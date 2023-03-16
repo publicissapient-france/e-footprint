@@ -33,6 +33,8 @@ class Sources:
         "echosdunet",
         "https://www.echosdunet.net/dossiers/facture-denergie-peut-on-reduire-consommation-electrique-sa-box-internet",
     )
+    STORAGE_EMBODIED_CARBON_STUDY = Source(
+        "Dirty secret of SSDs: embodied carbon", "https://arxiv.org/pdf/2207.10793.pdf")
 
 
 @dataclass

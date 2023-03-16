@@ -19,5 +19,5 @@ To execute main.py at the root of the project
 ```shell
 export PYTHONPATH="./:$PYTHONPATH"
 python -m pytest tests
-python use_cases.first_use_case.py
+python use_cases/first_use_case.py
 ```

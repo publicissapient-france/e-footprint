@@ -5,3 +5,5 @@ lib
 *.html
 *.png
 *.log
+# To ignore excel cache file
+~$*
