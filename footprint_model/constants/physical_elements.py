@@ -49,6 +49,22 @@ class Devices:
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
     )
+    BOX = Device(
+        PhysicalElements.BOX,
+        carbon_footprint_fabrication=SourceValue(78 * u.kg, Sources.BASE_ADEME_V19),
+        power=SourceValue(10 * u.W, Sources.HYPOTHESIS),
+        lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
+        fraction_of_usage_per_day=SourceValue(24 * u.hour / u.day, Sources.HYPOTHESIS)
+    )
+    SCREEN = Device(
+        PhysicalElements.SCREEN,
+        # TODO: To update
+        carbon_footprint_fabrication=SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
+        power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
+        lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
+        fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS)
+    )
+    FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN = 0.20
 
 
 @dataclass

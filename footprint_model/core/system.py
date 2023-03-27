@@ -45,6 +45,10 @@ class UsagePattern:
             raise ValueError("Variable 'daily_usage_window' does not have time dimensionality")
 
     @property
+    def frac_laptop(self) -> float:
+        return 1 - self.frac_smartphone
+
+    @property
     def nb_visits_per_year(self) -> float:
         return self.population.nb_users * self.nb_visits_per_user_per_year
 
@@ -58,20 +62,20 @@ class UsagePattern:
         return frac_visits * self.nb_visits_per_year * self.user_journey.compute_network_consumption(network)
 
     def compute_energy_consumption(self) -> Dict[PhysicalElements, Quantity]:
+        wifi_usage_fraction = (self.frac_laptop + self.frac_smartphone * (1 - self.frac_mobile_network_for_smartphones))
         return {
-            PhysicalElements.SMARTPHONE: self.compute_device_consumption(Devices.SMARTPHONE, self.frac_smartphone).to(
-                u.kWh
-            ),
-            PhysicalElements.LAPTOP: self.compute_device_consumption(Devices.LAPTOP, 1 - self.frac_smartphone).to(
-                u.kWh
-            ),
+            PhysicalElements.SMARTPHONE: self.compute_device_consumption(
+                Devices.SMARTPHONE, self.frac_smartphone).to(u.kWh),
+            PhysicalElements.LAPTOP: self.compute_device_consumption(
+                Devices.LAPTOP, self.frac_laptop).to(u.kWh),
+            PhysicalElements.BOX: self.compute_device_consumption(Devices.BOX, wifi_usage_fraction).to(u.kWh),
+            PhysicalElements.SCREEN: self.compute_device_consumption(
+                Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kWh),
             PhysicalElements.MOBILE_NETWORK: self.compute_network_consumption(
                 Networks.MOBILE_NETWORK, self.frac_smartphone * self.frac_mobile_network_for_smartphones
             ).to(u.kWh),
             PhysicalElements.WIFI_NETWORK: self.compute_network_consumption(
-                Networks.WIFI_NETWORK,
-                (1 - self.frac_smartphone) + self.frac_smartphone * (1 - self.frac_mobile_network_for_smartphones),
-            ).to(u.kWh),
+                Networks.WIFI_NETWORK,wifi_usage_fraction).to(u.kWh),
         }
 
     def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
@@ -79,7 +83,7 @@ class UsagePattern:
             PhysicalElements.SMARTPHONE: self.compute_device_fabrication_footprint(
                 Devices.SMARTPHONE, self.frac_smartphone).to(u.kg),
             PhysicalElements.LAPTOP: self.compute_device_fabrication_footprint(
-                Devices.LAPTOP, 1 - self.frac_smartphone).to(u.kg),
+                Devices.LAPTOP, self.frac_laptop).to(u.kg),
         }
 
     @property
