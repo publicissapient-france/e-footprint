@@ -49,6 +49,22 @@ class SourceValue:
                 "it is indeed mandatory to define a unit"
             )
 
+    @staticmethod
+    def _type_conversion_for_operation(operation_value):
+        if isinstance(operation_value, SourceValue):
+            return operation_value.value
+        else:
+            return operation_value
+
+    def __add__(self, other):
+        return self.value + self._type_conversion_for_operation(other)
+
+    def __truediv__(self, other):
+        return self.value / self._type_conversion_for_operation(other)
+
+    def __mul__(self, other):
+        return self.value * self._type_conversion_for_operation(other)
+
 
 if __name__ == "__main__":
     test_source = SourceValue(

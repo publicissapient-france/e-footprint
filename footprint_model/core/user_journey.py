@@ -77,14 +77,14 @@ class UserJourney:
         self.uj_steps.append(step)
 
     def compute_device_consumption(self, device: Device) -> Quantity:
-        return device.power.value * self.duration
+        return device.power * self.duration
 
     def compute_fabrication_footprint(self, device: Device) -> Quantity:
         return (
-            device.carbon_footprint_fabrication.value
+            device.carbon_footprint_fabrication
             * self.duration
-            / (device.lifespan.value * device.fraction_of_usage_per_day.value)
+            / (device.lifespan * device.fraction_of_usage_per_day)
         ).to(u.kg)
 
     def compute_network_consumption(self, network: Network) -> Quantity:
-        return (self.data_download + self.data_upload) * network.bandwidth_energy_intensity.value
+        return network.bandwidth_energy_intensity * (self.data_download + self.data_upload)

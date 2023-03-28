@@ -49,6 +49,10 @@ class UsagePattern:
         return 1 - self.frac_smartphone
 
     @property
+    def wifi_usage_fraction(self) -> float:
+        return self.frac_laptop + self.frac_smartphone * (1 - self.frac_mobile_network_for_smartphones)
+
+    @property
     def nb_visits_per_year(self) -> float:
         return self.population.nb_users * self.nb_visits_per_user_per_year
 
@@ -62,20 +66,19 @@ class UsagePattern:
         return frac_visits * self.nb_visits_per_year * self.user_journey.compute_network_consumption(network)
 
     def compute_energy_consumption(self) -> Dict[PhysicalElements, Quantity]:
-        wifi_usage_fraction = (self.frac_laptop + self.frac_smartphone * (1 - self.frac_mobile_network_for_smartphones))
         return {
             PhysicalElements.SMARTPHONE: self.compute_device_consumption(
                 Devices.SMARTPHONE, self.frac_smartphone).to(u.kWh),
             PhysicalElements.LAPTOP: self.compute_device_consumption(
                 Devices.LAPTOP, self.frac_laptop).to(u.kWh),
-            PhysicalElements.BOX: self.compute_device_consumption(Devices.BOX, wifi_usage_fraction).to(u.kWh),
+            PhysicalElements.BOX: self.compute_device_consumption(Devices.BOX, self.wifi_usage_fraction).to(u.kWh),
             PhysicalElements.SCREEN: self.compute_device_consumption(
                 Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kWh),
             PhysicalElements.MOBILE_NETWORK: self.compute_network_consumption(
                 Networks.MOBILE_NETWORK, self.frac_smartphone * self.frac_mobile_network_for_smartphones
             ).to(u.kWh),
             PhysicalElements.WIFI_NETWORK: self.compute_network_consumption(
-                Networks.WIFI_NETWORK,wifi_usage_fraction).to(u.kWh),
+                Networks.WIFI_NETWORK, self.wifi_usage_fraction).to(u.kWh),
         }
 
     def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
@@ -84,6 +87,10 @@ class UsagePattern:
                 Devices.SMARTPHONE, self.frac_smartphone).to(u.kg),
             PhysicalElements.LAPTOP: self.compute_device_fabrication_footprint(
                 Devices.LAPTOP, self.frac_laptop).to(u.kg),
+            PhysicalElements.BOX: self.compute_device_fabrication_footprint(
+                Devices.BOX, self.wifi_usage_fraction).to(u.kg),
+            PhysicalElements.SCREEN: self.compute_device_fabrication_footprint(
+                Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kg),
         }
 
     @property
@@ -120,28 +127,37 @@ class System:
             raise ValueError("Variable 'data_storage_duration' does not have time dimensionality")
 
     @property
-    def number_of_servers_needed__raw(self) -> float:
+    def nb_of_servers_required__raw(self) -> float:
         return self.usage_pattern.estimated_infra_need.ram / (Servers.SERVER.ram.value * Server.SERVER_UTILISATION_RATE)
 
+    @property
+    def nb_of_terabytes_required(self) -> Quantity:
+        return math.ceil(
+            (self.usage_pattern.estimated_infra_need.storage.to(u.To)
+             * self.data_replication_factor * self.data_storage_duration / u.year).magnitude
+        ) * u.To
+
     def compute_servers_consumption(self) -> Quantity:
-        nb_servers = math.ceil(self.number_of_servers_needed__raw)
+        nb_servers = math.ceil(self.nb_of_servers_required__raw)
         # TODO: Take idle time into account
-        return (nb_servers * u.year * Servers.SERVER.power.value * Servers.SERVER.power_usage_effectiveness).to(u.kWh)
+        return (Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers * u.year).to(u.kWh)
 
     def compute_servers_fabrication_footprint(self) -> Quantity:
-        nb_servers = math.ceil(self.number_of_servers_needed__raw)
-        servers_fab_footprint = (nb_servers * Servers.SERVER.carbon_footprint_fabrication.value
+        nb_servers = math.ceil(self.nb_of_servers_required__raw)
+        servers_fab_footprint = (Servers.SERVER.carbon_footprint_fabrication * nb_servers
                                  * (1 * u.year / Servers.SERVER.lifespan.value))
         return servers_fab_footprint.to(u.kg)
 
     def compute_storage_consumption(self) -> Quantity:
-        nb_of_terabytes_required = math.ceil(
-            (self.usage_pattern.estimated_infra_need.storage.to(u.To) * self.data_replication_factor
-             * self.data_storage_duration / u.year).magnitude) * u.To
-        storage_power_during_use = ((nb_of_terabytes_required / Storages.SSD_STORAGE.storage_capacity.value)
-                                    * Storages.SSD_STORAGE.power.value * Storages.SSD_STORAGE.power_usage_effectiveness)
+        storage_power_during_use = ((self.nb_of_terabytes_required / Storages.SSD_STORAGE.storage_capacity.value)
+                                    * Storages.SSD_STORAGE.power * Storages.SSD_STORAGE.power_usage_effectiveness)
         usage_time_per_year = (self.usage_pattern.daily_usage_window / u.day) * u.year
         return (storage_power_during_use * usage_time_per_year).to(u.kWh)
+
+    def compute_storage_fabrication_footprint(self) -> Quantity:
+        return (self.nb_of_terabytes_required
+                * (Storages.SSD_STORAGE.carbon_footprint_fabrication / Storages.SSD_STORAGE.storage_capacity)
+                * 1 * u.year / Storages.SSD_STORAGE.lifespan.value)
 
     def compute_energy_consumption(self) -> Dict[PhysicalElements, Quantity]:
         energy_consumption = self.usage_pattern.compute_energy_consumption()
@@ -153,5 +169,6 @@ class System:
     def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
         fabrication_emissions = self.usage_pattern.compute_fabrication_emissions()
         fabrication_emissions[PhysicalElements.SERVER] = self.compute_servers_fabrication_footprint()
+        fabrication_emissions[PhysicalElements.SSD] = self.compute_storage_fabrication_footprint()
 
         return fabrication_emissions
