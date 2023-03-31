@@ -3,6 +3,7 @@ from footprint_model.constants.countries import Country
 from footprint_model.constants.physical_elements import (Device, Network, PhysicalElements, Devices, Networks, Servers,
                                                          Server, Storages)
 from footprint_model.core.user_journey import UserJourney
+from footprint_model.utils.tools import round_dict
 
 from dataclasses import dataclass
 from typing import Dict
@@ -192,11 +193,11 @@ class System:
         energy_consumption[PhysicalElements.SERVER] = self.compute_servers_consumption()
         energy_consumption[PhysicalElements.SSD] = self.compute_storage_consumption()
 
-        return energy_consumption
+        return round_dict(energy_consumption, 1)
 
     def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
         fabrication_emissions = self.usage_pattern.compute_fabrication_emissions()
         fabrication_emissions[PhysicalElements.SERVER] = self.compute_servers_fabrication_footprint()
         fabrication_emissions[PhysicalElements.SSD] = self.compute_storage_fabrication_footprint()
 
-        return fabrication_emissions
+        return round_dict(fabrication_emissions, 1)

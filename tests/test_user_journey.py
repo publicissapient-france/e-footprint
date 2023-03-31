@@ -71,6 +71,7 @@ class TestUserJourney(TestCase):
             power=SourceValue(device_power, Sources.HYPOTHESIS),
             lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
             fraction_of_usage_per_day=SourceValue(3 * u.hour / u.year, Sources.HYPOTHESIS),
+            data_usage=SourceValue(12.7 * u.Go / u.month, Sources.ARCEP_2022_MOBILE_NETWORK_STUDY)
         )
         with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration
@@ -90,6 +91,7 @@ class TestUserJourney(TestCase):
             power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(lifespan, Sources.HYPOTHESIS),
             fraction_of_usage_per_day=SourceValue(average_fraction_of_usage_per_day, Sources.HYPOTHESIS),
+            data_usage=SourceValue(12.7 * u.Go / u.month, Sources.ARCEP_2022_MOBILE_NETWORK_STUDY)
         )
         with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration
