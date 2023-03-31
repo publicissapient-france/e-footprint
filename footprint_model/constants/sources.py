@@ -35,6 +35,10 @@ class Sources:
     )
     STORAGE_EMBODIED_CARBON_STUDY = Source(
         "Dirty secret of SSDs: embodied carbon", "https://arxiv.org/pdf/2207.10793.pdf")
+    ARCEP_2022_MOBILE_NETWORK_STUDY = Source(
+        "ARCEP - Les SERVICES de communications électroniques en France – 3eme TRIMESTRE 2022",
+        "https://www.arcep.fr/fileadmin/reprise/observatoire/3-2022/obs-marches-T3-2022_janv2023.pdf")
+    STATE_OF_MOBILE_2022 = Source("DATA.AI - STATE OF MOBILE", "https://www.data.ai/en/go/state-of-mobile-2022")
 
 
 @dataclass

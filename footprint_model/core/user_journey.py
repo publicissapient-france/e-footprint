@@ -44,6 +44,16 @@ class UserJourneyStep:
         if self.tracking_data > 0 * u.o:
             self.data_transferred.append(DataTransferred(DataTransferredType.UPLOAD, self.tracking_data))
 
+    def __mul__(self, other):
+        if type(other) not in [int, float]:
+            raise ValueError(f"Can only multiply UserJourneyStep with int or float, not {type(other)}")
+        data_transfers_copy = self.data_transferred.copy()
+        for data_transfer in data_transfers_copy:
+            data_transfer.size = data_transfer.size * other
+
+        return UserJourneyStep(
+            self.name, data_transfers_copy, self.duration * other, 0 * u.Mo, self.url_pattern)
+
 
 @dataclass
 class UserJourney:

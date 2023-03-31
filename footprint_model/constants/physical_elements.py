@@ -28,10 +28,13 @@ class Hardware:
 @dataclass
 class Device(Hardware):
     fraction_of_usage_per_day: SourceValue
+    data_usage: SourceValue
 
     def __post_init__(self):
         if not self.fraction_of_usage_per_day.value.check("[]"):
             raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
+        if not self.data_usage.value.check("[data] / [time]"):
+            raise ValueError("Variable 'data_usage' should have data / time dimensionality")
 
 
 class Devices:
@@ -40,7 +43,8 @@ class Devices:
         carbon_footprint_fabrication=SourceValue(30 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_per_day=SourceValue(3 * u.hour / u.day, Sources.HYPOTHESIS),
+        fraction_of_usage_per_day=SourceValue(3.6 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022),
+        data_usage=SourceValue(12.7 * u.Go / u.month, Sources.ARCEP_2022_MOBILE_NETWORK_STUDY)
     )
     LAPTOP = Device(
         PhysicalElements.LAPTOP,
@@ -48,13 +52,17 @@ class Devices:
         power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
+        # TODO: get data
+        data_usage=SourceValue(0 * u.Go / u.month, Sources.HYPOTHESIS)
     )
     BOX = Device(
         PhysicalElements.BOX,
         carbon_footprint_fabrication=SourceValue(78 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(10 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_per_day=SourceValue(24 * u.hour / u.day, Sources.HYPOTHESIS)
+        fraction_of_usage_per_day=SourceValue(24 * u.hour / u.day, Sources.HYPOTHESIS),
+        # TODO: get data
+        data_usage=SourceValue(0 * u.Go / u.month, Sources.HYPOTHESIS)
     )
     SCREEN = Device(
         PhysicalElements.SCREEN,
@@ -62,7 +70,8 @@ class Devices:
         carbon_footprint_fabrication=SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS)
+        fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
+        data_usage=SourceValue(0 * u.Go / u.month, Sources.HYPOTHESIS)
     )
     FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN = 0.20
 
@@ -111,7 +120,7 @@ class Storages:
         PhysicalElements.SSD,
         carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        lifespan=SourceValue(4 * u.years, Sources.HYPOTHESIS),
+        lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=1.2
@@ -125,6 +134,7 @@ class Storages:
         storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=1.2
     )
+
 
 @dataclass
 class Network:
