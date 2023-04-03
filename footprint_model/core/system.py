@@ -98,7 +98,7 @@ class UsagePattern:
     @property
     def estimated_infra_need(self) -> InfraNeed:
         nb_visits_per_usage_window = self.nb_visits_per_year / 365
-        nb_visitors_in_parallel_during_usage_window = (
+        nb_visitors_in_parallel_during_usage_window = max(1,
                 nb_visits_per_usage_window * self.user_journey.duration / self.daily_usage_window)
         data_transferred_in_parallel = (nb_visitors_in_parallel_during_usage_window
                                        * (self.user_journey.data_upload + self.user_journey.data_download))
