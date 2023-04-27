@@ -41,7 +41,7 @@ class System:
     def nb_of_terabytes_required(self) -> Dict[UsagePattern, Quantity]:
         nb_of_terabytes_required = {}
         for usage_pattern in self.usage_patterns:
-            nb_of_terabytes_required[usage_pattern] = math.ceil(
+            nb_of_terabytes_required[usage_pattern] = (
                 (usage_pattern.estimated_infra_need.storage.to(u.To)
                  * self.data_replication_factor * self.data_storage_duration / u.year).magnitude) * u.To
         return nb_of_terabytes_required

@@ -12,6 +12,7 @@ class Source:
 
 
 class Sources:
+    USER_INPUT = Source("User input", None)
     ADEME_STUDY = Source(
         name="Étude ADEME",
         link="https://docs.google.com/spreadsheets/d/1s-B4WLXAxSE8ddoY9929SX2tPdCZ4OEl/edit#gid=155161832",
@@ -67,6 +68,9 @@ class SourceValue:
         return self.value / self._type_conversion_for_operation(other)
 
     def __mul__(self, other):
+        return self.value * self._type_conversion_for_operation(other)
+
+    def __rmul__(self, other):
         return self.value * self._type_conversion_for_operation(other)
 
 

@@ -1,10 +1,10 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Dict
 
 from pint import Quantity
 
 from footprint_model.constants.countries import Country
-from footprint_model.constants.physical_elements import Device, Network, PhysicalElements, Devices, Networks, Server
+from footprint_model.constants.physical_elements import (Device, Network, PhysicalElements, Devices, Networks, Server)
 from footprint_model.constants.units import u
 from footprint_model.core.user_journey import UserJourney
 
@@ -34,11 +34,13 @@ class UsagePattern:
     name: str
     user_journey: UserJourney
     population: Population
-    # TODO: attach fraction of use to device type
     frac_smartphone: float
     frac_mobile_network_for_smartphones: float
     nb_visits_per_user_per_year: int
+    # TODO: Raise ValueError if daily_usage_window is inferior to user_journey.duration
     daily_usage_window: Quantity
+    smartphone: Device = field(default_factory=lambda: Devices.SMARTPHONE)
+    laptop: Device = field(default_factory=lambda: Devices.LAPTOP)
 
     def __post_init__(self):
         if not self.daily_usage_window.check("[time]"):
@@ -76,9 +78,9 @@ class UsagePattern:
     def compute_energy_consumption(self) -> Dict[PhysicalElements, Quantity]:
         return {
             PhysicalElements.SMARTPHONE: self.compute_device_consumption(
-                Devices.SMARTPHONE, self.frac_smartphone).to(u.kWh),
+                self.smartphone, self.frac_smartphone).to(u.kWh),
             PhysicalElements.LAPTOP: self.compute_device_consumption(
-                Devices.LAPTOP, self.frac_laptop).to(u.kWh),
+                self.laptop, self.frac_laptop).to(u.kWh),
             PhysicalElements.BOX: self.compute_device_consumption(Devices.BOX, self.wifi_usage_fraction).to(u.kWh),
             PhysicalElements.SCREEN: self.compute_device_consumption(
                 Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kWh),
@@ -92,9 +94,9 @@ class UsagePattern:
     def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
         return {
             PhysicalElements.SMARTPHONE: self.compute_device_fabrication_footprint(
-                Devices.SMARTPHONE, self.frac_smartphone).to(u.kg),
+                self.smartphone, self.frac_smartphone).to(u.kg),
             PhysicalElements.LAPTOP: self.compute_device_fabrication_footprint(
-                Devices.LAPTOP, self.frac_laptop).to(u.kg),
+                self.laptop, self.frac_laptop).to(u.kg),
             PhysicalElements.BOX: self.compute_device_fabrication_footprint(
                 Devices.BOX, self.wifi_usage_fraction).to(u.kg),
             PhysicalElements.SCREEN: self.compute_device_fabrication_footprint(
