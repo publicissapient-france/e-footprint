@@ -10,14 +10,14 @@ def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
     index = np.arange(len(elements))
     bar_width = 0.4
 
-    total_emissions = 0
+    total_emissions_in_kg = 0
     for input_dict in input_dicts:
-        total_emissions += sum(input_dict.values()).to(u.kg).magnitude
+        total_emissions_in_kg += sum(input_dict.values()).to(u.kg).magnitude
 
     for i, input_dict in enumerate(input_dicts):
         values = [input_dict.get(element, 0 * u.kg).to(u.kg).magnitude for element in elements]
 
-        proportions = [(value / total_emissions) * 100 for value in values]
+        proportions = [(value / total_emissions_in_kg) * 100 for value in values]
 
         # Plot the values with proportions as secondary scale
         rects = ax.bar(index + i * bar_width, values, bar_width, label=legend_labels[i])
@@ -30,17 +30,23 @@ def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
     ax.set_xlabel("Physical Elements")
     ax.set_ylabel("kg CO2 emissions / year")
     ax.set_title(title, fontsize=24, fontweight="bold", y=1.12)
-    rounded_sum_in_tons = round(total_emissions / 1000, rounding_value)
+    if total_emissions_in_kg < 501:
+        unit = "kg"
+        dividing_number = 1
+    else:
+        unit = "ton"
+        dividing_number = 1000
+    rounded_sum = round(total_emissions_in_kg / dividing_number, rounding_value)
     if rounding_value == 0:
-        rounded_sum_in_tons = int(rounded_sum_in_tons)
-    ax.text(0.5, 1.1, f"CO2 emissions (total {rounded_sum_in_tons} tons)",
+        rounded_sum = int(rounded_sum)
+    ax.text(0.5, 1.1, f"CO2 emissions (total {rounded_sum} {unit})",
             transform=ax.transAxes, fontsize=12, va="top", ha="center")
     ax.set_xticks(index + bar_width / 2)
     ax.set_xticklabels(elements, rotation=45, ha="right")
 
     ax2 = ax.twinx()
     max_value = max([max(input_dict.values()) for input_dict in input_dicts]).to(u.kg).magnitude
-    ax2.set_ylim(0, 100 * (max_value / total_emissions) * (ax.get_ylim()[1] / max_value))
+    ax2.set_ylim(0, 100 * (max_value / total_emissions_in_kg) * (ax.get_ylim()[1] / max_value))
     ax2.set_ylabel("Proportions (%)")
 
     ax.legend()
