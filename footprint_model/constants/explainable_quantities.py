@@ -1,6 +1,8 @@
 from pint import Quantity
 from typing import Dict
 
+from copy import deepcopy
+
 
 class ExplainableQuantity:
     def __init__(
@@ -41,13 +43,13 @@ class ExplainableQuantity:
         if issubclass(type(other), ExplainableQuantity):
             return self.value > other.value
         else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {other.type}")
+            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __lt__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return self.value < other.value
         else:
-            raise ValueError(f"Can only compare with another ExplainableQuantity, not {other.type}")
+            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
     def __eq__(self, other):
         if issubclass(type(other), ExplainableQuantity):
@@ -59,58 +61,81 @@ class ExplainableQuantity:
         if "self" not in operation_formula or "other" not in operation_formula:
             raise ValueError("There should be self and other in operation formula")
 
-        if issubclass(type(other), ExplainableQuantity):
-            highest_height_level = max(self.height_level, other.height_level)
-            new_name_values_dict = self.name_values_dict.copy()
-            new_name_formulas_dict = self.name_formulas_dict.copy()
-            new_formulas = {}
-            for height in range(highest_height_level + 1):
-                if self.height_level >= height and other.height_level >= height:
-                    new_name_values_dict[height].update(other.name_values_dict[height])
-                    new_name_formulas_dict[height].update(other.name_formulas_dict[height])
-                elif other.height_level >= height:
-                    new_name_values_dict[height] = other.name_values_dict[height]
-                    new_name_formulas_dict[height] = other.name_formulas_dict[height]
-                new_formulas[height] = operation_formula.replace(
-                    "self", f"{self.formulas[min(self.height_level, height)]}").replace(
-                    "other", f"{other.formulas[min(other.height_level, height)]}"
-                )
-            return ExplainableQuantity(
-                return_value, formulas=new_formulas, name_values_dict=new_name_values_dict,
-                name_formulas_dict=new_name_formulas_dict)
-        else:
-            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
+        highest_height_level = max(self.height_level, other.height_level)
+        new_name_values_dict = deepcopy(self.name_values_dict)
+        new_name_formulas_dict = deepcopy(self.name_formulas_dict)
+        new_formulas = {}
+        for height in range(highest_height_level + 1):
+            if self.height_level >= height and other.height_level >= height:
+                new_name_values_dict[height].update(other.name_values_dict[height])
+                new_name_formulas_dict[height].update(other.name_formulas_dict[height])
+            elif other.height_level >= height:
+                new_name_values_dict[height] = other.name_values_dict[height]
+                new_name_formulas_dict[height] = other.name_formulas_dict[height]
+            new_formulas[height] = operation_formula.replace(
+                "self", f"{self.formulas[min(self.height_level, height)]}").replace(
+                "other", f"{other.formulas[min(other.height_level, height)]}"
+            )
+        return ExplainableQuantity(
+            return_value, formulas=new_formulas, name_values_dict=new_name_values_dict,
+            name_formulas_dict=new_name_formulas_dict)
 
     def __add__(self, other):
         if not issubclass(type(other), ExplainableQuantity) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
             return self
-        return self.compute_operation(other, "self + other", self.value + other.value)
+        elif issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "self + other", self.value + other.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __sub__(self, other):
-        return self.compute_operation(other, "self - other", self.value - other.value)
+        if issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "self - other", self.value - other.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __mul__(self, other):
-        return self.compute_operation(other, "self * other", self.value * other.value)
+        if issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "self * other", self.value * other.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __truediv__(self, other):
-        return self.compute_operation(other, "((self) / (other))", self.value / other.value)
+        if issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "((self) / (other))", self.value / other.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __radd__(self, other):
         return self.__add__(other)
 
     def __rsub__(self, other):
-        return self.compute_operation(other, "other - self", other.value - self.value)
+        if issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "other - self", other.value - self.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __rmul__(self, other):
         return self.__mul__(other)
 
     def __rtruediv__(self, other):
-        return self.compute_operation(other, "other / self", other.value / self.value)
+        if issubclass(type(other), ExplainableQuantity):
+            return self.compute_operation(other, "other / self", other.value / self.value)
+        else:
+            raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __round__(self, round_level):
         self.value = round(self.value, round_level)
         return self
+
+    @staticmethod
+    def _replace_values_in_formula(formula, values_dict):
+        formula_with_values = formula
+        for var, val in values_dict.items():
+            formula_with_values = formula_with_values.replace(var, str(val))
+
+        return formula_with_values
 
     def explain(self, pretty_print=True):
         highest_height_level = max(self.formulas.keys())
@@ -125,8 +150,8 @@ class ExplainableQuantity:
                     int_calc_formula = self.name_formulas_dict[height_level][int_calc]
                     formula_with_values = int_calc_formula
                     for int_height_level in range(height_level, -1, -1):
-                        for var, val in self.name_values_dict[int_height_level].items():
-                            formula_with_values = formula_with_values.replace(var, str(val))
+                        formula_with_values = self._replace_values_in_formula(
+                            formula_with_values, self.name_values_dict[int_height_level])
                     intermediate_formula = f"{int_calc} = {int_calc_formula} = {formula_with_values} " \
                                            f"= {self.name_values_dict[height_level][int_calc]}\n"
 
@@ -134,8 +159,13 @@ class ExplainableQuantity:
                         calc_str += self.pretty_print_calculation(intermediate_formula)
                     else:
                         calc_str += intermediate_formula
+        else:
+            formula = self.formulas[0]
+            formula_with_values = self._replace_values_in_formula(formula, self.name_values_dict[0])
 
-        print(calc_str)
+            calc_str += f"{formula} = {formula_with_values} = {self.value}"
+
+        return calc_str
 
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)
