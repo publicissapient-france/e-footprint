@@ -29,13 +29,22 @@ class System:
         self.cloud = cloud
 
     @property
-    def nb_of_servers_required__raw(self) -> Dict[UsagePattern, float]:
+    def nb_of_servers_required(self) -> Dict[UsagePattern, float]:
         nb_of_servers_required = {}
         for usage_pattern in self.usage_patterns:
-            nb_of_servers_required[usage_pattern] = (
+            nb_of_servers_required_up__raw = (
                     usage_pattern.estimated_infra_need.ram
                     / (Servers.SERVER.ram * Server.server_utilization_rate(self.cloud))
-            ).define_as_intermediate_calculation(f"Nb of servers required for {usage_pattern.name}")
+            )
+            if not self.cloud and (
+                    int(nb_of_servers_required_up__raw.magnitude) != nb_of_servers_required_up__raw.magnitude):
+                nb_of_servers_required_up = nb_of_servers_required_up__raw + ExplainableQuantity(
+                    (math.ceil(nb_of_servers_required_up__raw.magnitude) - nb_of_servers_required_up__raw.magnitude)
+                    * u.dimensionless, "Extra server capacity because number of servers must be an integer")
+            else:
+                nb_of_servers_required_up = nb_of_servers_required_up__raw
+            nb_of_servers_required[usage_pattern] = nb_of_servers_required_up.define_as_intermediate_calculation(
+                f"Nb of servers required for {usage_pattern.name}")
         return nb_of_servers_required
 
     @property
@@ -50,47 +59,44 @@ class System:
 
     def compute_servers_consumption(self) -> Dict[UsagePattern, ExplainableQuantity]:
         servers_consumption = {}
-        nb_of_servers_required__raw = self.nb_of_servers_required__raw
+        nb_of_servers_required = self.nb_of_servers_required
         for usage_pattern in self.usage_patterns:
+            effective_power = Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness
             if self.cloud:
-                nb_servers = nb_of_servers_required__raw[usage_pattern]
-                effective_power = Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness
-                servers_consumption[usage_pattern] = (
-                        nb_servers * effective_power
+                servers_consumption_up = (
+                        nb_of_servers_required[usage_pattern] * effective_power
                         * (
                                 usage_pattern.usage_time_fraction
                                 + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                         )
-                ).to(u.kWh / u.year).define_as_intermediate_calculation(
-                    f"Server energy consumption of {usage_pattern.name}")
+                ).to(u.kWh / u.year)
             else:
-                nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
                 # TODO: Take idle time into account
-                servers_consumption[usage_pattern] = (
-                        Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers).to(u.kWh / u.year)
+                servers_consumption_up = (
+                        effective_power * nb_of_servers_required[usage_pattern]).to(u.kWh / u.year)
+            servers_consumption[usage_pattern] = servers_consumption_up.define_as_intermediate_calculation(
+                    f"Server energy consumption of {usage_pattern.name}")
         return servers_consumption
 
     def compute_servers_fabrication_footprint(self) -> Dict[UsagePattern, ExplainableQuantity]:
         servers_fabrication_footprint = {}
-        nb_of_servers_required__raw = self.nb_of_servers_required__raw
+        nb_of_servers_required = self.nb_of_servers_required
         for usage_pattern in self.usage_patterns:
             if self.cloud:
-                nb_servers = nb_of_servers_required__raw[usage_pattern]
-                servers_fabrication_footprint[usage_pattern] = (
-                    nb_servers * Servers.SERVER.carbon_footprint_fabrication
+                servers_fab_footprint_up = (
+                    nb_of_servers_required[usage_pattern] * Servers.SERVER.carbon_footprint_fabrication
                     * (
                             usage_pattern.usage_time_fraction
                             + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                     )
                     / Servers.SERVER.lifespan
-                ).to(u.kg / u.year).define_as_intermediate_calculation(
-                    f"Server fabrication emissions of {usage_pattern.name}")
+                ).to(u.kg / u.year)
             else:
-                # TODO: debug math.ceil with ExplainableQuantity
-                nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
-                servers_fab_footprint = (Servers.SERVER.carbon_footprint_fabrication * nb_servers
-                                         / Servers.SERVER.lifespan)
-                servers_fabrication_footprint[usage_pattern] = servers_fab_footprint.to(u.kg / u.year)
+                servers_fab_footprint_up = (
+                        Servers.SERVER.carbon_footprint_fabrication * nb_of_servers_required[usage_pattern]
+                        / Servers.SERVER.lifespan).to(u.kg / u.year)
+            servers_fabrication_footprint[usage_pattern] = servers_fab_footprint_up.define_as_intermediate_calculation(
+                f"Server fabrication emissions of {usage_pattern.name}")
         return servers_fabrication_footprint
 
     def compute_storage_consumption(self) -> Dict[UsagePattern, ExplainableQuantity]:

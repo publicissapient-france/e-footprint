@@ -34,10 +34,23 @@ class TestSystem(TestCase):
             cloud=True
         )
 
+        self.non_cloud_system = System(
+            "Non cloud system",
+            usage_patterns=[self.usage_pattern],
+            data_replication_factor=2,
+            data_storage_duration=3 * u.year,
+            cloud=False
+        )
+
     def test_nb_of_servers_required__raw(self):
         self.assertDictEqual(
-            round_dict(extract_values_from_dict(self.system.nb_of_servers_required__raw), 2),
+            round_dict(extract_values_from_dict(self.system.nb_of_servers_required), 2),
             {self.usage_pattern: 0.87 * u.dimensionless})
+
+    def test_nb_of_servers_required__raw__non_cloud(self):
+        self.assertDictEqual(
+            round_dict(extract_values_from_dict(self.non_cloud_system.nb_of_servers_required), 2),
+            {self.usage_pattern: 2 * u.dimensionless})
 
     def test_storage_required(self):
         self.assertDictEqual(
@@ -47,6 +60,11 @@ class TestSystem(TestCase):
         self.assertDictEqual(
             round_dict(extract_values_from_dict(self.system.compute_servers_consumption()), 1),
             {self.usage_pattern: 1521.9 * u.kWh / u.year})
+
+    def test_compute_servers_consumption_non_cloud(self):
+        self.assertDictEqual(
+            round_dict(extract_values_from_dict(self.non_cloud_system.compute_servers_consumption()), 1),
+            {self.usage_pattern: 6311.5 * u.kWh / u.year})
 
     def test_compute_servers_fabrication_footprint(self):
         self.assertDictEqual(
