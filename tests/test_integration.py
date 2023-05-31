@@ -29,7 +29,7 @@ class IntegrationTest(TestCase):
             PhysicalElements.SCREEN: 5000.0 * u.kWh / u.year,
             PhysicalElements.MOBILE_NETWORK: 1860.0 * u.kWh / u.year,
             PhysicalElements.WIFI_NETWORK: 2325.0 * u.kWh / u.year,
-            PhysicalElements.SERVER: 134.5 * u.kWh / u.year,
+            PhysicalElements.SERVER: 134.7 * u.kWh / u.year,
             PhysicalElements.SSD: 54.7 * u.kWh / u.year,
         }}
         self.assertDictEqual(extract_values_from_dict(system.compute_energy_consumption(), imbricated_dict=True),

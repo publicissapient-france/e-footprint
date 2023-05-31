@@ -3,6 +3,8 @@ from typing import Dict
 
 from copy import deepcopy
 
+DEFAULT_ROUNDING_LEVEL = 2
+
 
 class ExplainableQuantity:
     def __init__(
@@ -22,7 +24,7 @@ class ExplainableQuantity:
             self.formulas = formulas
             self.height_level = max(self.formulas.keys())
         if name_values_dict is None:
-            self.name_values_dict = {self.height_level: {formula: value}}
+            self.name_values_dict = {self.height_level: {formula: round(value, DEFAULT_ROUNDING_LEVEL)}}
         else:
             self.name_values_dict = name_values_dict
         if name_formulas_dict is None:
@@ -33,7 +35,7 @@ class ExplainableQuantity:
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
         self.height_level += 1
         self.formulas[self.height_level] = intermediate_calculation_label
-        self.name_values_dict[self.height_level] = {intermediate_calculation_label: self.value}
+        self.name_values_dict[self.height_level] = {intermediate_calculation_label: round(self.value, DEFAULT_ROUNDING_LEVEL)}
         self.name_formulas_dict[self.height_level] = {
             intermediate_calculation_label: self.formulas[self.height_level - 1]}
 
@@ -139,23 +141,23 @@ class ExplainableQuantity:
 
     def explain(self, pretty_print=True):
         highest_height_level = max(self.formulas.keys())
-        calc_str = "Formula details:\n\n"
+        calc_str = "## High-level formula:\n\n"
 
         if highest_height_level > 0:
             for height_level in range(highest_height_level, 0, -1):
                 if height_level != highest_height_level:
-                    calc_str += f"\n\nwith {', '.join(list(self.name_values_dict[height_level].keys()))} defined as:\n"
+                    calc_str += f"\n\n#### with {', '.join(list(self.name_values_dict[height_level].keys()))} defined as:\n"
                 for int_calc in self.name_values_dict[height_level].keys():
-                    calc_str += "\n"
+                    calc_str += f"\n##### {int_calc}:\n"
                     int_calc_formula = self.name_formulas_dict[height_level][int_calc]
                     formula_with_values = int_calc_formula
                     for int_height_level in range(height_level, -1, -1):
                         formula_with_values = self._replace_values_in_formula(
                             formula_with_values, self.name_values_dict[int_height_level])
                     intermediate_formula = f"{int_calc} = {int_calc_formula} = {formula_with_values} " \
-                                           f"= {self.name_values_dict[height_level][int_calc]}\n"
+                                           f"= {round(self.name_values_dict[height_level][int_calc], DEFAULT_ROUNDING_LEVEL)}\n"
 
-                    if pretty_print and height_level > 1:
+                    if pretty_print and height_level >= 1:
                         calc_str += self.pretty_print_calculation(intermediate_formula)
                     else:
                         calc_str += intermediate_formula
@@ -163,7 +165,7 @@ class ExplainableQuantity:
             formula = self.formulas[0]
             formula_with_values = self._replace_values_in_formula(formula, self.name_values_dict[0])
 
-            calc_str += f"{formula} = {formula_with_values} = {self.value}"
+            calc_str += f"{formula} = {formula_with_values} = {round(self.value, DEFAULT_ROUNDING_LEVEL)}"
 
         return calc_str
 

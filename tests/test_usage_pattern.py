@@ -102,7 +102,7 @@ class TestUsagePattern(unittest.TestCase):
 
     def test_estimated_infra_need(self):
         infra_need = self.usage_pattern.estimated_infra_need
-        self.assertEqual(round(infra_need.ram.value, 3), 0.029 * u.Go)
+        self.assertEqual(round(infra_need.ram.value, 3), 0.05 * u.Go)
         self.assertEqual(round(infra_need.storage.value, 1), 0.2 * u.To / u.year)
 
     def test_data_upload(self):

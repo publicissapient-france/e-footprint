@@ -8,6 +8,7 @@ from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 from dataclasses import dataclass
 from typing import Dict
+import math
 
 from pint import Quantity
 
@@ -146,11 +147,18 @@ class UsagePattern:
     def estimated_infra_need(self) -> InfraNeed:
         # TODO: Split into estimated_ram_need and estimated_storage_need for optimization
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
-        nb_user_journeys_in_parallel_during_usage = max(
-            one_user_journey,
+        nb_uj_in_parallel__raw = (
             (one_user_journey * (self.user_journeys_freq * self.user_journey.duration / self.usage_time_fraction)).to(
-                u.user_journey)
-        )
+                u.user_journey))
+        if nb_uj_in_parallel__raw.magnitude != int(nb_uj_in_parallel__raw.magnitude):
+            nb_user_journeys_in_parallel_during_usage = (
+                nb_uj_in_parallel__raw + ExplainableQuantity(
+                (math.ceil(nb_uj_in_parallel__raw.magnitude) - nb_uj_in_parallel__raw.magnitude)
+                    * u.user_journey, "Rounding up of user journeys in parallel to next integer"))
+        else:
+            nb_user_journeys_in_parallel_during_usage = nb_uj_in_parallel__raw
+        nb_user_journeys_in_parallel_during_usage.define_as_intermediate_calculation(
+            "Number of user journeys in parallel")
         total_data_transfered = self.user_journey.data_upload + self.user_journey.data_download
         total_data_transfered.formulas[0] = f"({total_data_transfered.formulas[0]})"
         data_transferred_in_parallel = (nb_user_journeys_in_parallel_during_usage * total_data_transfered)

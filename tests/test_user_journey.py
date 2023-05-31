@@ -68,7 +68,7 @@ class TestUserJourney(TestCase):
         )
 
     def test_compute_device_consumption(self):
-        duration = ExplainableQuantity(10 * u.s, "duration")
+        duration = ExplainableQuantity(10 * u.s / u.user_journey, "duration")
         device_power = 3 * u.W
         device_consumption = device_power * duration.value
         device = Device(
@@ -87,12 +87,12 @@ class TestUserJourney(TestCase):
             self.assertEqual(device_consumption_computed.value, device_consumption)
 
     def test_compute_fabrication_footprint(self):
-        duration = ExplainableQuantity(10 * u.s, "duration")
+        duration = ExplainableQuantity(10 * u.s / u.user_journey, "duration")
         carbon_footprint_fabrication = 60 * u.kg
         average_fraction_of_usage_per_day = 3 * u.hour / u.day
         lifespan = 3 * u.year
         fabrication_footprint = (carbon_footprint_fabrication * duration.value /
-                                 (lifespan * average_fraction_of_usage_per_day))
+                                 (lifespan * average_fraction_of_usage_per_day)).to(u.gram / u.user_journey)
         device = Device(
             PhysicalElements.SMARTPHONE,
             carbon_footprint_fabrication=SourceValue(carbon_footprint_fabrication, Sources.BASE_ADEME_V19),
@@ -108,10 +108,11 @@ class TestUserJourney(TestCase):
             self.assertEqual(fabrication_footprint_computed.value, fabrication_footprint)
 
     def test_compute_network_consumption(self):
-        data_download = ExplainableQuantity(10 * u.Mo, "data_download")
-        data_upload = ExplainableQuantity(20 * u.Mo, "data_upload")
+        data_download = ExplainableQuantity(10 * u.Mo / u.user_journey, "data_download")
+        data_upload = ExplainableQuantity(20 * u.Mo / u.user_journey, "data_upload")
         bandwidth_energy_intensity = 0.05 * u("kWh/Go")
-        network_consumption = (data_download.value + data_upload.value) * bandwidth_energy_intensity
+        network_consumption = ((data_download.value + data_upload.value) * bandwidth_energy_intensity).to(
+            u.Wh / u.user_journey)
         network = Network(
             PhysicalElements.WIFI_NETWORK,
             SourceValue(bandwidth_energy_intensity, Sources.TRAFICOM_STUDY),

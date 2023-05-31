@@ -38,12 +38,12 @@ class TestExplainableQuantity(unittest.TestCase):
 
     def test_explain_order_0(self):
         self.assertEqual(
-            (self.a + self.b).explain(), 'Formula details:\n\n1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt')
+            (self.a + self.b).explain(), '## High-level formula:\n\n1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt')
 
     def test_explain_order_1(self):
         self.assertEqual(
             self.c.explain(pretty_print=False),
-            'Formula details:\n\n\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n')
+            '## High-level formula:\n\n\n##### int calc:\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n')
 
     def test_second_order_calc(self):
         self.assertEqual(self.d.height_level, 2)
@@ -62,11 +62,11 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_explain_order_2(self):
         self.assertEqual(
             self.d.explain(pretty_print=False),
-            'Formula details:\n\n\nint calc 2 = int calc + 2 Watt = 3 watt + 2 watt = 5 watt\n\n\nwith int calc defined as:\n\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n'
+            '## High-level formula:\n\n\n##### int calc 2:\nint calc 2 = int calc + 2 Watt = 3 watt + 2 watt = 5 watt\n\n\n#### with int calc defined as:\n\n##### int calc:\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n'
         )
         self.assertEqual(
             self.d.explain(pretty_print=True),
-            'Formula details:\n\n\nint calc 2\n=\n int calc + 2 Watt\n=\n 3 watt + 2 watt\n=\n 5 watt\n\n\nwith int calc defined as:\n\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n'
+            '## High-level formula:\n\n\n##### int calc 2:\nint calc 2\n=\n int calc + 2 Watt\n=\n 3 watt + 2 watt\n=\n 5 watt\n\n\n#### with int calc defined as:\n\n##### int calc:\nint calc\n=\n 1 Watt + 2 Watt\n=\n 1 watt + 2 watt\n=\n 3 watt\n'
         )
 
     def test_to(self):

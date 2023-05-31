@@ -156,7 +156,8 @@ class System:
             for key in energy_consumption:
                 output_dict[key] = (
                         energy_consumption[key] * usage_pattern.population.country.average_carbon_intensity).to(
-                    u.kg / u.year)
+                    u.kg / u.year).define_as_intermediate_calculation(
+                    f"CO2 emissions from electricity use of {key} in {usage_pattern.name}")
             energy_emissions[usage_pattern] = round_dict(output_dict, 1)
 
         return energy_emissions

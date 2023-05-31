@@ -5,6 +5,7 @@ from footprint_model.constants.explainable_quantities import ExplainableQuantity
 from dataclasses import dataclass, field
 from typing import List, Optional
 from pint import Quantity
+from copy import deepcopy
 
 
 class DataTransferredType:
@@ -58,6 +59,10 @@ class UserJourneyStep:
 
         return UserJourneyStep(
             self.name, data_transfers_copy, self.duration * other, 0 * u.Mo, self.url_pattern)
+    
+    def compute_bandwidth(self, transferred_type: DataTransferredType) -> ExplainableQuantity:
+        return (sum([data_transfer.size for data_transfer in self.data_transferred
+                if data_transfer.type == transferred_type]))
 
 
 @dataclass
@@ -70,11 +75,11 @@ class UserJourney:
     @property
     @intermediate_calculation("duration")
     def duration(self) -> ExplainableQuantity:
-        uj_step_duration_sum = sum(elt.duration for elt in self.uj_steps)
+        uj_step_duration_sum = deepcopy(sum(elt.duration for elt in self.uj_steps))
         uj_step_duration_sum.formulas[0] = f"({uj_step_duration_sum.formulas[0]})"
         return uj_step_duration_sum
 
-    def _compute_bandwidth(self, transferred_type: DataTransferredType) -> Quantity:
+    def _compute_bandwidth(self, transferred_type: DataTransferredType) -> ExplainableQuantity:
         # TODO: write tests for this function
         all_data_transferred = []
         for uj_step in self.uj_steps:
@@ -84,12 +89,12 @@ class UserJourney:
         return uj_bandwidth
 
     @property
-    def data_download(self) -> Quantity:
+    def data_download(self) -> ExplainableQuantity:
         return ExplainableQuantity(
             self._compute_bandwidth(DataTransferredType.DOWNLOAD), f"Data download of step {self.name}")
 
     @property
-    def data_upload(self) -> Quantity:
+    def data_upload(self) -> ExplainableQuantity:
         return ExplainableQuantity(
             self._compute_bandwidth(DataTransferredType.UPLOAD), f"Data upload of step {self.name}")
 
@@ -97,18 +102,19 @@ class UserJourney:
         self.uj_steps.append(step)
 
     @intermediate_calculation("Device energy consumption")
-    def compute_device_consumption(self, device: Device) -> Quantity:
-        device_consumption = device.power * self.duration
+    def compute_device_consumption(self, device: Device) -> ExplainableQuantity:
+        device_consumption = (device.power * self.duration).to(u.Wh / u.user_journey)
         return device_consumption
 
-    def compute_fabrication_footprint(self, device: Device) -> Quantity:
+    def compute_fabrication_footprint(self, device: Device) -> ExplainableQuantity:
         uj_fabrication_footprint = (device.carbon_footprint_fabrication * self.duration
-                                    / (device.lifespan * device.fraction_of_usage_time))
+                                    / (device.lifespan * device.fraction_of_usage_time)).to(u.g / u.user_journey)
         uj_fabrication_footprint.define_as_intermediate_calculation(
             f"{device.name} fabrication footprint during {self.name}")
         return uj_fabrication_footprint
 
-    def compute_network_consumption(self, network: Network) -> Quantity:
-        network_consumption = network.bandwidth_energy_intensity * (self.data_download + self.data_upload)
+    def compute_network_consumption(self, network: Network) -> ExplainableQuantity:
+        network_consumption = (network.bandwidth_energy_intensity * (self.data_download + self.data_upload)).to(
+            u.Wh / u.user_journey)
         network_consumption.define_as_intermediate_calculation(f"{network.name} consumption during {self.name}")
         return network_consumption
