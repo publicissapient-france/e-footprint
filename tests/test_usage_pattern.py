@@ -1,10 +1,10 @@
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from copy import deepcopy
 
 from footprint_model.constants.countries import Countries
+from footprint_model.core.time_intervals import TimeIntervals
 from footprint_model.core.usage_pattern import UsagePattern
-from footprint_model.core.infra_need import InfraNeed
 from footprint_model.constants.units import u
 from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
@@ -22,17 +22,6 @@ class TestUsagePattern(unittest.TestCase):
         user_journey.data_download = ExplainableQuantity(3.0 * u.Mo / u.user_journey, "data_download")
 
         user_journey.services = {self.service1, self.service2}
-
-        user_journey.ram_needed_per_service = {
-            self.service1: ExplainableQuantity(5 * u.Mo / u.user_journey, "RAM for service1"),
-            self.service2: ExplainableQuantity(10 * u.Mo / u.user_journey, "RAM for service2")}
-        user_journey.storage_need_per_service = {
-            self.service1: ExplainableQuantity(500 * u.Go / u.user_journey, "Storage for service1"),
-            self.service2: ExplainableQuantity(1000 * u.Go / u.user_journey, "Storage for service2")}
-        user_journey.cpu_need_per_service = {
-            self.service1: ExplainableQuantity(0.5 * u.core / u.user_journey, "CPU for service1"),
-            self.service2: ExplainableQuantity(1 * u.core / u.user_journey, "CPU for service2")}
-
         population = MagicMock()
         population.nb_devices = ExplainableQuantity(10000 * u.user, "population")
         population.country = Countries.FRANCE
@@ -51,22 +40,14 @@ class TestUsagePattern(unittest.TestCase):
     def test_usage_time_fraction(self):
         self.assertEqual(self.usage_pattern.usage_time_fraction.value, (8 / 24) * u.dimensionless)
 
+    def test_update_usage_time_fraction(self):
+        intervals = TimeIntervals("usage time intervals", [[8, 10]], self.usage_pattern.device_population.country.timezone)
+        with patch.object(self.usage_pattern, "time_intervals", new=intervals):
+            self.usage_pattern.update_usage_time_fraction()
+            self.assertEqual(self.usage_pattern.usage_time_fraction.value, (2 / 24) * u.dimensionless)
+
     def test_non_usage_time_fraction(self):
         self.assertEqual(self.usage_pattern.non_usage_time_fraction.value, (1 - 8/24) * u.dimensionless)
-
-    def test_check_time_intervals_validity(self):
-        result = self.usage_pattern._check_time_intervals_validity(self.up_time_intervals)
-        self.assertIsNone(result)  # Assert that no exception is raised
-
-    def test_invalid_start_time(self):
-        self.up_time_intervals = [[16, 8]]  # Update with invalid time interval
-        with self.assertRaises(ValueError):
-            self.usage_pattern._check_time_intervals_validity(self.up_time_intervals)
-
-    def test_interval_overlap(self):
-        self.up_time_intervals = [[8, 12], [10, 14]]  # Update with overlapping time intervals
-        with self.assertRaises(ValueError):
-            self.usage_pattern._check_time_intervals_validity(self.up_time_intervals)
 
     def test_user_journey_setter(self):
         test_uj = MagicMock()
@@ -98,8 +79,18 @@ class TestUsagePattern(unittest.TestCase):
     def test_services(self):
         self.assertEqual({self.service1, self.service2}, self.usage_pattern.services)
 
-    def test_nb_user_journeys_per_year(self):
+    def test_user_journey_freq(self):
         self.assertEqual(self.expected_nb_user_journeys_per_year, self.usage_pattern.user_journey_freq.value)
+
+    def test_update_user_journey_freq(self):
+        nb_devices = ExplainableQuantity(2 * u.user, "population")
+        uj_freq_per_user = ExplainableQuantity(10 * u.user_journey / (u.user * u.year))
+
+        expected_uj_freq = nb_devices * uj_freq_per_user
+        with patch.object(self.usage_pattern.device_population, "nb_devices", new=nb_devices), \
+                patch.object(self.usage_pattern, "user_journey_freq_per_user", new=uj_freq_per_user):
+            self.usage_pattern.update_user_journey_freq()
+            self.assertEqual(self.usage_pattern.user_journey_freq.value, expected_uj_freq.value)
 
     def test_nb_user_journeys_in_parallel_during_usage(self):
         actual_nb_user_journeys_in_parallel_during_usage = self.usage_pattern.nb_user_journeys_in_parallel_during_usage
@@ -107,43 +98,24 @@ class TestUsagePattern(unittest.TestCase):
         self.assertAlmostEqual(self.expected_nb_uj_in_parallel.value,
                                actual_nb_user_journeys_in_parallel_during_usage.value)
 
-    def test_estimated_infra_need(self):
-        # Initializing empty lists of 24 ExplainableQuantity instances for each attribute
-        ram_needed_1 = [ExplainableQuantity(0 * u.Mo)] * 24
-        storage_needed_1 = (self.usage_pattern.user_journey.storage_need_per_service[self.service1]
-                            * self.usage_pattern.user_journey_freq).to(u.To / u.year)
-        cpu_needed_1 = [ExplainableQuantity(0 * u.core)] * 24
-        ram_needed_2 = [ExplainableQuantity(0 * u.Mo)] * 24
-        storage_needed_2 = (self.usage_pattern.user_journey.storage_need_per_service[self.service2]
-                            * self.usage_pattern.user_journey_freq).to(u.To / u.year)
-        cpu_needed_2 = [ExplainableQuantity(0 * u.core)] * 24
+    def test_update_nb_user_journeys_in_parallel_during_usage(self):
+        expected_nb_uj_in_parallel = ExplainableQuantity(4 * u.user_journey)
+        with patch.object(self.usage_pattern, "user_journey_freq", ExplainableQuantity(2 * u.user_journey / u.year)), \
+                patch.object(self.usage_pattern.user_journey, "duration", ExplainableQuantity(1 * u.year / u.user_journey)), \
+                patch.object(self.usage_pattern, "usage_time_fraction", ExplainableQuantity((12 / 24) * u.dimensionless)):
+            self.usage_pattern.update_nb_user_journeys_in_parallel_during_usage()
+            self.assertEqual(expected_nb_uj_in_parallel.value, self.usage_pattern.nb_user_journeys_in_parallel_during_usage.value)
 
-        for hour in range(self.up_time_intervals[0][0], self.up_time_intervals[0][1]):
-            ram_needed_1[hour - 2] = self.usage_pattern.user_journey.ram_needed_per_service[
-                                     self.service1] * self.expected_nb_uj_in_parallel
-            cpu_needed_1[hour - 2] = self.usage_pattern.user_journey.cpu_need_per_service[
-                                     self.service1] * self.expected_nb_uj_in_parallel
-
-            ram_needed_2[hour - 2] = self.usage_pattern.user_journey.ram_needed_per_service[
-                                     self.service2] * self.expected_nb_uj_in_parallel
-            cpu_needed_2[hour - 2] = self.usage_pattern.user_journey.cpu_need_per_service[
-                                     self.service2] * self.expected_nb_uj_in_parallel
-
-        # Creating expected_infra_needs
-        expected_infra_needs = {
-            self.service1: InfraNeed(
-                ram=ram_needed_1,
-                storage=storage_needed_1,
-                cpu=cpu_needed_1
-            ),
-            self.service2: InfraNeed(
-                ram=ram_needed_2,
-                storage=storage_needed_2,
-                cpu=cpu_needed_2
-            )
-        }
-
-        assert expected_infra_needs == self.usage_pattern.estimated_infra_need
+    def test_update_nb_user_journeys_in_parallel_during_usage_round_up(self):
+        expected_nb_uj_in_parallel = ExplainableQuantity(4 * u.user_journey)
+        with patch.object(self.usage_pattern, "user_journey_freq", ExplainableQuantity(2 * u.user_journey / u.year)), \
+                patch.object(self.usage_pattern.user_journey, "duration",
+                             ExplainableQuantity(1 * u.year / u.user_journey)), \
+                patch.object(self.usage_pattern, "usage_time_fraction",
+                             ExplainableQuantity((14 / 24) * u.dimensionless)):
+            self.usage_pattern.update_nb_user_journeys_in_parallel_during_usage()
+            self.assertEqual(expected_nb_uj_in_parallel.value,
+                             self.usage_pattern.nb_user_journeys_in_parallel_during_usage.value)
 
 
 if __name__ == '__main__':

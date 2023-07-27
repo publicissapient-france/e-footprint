@@ -1,5 +1,6 @@
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
-from footprint_model.core.infra_need import InfraNeed
+from pint import Quantity
+
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.units import u
 
 
@@ -12,21 +13,21 @@ def create_ram_or_cpu_need_list(time_interval, value):
     return need_list
 
 
-def create_infra_need(
-        time_interval, value_ram=ExplainableQuantity(100 * u.Go), value_cpu=ExplainableQuantity(1 * u.core),
-        value_storage=ExplainableQuantity(10.1 * u.To / u.year, "Storage for service1")):
-
-    ram_list = create_ram_or_cpu_need_list(time_interval, value_ram)
-    storage = value_storage
-    cpu_list = create_ram_or_cpu_need_list(time_interval, value_cpu)
-
-    return InfraNeed(ram=ram_list, storage=storage, cpu=cpu_list)
+def create_ram_need(hours_in_use, ram: Quantity = 100 * u.Go):
+    hour_by_hour_ram_need = [ExplainableQuantity(0 * u.Go)] * 24
+    for time_interval in hours_in_use:
+        start, end = time_interval
+        for i in range(start, end):
+            hour_by_hour_ram_need[i] = ExplainableQuantity(ram)
+    return ExplainableHourlyUsage(hour_by_hour_ram_need)
 
 
-def extract_values_from_dict(input_dict, nested_dict=False):
-    if not nested_dict:
-        return {key: input_dict[key].value for key in input_dict.keys()}
-    else:
-        return {key: {inside_dict_key: input_dict[key][inside_dict_key].value
-                      for inside_dict_key in input_dict[key].keys()}
-                for key in input_dict.keys()}
+def create_cpu_need(hours_in_use, cpu: Quantity = 1 * u.core):
+    hour_by_hour_cpu_need = [ExplainableQuantity(0 * u.core)] * 24
+    for time_interval in hours_in_use:
+        start, end = time_interval
+        for i in range(start, end):
+            hour_by_hour_cpu_need[i] = ExplainableQuantity(cpu)
+    return ExplainableHourlyUsage(hour_by_hour_cpu_need)
+
+

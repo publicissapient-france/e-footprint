@@ -2,11 +2,10 @@ from footprint_model.constants.explainable_quantities import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 from footprint_model.core.storage import Storage
-from tests.utils import create_infra_need
 
 from copy import deepcopy
 from unittest import TestCase
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 
 class TestStorage(TestCase):
@@ -30,9 +29,8 @@ class TestStorage(TestCase):
         self.usage_pattern_single_service = MagicMock()
         self.service1 = MagicMock()
         self.service1.storage = self.storage_single_service
+        self.service1.storage_needed = ExplainableQuantity(2 * u.To / u.year)
         self.usage_pattern_single_service.services = {self.service1}
-        self.needs1 = create_infra_need([[0, 8]])
-        self.usage_pattern_single_service.estimated_infra_need = {self.service1: self.needs1}
         self.storage_single_service.usage_patterns = {self.usage_pattern_single_service}
 
         self.usage_pattern_multiple_services = MagicMock()
@@ -40,12 +38,9 @@ class TestStorage(TestCase):
         self.service3 = MagicMock()
         self.service2.storage = self.storage_multiple_services
         self.service3.storage = self.storage_multiple_services
+        self.service2.storage_needed = ExplainableQuantity(2 * u.To / u.year)
+        self.service3.storage_needed = ExplainableQuantity(3 * u.To / u.year)
         self.usage_pattern_multiple_services.services = {self.service1, self.service2, self.service3}
-        self.needs2 = create_infra_need([[6, 14]])
-        self.needs3 = create_infra_need([[8, 16]])
-        self.usage_pattern_multiple_services.estimated_infra_need = {
-            self.service1: self.needs1, self.service2: self.needs2, self.service3: self.needs3
-        }
         self.storage_multiple_services.usage_patterns = {self.usage_pattern_multiple_services}
 
     def test_services_single_usage_pattern_single_service(self):
@@ -60,27 +55,59 @@ class TestStorage(TestCase):
         self.assertEqual({self.service1}, self.storage_single_service.services)
         self.storage_single_service.usage_patterns = {self.usage_pattern_single_service}
 
-    def test_active_storage(self):
+    def test_update_all_services_storage_needs_single_service(self):
+        self.storage_single_service.update_all_services_storage_needs()
+        self.assertEqual(self.service1.storage_needed, self.storage_single_service.all_services_storage_needs)
+
+    def test_update_all_services_storage_needs_multiple_services(self):
+        self.storage_multiple_services.update_all_services_storage_needs()
+        expected_value = self.service2.storage_needed + self.service3.storage_needed
+        self.assertEqual(expected_value, self.storage_multiple_services.all_services_storage_needs)
+
+    def test_active_storage_required(self):
         active_storage_expected = (
                 ExplainableQuantity(10.1 * u.To / u.year)
                 * SourceValue(1 * u.hour, Sources.HYPOTHESIS, "Time interval during which active storage is considered")
         ).to(u.Go)
-        self.assertEqual(active_storage_expected.value, self.storage_single_service.active_storage_required.value)
+        with patch.object(self.storage_single_service, "all_services_storage_needs", new=ExplainableQuantity(10.1 * u.To / u.year)):
+            self.storage_single_service.update_active_storage_required()
+            self.assertEqual(active_storage_expected.value, self.storage_single_service.active_storage_required.value)
 
     def test_long_term_storage_required(self):
         long_term_storage_expected = (
                 ExplainableQuantity(10.1 * u.To / u.year) * self.storage_base.data_replication_factor
-                * self.storage_base.data_storage_duration - self.storage_base.active_storage_required)
+                * self.storage_base.data_storage_duration - ExplainableQuantity(1.5 * u.Go))
+        with patch.object(self.storage_single_service, "all_services_storage_needs", new=ExplainableQuantity(10.1 * u.To / u.year)), \
+                patch.object(self.storage_single_service, "active_storage_required", new=ExplainableQuantity(1.5 * u.Go)):
+            self.storage_single_service.update_long_term_storage_required()
 
-        self.assertEqual(
-            long_term_storage_expected.value, round(self.storage_single_service.long_term_storage_required.value, 1))
+            self.assertEqual(
+                round(long_term_storage_expected.value, 1), round(self.storage_single_service.long_term_storage_required.value, 1))
 
     def test_nb_of_active_instances(self):
-        self.assertEqual(0.0012 * u.dimensionless, round(self.storage_single_service.nb_of_active_instances.value, 4))
+        active_instances_expected = (ExplainableQuantity(2 * u.Go) / self.storage_single_service.storage_capacity)
+        with patch.object(self.storage_single_service, "active_storage_required", new=ExplainableQuantity(2 * u.Go)):
+            self.storage_single_service.update_nb_of_active_instances()
+            self.assertEqual(active_instances_expected.value, round(self.storage_single_service.nb_of_active_instances.value, 4))
 
     def test_nb_of_idle_instances(self):
-        self.assertEqual(151.5 * u.dimensionless, round(self.storage_single_service.nb_of_idle_instances.value, 1))
+        idle_instances_expected = ExplainableQuantity(5 * u.Go) / self.storage_single_service.storage_capacity
+        with patch.object(self.storage_single_service, "long_term_storage_required", new=ExplainableQuantity(5 * u.Go)):
+            self.storage_single_service.update_nb_of_idle_instances()
+            self.assertEqual(idle_instances_expected.value, self.storage_single_service.nb_of_idle_instances.value)
+
+    def test_nb_of_instances(self):
+        with patch.object(self.storage_single_service, "nb_of_active_instances",
+                          new=ExplainableQuantity(3 * u.dimensionless)), \
+                patch.object(self.storage_single_service, "nb_of_idle_instances", new=ExplainableQuantity(2 * u.dimensionless)):
+            self.storage_single_service.update_nb_of_instances()
+            self.assertEqual(ExplainableQuantity(5 * u.dimensionless), self.storage_single_service.nb_of_instances)
 
     def test_instances_power(self):
-        expected_power = ExplainableQuantity(478 * u.kWh / u.year)
-        self.assertEqual(expected_power.value, round(self.storage_single_service.instances_power.value, 0))
+        with patch.object(self.storage_single_service, "nb_of_active_instances",
+                          new=ExplainableQuantity(10 * u.dimensionless)), \
+                patch.object(self.storage_single_service, "nb_of_idle_instances", new=ExplainableQuantity(1 * u.dimensionless)), \
+                patch.object(self.storage_single_service, "fraction_of_time_in_use", new=ExplainableQuantity(0.5 * u.dimensionless)):
+            self.storage_single_service.update_instances_power()
+            expected_power = ExplainableQuantity((15.6 / 2 + 0.36) * u.W).to(u.kWh / u.year)
+            self.assertEqual(round(expected_power.value, 0), round(self.storage_single_service.instances_power.value, 0))

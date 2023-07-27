@@ -1,27 +1,22 @@
-import pytz
-
 from footprint_model.constants.units import u
 from footprint_model.constants.sources import SourceValue, Source
 
-from typing import Optional
 
 class Country:
-    def __init__(self, name: str, short_name: str, average_carbon_intensity: SourceValue, year: int,
-                 timezone: Optional[str]):
+    def __init__(self, name: str, short_name: str, average_carbon_intensity: SourceValue, year: int, timezone: str):
         self.name = name
         self.short_name = short_name
-        self.average_carbon_intensity = average_carbon_intensity
-        self.average_carbon_intensity.set_name(f"average carbon intensity of {self.name}")
-        self.year = year
-        self.timezone = pytz.timezone(timezone) if timezone is not None else None
-
-    def __post_init__(self):
         # "[time]**2 / [length]**2" corresponds to mass over energy I.U.
-        if not self.average_carbon_intensity.check("[time]**2 / [length]**2"):
+        if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
             raise ValueError(
                 "Variable 'average_carbon_intensity' does not have mass over energy "
                 "('[time]**2 / [length]**2') dimensionality"
             )
+        self.average_carbon_intensity = average_carbon_intensity
+        # TODO: check why energy_footprint doesn’t track average_carbon_intensity
+        self.average_carbon_intensity.set_name(f"average carbon intensity of {self.name}")
+        self.year = year
+        self.timezone = timezone
 
 
 class Countries:

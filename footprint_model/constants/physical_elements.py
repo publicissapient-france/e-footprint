@@ -1,7 +1,6 @@
 from footprint_model.constants.countries import Country
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
+from footprint_model.constants.explainable_quantities import ModelingObject
 from footprint_model.constants.sources import SourceValue
-from footprint_model.core.infra_need import InfraNeed
 from footprint_model.constants.units import u
 
 from abc import ABC, abstractmethod
@@ -19,16 +18,19 @@ class PhysicalElements:
     STORAGE = "storage"
 
 
-class Hardware:
+class Hardware(ModelingObject):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue):
-        self.name = name
+        super().__init__(name)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication
         self.carbon_footprint_fabrication.set_name(f"carbon footprint fabrication of {self.name}")
         self.power = power
         self.power.set_name(f"power of {self.name}")
         self.lifespan = lifespan
         self.lifespan.set_name(f"lifespan of {self.name}")
+
+    def compute_calculated_attributes(self):
+        pass
 
 
 class ObjectLinkedToUsagePatterns(ABC):
@@ -47,56 +49,63 @@ class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
                  country: Country):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan)
         ObjectLinkedToUsagePatterns.__init__(self)
+        self.all_services_cpu_needs = None
+        self.all_services_ram_needs = None
+        self.nb_of_instances = None
+        self.instances_power = None
+        self.fraction_of_time_in_use = None
+        self.energy_footprint = None
+        self.instances_fabrication_footprint = None
         self.country = country
+
+    def update_functions_defined_in_infra_hardware_class(self):
+        self.update_all_services_cpu_needs()
+        self.update_all_services_ram_needs()
+        self.update_fraction_of_time_in_use()
+        self.update_nb_of_instances()
+        self.update_instances_fabrication_footprint()
+        self.update_instances_power()
+        self.update_energy_footprint()
+
+    @abstractmethod
+    def update_nb_of_instances(self):
+        pass
+
+    @abstractmethod
+    def update_instances_power(self):
+        pass
 
     @property
     @abstractmethod
     def services(self):
         pass
 
-    @property
-    @abstractmethod
-    def nb_of_instances(self):
-        pass
+    def update_all_services_ram_needs(self):
+        service_ram_needs_list = [service.hour_by_hour_ram_need for service in self.services]
+        all_service_ram_needs = sum(service_ram_needs_list)
 
-    @property
-    @abstractmethod
-    def instances_power(self):
-        pass
+        self.all_services_ram_needs = all_service_ram_needs
 
-    @property
-    def all_services_infra_needs(self):
-        infra_hardware_resource_needs = InfraNeed(
-            ram=[ExplainableQuantity(0 * u.Mo)] * 24, storage=ExplainableQuantity(0 * u.To / u.year),
-            cpu=[ExplainableQuantity(0 * u.core)] * 24)
+    def update_all_services_cpu_needs(self):
+        service_cpu_needs_list = [service.hour_by_hour_cpu_need for service in self.services]
+        all_services_cpu_needs = sum(service_cpu_needs_list)
 
-        services_using_infra_hardware = self.services
-        for usage_pattern in self.usage_patterns:
-            for service, service_infra_need in usage_pattern.estimated_infra_need.items():
-                if service in services_using_infra_hardware:
-                    infra_hardware_resource_needs += service_infra_need
+        self.all_services_cpu_needs = all_services_cpu_needs
 
-        return infra_hardware_resource_needs
+    def update_fraction_of_time_in_use(self):
+        usage_from_ram = self.all_services_ram_needs.to_usage()
+        usage_from_cpu = self.all_services_cpu_needs.to_usage()
 
-    @property
-    def fraction_of_time_in_use(self) -> ExplainableQuantity:
-        hours = 0
-        for ram, cpu in zip(self.all_services_infra_needs.ram, self.all_services_infra_needs.cpu):
-            if ram.magnitude > 0 or cpu.magnitude > 0:
-                hours += 1
+        fraction_of_time_in_use = (usage_from_ram + usage_from_cpu).compute_usage_time_fraction()
 
-        return ExplainableQuantity(hours * u.hour / u.day, f"Fraction of time of daily use for {self.name}")
+        self.fraction_of_time_in_use = fraction_of_time_in_use.define_as_intermediate_calculation(
+            f"Fraction of time in use of {self.name}")
 
-    @property
-    @intermediate_calculation("Instances fabrication emissions")
-    def instances_fabrication_footprint(self) -> ExplainableQuantity:
-        instances_fab_footprint = (
-                self.carbon_footprint_fabrication * self.nb_of_instances / self.lifespan).to(u.kg / u.year)
+    def update_instances_fabrication_footprint(self):
+        self.instances_fabrication_footprint = (
+                self.carbon_footprint_fabrication * self.nb_of_instances / self.lifespan).to(
+            u.kg / u.year).define_as_intermediate_calculation(f"Instances of {self.name} fabrication footprint")
 
-        return instances_fab_footprint
-
-    @property
-    @intermediate_calculation("Electricity use footprint")
-    def energy_footprint(self) -> ExplainableQuantity:
-        energy_footprints = (self.instances_power * self.country.average_carbon_intensity).to(u.kg / u.year)
-        return energy_footprints
+    def update_energy_footprint(self):
+        self.energy_footprint = (self.instances_power * self.country.average_carbon_intensity).to(
+            u.kg / u.year).define_as_intermediate_calculation(f"Energy footprint of {self.name}")

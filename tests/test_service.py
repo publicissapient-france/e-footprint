@@ -1,9 +1,47 @@
 import unittest
 from unittest.mock import MagicMock
+from copy import deepcopy
 
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.units import u
-from footprint_model.core.service import Service, Request
+from footprint_model.core.service import Service
+
+
+def create_test_service(service):
+    test_service = deepcopy(service)
+
+    uj_step = MagicMock()
+    uj_step.service = test_service
+    uj_step.data_upload = ExplainableQuantity(100 * u.Mo / u.user_journey)
+    uj_step.ram_needed = ExplainableQuantity(2 * u.Go)
+    uj_step.cpu_needed = ExplainableQuantity(2 * u.core)
+    uj_step.request_duration = ExplainableQuantity(10 * u.min)
+
+    usage_pattern = MagicMock()
+    usage_pattern.user_journey.uj_steps = [uj_step]
+    usage_pattern.user_journey_freq = ExplainableQuantity(1 * u.user_journey / u.day)
+    usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour)
+    usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(10 * u.user_journey)
+    usage_pattern.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        [ExplainableQuantity(1 * u.dimensionless)] * 24)
+
+    test_service.usage_patterns = [usage_pattern]
+
+    return test_service
+
+
+def add_new_step_to_test_service(test_service):
+    test_service2 = MagicMock()
+
+    uj_step2 = MagicMock()
+    uj_step2.service = test_service2
+    uj_step2.ram_needed = ExplainableQuantity(2 * u.Go)
+    uj_step2.cpu_needed = ExplainableQuantity(2 * u.core)
+    uj_step2.request_duration = ExplainableQuantity(10 * u.min)
+
+    test_service.usage_patterns[0].user_journey.uj_steps.append(uj_step2)
+
+    return test_service
 
 
 class TestService(unittest.TestCase):
@@ -20,6 +58,9 @@ class TestService(unittest.TestCase):
         self.assertEqual(self.service.storage, self.storage)
         self.assertEqual(self.service.base_ram_consumption.value, self.base_ram)
         self.assertEqual(self.service.base_cpu_consumption.value, self.base_cpu)
+        self.assertEqual(self.service.hour_by_hour_ram_need, None)
+        self.assertEqual(self.service.hour_by_hour_cpu_need, None)
+        self.assertEqual(self.service.storage_needed, None)
 
     def test_service_invalid_ram_consumption(self):
         invalid_ram = 4 * u.min
@@ -38,36 +79,61 @@ class TestService(unittest.TestCase):
         self.assertEqual(service1, service2)
         self.assertNotEqual(service1, service3)
 
+    def test_compute_calculated_attributes(self):
+        test_service = create_test_service(self.service)
 
-class TestRequest(unittest.TestCase):
-    def setUp(self):
-        self.service = MagicMock()
-        self.data_upload = 100 * u.Mo
-        self.data_download = 200 * u.Mo
-        self.duration = 10 * u.s
-        self.cpu_needed = 1 * u.core
-        self.server_ram_per_data_transferred = ExplainableQuantity(5 * u.dimensionless, "server_ram_per_data_transferred")
-        self.request = Request("Test Request", self.service, self.data_upload, self.data_download, self.duration,
-                               self.cpu_needed)
+        test_service.compute_calculated_attributes()
 
-    def test_request_initialization(self):
-        self.assertEqual(self.request.name, "Test Request")
-        self.assertEqual(self.request.service, self.service)
-        self.assertEqual(self.request.data_upload.value * u.user_journey, self.data_upload)
-        self.assertEqual(self.request.data_download.value * u.user_journey, self.data_download)
-        self.assertEqual(self.request.duration.value, self.duration)
-        self.assertEqual(self.request.ram_needed, self.server_ram_per_data_transferred * self.request.data_download)
-        self.assertEqual(self.request.cpu_needed.value * u.user_journey, self.cpu_needed)
+        self.assertNotEqual(test_service.storage_needed.value, None)
+        self.assertNotEqual(test_service.hour_by_hour_cpu_need.value, None)
+        self.assertNotEqual(test_service.hour_by_hour_ram_need.value, None)
 
-    def test_request_invalid_data_upload(self):
-        invalid_data_upload = 100 * u.s
-        with self.assertRaises(ValueError):
-            Request("Invalid Data Upload Request", self.service, invalid_data_upload, self.data_download)
+    def test_update_storage_needed(self):
+        test_service = create_test_service(self.service)
 
-    def test_request_invalid_data_download(self):
-        invalid_data_download = 200 * u.s
-        with self.assertRaises(ValueError):
-            Request("Invalid Data Download Request", self.service, self.data_upload, invalid_data_download)
+        test_service.update_storage_needed()
+
+        self.assertEqual((100 * u.Mo / u.day).to(u.To / u.year), test_service.storage_needed.value)
+
+    def test_update_hour_by_hour_ram_need(self):
+        test_service = create_test_service(self.service)
+
+        test_service.update_hour_by_hour_ram_need()
+
+        self.assertEqual(
+            [3.33 * u.Go] * 24,
+            [round(elt.value, 2) for elt in test_service.hour_by_hour_ram_need.value])
+
+    def test_update_hour_by_hour_ram_need_multiple_services(self):
+        test_service = create_test_service(self.service)
+
+        test_service_with_new_uj_step = add_new_step_to_test_service(test_service)
+
+        test_service_with_new_uj_step.update_hour_by_hour_ram_need()
+
+        self.assertEqual(
+            [3.33 * u.Go] * 24,
+            [round(elt.value, 2) for elt in test_service.hour_by_hour_ram_need.value])
+
+    def test_update_hour_by_hour_cpu_need(self):
+        test_service = create_test_service(self.service)
+
+        test_service.update_hour_by_hour_cpu_need()
+
+        self.assertEqual(
+            [3.33 * u.core] * 24,
+            [round(elt.value, 2) for elt in test_service.hour_by_hour_cpu_need.value])
+
+    def test_update_hour_by_hour_cpu_need_multiple_services(self):
+        test_service = create_test_service(self.service)
+
+        test_service_with_new_uj_step = add_new_step_to_test_service(test_service)
+
+        test_service_with_new_uj_step.update_hour_by_hour_cpu_need()
+
+        self.assertEqual(
+            [3.33 * u.core] * 24,
+            [round(elt.value, 2) for elt in test_service.hour_by_hour_cpu_need.value])
 
 
 if __name__ == '__main__':

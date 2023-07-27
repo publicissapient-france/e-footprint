@@ -4,7 +4,7 @@ from footprint_model.core.device_population import DevicePopulation
 from footprint_model.core.server import Server
 from footprint_model.core.storage import Storage
 from footprint_model.core.usage_pattern import UsagePattern
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 from typing import Dict, List, Set
 

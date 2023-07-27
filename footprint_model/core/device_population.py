@@ -1,6 +1,7 @@
 from footprint_model.constants.countries import Country
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
-from footprint_model.constants.physical_elements import PhysicalElements, Hardware, ObjectLinkedToUsagePatterns
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.physical_elements import (PhysicalElements, Hardware, ObjectLinkedToUsagePatterns,
+                                                         ModelingObject)
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
@@ -26,44 +27,60 @@ class Device(Hardware):
             raise ValueError("Variable 'data_usage' should have data / time dimensionality")
 
 
-class DevicePopulation(ObjectLinkedToUsagePatterns):
+class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
     def __init__(self, name: str, nb_users: float, country: Country, devices: List[Device]):
-        super().__init__()
-        self.name = name
+        super().__init__(name)
+        ObjectLinkedToUsagePatterns.__init__(self)
+        self.fabrication_footprint = None
+        self.energy_footprint = None
+        self.power = None
         self.nb_devices = SourceValue(nb_users * u.user, Sources.USER_INPUT, f"nb devices in {self.name}")
         self.country = country
         self.devices = devices
 
-    @property
-    @intermediate_calculation("Devices power")
-    def power(self) -> ExplainableQuantity:
+        self.compute_calculated_attributes()
+
+    def compute_calculated_attributes(self):
+        if len(self.usage_patterns) > 0:
+            self.update_power()
+            self.update_energy_footprint()
+            self.update_fabrication_footprint()
+
+    def update_power(self):
+        devices_powers = [device.power for device in self.devices]
+        user_journey_freqs = [usage_pattern.user_journey_freq for usage_pattern in self.usage_patterns]
+        user_journey_durations = [usage_pattern.user_journey.duration for usage_pattern in self.usage_patterns]
+
         power = ExplainableQuantity(0 * u.W)
-        for usage_pattern in self.usage_patterns:
-            for device in self.devices:
-                power += (
-                         usage_pattern.user_journey_freq
-                         * usage_pattern.user_journey.compute_device_consumption(device)
-                ).to(u.kWh / u.year)
+        for device_power in devices_powers:
+            for user_journey_freq, user_journey_duration in zip(user_journey_freqs, user_journey_durations):
+                power += (user_journey_freq * (device_power * user_journey_duration)).to(u.kWh / u.year)
 
-        return power
+        self.power = power.define_as_intermediate_calculation(f"Power of {self.name} device")
 
-    @property
-    @intermediate_calculation("Energy footprint")
-    def energy_footprint(self):
-        return (self.power * self.country.average_carbon_intensity).to(u.kg / u.year)
+    def update_energy_footprint(self):
+        energy_footprint = (self.power * self.country.average_carbon_intensity).to(u.kg / u.year)
+        self.energy_footprint = energy_footprint.define_as_intermediate_calculation(f"Energy footprint of {self.name}")
 
-    @property
-    @intermediate_calculation("Devices fabrication footprint")
-    def fabrication_footprint(self) -> ExplainableQuantity:
+    def update_fabrication_footprint(self):
+        device_fabrication_carbon_footprints = [device.carbon_footprint_fabrication for device in self.devices]
+        device_lifespans = [device.lifespan for device in self.devices]
+        device_fractions_of_usage_time = [device.fraction_of_usage_time for device in self.devices]
+        user_journey_durations = [usage_pattern.user_journey.duration for usage_pattern in self.usage_patterns]
+        user_journey_freqs = [usage_pattern.user_journey_freq for usage_pattern in self.usage_patterns]
+
         devices_fabrication_footprint = ExplainableQuantity(0 * u.kg / u.year)
-        for usage_pattern in self.usage_patterns:
-            for device in self.devices:
+        for device_fabrication_carbon_footprint, device_lifespan, device_fraction_of_usage_time \
+                in zip(device_fabrication_carbon_footprints, device_lifespans, device_fractions_of_usage_time):
+            for user_journey_duration, user_journey_freq in zip(user_journey_durations, user_journey_freqs):
+                device_uj_fabrication_footprint = (
+                        device_fabrication_carbon_footprint * user_journey_duration
+                        / (device_lifespan * device_fraction_of_usage_time)).to(u.g / u.user_journey)
                 devices_fabrication_footprint += (
-                        usage_pattern.user_journey_freq
-                        * usage_pattern.user_journey.compute_fabrication_footprint(device)
-                ).to(u.kg / u.year)
+                        user_journey_freq * device_uj_fabrication_footprint).to(u.kg / u.year)
 
-        return devices_fabrication_footprint
+        self.fabrication_footprint = devices_fabrication_footprint.define_as_intermediate_calculation(
+            f"Devices fabrication footprint of {self.name}")
 
 
 class Devices:

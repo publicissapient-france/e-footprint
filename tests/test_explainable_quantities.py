@@ -1,6 +1,8 @@
 import unittest
 from pint import UnitRegistry
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, ExplainableHourlyUsage, \
+    ExplainableObject
+import pytz
 
 u = UnitRegistry()
 
@@ -13,21 +15,31 @@ class TestExplainableQuantity(unittest.TestCase):
         self.c.define_as_intermediate_calculation("int calc")
         self.d = self.c + self.b
         self.d.define_as_intermediate_calculation("int calc 2")
+        self.e = ExplainableQuantity(3 * u.W, "e")
+        for explainable_quantity in (self.a, self.b, self.e):
+            explainable_quantity.pubsub_topic = "Non null topic"
+        self.f = self.a + self.b + self.e
+
+    def test_compute_calculation(self):
+        self.assertEqual([self.a, self.b, self.e], self.f.input_attributes_to_listen_to)
 
     def test_init(self):
         self.assertEqual(self.a.value, 1 * u.W)
-        self.assertEqual(self.a.formulas, {0: "1 Watt"})
-        self.assertEqual(self.a.name_values_dict, {0: {"1 Watt": 1 * u.W}})
-        self.assertEqual(self.a.name_formulas_dict, {0: {"1 Watt": "1 Watt"}})
+        self.assertEqual(self.a.label, "1 Watt")
+        self.assertEqual(self.a.left_child, None)
+        self.assertEqual(self.a.right_child, None)
+        self.assertEqual(self.a.child_operator, None)
+
+        self.assertEqual(self.c.value, 3 * u.W)
+        self.assertEqual(self.c.label, "int calc")
+        self.assertEqual(self.c.left_child, self.a)
+        self.assertEqual(self.c.right_child, self.b)
+        self.assertEqual(self.c.child_operator, '+')
 
     def test_define_as_intermediate_calculation(self):
         self.assertEqual(self.c.height_level, 1)
-        self.assertDictEqual(self.c.formulas, {0: '1 Watt + 2 Watt', 1: 'int calc'})
-        self.assertDictEqual(
-            self.c.name_values_dict, {0: {'1 Watt': 1 * u.W, '2 Watt': 2 * u.W}, 1: {'int calc': 3 * u.W}})
-        self.assertDictEqual(
-            self.c.name_formulas_dict,
-            {0: {'1 Watt': '1 Watt', '2 Watt': '2 Watt'}, 1: {'int calc': '1 Watt + 2 Watt'}})
+        self.assertEqual(self.c.label, "int calc")
+        self.assertEqual(self.d.height_level, 2)
 
     def test_operators(self):
         self.assertEqual(self.c.value, 3 * u.W)
@@ -37,36 +49,15 @@ class TestExplainableQuantity(unittest.TestCase):
         self.assertRaises(ValueError, self.a.__eq__, 1)
 
     def test_explain_order_0(self):
-        self.assertEqual(
-            (self.a + self.b).explain(), '## High-level formula:\n\n1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt')
+        self.assertEqual((self.a + self.b).explain(), '(1 Watt + 2 Watt)')
 
     def test_explain_order_1(self):
-        self.assertEqual(
-            self.c.explain(pretty_print=False),
-            '## High-level formula:\n\n\n##### int calc:\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n')
-
-    def test_second_order_calc(self):
-        self.assertEqual(self.d.height_level, 2)
-        self.assertDictEqual(self.d.formulas, {0: '1 Watt + 2 Watt + 2 Watt', 1: 'int calc + 2 Watt', 2: 'int calc 2'})
-        self.assertDictEqual(
-            self.d.name_values_dict,
-            {0: {'1 Watt': 1 * u.W, '2 Watt': 2 * u.W},
-             1: {'int calc': 3 * u.W},
-             2: {'int calc 2': 5 * u.W}})
-        self.assertDictEqual(
-            self.d.name_formulas_dict,
-            {0: {'1 Watt': '1 Watt', '2 Watt': '2 Watt'},
-             1: {'int calc': '1 Watt + 2 Watt'},
-             2: {'int calc 2': 'int calc + 2 Watt'}})
+        self.assertEqual(self.c.explain(), '(1 Watt + 2 Watt)')
 
     def test_explain_order_2(self):
         self.assertEqual(
-            self.d.explain(pretty_print=False),
-            '## High-level formula:\n\n\n##### int calc 2:\nint calc 2 = int calc + 2 Watt = 3 watt + 2 watt = 5 watt\n\n\n#### with int calc defined as:\n\n##### int calc:\nint calc = 1 Watt + 2 Watt = 1 watt + 2 watt = 3 watt\n'
-        )
-        self.assertEqual(
-            self.d.explain(pretty_print=True),
-            '## High-level formula:\n\n\n##### int calc 2:\nint calc 2\n=\n int calc + 2 Watt\n=\n 3 watt + 2 watt\n=\n 5 watt\n\n\n#### with int calc defined as:\n\n##### int calc:\nint calc\n=\n 1 Watt + 2 Watt\n=\n 1 watt + 2 watt\n=\n 3 watt\n'
+            self.d.explain(),
+            '((1 Watt + 2 Watt) + 2 Watt)'
         )
 
     def test_to(self):
@@ -81,6 +72,76 @@ class TestExplainableQuantity(unittest.TestCase):
 
     def test_subtract_0(self):
         self.assertEqual(self.a, self.a - 0)
+
+
+class TestExplainableHourlyUsage(unittest.TestCase):
+
+    def setUp(self):
+        self.usage1 = [ExplainableQuantity(1 * u.W, "1 Watt") for _ in range(24)]
+        self.usage2 = [ExplainableQuantity(2 * u.W, "2 Watt") for _ in range(24)]
+        self.hourly_usage1 = ExplainableHourlyUsage(self.usage1, "Usage 1")
+        self.hourly_usage2 = ExplainableHourlyUsage(self.usage2, "Usage 2")
+        self.sum_hourly_usage = self.hourly_usage1 + self.hourly_usage2
+
+    def test_init(self):
+        self.assertEqual(self.hourly_usage1.label, "Usage 1")
+        self.assertEqual(len(self.hourly_usage1.value), 24)
+
+    def test_addition(self):
+        result_usage = [ExplainableQuantity(3 * u.W) for _ in range(24)]
+        for value, expected in zip(self.sum_hourly_usage.value, result_usage):
+            self.assertEqual(value, expected)
+
+    def test_subtraction(self):
+        result = self.hourly_usage2 - self.hourly_usage1
+        for value in result.value:
+            self.assertEqual(value, ExplainableQuantity(1 * u.W))
+
+    def test_convert_to_utc(self):
+        # Create a simple ExplainableHourlyUsage instance with values [1,2,3,4,5]
+        usage = ExplainableHourlyUsage([ExplainableQuantity(i * u.dimensionless) for i in range(1, 6)])
+
+        # Let's say the local timezone is 2 hours ahead of UTC
+        local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'))
+        local_tz_behind_utc = ExplainableObject(pytz.timezone('America/New_York'))
+
+        converted_ahead_utc = usage.convert_to_utc(local_tz_ahead_utc)
+        converted_behind_utc = usage.convert_to_utc(local_tz_behind_utc)
+
+        # Convert the values back to simple list for comparison
+        converted_values_ahead_utc = [q.value for q in converted_ahead_utc.value]
+        converted_values_behind_utc = [q.value for q in converted_behind_utc.value]
+
+        # If Berlin is 2 hours ahead, converting to UTC would result in the array shifted by 2 positions to the left.
+        self.assertEqual(converted_values_ahead_utc, [3 * u.dimensionless, 4 * u.dimensionless, 5 * u.dimensionless,
+                                            1 * u.dimensionless, 2 * u.dimensionless])
+        self.assertEqual(converted_values_behind_utc, [2 * u.dimensionless, 3 * u.dimensionless, 4 * u.dimensionless,
+                                                       5 * u.dimensionless, 1 * u.dimensionless])
+
+        # Check other attributes of converted ExplainableHourlyUsage
+        self.assertEqual(converted_ahead_utc.label, "convert to utc")
+        self.assertEqual(converted_ahead_utc.left_child, local_tz_ahead_utc)
+        self.assertEqual(converted_ahead_utc.right_child, usage)
+        self.assertEqual(converted_ahead_utc.child_operator, "conversion to utc time hourly usage")
+
+    def test_compute_usage_time_fraction(self):
+        fraction = self.hourly_usage1.compute_usage_time_fraction()
+        self.assertEqual(fraction, ExplainableQuantity(1 * u.dimensionless))
+
+    def test_to_usage(self):
+        usage = self.hourly_usage1.to_usage()
+        for i, elt in enumerate(usage.value):
+            self.assertEqual(elt, ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i+1}"))
+
+    def test_sum(self):
+        summed = self.hourly_usage1.sum()
+        self.assertEqual(summed, ExplainableQuantity(24 * u.W))
+
+    def test_max(self):
+        maximum = self.hourly_usage1.max()
+        self.assertEqual(maximum, ExplainableQuantity(1 * u.W))
+
+
 
 
 if __name__ == "__main__":

@@ -1,13 +1,28 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import PropertyMock, MagicMock
+from unittest.mock import MagicMock
 from copy import deepcopy
 
-from footprint_model.constants.sources import SourceValue, Sources, u
+from footprint_model.constants.sources import u
 from footprint_model.core.user_journey import UserJourneyStep, UserJourney
 from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
-UJ_MODULE = "footprint_model.core.user_journey.UserJourney"
+
+class TestUserJourneyStep(TestCase):
+    def setUp(self):
+        self.service = MagicMock()
+
+        self.user_journey_step = UserJourneyStep(
+            "", service=self.service, data_download=200 * u.Mo, data_upload=(100 * u.Mo),
+            server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
+            user_time_spent=(2 * u.min))
+
+    def test_update_ram_needed(self):
+        test_uj_step = deepcopy(self.user_journey_step)
+        test_uj_step.update_ram_needed()
+        expected_ram_needed = ExplainableQuantity(400 * u.Mo / u.user_journey)
+
+        self.assertEqual(expected_ram_needed.value, test_uj_step.ram_needed.value)
 
 
 class TestUserJourney(TestCase):
@@ -21,18 +36,12 @@ class TestUserJourney(TestCase):
         self.server.usage_patterns = set()
         self.storage.usage_patterns = set()
 
-        request = MagicMock()
-        request.service = self.service
-        request.data_download = 200 * u.Mo
-        request.data_upload = ExplainableQuantity(100 * u.Mo / u.user_journey)
-        request.ram_needed = ExplainableQuantity(2 * u.Go)
-        request.cpu_needed = ExplainableQuantity(2 * u.core)
-        request.duration = ExplainableQuantity(2 * u.min / u.user_journey)
-
-        self.user_journey = UserJourney("test user journey")
-        self.user_journey_step = UserJourneyStep("", request, 10 * u.s)
+        self.user_journey_step = UserJourneyStep(
+            "", service=self.service, data_download=200 * u.Mo, data_upload=(100 * u.Mo),
+            server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
+            user_time_spent=(2 * u.min))
         self.one_user_journey = ExplainableQuantity(1 * u.user_journey)
-        self.user_journey.uj_steps = [self.user_journey_step]
+        self.user_journey = UserJourney("test user journey", uj_steps=[self.user_journey_step])
 
         self.usage_pattern = MagicMock()
         self.user_journey.usage_patterns = {self.usage_pattern}
@@ -63,6 +72,9 @@ class TestUserJourney(TestCase):
     def test_add_step(self):
         self.user_journey.add_step(self.user_journey_step)
         self.assertEqual(self.user_journey.uj_steps, [self.user_journey_step, self.user_journey_step])
+        self.assertEqual(self.user_journey.duration.value, 2 * self.user_journey_step.user_time_spent.value)
+        self.assertEqual(self.user_journey.data_download.value, 2 * self.user_journey_step.data_download.value)
+        self.assertEqual(self.user_journey.data_upload.value, 2 * self.user_journey_step.data_upload.value)
 
     def test_servers(self):
         self.assertEqual(self.user_journey.servers, {self.server})
@@ -73,133 +85,40 @@ class TestUserJourney(TestCase):
     def test_services(self):
         self.assertEqual(self.user_journey.services, {self.service})
 
-    def test_duration(self):
-        duration1 = 10 * u.s
-        duration2 = 30 * u.s
-        user_journey_step1 = UserJourneyStep("", self.user_journey_step.request, duration1)
-        user_journey_step2 = UserJourneyStep("", self.user_journey_step.request, duration2)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step1]).duration.value, duration1 / u.user_journey)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step2]).duration.value, duration2 / u.user_journey)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step1, user_journey_step2]).duration.value,
-                         (duration1 + duration2) / u.user_journey)
+    def test_update_duration_with_multiple_steps(self):
+        test_uj = deepcopy(self.user_journey)
+        test_uj.add_step(self.user_journey_step)
+        for step in test_uj.uj_steps:
+            step.user_time_spent = ExplainableQuantity(5 * u.min / u.user_journey)
 
-    def test_data_download(self):
-        data_download = 30 * u.Mo
-        data_upload = ExplainableQuantity(40 * u.Mo)
+        test_uj.update_duration()
+        expected_duration = ExplainableQuantity(10 * u.min / u.user_journey)
 
-        request_download = MagicMock()
-        request_download.data_download = ExplainableQuantity(data_download / u.user_journey)
-        request_download.data_upload = ExplainableQuantity(0 * u.Mo)
+        self.assertEqual(test_uj.duration.value, expected_duration.value)
 
-        request_upload = MagicMock()
-        request_upload.data_download = ExplainableQuantity(0 * u.Mo)
-        request_upload.data_upload = data_upload
+    def test_update_data_download_with_multiple_steps(self):
+        test_uj = deepcopy(self.user_journey)
+        test_uj.add_step(self.user_journey_step)
 
-        user_journey_step_download = UserJourneyStep("", request_download, 10 * u.s)
-        user_journey_step_upload = UserJourneyStep("", request_upload, 10 * u.s)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_download]).data_download.value,
-                         data_download / u.user_journey)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_download] * 2).data_download.value,
-                         data_download * 2 / u.user_journey)
-        self.assertEqual(
-            UserJourney("uj", uj_steps=[user_journey_step_download, user_journey_step_upload]).data_download.value,
-            data_download / u.user_journey,
-        )
+        for step in test_uj.uj_steps:
+            step.data_download = ExplainableQuantity(10 * u.Mo / u.user_journey)
+        test_uj.update_data_download()
 
-    def test_data_upload(self):
-        data_download = 30 * u.Mo
-        data_upload = 40 * u.Mo
+        expected_data_download = ExplainableQuantity(20 * u.Mo / u.user_journey)
 
-        request_download = MagicMock()
-        request_download.data_download = ExplainableQuantity(data_download / u.user_journey)
-        request_download.data_upload = ExplainableQuantity(0 * u.Mo / u.user_journey)
+        self.assertEqual(test_uj.data_download.value, expected_data_download.value)
 
-        request_upload = MagicMock()
-        request_upload.data_download = 0 * u.Mo
-        request_upload.data_upload = ExplainableQuantity(data_upload / u.user_journey)
+    def test_update_data_upload_with_multiple_steps(self):
+        test_uj = deepcopy(self.user_journey)
+        test_uj.add_step(self.user_journey_step)
+        for step in test_uj.uj_steps:
+            step.data_upload = ExplainableQuantity(10 * u.Mo / u.user_journey)
 
-        user_journey_step_download = UserJourneyStep("", request_download, 10 * u.s)
-        user_journey_step_upload = UserJourneyStep("", request_upload, 10 * u.s)
-        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_upload]).data_upload.value,
-                         data_upload / u.user_journey)
-        self.assertEqual(round(UserJourney("uj", uj_steps=[user_journey_step_upload] * 2).data_upload.value, 2),
-                         (data_upload * 2) / u.user_journey)
-        self.assertEqual(
-            UserJourney("uj", uj_steps=[user_journey_step_download, user_journey_step_upload]).data_upload.value,
-            # Strangely this conversion is needed for the comparison to work...
-            data_upload.to(u.o) / u.user_journey
-        )
+        test_uj.update_data_upload()
 
-    def test_compute_device_consumption(self):
-        duration = ExplainableQuantity(10 * u.s / u.user_journey, "duration")
-        device_power = 3 * u.W
-        device_consumption = device_power * duration.value
-        device = MagicMock()
-        device.power = SourceValue(device_power, Sources.HYPOTHESIS)
+        expected_data_upload = ExplainableQuantity(20 * u.Mo / u.user_journey)
 
-        with unittest.mock.patch(f"{UJ_MODULE}.duration", new=duration):
-            user_journey = UserJourney("test user journey")
-            device_consumption_computed = user_journey.compute_device_consumption(device)
-            self.assertEqual(device_consumption_computed.value, device_consumption)
-
-    def test_compute_fabrication_footprint(self):
-        duration = ExplainableQuantity(10 * u.s / u.user_journey, "duration")
-        carbon_footprint_fabrication = 60 * u.kg
-        average_fraction_of_usage_per_day = 3 * u.hour / u.day
-        lifespan = 3 * u.year
-        fabrication_footprint = (carbon_footprint_fabrication * duration.value /
-                                 (lifespan * average_fraction_of_usage_per_day)).to(u.gram / u.user_journey)
-        device = MagicMock()
-        device.carbon_footprint_fabrication = SourceValue(carbon_footprint_fabrication, Sources.BASE_ADEME_V19)
-        device.lifespan = SourceValue(lifespan, Sources.HYPOTHESIS)
-        device.fraction_of_usage_time = SourceValue(average_fraction_of_usage_per_day, Sources.HYPOTHESIS)
-        with unittest.mock.patch(f"{UJ_MODULE}.duration", new=duration):
-            user_journey = UserJourney("test user journey")
-            fabrication_footprint_computed = user_journey.compute_fabrication_footprint(device)
-            self.assertEqual(fabrication_footprint_computed.value, fabrication_footprint)
-
-    def test_compute_network_consumption(self):
-        data_download = ExplainableQuantity(10 * u.Mo / u.user_journey, "data_download")
-        data_upload = ExplainableQuantity(20 * u.Mo / u.user_journey, "data_upload")
-        bandwidth_energy_intensity = 0.05 * u("kWh/Go")
-        network_consumption = ((data_download.value + data_upload.value) * bandwidth_energy_intensity).to(
-            u.Wh / u.user_journey)
-        network = MagicMock()
-        network.bandwidth_energy_intensity = SourceValue(bandwidth_energy_intensity, Sources.TRAFICOM_STUDY)
-
-        with unittest.mock.patch(f"{UJ_MODULE}.data_download", new=data_download),\
-                unittest.mock.patch(f"{UJ_MODULE}.data_upload", new=data_upload):
-            user_journey = UserJourney("test user journey")
-            network_consumption_computed = user_journey.compute_network_consumption(network)
-            self.assertEqual(network_consumption_computed.value, network_consumption)
-
-    def test_ram_needed_per_service(self):
-        expected_ram_per_service = {
-            self.user_journey_step.request.service: (self.user_journey_step.request.ram_needed
-                                                     * self.user_journey_step.request.duration
-                                                     / (self.user_journey.duration * self.one_user_journey)
-                                                     ).to(u.Mo / u.user_journey)
-        }
-        self.assertDictEqual(
-            self.user_journey.ram_needed_per_service,
-            expected_ram_per_service
-        )
-
-    def test_storage_need_per_service(self):
-        expected_storage_per_service = {
-            self.user_journey_step.request.service: (self.user_journey_step.request.data_upload
-                                                     ).to(u.Mo / u.user_journey)
-        }
-        self.assertDictEqual(self.user_journey.storage_need_per_service, expected_storage_per_service)
-
-    def test_cpu_need_per_service(self):
-        expected_cpu_per_service = {
-            self.user_journey_step.request.service: (self.user_journey_step.request.cpu_needed *
-                                                     self.user_journey_step.request.duration
-                                                     / (self.user_journey.duration * self.one_user_journey)
-                                                     ).to(u.core / u.user_journey)
-        }
-        self.assertDictEqual(self.user_journey.cpu_need_per_service, expected_cpu_per_service)
+        self.assertEqual(test_uj.data_upload.value, expected_data_upload.value)
 
 
 if __name__ == "__main__":
