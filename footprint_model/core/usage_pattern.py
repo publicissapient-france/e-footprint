@@ -137,6 +137,7 @@ class UsagePattern:
         time_diff = self.device_population.country.timezone.utcoffset(current_time) - utc_tz.utcoffset(current_time)
         time_diff_in_hours = int(time_diff.total_seconds() / 3600)
 
+        nb_user_journeys_in_parallel_during_usage = self.nb_user_journeys_in_parallel_during_usage
         for service in ram_per_service.keys():
             ram_needed = [ExplainableQuantity(0 * u.Mo)] * 24
             cpu_needed = [ExplainableQuantity(0 * u.core)] * 24
@@ -148,8 +149,8 @@ class UsagePattern:
                     # calculate the corresponding hour in UTC
                     utc_hour = (hour - time_diff_in_hours) % 24
 
-                    ram_needed[utc_hour] += ram_per_service[service] * self.nb_user_journeys_in_parallel_during_usage
-                    cpu_needed[utc_hour] += cpu_per_service[service] * self.nb_user_journeys_in_parallel_during_usage
+                    ram_needed[utc_hour] += ram_per_service[service] * nb_user_journeys_in_parallel_during_usage
+                    cpu_needed[utc_hour] += cpu_per_service[service] * nb_user_journeys_in_parallel_during_usage
 
             storage_needed = (storage_per_service[service] * self.user_journey_freq).to(u.To / u.year)
 

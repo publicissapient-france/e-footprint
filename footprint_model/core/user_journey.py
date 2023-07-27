@@ -126,10 +126,11 @@ class UserJourney:
     def ram_needed_per_service(self) -> Dict[Service, ExplainableQuantity]:
         ram_per_service = {}
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
+        duration = self.duration
         for uj_step in self.uj_steps:
             service = uj_step.request.service
             ram_per_service[service] = ram_per_service.get(service, 0) + (
-                    uj_step.request.ram_needed * uj_step.request.duration / (self.duration * one_user_journey)
+                    uj_step.request.ram_needed * uj_step.request.duration / (duration * one_user_journey)
             ).to(u.Mo / u.user_journey)
         for service in ram_per_service.keys():
             ram_per_service[service].define_as_intermediate_calculation(
@@ -152,11 +153,12 @@ class UserJourney:
     def cpu_need_per_service(self) -> Dict[Service, ExplainableQuantity]:
         cpu_per_service = {}
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
+        duration = self.duration
         for uj_step in self.uj_steps:
             service = uj_step.request.service
             cpu_per_service[service] = cpu_per_service.get(service, 0) + (
                     uj_step.request.cpu_needed * uj_step.request.duration
-                    / (self.duration * one_user_journey)).to(u.core / u.user_journey)
+                    / (duration * one_user_journey)).to(u.core / u.user_journey)
         for service in cpu_per_service.keys():
             cpu_per_service[service].define_as_intermediate_calculation(
                 f"CPU need averaged over duration of {self.name} for service {service.name}")
