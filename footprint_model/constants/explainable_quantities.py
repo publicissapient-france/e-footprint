@@ -1,7 +1,7 @@
 import numbers
 
 from pint import Quantity
-from typing import Dict
+from typing import Type
 
 from copy import deepcopy
 
@@ -10,8 +10,9 @@ DEFAULT_ROUNDING_LEVEL = 2
 
 class ExplainableQuantity:
     def __init__(
-            self, value: Quantity, formula: str = "no formula", formulas: Dict = None, name_values_dict: Dict = None,
-            name_formulas_dict: Dict = None):
+            self, value: Quantity, label: str = "no label",  height_level: int = 0,
+            left_child: Type["ExplainableQuantity"] = None, right_child: Type["ExplainableQuantity"] = None,
+            child_operator: str = None):
         if not isinstance(value, Quantity):
             raise ValueError(
                 "Variable 'value' does not correspond to the appropriate 'Quantity' type, "
@@ -19,27 +20,15 @@ class ExplainableQuantity:
             )
 
         self.value = value
-        if formulas is None:
-            self.height_level = 0
-            self.formulas = {self.height_level: formula}
-        else:
-            self.formulas = formulas
-            self.height_level = max(self.formulas.keys())
-        if name_values_dict is None:
-            self.name_values_dict = {self.height_level: {formula: round(value, DEFAULT_ROUNDING_LEVEL)}}
-        else:
-            self.name_values_dict = name_values_dict
-        if name_formulas_dict is None:
-            self.name_formulas_dict = {0: {formula: formula}}
-        else:
-            self.name_formulas_dict = name_formulas_dict
-            
+        self.label = label
+        self.height_level = height_level
+        self.left_child = left_child
+        self.right_child = right_child
+        self.child_operator = child_operator
+
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
         self.height_level += 1
-        self.formulas[self.height_level] = intermediate_calculation_label
-        self.name_values_dict[self.height_level] = {intermediate_calculation_label: round(self.value, DEFAULT_ROUNDING_LEVEL)}
-        self.name_formulas_dict[self.height_level] = {
-            intermediate_calculation_label: self.formulas[self.height_level - 1]}
+        self.label = intermediate_calculation_label
 
         return self
 
@@ -61,28 +50,13 @@ class ExplainableQuantity:
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
-    def compute_operation(self, other, operation_formula, return_value):
-        if "self" not in operation_formula or "other" not in operation_formula:
-            raise ValueError("There should be self and other in operation formula")
+    @staticmethod
+    def compute_operation(left_child, right_child, operator, return_value):
+        highest_height_level = max(left_child.height_level, right_child.height_level)
 
-        highest_height_level = max(self.height_level, other.height_level)
-        new_name_values_dict = deepcopy(self.name_values_dict)
-        new_name_formulas_dict = deepcopy(self.name_formulas_dict)
-        new_formulas = {}
-        for height in range(highest_height_level + 1):
-            if self.height_level >= height and other.height_level >= height:
-                new_name_values_dict[height].update(other.name_values_dict[height])
-                new_name_formulas_dict[height].update(other.name_formulas_dict[height])
-            elif other.height_level >= height:
-                new_name_values_dict[height] = other.name_values_dict[height]
-                new_name_formulas_dict[height] = other.name_formulas_dict[height]
-            new_formulas[height] = operation_formula.replace(
-                "self", f"{self.formulas[min(self.height_level, height)]}").replace(
-                "other", f"{other.formulas[min(other.height_level, height)]}"
-            )
         return ExplainableQuantity(
-            return_value, formulas=new_formulas, name_values_dict=new_name_values_dict,
-            name_formulas_dict=new_name_formulas_dict)
+            return_value, label="", height_level=highest_height_level, left_child=left_child, right_child=right_child,
+            child_operator=operator)
 
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
@@ -94,7 +68,7 @@ class ExplainableQuantity:
             elif other.magnitude == 0:
                 return self
             else:
-                return self.compute_operation(other, "self + other", self.value + other.value)
+                return self.compute_operation(self, other, "+", self.value + other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
@@ -108,19 +82,19 @@ class ExplainableQuantity:
             elif other.magnitude == 0:
                 return self
             else:
-                return self.compute_operation(other, "self - other", self.value - other.value)
+                return self.compute_operation(self, other, "-", self.value - other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __mul__(self, other):
         if issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "self * other", self.value * other.value)
+            return self.compute_operation(self, other, "*", self.value * other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __truediv__(self, other):
         if issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "((self) / (other))", self.value / other.value)
+            return self.compute_operation(self, other, "/", self.value / other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
@@ -129,7 +103,7 @@ class ExplainableQuantity:
 
     def __rsub__(self, other):
         if issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "other - self", other.value - self.value)
+            return self.compute_operation(other, self, "-", other.value - self.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
@@ -138,7 +112,7 @@ class ExplainableQuantity:
 
     def __rtruediv__(self, other):
         if issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "other / self", other.value / self.value)
+            return self.compute_operation(other, self, "/", other.value / self.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
@@ -186,7 +160,7 @@ class ExplainableQuantity:
 
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)
-        self.name_values_dict[self.formulas[self.height_level]] = self.value
+
         return self
 
     @property

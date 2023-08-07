@@ -82,7 +82,7 @@ class UserJourney:
     @intermediate_calculation("duration")
     def duration(self) -> ExplainableQuantity:
         uj_step_duration_sum = deepcopy(sum(elt.duration for elt in self.uj_steps))
-        uj_step_duration_sum.formulas[0] = f"({uj_step_duration_sum.formulas[0]})"
+
         return uj_step_duration_sum
 
     @property

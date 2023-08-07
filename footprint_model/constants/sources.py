@@ -45,17 +45,16 @@ class Sources:
 
 class SourceValue(ExplainableQuantity):
     def __init__(self, value: Quantity, source: Source, name: str = "unnamed value"):
-        super().__init__(value, formula=name)
+        super().__init__(value, label=name)
         self.source = source
 
     def set_name(self, new_name: str):
         if self.height_level > 0:
             raise ValueError("Source values should stay at height level of 0.")
         if self.source != Sources.USER_INPUT:
-            self.formulas[0] = f"{new_name} from {self.source.name}"
+            self.label = f"{new_name} from {self.source.name}"
         else:
-            self.formulas[0] = f"{new_name}"
-        self.name_values_dict[0] = {self.formulas[0]: self.value}
+            self.label = f"{new_name}"
 
 
 if __name__ == "__main__":
