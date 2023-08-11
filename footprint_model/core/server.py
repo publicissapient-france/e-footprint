@@ -9,14 +9,17 @@ import math
 
 
 class CloudConfig(NonQuantityUsedInCalculation):
-    def __init__(self, autoscaling: bool):
-        super().__init__(autoscaling)
+    def __init__(self, cloud_config: str):
+        super().__init__(cloud_config)
+
+    def __eq__(self, other):
+        return self.value == other
 
 
 class Server(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: int,
-                 power_usage_effectiveness: float, country: Country, cloud: bool):
+                 power_usage_effectiveness: float, country: Country, cloud: str):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
         self.available_cpu_per_instance = None
         self.available_ram_per_instance = None
@@ -42,7 +45,7 @@ class Server(InfraHardware):
             self.update_functions_defined_in_infra_hardware_class()
 
     def update_server_utilization_rate(self):
-        if self.cloud:
+        if self.cloud == "Serverless" or self.cloud == "Autoscaling":
             self.server_utilization_rate = ExplainableQuantity(
                 0.9 * u.dimensionless, "Cloud server utilization rate").define_as_intermediate_calculation(
                 "Cloud server utilization rate")
@@ -88,13 +91,12 @@ class Server(InfraHardware):
             f"Available cpu per instance of {self.name}")
 
     def update_nb_of_instances(self):
-        cloud = self.cloud
         all_services_ram_needs = self.all_services_ram_needs
         all_services_cpu_needs = self.all_services_cpu_needs
         available_ram_per_instance = self.available_ram_per_instance
         available_cpu_per_instance = self.available_cpu_per_instance
 
-        if cloud:
+        if self.cloud == "Serverless":
             one_day = ExplainableQuantity(24 * u.hour, '24 hours')
             ram_needed_per_day = (
                     all_services_ram_needs.sum() * ExplainableQuantity(1 * u.hour, "1 hour") / one_day)
@@ -105,7 +107,41 @@ class Server(InfraHardware):
                                     cpu_needed_per_day / available_cpu_per_instance)
 
             nb_of_instances = nb_of_servers_raw
-        else:
+
+        elif self.cloud == "Autoscaling":
+            nb_of_servers_based_on_ram_alone = all_services_ram_needs / available_ram_per_instance
+            nb_of_servers_based_on_cpu_alone = all_services_cpu_needs / available_cpu_per_instance
+
+            nb_of_servers_raw = ExplainableHourlyUsage(
+                [max(ram_nb_of_servers, cpu_nb_of_servers) for ram_nb_of_servers, cpu_nb_of_servers
+                 in zip(nb_of_servers_based_on_ram_alone.value, nb_of_servers_based_on_cpu_alone.value)],
+                "",
+                left_child=nb_of_servers_based_on_ram_alone,
+                right_child=nb_of_servers_based_on_cpu_alone,
+                child_operator="Max nb of servers hour by hour based on cpu or ram"
+            )
+
+            hour_by_hour_nb_of_instances__list = []
+            for hour in range(24):
+                nb_of_servers_raw_that_hour = nb_of_servers_raw.value[hour]
+                if math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude != 0:
+                    nb_of_instances_per_hour = nb_of_servers_raw_that_hour + ExplainableQuantity(
+                        (math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude)
+                        * u.dimensionless, "Extra server capacity because number of servers must be an integer")
+                else:
+                    nb_of_instances_per_hour = nb_of_servers_raw_that_hour
+
+                hour_by_hour_nb_of_instances__list.append(nb_of_instances_per_hour)
+
+            hour_by_hour_nb_of_instances = ExplainableHourlyUsage(
+                hour_by_hour_nb_of_instances__list, "", left_child=nb_of_servers_raw,
+                child_operator="Rounding of server number of instances"
+            )
+
+            nb_of_instances = (hour_by_hour_nb_of_instances.sum()
+                               / ExplainableQuantity(24 * u.dimensionless, "24 hours per day"))
+
+        elif self.cloud == "On premise":
             ram_needed_per_day = all_services_ram_needs.max()
             cpu_needed_per_day = all_services_cpu_needs.max()
 
@@ -118,6 +154,9 @@ class Server(InfraHardware):
             else:
                 nb_of_instances = nb_of_servers_raw
 
+        else:
+            raise ValueError(f"CloudConfig should be Autoscaling, Serverless or On premise, not {self.cloud.value}")
+
         self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Number of instances of {self.name}")
 
     def update_instances_power(self):
@@ -129,7 +168,7 @@ class Server(InfraHardware):
         idle_power = self.idle_power
 
         effective_power = power * power_usage_effectiveness
-        if cloud:
+        if cloud == "Serverless" or self.cloud == "Autoscaling":
             server_power = (effective_power * nb_of_instances).to(u.kWh / u.year)
         else:
             fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless) - fraction_of_time_in_use
@@ -152,5 +191,5 @@ class Servers:
         nb_of_cpus=24,
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
-        cloud=True
+        cloud="Serverless"
     )

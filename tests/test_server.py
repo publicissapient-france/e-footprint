@@ -26,7 +26,7 @@ class TestServer(TestCase):
             nb_of_cpus=24,
             power_usage_effectiveness=1.2,
             country=self.country,
-            cloud=False
+            cloud="On premise"
         )
 
         self.server_single_service = deepcopy(self.server_base)
@@ -66,7 +66,10 @@ class TestServer(TestCase):
         self.service3.base_cpu_consumption = ExplainableQuantity(2 * u.core)
 
         self.server_cloud = deepcopy(self.server_single_service)
-        self.server_cloud.cloud = True
+        self.server_cloud.cloud = "Serverless"
+
+        self.server_autoscaling = deepcopy(self.server_single_service)
+        self.server_autoscaling.cloud = "Autoscaling"
 
     def test_server_utilization_rate(self):
         self.server_base.update_server_utilization_rate()
@@ -129,7 +132,7 @@ class TestServer(TestCase):
                 patch.object(self.server_single_service, "all_services_cpu_needs", new=hour_by_hour_cpu_need), \
                 patch.object(self.server_single_service, "available_ram_per_instance", new=ExplainableQuantity(100 * u.Go)), \
                 patch.object(self.server_single_service, "available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
-                patch.object(self.server_single_service, "cloud", new=False):
+                patch.object(self.server_single_service, "cloud", new="On premise"):
             self.server_single_service.update_nb_of_instances()
             self.assertEqual(10 * u.dimensionless, self.server_single_service.nb_of_instances.value)
 
@@ -141,22 +144,40 @@ class TestServer(TestCase):
                 patch.object(self.server_cloud, "all_services_cpu_needs", new=cpu_need), \
                 patch.object(self.server_cloud, "available_ram_per_instance", new=ExplainableQuantity(100 * u.Go)), \
                 patch.object(self.server_cloud, "available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
-                patch.object(self.server_cloud, "cloud", new=True):
+                patch.object(self.server_cloud, "cloud", new="Serverless"):
             self.server_cloud.update_nb_of_instances()
             self.assertEqual(1.5 * u.dimensionless, round(self.server_cloud.nb_of_instances.value, 2))
+
+    def test_nb_of_instances_cloud_autoscaling(self):
+        infra_need = (create_infra_need([[0, 12]], ExplainableQuantity(50 * u.Go), ExplainableQuantity(1 * u.core))
+                      + create_infra_need([[12, 24]], ExplainableQuantity(200 * u.Go), ExplainableQuantity(1 * u.core)))
+        with patch(
+                f"{SERVER_MODULE}.all_services_infra_needs", new=infra_need), \
+                patch(f"{SERVER_MODULE}.available_ram_per_instance", new=ExplainableQuantity(100 * u.Go)), \
+                patch(f"{SERVER_MODULE}.available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
+                patch.object(self.server_single_service, f"cloud", new="Autoscaling"):
+            self.assertEqual(1.5 * u.dimensionless, round(self.server_autoscaling.nb_of_instances.value, 2))
 
     def test_compute_instances_power(self):
         with patch.object(self.server_single_service,
                           "fraction_of_time_in_use", new=ExplainableQuantity(((24 - 10) / 24) * u.dimensionless)), \
                 patch.object(self.server_single_service, "nb_of_instances", new=ExplainableQuantity(10 * u.dimensionless)), \
-                patch.object(self.server_single_service, "cloud", new=False):
+                patch.object(self.server_single_service, "cloud", new="On premise"):
             self.server_single_service.update_instances_power()
             self.assertEqual(round((55400 / 24 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_single_service.instances_power.value, 2))
 
     def test_compute_instances_power_cloud(self):
         with patch.object(self.server_single_service, "nb_of_instances", new=ExplainableQuantity(10 * u.dimensionless)), \
-                patch.object(self.server_single_service, f"cloud", new=True):
+                patch.object(self.server_single_service, f"cloud", new="Serverless"):
+            self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
+                             round(self.server_single_service.instances_power.value, 2))
+
+    def test_compute_instances_power_cloud_autoscaling(self):
+        with patch(
+                f"{SERVER_MODULE}.fraction_of_time_in_use", new=ExplainableQuantity(10 * u.hour / u.day)), \
+                patch(f"{SERVER_MODULE}.nb_of_instances", new=ExplainableQuantity(10 * u.dimensionless)), \
+                patch.object(self.server_single_service, f"cloud", new="Autoscaling"):
             self.server_single_service.update_instances_power()
             self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_single_service.instances_power.value, 2))
