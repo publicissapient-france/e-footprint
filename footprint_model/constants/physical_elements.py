@@ -1,6 +1,6 @@
 from footprint_model.constants.countries import Country
 from footprint_model.constants.explainable_quantities import ModelingObject
-from footprint_model.constants.sources import SourceValue
+from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
 from abc import ABC, abstractmethod
@@ -20,7 +20,7 @@ class PhysicalElements:
 
 class Hardware(ModelingObject):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue):
+                 lifespan: SourceValue, fraction_of_usage_time: SourceValue):
         super().__init__(name)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication
         self.carbon_footprint_fabrication.set_name(f"carbon footprint fabrication of {self.name}")
@@ -28,6 +28,10 @@ class Hardware(ModelingObject):
         self.power.set_name(f"power of {self.name}")
         self.lifespan = lifespan
         self.lifespan.set_name(f"lifespan of {self.name}")
+        if not fraction_of_usage_time.value.check("[]"):
+            raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
+        self.fraction_of_usage_time = fraction_of_usage_time
+        self.fraction_of_usage_time.set_name(f"{self.name} fraction of usage time")
 
     def compute_calculated_attributes(self):
         pass
@@ -47,7 +51,8 @@ class ObjectLinkedToUsagePatterns(ABC):
 class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue, lifespan: SourceValue,
                  country: Country):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan)
+        super().__init__(
+            name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
         ObjectLinkedToUsagePatterns.__init__(self)
         self.all_services_cpu_needs = None
         self.all_services_ram_needs = None
