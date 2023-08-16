@@ -10,3 +10,6 @@ lib
 *.DS_Store
 *.png
 .coverage
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+*.log

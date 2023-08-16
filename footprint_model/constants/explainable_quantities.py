@@ -1,16 +1,17 @@
+from footprint_model.utils.tools import flatten_list
+from footprint_model.constants.units import u
+
 import numbers
 import uuid
 from abc import ABC, abstractmethod
-
 from pint import Quantity
 from typing import Type, List
 from pubsub import pub
 import inspect
 from datetime import datetime
 import pytz
+import logging
 
-from footprint_model.utils.tools import flatten_list
-from footprint_model.constants.units import u
 
 DEFAULT_ROUNDING_LEVEL = 2
 
@@ -369,7 +370,6 @@ class ModelingObject(ABC):
             else:
                 values_type = type_set.pop()
             if issubclass(values_type, AttributeUsedInCalculation):
-                print(f"sending message to topic {current_pubsub_topic}")
                 pub.sendMessage(current_pubsub_topic)
             if issubclass(values_type, UpdateFunctionOutput):
                 update_func = getattr(self, f"update_{name}", None)
@@ -384,14 +384,14 @@ class ModelingObject(ABC):
                     for pubsub_topic in pubsub_topics_to_listen_to:
                         # TODO: Also unsubscribe from all old_value topics before subscribing
                         pub.subscribe(update_func, pubsub_topic)
-                    print(f"Subscribed update_{name} to {pubsub_topics_to_listen_to}")
+                    logging.debug(f"Subscribed update_{name} to {pubsub_topics_to_listen_to}")
             elif issubclass(values_type, ModelingObject):
                 if old_value is not None and old_value != input_value:
                     old_value_elts = convert_to_list(old_value)
                     disappearing_objects = [obj for obj in old_value_elts if obj not in value_elts]
                     for obj in disappearing_objects:
                         recursively_send_pubsub_message_for_every_attribute_used_in_calculation([obj])
-
+                logging.info(f"Computing calculated attributes for {self.name}")
                 self.compute_calculated_attributes()
 
 
