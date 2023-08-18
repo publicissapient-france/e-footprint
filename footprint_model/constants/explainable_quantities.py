@@ -1,4 +1,4 @@
-from footprint_model.utils.tools import flatten_list
+from footprint_model.utils.tools import convert_to_list
 from footprint_model.constants.units import u
 
 import numbers
@@ -323,17 +323,6 @@ def recursively_send_pubsub_message_for_every_attribute_used_in_calculation(old_
             pub.sendMessage(attr_value.pubsub_topic)
         for modeling_object, modeling_object_name in get_subclass_attributes(obj, ModelingObject).items():
             recursively_send_pubsub_message_for_every_attribute_used_in_calculation([modeling_object])
-
-
-def convert_to_list(input_value):
-    if type(input_value) == list:
-        value_elts = flatten_list(input_value)
-    elif type(input_value) == set:
-        value_elts = flatten_list(list(input_value))
-    else:
-        value_elts = [input_value]
-
-    return value_elts
 
 
 class ModelingObject(ABC):

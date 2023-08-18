@@ -17,6 +17,7 @@ def flatten_list(nested_list):
 
     return flattened_list
 
+
 def time_it(func):
     def wrapper(*args, **kwargs):
         start_time = time.time()
@@ -25,3 +26,14 @@ def time_it(func):
         print(f"Function {func.__name__} took {end_time - start_time:.5f} seconds to execute.")
         return result
     return wrapper
+
+
+def convert_to_list(input_value):
+    if type(input_value) == list:
+        value_elts = flatten_list(input_value)
+    elif type(input_value) == set:
+        value_elts = flatten_list(list(input_value))
+    else:
+        value_elts = [input_value]
+
+    return value_elts

@@ -39,7 +39,7 @@ class UserJourneyStep(ModelingObject):
         if not request_duration.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
         self.request_duration = SourceValue(
-            request_duration, Sources.USER_INPUT, f"Request duration to {self.service} in {self.name}")
+            request_duration, Sources.USER_INPUT, f"Request duration to {self.service.name} in {self.name}")
         if request_duration > user_time_spent:
             raise ValueError("Variable 'request_duration' can not be greater than variable 'user_time_spent'")
 
