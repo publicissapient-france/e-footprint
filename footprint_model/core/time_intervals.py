@@ -53,6 +53,8 @@ class TimeIntervals(ModelingObject):
             child_operator="conversion to hourly usage")
 
     def update_utc_time_intervals(self):
-        self.utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.timezone)
+        utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.timezone)
+        self.utc_time_intervals = utc_time_intervals.define_as_intermediate_calculation(
+            f"UTC time intervals of {self.name}")
 
         # TODO: to refactor and test
