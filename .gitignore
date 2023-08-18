@@ -11,5 +11,7 @@ lib
 *.png
 .coverage
 .ipynb_checkpoints
-*/.ipynb_checkpoints/*
 *.log
+*.ipynb
+*.html
+lib
