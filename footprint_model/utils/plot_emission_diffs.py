@@ -107,10 +107,15 @@ class EmissionPlotter:
         if self.rounding_value == 0:
             rounded_total__old = int(rounded_total__old)
 
+        if rounded_total__old != rounded_total__new:
+            subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {unit}s of CO2 emissions in" \
+                            f" {self.timespan.value} " \
+                            f"({int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
+        else:
+            subtitle_text = f"{rounded_total__new} {unit}s of CO2 emissions in {self.timespan.value}"
+
         self.ax.text(
-            0.5, 1.1,
-            f"From {rounded_total__old} to {rounded_total__new} {unit}s of CO2 emissions in {self.timespan.value} "
-            f"({int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)",
+            0.5, 1.1, subtitle_text,
             transform=self.ax.transAxes, fontsize=22, va="top", ha="center")
 
     def plot_emission_diffs(self):
