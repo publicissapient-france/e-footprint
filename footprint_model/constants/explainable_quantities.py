@@ -339,7 +339,7 @@ class ModelingObject(ABC):
         super().__setattr__(name, input_value)
         value_elts = convert_to_list(input_value)
 
-        current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
+        current_pubsub_topic = f"{name}_in_{self.id}"
         for value in value_elts:
             if issubclass(type(value), AttributeUsedInCalculation):
                 value.pubsub_topic = current_pubsub_topic
@@ -360,6 +360,7 @@ class ModelingObject(ABC):
                 values_type = type_set.pop()
             if issubclass(values_type, AttributeUsedInCalculation):
                 pub.sendMessage(current_pubsub_topic)
+                logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
             if issubclass(values_type, UpdateFunctionOutput):
                 update_func = getattr(self, f"update_{name}", None)
                 if update_func is None and (input_value.left_child is not None or input_value.right_child is not None):
