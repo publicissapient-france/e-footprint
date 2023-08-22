@@ -89,7 +89,6 @@ if __name__ == "__main__":
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
         data_replication_factor=3,
-        data_storage_duration=10 * u.year
     )
     service = Service("Youtube", server, storage, base_ram_consumption=300 * u.Mo,
                       base_cpu_consumption=2 * u.core)
@@ -111,7 +110,7 @@ if __name__ == "__main__":
 
     system = System("system 1", [usage_pattern])
 
-    G = build_graph(system.energy_footprints()["Servers"], label_len_threshold=0)
-    G.show("calculus_output.html")
+    G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
+    G.show("calculus_output_storage.html")
     G_raw = build_graph(system.energy_footprints()["Servers"], label_len_threshold=-1)
     G_raw.show("calculus_output__raw.html")

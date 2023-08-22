@@ -49,6 +49,21 @@ class System:
 
         return output_set
 
+    def get_storage_by_name(self, storage_name) -> Storage:
+        for storage in self.storages:
+            if storage.name == storage_name:
+                return storage
+
+    def get_server_by_name(self, server_name) -> Server:
+        for server in self.servers:
+            if server.name == server_name:
+                return server
+
+    def get_usage_pattern_by_name(self, usage_pattern_name) -> UsagePattern:
+        for usage_pattern in self.usage_patterns:
+            if usage_pattern.name == usage_pattern_name:
+                return usage_pattern
+
     def fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),

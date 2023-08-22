@@ -1,16 +1,15 @@
 from footprint_model.constants.countries import Country, Countries
 from footprint_model.constants.physical_elements import InfraHardware
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
-
-from pint import Quantity
 
 
 class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  power_usage_effectiveness: float, country: Country, data_replication_factor: int,
-                 data_storage_duration: Quantity):
+                 storage_need_from_previous_year: ExplainableQuantity = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
         self.all_services_storage_needs = None
         self.long_term_storage_required = None
@@ -26,10 +25,18 @@ class Storage(InfraHardware):
             power_usage_effectiveness * u.dimensionless, Sources.USER_INPUT, f"PUE of {self.name}")
         self.data_replication_factor = SourceValue(
             data_replication_factor * u.dimensionless, Sources.USER_INPUT, f"Data replication factor of {self.name}")
-        if not data_storage_duration.check("[time]"):
-            raise ValueError("Variable 'data_storage_duration' does not have time dimensionality")
-        self.data_storage_duration = SourceValue(
-            data_storage_duration, Sources.USER_INPUT, f"Data storage duration of {self.name}")
+        # TODO: implement data storage duration logic
+        if storage_need_from_previous_year is not None:
+            if not storage_need_from_previous_year.value.check("[data]"):
+                raise ValueError(
+                    "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
+                    " '[data]' dimensionality")
+            storage_need_from_previous_year.left_child = None
+            storage_need_from_previous_year.right_child = None
+            storage_need_from_previous_year.label = f"{self.name} storage need from previous year"
+            self.storage_need_from_previous_year = storage_need_from_previous_year
+        else:
+            self.storage_need_from_previous_year = 0
 
     def compute_calculated_attributes(self):
         self.update_all_services_storage_needs()
@@ -51,8 +58,11 @@ class Storage(InfraHardware):
             f"Storage need of {self.name}")
 
     def update_long_term_storage_required(self):
+        # TODO: Higher level year by year analysis that adds storage from previous year with remaining storage duration
+        # to current storage
         long_term_storage_required = (
-                self.all_services_storage_needs * self.data_replication_factor * self.data_storage_duration
+                self.all_services_storage_needs * self.data_replication_factor
+                * ExplainableQuantity(1 * u.year, "one year") + self.storage_need_from_previous_year
                 - self.active_storage_required
         )
 
@@ -106,7 +116,6 @@ class Storages:
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
         data_replication_factor=3,
-        data_storage_duration=5 * u.year
     )
     HDD_STORAGE = Storage(
         "Default HDD storage",
@@ -118,5 +127,4 @@ class Storages:
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
         data_replication_factor=3,
-        data_storage_duration=5 * u.year
     )
