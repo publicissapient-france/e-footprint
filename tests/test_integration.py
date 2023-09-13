@@ -14,13 +14,9 @@ from footprint_model.constants.units import u
 
 
 class IntegrationTest(TestCase):
-    def test_init_use_case(self):
-        server = Servers.SERVER
-        default_device_pop = DevicePopulation(
-            "French Youtube users on laptop", 4e7 * 0.3, Countries.FRANCE, [Devices.LAPTOP])
-
     def test_base_use_case(self):
         server = Servers.SERVER
+        server.cloud = "Serverless"
         storage = Storage(
             "Default SSD storage",
             carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -30,8 +26,7 @@ class IntegrationTest(TestCase):
             storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=1.2,
             country=Countries.GERMANY,
-            data_replication_factor=3,
-            data_storage_duration=10 * u.year
+            data_replication_factor=3
         )
         service = Service("Youtube", server, storage, base_ram_consumption=300 * u.Mo,
                           base_cpu_consumption=2 * u.core)
@@ -42,10 +37,6 @@ class IntegrationTest(TestCase):
                                       request_duration=0.1 * u.s)
 
         default_uj = UserJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])
-        print(default_uj.duration.value)
-        #upload_step.user_time_spent = ExplainableQuantity(1 * u.hour / u.user_journey, "one hour")
-        print(default_uj.duration.value)
-        print(default_uj.duration.explain())
         default_device_pop = DevicePopulation(
             "French Youtube users on laptop", 4e7 * 0.3, Countries.FRANCE, [Devices.LAPTOP])
 
@@ -56,20 +47,5 @@ class IntegrationTest(TestCase):
 
         system = System("system 1", [usage_pattern])
 
-        fabrication_dict = {
-            "Servers": 170023 * u.kg / u.year,
-            "Storage": 1226400 * u.kg / u.year,
-            "Devices": 14859346 * u.kg / u.year,
-            "Network": 0 * u.kg / u.year
-        }
-
-        print(system.fabrication_footprints())
-
-        energy_footprints_dict = {
-            "Servers": 2071091 * u.kg / u.year,
-            "Storage": 1 * u.kg / u.year,
-            "Devices": 6210171 * u.kg / u.year,
-            "Network": 15519015 * u.kg / u.year
-        }
-
-        print(system.energy_footprints())
+        system.fabrication_footprints()
+        system.energy_footprints()

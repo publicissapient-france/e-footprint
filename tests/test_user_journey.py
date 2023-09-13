@@ -1,7 +1,6 @@
 import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
-from copy import deepcopy
 
 from footprint_model.constants.sources import u
 from footprint_model.core.user_journey import UserJourneyStep, UserJourney
@@ -18,11 +17,10 @@ class TestUserJourneyStep(TestCase):
             user_time_spent=(2 * u.min))
 
     def test_update_ram_needed(self):
-        test_uj_step = deepcopy(self.user_journey_step)
-        test_uj_step.update_ram_needed()
+        self.user_journey_step.update_ram_needed()
         expected_ram_needed = ExplainableQuantity(400 * u.Mo / u.user_journey)
 
-        self.assertEqual(expected_ram_needed.value, test_uj_step.ram_needed.value)
+        self.assertEqual(expected_ram_needed.value, self.user_journey_step.ram_needed.value)
 
 
 class TestUserJourney(TestCase):
@@ -47,26 +45,24 @@ class TestUserJourney(TestCase):
         self.user_journey.usage_patterns = {self.usage_pattern}
 
     def test_link_usage_pattern_add_new_usage_pattern(self):
-        test_user_journey = deepcopy(self.user_journey)
-        test_user_journey.usage_patterns = {'up'}
-        test_user_journey.link_usage_pattern('up2')
+        self.user_journey.usage_patterns = {'up'}
+        self.user_journey.link_usage_pattern('up2')
 
-        self.assertEqual({'up', 'up2'}, test_user_journey.usage_patterns)
-        for server in test_user_journey.servers:
+        self.assertEqual({'up', 'up2'}, self.user_journey.usage_patterns)
+        for server in self.user_journey.servers:
             server.link_usage_pattern.assert_called_once_with('up2')
 
-        for storage in test_user_journey.storages:
+        for storage in self.user_journey.storages:
             storage.link_usage_pattern.assert_called_once_with('up2')
 
     def test_unlink_usage_pattern(self):
-        test_user_journey = deepcopy(self.user_journey)
-        test_user_journey.usage_patterns = {'up', 'up2'}
-        test_user_journey.unlink_usage_pattern('up2')
-        self.assertEqual({'up'}, test_user_journey.usage_patterns)
+        self.user_journey.usage_patterns = {'up', 'up2'}
+        self.user_journey.unlink_usage_pattern('up2')
+        self.assertEqual({'up'}, self.user_journey.usage_patterns)
 
-        for server in test_user_journey.servers:
+        for server in self.user_journey.servers:
             server.unlink_usage_pattern.assert_called_once_with('up2')
-        for storage in test_user_journey.storages:
+        for storage in self.user_journey.storages:
             storage.unlink_usage_pattern.assert_called_once_with('up2')
 
     def test_add_step(self):
@@ -86,39 +82,36 @@ class TestUserJourney(TestCase):
         self.assertEqual(self.user_journey.services, {self.service})
 
     def test_update_duration_with_multiple_steps(self):
-        test_uj = deepcopy(self.user_journey)
-        test_uj.add_step(self.user_journey_step)
-        for step in test_uj.uj_steps:
+        self.user_journey.add_step(self.user_journey_step)
+        for step in self.user_journey.uj_steps:
             step.user_time_spent = ExplainableQuantity(5 * u.min / u.user_journey)
 
-        test_uj.update_duration()
+        self.user_journey.update_duration()
         expected_duration = ExplainableQuantity(10 * u.min / u.user_journey)
 
-        self.assertEqual(test_uj.duration.value, expected_duration.value)
+        self.assertEqual(self.user_journey.duration.value, expected_duration.value)
 
     def test_update_data_download_with_multiple_steps(self):
-        test_uj = deepcopy(self.user_journey)
-        test_uj.add_step(self.user_journey_step)
+        self.user_journey.add_step(self.user_journey_step)
 
-        for step in test_uj.uj_steps:
+        for step in self.user_journey.uj_steps:
             step.data_download = ExplainableQuantity(10 * u.Mo / u.user_journey)
-        test_uj.update_data_download()
+        self.user_journey.update_data_download()
 
         expected_data_download = ExplainableQuantity(20 * u.Mo / u.user_journey)
 
-        self.assertEqual(test_uj.data_download.value, expected_data_download.value)
+        self.assertEqual(self.user_journey.data_download.value, expected_data_download.value)
 
     def test_update_data_upload_with_multiple_steps(self):
-        test_uj = deepcopy(self.user_journey)
-        test_uj.add_step(self.user_journey_step)
-        for step in test_uj.uj_steps:
+        self.user_journey.add_step(self.user_journey_step)
+        for step in self.user_journey.uj_steps:
             step.data_upload = ExplainableQuantity(10 * u.Mo / u.user_journey)
 
-        test_uj.update_data_upload()
+        self.user_journey.update_data_upload()
 
         expected_data_upload = ExplainableQuantity(20 * u.Mo / u.user_journey)
 
-        self.assertEqual(test_uj.data_upload.value, expected_data_upload.value)
+        self.assertEqual(self.user_journey.data_upload.value, expected_data_upload.value)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,6 @@ from footprint_model.core.time_intervals import TimeIntervals
 
 
 class TestTimeIntervals(unittest.TestCase):
-
     def setUp(self):
         self.name = "test_intervals"
         self.time_intervals = [[0, 5], [6, 10], [15, 20]]

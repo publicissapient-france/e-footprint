@@ -37,7 +37,7 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
             for user_journey_freq, user_journey_duration in zip(user_journey_freqs, user_journey_durations):
                 power += (user_journey_freq * (device_power * user_journey_duration)).to(u.kWh / u.year)
 
-        self.power = power.define_as_intermediate_calculation(f"Power of {self.name} device")
+        self.power = power.define_as_intermediate_calculation(f"Power of {self.name} devices")
 
     def update_energy_footprint(self):
         energy_footprint = (self.power * self.country.average_carbon_intensity).to(u.kg / u.year)

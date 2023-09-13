@@ -80,6 +80,7 @@ class Storage(InfraHardware):
 
     def update_nb_of_idle_instances(self):
         nb_of_idle_instances = (self.long_term_storage_required / self.storage_capacity).to(u.dimensionless)
+
         self.nb_of_idle_instances = nb_of_idle_instances.define_as_intermediate_calculation(
             f"Number of idle storage units for {self.name}")
 

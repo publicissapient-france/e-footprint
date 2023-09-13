@@ -5,7 +5,7 @@ from footprint_model.constants.units import u
 
 
 class Network(ObjectLinkedToUsagePatterns, ModelingObject):
-    def __init__(self, name: PhysicalElements, bandwidth_energy_intensity: SourceValue):
+    def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
         ModelingObject.__init__(self, name)
         super().__init__()
         self.data_upload = None

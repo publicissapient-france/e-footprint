@@ -49,7 +49,7 @@ class Server(InfraHardware):
             self.server_utilization_rate = ExplainableQuantity(
                 0.9 * u.dimensionless, "Cloud server utilization rate").define_as_intermediate_calculation(
                 "Cloud server utilization rate")
-        else:
+        elif self.cloud == "On premise":
             self.server_utilization_rate = ExplainableQuantity(
                 0.7 * u.dimensionless, "On premise server utilization rate").define_as_intermediate_calculation(
                 "On premise server utilization rate"
@@ -160,21 +160,16 @@ class Server(InfraHardware):
         self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Number of instances of {self.name}")
 
     def update_instances_power(self):
-        cloud = self.cloud
-        power = self.power
-        power_usage_effectiveness = self.power_usage_effectiveness
-        nb_of_instances = self.nb_of_instances
-        fraction_of_time_in_use = self.fraction_of_time_in_use
-        idle_power = self.idle_power
-
-        effective_power = power * power_usage_effectiveness
-        if cloud == "Serverless" or self.cloud == "Autoscaling":
-            server_power = (effective_power * nb_of_instances).to(u.kWh / u.year)
+        effective_active_power = self.power * self.power_usage_effectiveness
+        effective_idle_power = self.idle_power * self.power_usage_effectiveness
+        if self.cloud == "Serverless" or self.cloud == "Autoscaling":
+            server_power = (effective_active_power * self.nb_of_instances).to(u.kWh / u.year)
         else:
-            fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless) - fraction_of_time_in_use
+            fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless) - self.fraction_of_time_in_use
             server_power = (
-                    nb_of_instances *
-                    ((effective_power * fraction_of_time_in_use) + (idle_power * fraction_of_time_not_in_use))
+                    self.nb_of_instances *
+                    ((effective_active_power * self.fraction_of_time_in_use)
+                     + (effective_idle_power * fraction_of_time_not_in_use))
             ).to(u.kWh / u.year)
 
         self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name}")

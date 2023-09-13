@@ -33,7 +33,7 @@ class TimeIntervals(ModelingObject):
         self.compute_calculated_attributes()
 
     @property
-    def pubsub_topics_to_listen_to(self) -> List[str]:
+    def pubsub_topics_to_listen_to(self) -> List[ExplainableHourlyUsage]:
         return [self.utc_time_intervals]
 
     def compute_calculated_attributes(self):
@@ -56,5 +56,3 @@ class TimeIntervals(ModelingObject):
         utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.timezone)
         self.utc_time_intervals = utc_time_intervals.define_as_intermediate_calculation(
             f"UTC time intervals of {self.name}")
-
-        # TODO: to refactor and test

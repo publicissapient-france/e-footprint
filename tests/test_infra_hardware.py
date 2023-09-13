@@ -133,19 +133,16 @@ class TestObjectLinkedToUsagePatterns(TestCase):
         self.test_object_linked_to_usage_patterns = ObjectLinkedToUsagePatterns()
 
     def test_link_usage_pattern_should_return_same_set_if_usage_pattern_already_in_set(self):
-        test_object_linked_to_usage_patterns = deepcopy(self.test_object_linked_to_usage_patterns)
-        test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
-        test_object_linked_to_usage_patterns.link_usage_pattern("usage_pattern_1")
-        self.assertEqual({"usage_pattern_1"}, test_object_linked_to_usage_patterns.usage_patterns)
+        self.test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
+        self.test_object_linked_to_usage_patterns.link_usage_pattern("usage_pattern_1")
+        self.assertEqual({"usage_pattern_1"}, self.test_object_linked_to_usage_patterns.usage_patterns)
 
     def test_link_usage_pattern_should_add_new_usage_pattern_to_usage_patterns_set(self):
-        test_object_linked_to_usage_patterns = deepcopy(self.test_object_linked_to_usage_patterns)
-        test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
-        test_object_linked_to_usage_patterns.link_usage_pattern("usage_pattern_2")
-        self.assertEqual({"usage_pattern_1", "usage_pattern_2"}, test_object_linked_to_usage_patterns.usage_patterns)
+        self.test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
+        self.test_object_linked_to_usage_patterns.link_usage_pattern("usage_pattern_2")
+        self.assertEqual({"usage_pattern_1", "usage_pattern_2"}, self.test_object_linked_to_usage_patterns.usage_patterns)
 
     def test_unlink_usage_pattern(self):
-        test_object_linked_to_usage_patterns = deepcopy(self.test_object_linked_to_usage_patterns)
-        test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
-        test_object_linked_to_usage_patterns.unlink_usage_pattern("usage_pattern_1")
-        self.assertEqual(set(), test_object_linked_to_usage_patterns.usage_patterns)
+        self.test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}
+        self.test_object_linked_to_usage_patterns.unlink_usage_pattern("usage_pattern_1")
+        self.assertEqual(set(), self.test_object_linked_to_usage_patterns.usage_patterns)

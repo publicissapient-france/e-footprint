@@ -349,7 +349,7 @@ class ModelingObject(ABC):
         caller_frame = frame.f_back
         info = inspect.getframeinfo(caller_frame)
 
-        if info.function != "__init__":
+        if info.function not in ("__init__", "__exit__"):
             type_set = [type(value) for value in value_elts]
             base_type = type(type_set[0])
 
@@ -399,7 +399,7 @@ class NonQuantityUsedInCalculation(AttributeUsedInCalculation):
             method_obj = getattr(instance_in_prev_frame, calling_function_name, None)
             pubsub_topic_to_listen_to = self.pubsub_topic
             pub.subscribe(method_obj, pubsub_topic_to_listen_to)
-            print(f"CALLING FUNC - Subscribed {calling_function_name} to {pubsub_topic_to_listen_to}")
+            logging.debug(f"CALLING FUNC - Subscribed {calling_function_name} to {pubsub_topic_to_listen_to}")
 
     def __get__(self, instance, owner):
         self.get_calling_function()

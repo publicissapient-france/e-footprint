@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from copy import deepcopy
 
 from footprint_model.constants.countries import Countries
 from footprint_model.core.time_intervals import TimeIntervals
@@ -41,8 +40,9 @@ class TestUsagePattern(unittest.TestCase):
         self.assertEqual(self.usage_pattern.usage_time_fraction.value, (8 / 24) * u.dimensionless)
 
     def test_update_usage_time_fraction(self):
-        intervals = TimeIntervals("usage time intervals", [[8, 10]], self.usage_pattern.device_population.country.timezone)
-        with patch.object(self.usage_pattern, "time_intervals", new=intervals):
+        intervals = TimeIntervals(
+            "usage time intervals", [[8, 10]], self.usage_pattern.device_population.country.timezone)
+        with patch.object(self.usage_pattern, "time_intervals", intervals):
             self.usage_pattern.update_usage_time_fraction()
             self.assertEqual(self.usage_pattern.usage_time_fraction.value, (2 / 24) * u.dimensionless)
 
@@ -51,30 +51,27 @@ class TestUsagePattern(unittest.TestCase):
 
     def test_user_journey_setter(self):
         test_uj = MagicMock()
-        test_up = deepcopy(self.usage_pattern)
-        old_uj = test_up._user_journey
-        test_up.user_journey = test_uj
+        old_uj = self.usage_pattern._user_journey
+        self.usage_pattern.user_journey = test_uj
 
-        old_uj.unlink_usage_pattern.assert_called_once_with(test_up)
-        test_uj.link_usage_pattern.assert_called_once_with(test_up)
+        old_uj.unlink_usage_pattern.assert_called_once_with(self.usage_pattern)
+        test_uj.link_usage_pattern.assert_called_once_with(self.usage_pattern)
 
     def test_device_population_setter(self):
         test_dp = MagicMock()
-        test_up = deepcopy(self.usage_pattern)
-        old_dp = test_up._device_population
-        test_up.device_population = test_dp
+        old_dp = self.usage_pattern._device_population
+        self.usage_pattern.device_population = test_dp
 
-        old_dp.unlink_usage_pattern.assert_called_once_with(test_up)
-        test_dp.link_usage_pattern.assert_called_once_with(test_up)
+        old_dp.unlink_usage_pattern.assert_called_once_with(self.usage_pattern)
+        test_dp.link_usage_pattern.assert_called_once_with(self.usage_pattern)
 
     def test_network_setter(self):
         test_network = MagicMock()
-        test_up = deepcopy(self.usage_pattern)
-        old_network = test_up._network
-        test_up.network = test_network
+        old_network = self.usage_pattern._network
+        self.usage_pattern.network = test_network
 
-        old_network.unlink_usage_pattern.assert_called_once_with(test_up)
-        test_network.link_usage_pattern.assert_called_once_with(test_up)
+        old_network.unlink_usage_pattern.assert_called_once_with(self.usage_pattern)
+        test_network.link_usage_pattern.assert_called_once_with(self.usage_pattern)
 
     def test_services(self):
         self.assertEqual({self.service1, self.service2}, self.usage_pattern.services)
@@ -90,7 +87,7 @@ class TestUsagePattern(unittest.TestCase):
         with patch.object(self.usage_pattern.device_population, "nb_devices", new=nb_devices), \
                 patch.object(self.usage_pattern, "user_journey_freq_per_user", new=uj_freq_per_user):
             self.usage_pattern.update_user_journey_freq()
-            self.assertEqual(self.usage_pattern.user_journey_freq.value, expected_uj_freq.value)
+            self.assertEqual(expected_uj_freq.value, self.usage_pattern.user_journey_freq.value)
 
     def test_nb_user_journeys_in_parallel_during_usage(self):
         actual_nb_user_journeys_in_parallel_during_usage = self.usage_pattern.nb_user_journeys_in_parallel_during_usage

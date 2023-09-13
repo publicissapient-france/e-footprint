@@ -36,13 +36,13 @@ class TestModelingObject(unittest.TestCase):
     def test_setattr_attribute_used_in_calculation(self):
         value = MockAttributeUsedInCalculation()
         self.modeling_object.attribute = value
-        self.assertEqual(value.pubsub_topic, "attribute_in_test_object_" + self.modeling_object.id)
+        self.assertEqual("attribute_in_" + self.modeling_object.id, value.pubsub_topic)
 
     @patch.object(pub, "sendMessage")
     def test_setattr_publishes_message(self, mock_send_message):
         value = MockAttributeUsedInCalculation()
         self.modeling_object.attribute = value
-        mock_send_message.assert_called_once_with("attribute_in_test_object_" + self.modeling_object.id)
+        mock_send_message.assert_called_once_with("attribute_in_" + self.modeling_object.id)
 
     @patch.object(pub, "subscribe")
     def test_setattr_update_function_output(self, mock_subscribe):
