@@ -27,7 +27,7 @@ class TimeIntervals(ModelingObject):
         self.utc_time_intervals = None
         sorted_time_intervals = sorted(time_intervals, key=lambda x: x[0])
         self.check_time_intervals_validity(sorted_time_intervals)
-        self.time_intervals = ExplainableObject(sorted_time_intervals)
+        self.time_intervals = ExplainableObject(sorted_time_intervals, f"local timezone time intervals of {self.name}")
         self.timezone = ExplainableObject(pytz.timezone(timezone) if timezone is not None else None)
         self.hourly_usage = None
 

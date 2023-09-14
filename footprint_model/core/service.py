@@ -20,7 +20,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         self.server = server
         self.storage = storage
         if not base_ram_consumption.check("[data]"):
-            raise ValueError("variable 'base_ram_consumption' does not have octet dimensionality")
+            raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
         if not base_cpu_consumption.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = SourceValue(

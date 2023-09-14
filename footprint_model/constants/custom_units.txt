@@ -1,4 +1,5 @@
-octet = [data] = o = oct
-user = [person] = user = user
-user_journey = [user_journey] = user_journey = user_journey
-core = [cpu] = core = core
+octet = [data] = o
+user = [person] = user
+user_journey = [user_journey] = uj
+core = [cpu] = core
+year = 365.25 day = yr

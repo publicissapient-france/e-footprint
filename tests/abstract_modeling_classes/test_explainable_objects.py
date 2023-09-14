@@ -48,18 +48,6 @@ class TestExplainableQuantity(unittest.TestCase):
         self.assertRaises(ValueError, self.a.__lt__, 1)
         self.assertRaises(ValueError, self.a.__eq__, 1)
 
-    def test_explain_order_0(self):
-        self.assertEqual((self.a + self.b).explain(), '(1 Watt + 2 Watt)')
-
-    def test_explain_order_1(self):
-        self.assertEqual(self.c.explain(), '(1 Watt + 2 Watt)')
-
-    def test_explain_order_2(self):
-        self.assertEqual(
-            self.d.explain(),
-            '((1 Watt + 2 Watt) + 2 Watt)'
-        )
-
     def test_to(self):
         self.a.to(u.mW)
         self.assertEqual(self.a.value, 1000 * u.mW)

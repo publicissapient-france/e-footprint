@@ -41,7 +41,7 @@ class ExplainableQuantity(ExplainableObject):
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableQuantity(self.value, "", left_child=self, child_operator="add 0")
+            return self
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
         else:
@@ -49,7 +49,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return ExplainableQuantity(self.value, "", left_child=self, child_operator="subtract 0")
+            return self
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
         else:
@@ -164,7 +164,7 @@ class ExplainableHourlyUsage(ExplainableObject):
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableHourlyUsage(self.value, "", left_child=self, child_operator="add 0")
+            return self
         elif issubclass(type(other), ExplainableHourlyUsage):
             return ExplainableHourlyUsage(
                 [elt1 + elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "+")
@@ -176,7 +176,7 @@ class ExplainableHourlyUsage(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return ExplainableHourlyUsage(self.value, "", left_child=self, child_operator="subtract 0")
+            return self
         elif issubclass(type(other), ExplainableHourlyUsage):
             return ExplainableHourlyUsage(
                 [elt1 - elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "-")

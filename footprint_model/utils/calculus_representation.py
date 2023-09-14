@@ -47,7 +47,7 @@ def build_graph(root_node, x_multiplier=150, y_multiplier=250, label_len_thresho
     def add_nodes_edges(node, parent_id=None):
         if len(node.label) > label_len_threshold:
             G.add_node(
-                node.label, label=node.label, title=str(node.value), x=pos[node.label][0]*x_multiplier,
+                node.label, label=node.label, title=str(node.explain()), x=pos[node.label][0]*x_multiplier,
                 y=pos[node.label][1]*y_multiplier)
             if parent_id:
                 G.add_edge(parent_id, node.label)
@@ -112,5 +112,5 @@ if __name__ == "__main__":
 
     G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
     G.show("calculus_output_storage.html")
-    G_raw = build_graph(system.energy_footprints()["Servers"], label_len_threshold=-1)
-    G_raw.show("calculus_output__raw.html")
+    G_raw = build_graph(system.energy_footprints()["Servers"], label_len_threshold=0)
+    G_raw.show("calculus_output_server.html")
