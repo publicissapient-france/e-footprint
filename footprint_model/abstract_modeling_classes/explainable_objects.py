@@ -149,7 +149,15 @@ class ExplainableHourlyUsage(ExplainableObject):
         result = sum(self.value)
         result.left_child = self
         result.right_child = None
-        result.child_operator = "sum of values in ExplainableHourlyUsage object"
+        result.child_operator = "sum"
+
+        return result
+
+    def mean(self):
+        result = sum(self.value) / ExplainableQuantity(24 * u.dimensionless, "24 hours in a day")
+        result.left_child = self
+        result.right_child = None
+        result.child_operator = "mean"
 
         return result
 

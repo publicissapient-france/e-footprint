@@ -33,12 +33,12 @@ def calculate_positions(node, label_len_threshold=-1):
         for i, n in enumerate(nodes):
             offset = (num_nodes - 1) / 2
             x = (i - offset) * (max_width / num_nodes)
-            pos[n.label] = (x, depth + (i % 2)/4)
+            pos[n.label] = (x, depth)
 
     return pos
 
 
-def build_graph(root_node, x_multiplier=150, y_multiplier=250, label_len_threshold=-1):
+def build_graph(root_node, x_multiplier=180, y_multiplier=200, label_len_threshold=-1):
     G = Network(notebook=True, directed=True, width="1800px", height="900px")
     G.toggle_physics(False)
 
@@ -46,9 +46,16 @@ def build_graph(root_node, x_multiplier=150, y_multiplier=250, label_len_thresho
 
     def add_nodes_edges(node, parent_id=None):
         if len(node.label) > label_len_threshold:
+            if node.left_child is None and node.right_child is None and type(node) == SourceValue:
+                if node.source == Sources.USER_INPUT:
+                    color = "green"
+                else:
+                    color = "red"
+            else:
+                color = None
             G.add_node(
-                node.label, label=node.label, title=str(node.explain()), x=pos[node.label][0]*x_multiplier,
-                y=pos[node.label][1]*y_multiplier)
+                node.label, label=set_string_max_width(node.label, 20), title=set_string_max_width(str(node.explain()), 80),
+                x=pos[node.label][0]*x_multiplier, y=pos[node.label][1]*y_multiplier, color=color)
             if parent_id:
                 G.add_edge(parent_id, node.label)
             current_id = node.label
@@ -63,6 +70,30 @@ def build_graph(root_node, x_multiplier=150, y_multiplier=250, label_len_thresho
     add_nodes_edges(root_node)
 
     return G
+
+
+def set_string_max_width(s, max_width):
+    lines = s.split('\n')
+    formatted_lines = []
+
+    for line in lines:
+        words = line.split()
+        current_line = []
+        current_len = 0
+
+        for word in words:
+            if current_len + len(word) > max_width:
+                formatted_lines.append(' '.join(current_line))
+                current_line = [word]
+                current_len = len(word) + 1
+            else:
+                current_line.append(word)
+                current_len += len(word) + 1
+
+        if current_line:
+            formatted_lines.append(' '.join(current_line))
+
+    return '\n'.join(formatted_lines)
 
 
 if __name__ == "__main__":

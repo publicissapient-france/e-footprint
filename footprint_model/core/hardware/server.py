@@ -98,14 +98,13 @@ class Server(InfraHardware):
         available_cpu_per_instance = self.available_cpu_per_instance
 
         if self.cloud == "Serverless":
-            one_day = ExplainableQuantity(24 * u.hour, '24 hours')
-            ram_needed_per_day = (
-                    all_services_ram_needs.sum() * ExplainableQuantity(1 * u.hour, "1 hour") / one_day)
-            cpu_needed_per_day = (
-                    all_services_cpu_needs.sum() * ExplainableQuantity(1 * u.hour, "1 hour") / one_day)
+            average_ram_needed_per_day = all_services_ram_needs.mean().define_as_intermediate_calculation(
+                f"Average RAM need of {self.name}")
+            average_cpu_needed_per_day = all_services_cpu_needs.mean().define_as_intermediate_calculation(
+                f"Average CPU need of {self.name}")
 
-            nb_of_servers_raw = max(ram_needed_per_day / available_ram_per_instance,
-                                    cpu_needed_per_day / available_cpu_per_instance)
+            nb_of_servers_raw = max(average_ram_needed_per_day / available_ram_per_instance,
+                                    average_cpu_needed_per_day / available_cpu_per_instance)
 
             nb_of_instances = nb_of_servers_raw
 

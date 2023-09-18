@@ -107,32 +107,49 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
             return tuple_element
         elif type(tuple_element) == tuple:
             if tuple_element[2] is None:
-                if tuple_element[1] == "usage time fraction computation":
-                    a = 1
                 return f"{tuple_element[1]}" \
-                       f" of {self.print_tuple_element(tuple_element[0], values)}"
-            if tuple_element[1] != "/":
-                return f"{self.print_tuple_element(tuple_element[0], values)}" \
-                       f" {tuple_element[1]}" \
-                       f" {self.print_tuple_element(tuple_element[2], values)}"
-            else:
-                return f"(({self.print_tuple_element(tuple_element[0], values)})" \
-                       f" {tuple_element[1]}" \
-                       f" ({self.print_tuple_element(tuple_element[2], values)}))"
+                       f" of ({self.print_tuple_element(tuple_element[0], values)})"
+
+            left_parenthesis = False
+            right_parenthesis = False
+
+            if tuple_element[1] == "/":
+                if type(tuple_element[2]) == tuple:
+                    right_parenthesis = True
+                if type(tuple_element[0]) == tuple and tuple_element[0][1] != "*":
+                    left_parenthesis = True
+            elif tuple_element[1] == "*":
+                if type(tuple_element[0]) == tuple and tuple_element[0][1] != "*":
+                    left_parenthesis = True
+                if type(tuple_element[2]) == tuple and tuple_element[2][1] != "*":
+                    right_parenthesis = True
+            elif tuple_element[1] in ["+", "-"]:
+                pass
+
+            lp_open = ""
+            lp_close = ""
+            rp_open = ""
+            rp_close = ""
+
+            if left_parenthesis:
+                lp_open = "("
+                lp_close = ")"
+            if right_parenthesis:
+                rp_open = "("
+                rp_close = ")"
+
+            return f"{lp_open}{self.print_tuple_element(tuple_element[0], values)}{lp_close}" \
+                   f" {tuple_element[1]}" \
+                   f" {rp_open}{self.print_tuple_element(tuple_element[2], values)}{rp_close}"
 
     @staticmethod
     def pretty_print_calculation(calc_str):
-        indentation_level = 0
         formatted_str = ""
 
         for char in calc_str:
-            if char == ')':
-                formatted_str += char + '\n' + '    ' * (indentation_level - 2)
-                indentation_level -= 1
-            elif char == '=' and formatted_str[-1] == ' ':
-                formatted_str = formatted_str[:-1] + '\n' + '    ' * (
-                    max(indentation_level - 2, 0)) + '=' + '\n' + '    ' * (max(indentation_level - 2, 0))
+            if char == '=' and formatted_str[-1] == ' ':
+                formatted_str = formatted_str[:-1] + '\n=\n'
             else:
                 formatted_str += char
 
-        return formatted_str.replace("\n)\n\n", ")\n").replace(")\n)", "))")
+        return formatted_str

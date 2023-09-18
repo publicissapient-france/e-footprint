@@ -38,4 +38,4 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual("f = c + b + a = 3 + 2 + 1 = 6", self.f.explain(pretty_print=False))
 
     def test_explain_without_right_child(self):
-        self.assertEqual("g = root square of d = root square of 4 = 2", self.g.explain(pretty_print=False))
+        self.assertEqual("g = root square of (d) = root square of (4) = 2", self.g.explain(pretty_print=False))

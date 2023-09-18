@@ -88,7 +88,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
     def update_hour_by_hour_cpu_need(self):
         hour_by_hour_cpu_needs = 0
         for usage_pattern in self.usage_patterns:
-            usage_pattern_cpu_need = ExplainableQuantity(0 * u.core / u.user_journey)
+            usage_pattern_cpu_need = 0
             for uj_step in usage_pattern.user_journey.uj_steps:
                 if uj_step.service == self:
                     average_uj_cpu_needed = self.compute_resource_needed_averaged_over_user_journey(
