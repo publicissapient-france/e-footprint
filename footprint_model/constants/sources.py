@@ -1,3 +1,4 @@
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.units import u
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
@@ -43,8 +44,8 @@ class Sources:
     STATE_OF_MOBILE_2022 = Source("DATA.AI - STATE OF MOBILE", "https://www.data.ai/en/GB/state-of-mobile-2022")
 
 
-class SourceValue(ExplainableQuantity):
-    def __init__(self, value: Quantity, source: Source, name: str = "unnamed value"):
+class SourceObject(ExplainableObject):
+    def __init__(self, value: object, source: Source, name: str = "unnamed object"):
         super().__init__(value, label=name)
         self.source = source
 
@@ -55,6 +56,12 @@ class SourceValue(ExplainableQuantity):
             self.label = f"{new_name} from {self.source.name}"
         else:
             self.label = f"{new_name}"
+
+
+class SourceValue(SourceObject, ExplainableQuantity):
+    def __init__(self, value: Quantity, source: Source, name: str = "unnamed value"):
+        super().__init__(value, source, name)
+        self.source = source
 
 
 if __name__ == "__main__":

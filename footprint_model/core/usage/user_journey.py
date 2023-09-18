@@ -36,7 +36,7 @@ class UserJourneyStep(ModelingObject):
         if not user_time_spent.check("[time]"):
             raise ValueError("Variable 'user_time_spent' does not have the appropriate '[time]' dimensionality")
         self.user_time_spent = SourceValue(
-            user_time_spent / u.user_journey, Sources.USER_INPUT, f"uj step {name} user_time_spent")
+            user_time_spent / u.user_journey, Sources.USER_INPUT, f"Time spent on step {self.name}")
         if not request_duration.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
         self.request_duration = SourceValue(

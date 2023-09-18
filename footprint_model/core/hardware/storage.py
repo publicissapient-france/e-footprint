@@ -18,9 +18,9 @@ class Storage(InfraHardware):
         self.nb_of_active_instances = None
         self.instances_power = None
         self.idle_power = idle_power
-        self.idle_power.set_name(f"idle power of {self.name}")
+        self.idle_power.set_name(f"Idle power of {self.name}")
         self.storage_capacity = storage_capacity
-        self.storage_capacity.set_name(f"storage capacity of {self.name}")
+        self.storage_capacity.set_name(f"Storage capacity of {self.name}")
         self.power_usage_effectiveness = SourceValue(
             power_usage_effectiveness * u.dimensionless, Sources.USER_INPUT, f"PUE of {self.name}")
         self.data_replication_factor = SourceValue(
@@ -101,8 +101,12 @@ class Storage(InfraHardware):
             f"Number of total instances for {self.name}")
 
     def update_instances_power(self):
-        active_storage_power = self.nb_of_active_instances * self.power * self.power_usage_effectiveness
-        idle_storage_power = self.nb_of_idle_instances * self.idle_power * self.power_usage_effectiveness
+        active_storage_power = (
+                self.nb_of_active_instances * self.power * self.power_usage_effectiveness
+        ).define_as_intermediate_calculation(f"Active instances power")
+        idle_storage_power = (
+                self.nb_of_idle_instances * self.idle_power * self.power_usage_effectiveness
+        ).define_as_intermediate_calculation(f"Idle instances power")
         storage_power = (
                 active_storage_power * self.fraction_of_time_in_use + idle_storage_power).to(u.kWh / u.year)
 

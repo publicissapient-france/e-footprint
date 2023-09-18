@@ -12,11 +12,11 @@ class Hardware(ModelingObject):
                  lifespan: SourceValue, fraction_of_usage_time: SourceValue):
         super().__init__(name)
         self.carbon_footprint_fabrication = carbon_footprint_fabrication
-        self.carbon_footprint_fabrication.set_name(f"carbon footprint fabrication of {self.name}")
+        self.carbon_footprint_fabrication.set_name(f"Carbon footprint fabrication of {self.name}")
         self.power = power
-        self.power.set_name(f"power of {self.name}")
+        self.power.set_name(f"Power of {self.name}")
         self.lifespan = lifespan
-        self.lifespan.set_name(f"lifespan of {self.name}")
+        self.lifespan.set_name(f"Lifespan of {self.name}")
         if not fraction_of_usage_time.value.check("[]"):
             raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
         self.fraction_of_usage_time = fraction_of_usage_time

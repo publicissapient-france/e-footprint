@@ -93,7 +93,7 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
             else:
                 output_values = []
                 for expl_quant in tuple_element_value:
-                    output_values.append(f"{expl_quant.value:~P}")
+                    output_values.append(f"{round(expl_quant.value, 1):~P}")
                 return f"[{', '.join(output_values)}]"
         else:
             try:

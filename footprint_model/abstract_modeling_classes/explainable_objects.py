@@ -119,7 +119,7 @@ class ExplainableHourlyUsage(ExplainableObject):
 
         return ExplainableHourlyUsage(
             self.value[time_diff_in_hours:] + self.value[:time_diff_in_hours], "",
-            left_child=local_timezone, right_child=self, child_operator="conversion to utc time hourly usage")
+            left_child=self, right_child=local_timezone, child_operator="converted to UTC from")
 
     def compute_usage_time_fraction(self):
         unused_hours = 0

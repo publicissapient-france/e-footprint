@@ -27,11 +27,11 @@ class Server(InfraHardware):
         self.server_utilization_rate = None
         self.nb_of_instances = None
         self.idle_power = idle_power
-        self.idle_power.set_name(f"idle power of {self.name}")
+        self.idle_power.set_name(f"Idle power of {self.name}")
         self.ram = ram
-        self.ram.set_name(f"ram of {self.name}")
+        self.ram.set_name(f"RAM of {self.name}")
         self.nb_of_cpus = nb_of_cpus
-        self.nb_of_cpus.set_name(f"nb cpus of {self.name}")
+        self.nb_of_cpus.set_name(f"Nb cpus of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness
         self.power_usage_effectiveness.set_name(f"PUE of {self.name}")
         self.cloud = CloudConfig(cloud)
@@ -48,14 +48,11 @@ class Server(InfraHardware):
 
     def update_server_utilization_rate(self):
         if self.cloud == "Serverless" or self.cloud == "Autoscaling":
-            self.server_utilization_rate = ExplainableQuantity(
-                0.9 * u.dimensionless, "Cloud server utilization rate").define_as_intermediate_calculation(
-                "Cloud server utilization rate")
+            self.server_utilization_rate = SourceValue(
+                0.9 * u.dimensionless, Sources.HYPOTHESIS, "Cloud server utilization rate")
         elif self.cloud == "On premise":
-            self.server_utilization_rate = ExplainableQuantity(
-                0.7 * u.dimensionless, "On premise server utilization rate").define_as_intermediate_calculation(
-                "On premise server utilization rate"
-            )
+            self.server_utilization_rate = SourceValue(
+                0.7 * u.dimensionless, Sources.HYPOTHESIS, "On premise server utilization rate")
 
     @property
     def services(self):
@@ -75,7 +72,7 @@ class Server(InfraHardware):
                     f" but is asked {services_resource_need.value}")
 
         self.available_ram_per_instance = available_ram_per_instance.define_as_intermediate_calculation(
-            f"Available ram per instance of {self.name}")
+            f"Available RAM per {self.name} instance")
 
     def update_available_cpu_per_instance(self):
         services_base_cpu_consumptions = [service.base_cpu_consumption for service in self.services]
@@ -90,7 +87,7 @@ class Server(InfraHardware):
                     f" but is asked {services_resource_need.value}")
 
         self.available_cpu_per_instance = available_cpu_per_instance.define_as_intermediate_calculation(
-            f"Available cpu per instance of {self.name}")
+            f"Available CPU per {self.name} instance")
 
     def update_nb_of_instances(self):
         all_services_ram_needs = self.all_services_ram_needs
@@ -110,16 +107,20 @@ class Server(InfraHardware):
             nb_of_instances = nb_of_servers_raw
 
         elif self.cloud == "Autoscaling":
-            nb_of_servers_based_on_ram_alone = all_services_ram_needs / available_ram_per_instance
-            nb_of_servers_based_on_cpu_alone = all_services_cpu_needs / available_cpu_per_instance
+            nb_of_servers_based_on_ram_alone = (
+                    all_services_ram_needs / available_ram_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on RAM alone")
+            nb_of_servers_based_on_cpu_alone = (
+                    all_services_cpu_needs / available_cpu_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on CPU alone")
 
             nb_of_servers_raw = ExplainableHourlyUsage(
                 [max(ram_nb_of_servers, cpu_nb_of_servers) for ram_nb_of_servers, cpu_nb_of_servers
                  in zip(nb_of_servers_based_on_ram_alone.value, nb_of_servers_based_on_cpu_alone.value)],
-                "",
+                f"Raw nb of instances",
                 left_child=nb_of_servers_based_on_ram_alone,
                 right_child=nb_of_servers_based_on_cpu_alone,
-                child_operator="Max nb of servers hour by hour based on cpu or ram"
+                child_operator="max compared with"
             )
 
             hour_by_hour_nb_of_instances__list = []
@@ -135,8 +136,8 @@ class Server(InfraHardware):
                 hour_by_hour_nb_of_instances__list.append(nb_of_instances_per_hour)
 
             hour_by_hour_nb_of_instances = ExplainableHourlyUsage(
-                hour_by_hour_nb_of_instances__list, "", left_child=nb_of_servers_raw,
-                child_operator="Rounding of server number of instances"
+                hour_by_hour_nb_of_instances__list, f"Hour by hour nb of instances", left_child=nb_of_servers_raw,
+                child_operator="Rounding up of instances nb"
             )
 
             nb_of_instances = hour_by_hour_nb_of_instances.mean()
@@ -159,7 +160,7 @@ class Server(InfraHardware):
         else:
             raise ValueError(f"CloudConfig should be Autoscaling, Serverless or On premise, not {self.cloud.value}")
 
-        self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Number of instances of {self.name}")
+        self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Nb of {self.name} instances")
 
     def update_instances_power(self):
         effective_active_power = self.power * self.power_usage_effectiveness
@@ -174,7 +175,7 @@ class Server(InfraHardware):
                      + (effective_idle_power * fraction_of_time_not_in_use))
             ).to(u.kWh / u.year)
 
-        self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name}")
+        self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name} instances")
 
 
 class Servers:

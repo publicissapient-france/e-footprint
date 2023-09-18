@@ -1,6 +1,6 @@
 from pyvis.network import Network
 
-from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 
 
 def nodes_at_depth(node, depth=0, depth_lists=None, label_len_threshold=-1):
@@ -47,8 +47,8 @@ def build_graph(root_node, x_multiplier=180, y_multiplier=200, label_len_thresho
     pos = calculate_positions(root_node, label_len_threshold)
 
     def add_nodes_edges(node, parent_id=None):
-        if len(node.label) > label_len_threshold and (type(node) == SourceValue or node.has_child):
-            if node.left_child is None and node.right_child is None and type(node) == SourceValue:
+        if len(node.label) > label_len_threshold and (issubclass(type(node), SourceObject) or node.has_child):
+            if node.left_child is None and node.right_child is None and issubclass(type(node), SourceObject):
                 if node.source == Sources.USER_INPUT:
                     color = "green"
                 else:

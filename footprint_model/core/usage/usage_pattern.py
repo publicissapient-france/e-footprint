@@ -28,7 +28,7 @@ class UsagePattern(ModelingObject):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
         self.user_journey_freq_per_user = SourceValue(
-            user_journey_freq_per_user, Sources.USER_INPUT, f"user_journeys frequency per user in {self.name}")
+            user_journey_freq_per_user, Sources.USER_INPUT, f"Usage frequency in {self.name}")
         self.time_intervals = TimeIntervals(f"{self.name} usage time intervals", time_intervals,
                                             device_population.country.timezone)
 
@@ -54,6 +54,7 @@ class UsagePattern(ModelingObject):
 
     def update_usage_time_fraction(self):
         self.usage_time_fraction = self.time_intervals.utc_time_intervals.compute_usage_time_fraction()
+        self.usage_time_fraction.define_as_intermediate_calculation(f"Usage time fraction of {self.name}")
 
     @property
     def user_journey(self) -> UserJourney:

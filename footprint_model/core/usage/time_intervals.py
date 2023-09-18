@@ -1,6 +1,6 @@
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from footprint_model.constants.sources import Sources, SourceObject
 from footprint_model.constants.units import u
 
 from typing import List
@@ -27,9 +27,10 @@ class TimeIntervals(ModelingObject):
         self.utc_time_intervals = None
         sorted_time_intervals = sorted(time_intervals, key=lambda x: x[0])
         self.check_time_intervals_validity(sorted_time_intervals)
-        self.time_intervals = ExplainableObject(sorted_time_intervals, f"local timezone time intervals of {self.name}")
-        self.timezone = ExplainableObject(
-            pytz.timezone(timezone) if timezone is not None else None, f"{self.name} timezone")
+        self.time_intervals = SourceObject(
+            sorted_time_intervals, Sources.USER_INPUT, f"{self.name} local timezone")
+        self.timezone = SourceObject(
+            pytz.timezone(timezone) if timezone is not None else None, Sources.USER_INPUT, f"{timezone} timezone")
         self.hourly_usage = None
 
         self.compute_calculated_attributes()
@@ -51,10 +52,10 @@ class TimeIntervals(ModelingObject):
                 hourly_usage[i] = ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i+1}")
 
         self.hourly_usage = ExplainableHourlyUsage(
-            hourly_usage, f"{self.name} local time zone hourly usage", left_child=self.time_intervals,
-            child_operator="conversion to hourly usage")
+            hourly_usage, f"{self.name} local timezone hourly usage", left_child=self.time_intervals,
+            child_operator="Hourly usage conversion")
 
     def update_utc_time_intervals(self):
         utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.timezone)
         self.utc_time_intervals = utc_time_intervals.define_as_intermediate_calculation(
-            f"UTC time intervals of {self.name}")
+            f"{self.name} UTC")

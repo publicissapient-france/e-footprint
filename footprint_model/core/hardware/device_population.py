@@ -16,7 +16,7 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         self.fabrication_footprint = None
         self.energy_footprint = None
         self.power = None
-        self.nb_devices = SourceValue(nb_users * u.user, Sources.USER_INPUT, f"nb devices in {self.name}")
+        self.nb_devices = SourceValue(nb_users * u.user, Sources.USER_INPUT, f"Nb devices in {self.name}")
         self.country = country
         self.devices = devices
 
@@ -33,7 +33,7 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         user_journey_freqs = [usage_pattern.user_journey_freq for usage_pattern in self.usage_patterns]
         user_journey_durations = [usage_pattern.user_journey.duration for usage_pattern in self.usage_patterns]
 
-        power = ExplainableQuantity(0 * u.W)
+        power = 0
         for device_power in devices_powers:
             for user_journey_freq, user_journey_duration in zip(user_journey_freqs, user_journey_durations):
                 power += (user_journey_freq * (device_power * user_journey_duration)).to(u.kWh / u.year)

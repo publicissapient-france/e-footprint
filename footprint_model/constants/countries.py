@@ -13,8 +13,7 @@ class Country:
                 "('[time]**2 / [length]**2') dimensionality"
             )
         self.average_carbon_intensity = average_carbon_intensity
-        # TODO: check why energy_footprint doesn’t track average_carbon_intensity
-        self.average_carbon_intensity.set_name(f"average carbon intensity of {self.name}")
+        self.average_carbon_intensity.set_name(f"Average carbon intensity of {self.name}")
         self.year = year
         self.timezone = timezone
 
