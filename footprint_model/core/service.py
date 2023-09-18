@@ -1,5 +1,5 @@
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.core.hardware.storage import Storage
 from footprint_model.core.hardware.server import Server
 from footprint_model.constants.sources import SourceValue, Sources
@@ -45,15 +45,19 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
             self.update_storage_needed()
 
     def update_storage_needed(self):
-        usage_patterns_storage_needs = 0
-        for usage_pattern in self.usage_patterns:
-            uj_steps_storage_needs = 0
-            for uj_step in usage_pattern.user_journey.uj_steps:
-                if uj_step.service == self:
-                    uj_steps_storage_needs += uj_step.data_upload
-            usage_patterns_storage_needs += uj_steps_storage_needs * usage_pattern.user_journey_freq
+        if len(self.usage_patterns) == 0:
+            self.storage_needed = ExplainableQuantity(
+                0 * u.TB, f"No storage for {self.name} because no associated usage pattern")
+        else:
+            usage_patterns_storage_needs = 0
+            for usage_pattern in self.usage_patterns:
+                uj_steps_storage_needs = 0
+                for uj_step in usage_pattern.user_journey.uj_steps:
+                    if uj_step.service == self:
+                        uj_steps_storage_needs += uj_step.data_upload
+                usage_patterns_storage_needs += uj_steps_storage_needs * usage_pattern.user_journey_freq
 
-        self.storage_needed = usage_patterns_storage_needs.to(u.TB / u.year).define_as_intermediate_calculation(
+            self.storage_needed = usage_patterns_storage_needs.to(u.TB / u.year).define_as_intermediate_calculation(
             f"Storage needed for {self.name}")
 
     @staticmethod
@@ -67,38 +71,50 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         return average_uj_resource_needed
 
     def update_hour_by_hour_ram_need(self):
-        hour_by_hour_ram_needs = 0
-        for usage_pattern in self.usage_patterns:
-            usage_pattern_ram_need = 0
-            for uj_step in usage_pattern.user_journey.uj_steps:
-                if uj_step.service == self:
-                    average_uj_ram_needed = self.compute_resource_needed_averaged_over_user_journey(
-                        uj_step.ram_needed, uj_step.request_duration, usage_pattern.user_journey.duration,
-                        u.GB / u.user_journey)
-                    average_uj_ram_needed = average_uj_ram_needed.define_as_intermediate_calculation(
-                        f"ram needed on server {self.server.name} to process {uj_step.name}, "
-                        f"averaged over user journey duration")
-                    usage_pattern_ram_need += average_uj_ram_needed
-            hour_by_hour_ram_needs += (
-                    (usage_pattern_ram_need * usage_pattern.nb_user_journeys_in_parallel_during_usage)
-                    * usage_pattern.time_intervals.utc_time_intervals)
+        if len(self.usage_patterns) == 0:
+            self.hour_by_hour_ram_need = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.GB)] * 24,
+                f"no RAM need for {self.name} because no associated usage pattern")
+        else:
+            hour_by_hour_ram_needs = 0
+            for usage_pattern in self.usage_patterns:
+                usage_pattern_ram_need = 0
+                for uj_step in usage_pattern.user_journey.uj_steps:
+                    if uj_step.service == self:
+                        average_uj_ram_needed = self.compute_resource_needed_averaged_over_user_journey(
+                            uj_step.ram_needed, uj_step.request_duration, usage_pattern.user_journey.duration,
+                            u.GB / u.user_journey)
+                        average_uj_ram_needed = average_uj_ram_needed.define_as_intermediate_calculation(
+                            f"ram needed on server {self.server.name} to process {uj_step.name}, "
+                            f"averaged over user journey duration")
+                        usage_pattern_ram_need += average_uj_ram_needed
+                hour_by_hour_ram_needs += (
+                        (usage_pattern_ram_need * usage_pattern.nb_user_journeys_in_parallel_during_usage)
+                        * usage_pattern.time_intervals.utc_time_intervals)
 
-        self.hour_by_hour_ram_need = hour_by_hour_ram_needs
+            self.hour_by_hour_ram_need = hour_by_hour_ram_needs.define_as_intermediate_calculation(
+                f"{self.name} hour by hour RAM need")
 
     def update_hour_by_hour_cpu_need(self):
-        hour_by_hour_cpu_needs = 0
-        for usage_pattern in self.usage_patterns:
-            usage_pattern_cpu_need = 0
-            for uj_step in usage_pattern.user_journey.uj_steps:
-                if uj_step.service == self:
-                    average_uj_cpu_needed = self.compute_resource_needed_averaged_over_user_journey(
-                        uj_step.cpu_needed, uj_step.request_duration, usage_pattern.user_journey.duration,
-                        u.core / u.user_journey)
-                    average_uj_cpu_needed = average_uj_cpu_needed.define_as_intermediate_calculation(
-                        f"cpu needed on server {self.server.name} to process {uj_step.name}, "
-                        f"averaged over user journey duration")
-                    usage_pattern_cpu_need += average_uj_cpu_needed
-            hour_by_hour_cpu_needs += (usage_pattern_cpu_need * usage_pattern.nb_user_journeys_in_parallel_during_usage
-                                       * usage_pattern.time_intervals.utc_time_intervals)
+        if len(self.usage_patterns) == 0:
+            self.hour_by_hour_cpu_need = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.GB)] * 24,
+                f"no CPU need for {self.name} because no associated usage pattern")
+        else:
+            hour_by_hour_cpu_needs = 0
+            for usage_pattern in self.usage_patterns:
+                usage_pattern_cpu_need = 0
+                for uj_step in usage_pattern.user_journey.uj_steps:
+                    if uj_step.service == self:
+                        average_uj_cpu_needed = self.compute_resource_needed_averaged_over_user_journey(
+                            uj_step.cpu_needed, uj_step.request_duration, usage_pattern.user_journey.duration,
+                            u.core / u.user_journey)
+                        average_uj_cpu_needed = average_uj_cpu_needed.define_as_intermediate_calculation(
+                            f"cpu needed on server {self.server.name} to process {uj_step.name}, "
+                            f"averaged over user journey duration")
+                        usage_pattern_cpu_need += average_uj_cpu_needed
+                hour_by_hour_cpu_needs += (usage_pattern_cpu_need * usage_pattern.nb_user_journeys_in_parallel_during_usage
+                                           * usage_pattern.time_intervals.utc_time_intervals)
 
-        self.hour_by_hour_cpu_need = hour_by_hour_cpu_needs
+            self.hour_by_hour_cpu_need = hour_by_hour_cpu_needs.define_as_intermediate_calculation(
+                f"{self.name} hour by hour CPU need")

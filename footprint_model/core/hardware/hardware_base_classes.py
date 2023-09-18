@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage, ExplainableQuantity
 from footprint_model.constants.countries import Country
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.constants.sources import SourceValue, Sources
@@ -74,16 +75,24 @@ class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
         pass
 
     def update_all_services_ram_needs(self):
-        service_ram_needs_list = [service.hour_by_hour_ram_need for service in self.services]
-        all_service_ram_needs = sum(service_ram_needs_list)
+        if len(self.services) > 0:
+            service_ram_needs_list = [service.hour_by_hour_ram_need for service in self.services]
+            all_service_ram_needs = sum(service_ram_needs_list)
 
-        self.all_services_ram_needs = all_service_ram_needs
+            self.all_services_ram_needs = all_service_ram_needs
+        else:
+            self.all_services_ram_needs = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.GB, "no RAM need")] * 24, f"No RAM need for {self.name} because no associated service")
 
     def update_all_services_cpu_needs(self):
-        service_cpu_needs_list = [service.hour_by_hour_cpu_need for service in self.services]
-        all_services_cpu_needs = sum(service_cpu_needs_list)
+        if len(self.services) > 0:
+            service_cpu_needs_list = [service.hour_by_hour_cpu_need for service in self.services]
+            all_services_cpu_needs = sum(service_cpu_needs_list)
 
-        self.all_services_cpu_needs = all_services_cpu_needs
+            self.all_services_cpu_needs = all_services_cpu_needs
+        else:
+            self.all_services_cpu_needs = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.core, "no CPU need")] * 24, f"No CPU need for {self.name} because no associated service")
 
     def update_fraction_of_time_in_use(self):
         usage_from_ram = self.all_services_ram_needs.to_usage().define_as_intermediate_calculation(

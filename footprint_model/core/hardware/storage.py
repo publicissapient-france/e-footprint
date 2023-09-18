@@ -52,10 +52,14 @@ class Storage(InfraHardware):
                 if service.storage == self}
 
     def update_all_services_storage_needs(self):
-        all_services_storage_needs = sum(service.storage_needed for service in self.services).to(u.TB / u.year)
+        if len(self.services) > 0:
+            all_services_storage_needs = sum(service.storage_needed for service in self.services).to(u.TB / u.year)
 
-        self.all_services_storage_needs = all_services_storage_needs.define_as_intermediate_calculation(
-            f"Storage need of {self.name}")
+            self.all_services_storage_needs = all_services_storage_needs.define_as_intermediate_calculation(
+                f"Storage need of {self.name}")
+        else:
+            self.all_services_storage_needs = ExplainableQuantity(
+                0 * u.TB / u.year, f"No storage need for {self.name} because no associated services")
 
     def update_long_term_storage_required(self):
         # TODO: Higher level year by year analysis that adds storage from previous year with remaining storage duration
