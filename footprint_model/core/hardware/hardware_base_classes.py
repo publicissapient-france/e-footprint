@@ -86,8 +86,10 @@ class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
         self.all_services_cpu_needs = all_services_cpu_needs
 
     def update_fraction_of_time_in_use(self):
-        usage_from_ram = self.all_services_ram_needs.to_usage()
-        usage_from_cpu = self.all_services_cpu_needs.to_usage()
+        usage_from_ram = self.all_services_ram_needs.to_usage().define_as_intermediate_calculation(
+            f"{self.name} usage pattern from RAM need")
+        usage_from_cpu = self.all_services_cpu_needs.to_usage().define_as_intermediate_calculation(
+            f"{self.name} usage pattern from CPU need")
 
         fraction_of_time_in_use = (usage_from_ram + usage_from_cpu).compute_usage_time_fraction()
 

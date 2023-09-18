@@ -21,8 +21,8 @@ class TestServer(TestCase):
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            nb_of_cpus=0,
-            power_usage_effectiveness=0,
+            nb_of_cpus=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             country=MagicMock(),
             cloud="Unexisting cloud"
         )

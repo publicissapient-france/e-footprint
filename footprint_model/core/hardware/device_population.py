@@ -51,7 +51,7 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         user_journey_durations = [usage_pattern.user_journey.duration for usage_pattern in self.usage_patterns]
         user_journey_freqs = [usage_pattern.user_journey_freq for usage_pattern in self.usage_patterns]
 
-        devices_fabrication_footprint = ExplainableQuantity(0 * u.kg / u.year)
+        devices_fabrication_footprint = 0
         for device_fabrication_carbon_footprint, device_lifespan, device_fraction_of_usage_time \
                 in zip(device_fabrication_carbon_footprints, device_lifespans, device_fractions_of_usage_time):
             for user_journey_duration, user_journey_freq in zip(user_journey_durations, user_journey_freqs):

@@ -1,5 +1,7 @@
 from pyvis.network import Network
 
+from footprint_model.constants.sources import SourceValue, Sources
+
 
 def nodes_at_depth(node, depth=0, depth_lists=None, label_len_threshold=-1):
     if depth_lists is None:
@@ -38,14 +40,14 @@ def calculate_positions(node, label_len_threshold=-1):
     return pos
 
 
-def build_graph(root_node, x_multiplier=180, y_multiplier=200, label_len_threshold=-1):
-    G = Network(notebook=True, directed=True, width="1800px", height="900px")
+def build_graph(root_node, x_multiplier=180, y_multiplier=200, label_len_threshold=0, width="1800px", height="900px"):
+    G = Network(notebook=True, directed=True, width=width, height=height)
     G.toggle_physics(False)
 
     pos = calculate_positions(root_node, label_len_threshold)
 
     def add_nodes_edges(node, parent_id=None):
-        if len(node.label) > label_len_threshold:
+        if len(node.label) > label_len_threshold and (type(node) == SourceValue or node.has_child):
             if node.left_child is None and node.right_child is None and type(node) == SourceValue:
                 if node.source == Sources.USER_INPUT:
                     color = "green"
@@ -97,7 +99,6 @@ def set_string_max_width(s, max_width):
 
 
 if __name__ == "__main__":
-    from footprint_model.constants.sources import SourceValue, Sources
     from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
     from footprint_model.core.hardware.server import Servers
     from footprint_model.core.hardware.storage import Storage

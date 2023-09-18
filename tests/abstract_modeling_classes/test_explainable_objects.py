@@ -130,7 +130,5 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         self.assertEqual(maximum, ExplainableQuantity(1 * u.W))
 
 
-
-
 if __name__ == "__main__":
     unittest.main()

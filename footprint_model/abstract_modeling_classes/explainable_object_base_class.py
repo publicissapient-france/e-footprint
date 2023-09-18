@@ -37,6 +37,10 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
                 else:
                     self.input_attributes_to_listen_to += child.input_attributes_to_listen_to
 
+    @property
+    def has_child(self):
+        return self.left_child is not None or self.right_child is not None
+
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
         self.height_level += 1
         self.label = intermediate_calculation_label

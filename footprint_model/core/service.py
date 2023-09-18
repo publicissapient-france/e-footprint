@@ -45,9 +45,9 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
             self.update_storage_needed()
 
     def update_storage_needed(self):
-        usage_patterns_storage_needs = ExplainableQuantity(0 * u.TB / u.year)
+        usage_patterns_storage_needs = 0
         for usage_pattern in self.usage_patterns:
-            uj_steps_storage_needs = ExplainableQuantity(0 * u.MB / u.user_journey)
+            uj_steps_storage_needs = 0
             for uj_step in usage_pattern.user_journey.uj_steps:
                 if uj_step.service == self:
                     uj_steps_storage_needs += uj_step.data_upload
@@ -69,7 +69,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
     def update_hour_by_hour_ram_need(self):
         hour_by_hour_ram_needs = 0
         for usage_pattern in self.usage_patterns:
-            usage_pattern_ram_need = ExplainableQuantity(0 * u.GB / u.user_journey)
+            usage_pattern_ram_need = 0
             for uj_step in usage_pattern.user_journey.uj_steps:
                 if uj_step.service == self:
                     average_uj_ram_needed = self.compute_resource_needed_averaged_over_user_journey(

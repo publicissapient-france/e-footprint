@@ -19,8 +19,8 @@ class CloudConfig(NonQuantityUsedInCalculation):
 
 class Server(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: int,
-                 power_usage_effectiveness: float, country: Country, cloud: str):
+                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
+                 power_usage_effectiveness: SourceValue, country: Country, cloud: str):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
         self.available_cpu_per_instance = None
         self.available_ram_per_instance = None
@@ -30,9 +30,10 @@ class Server(InfraHardware):
         self.idle_power.set_name(f"idle power of {self.name}")
         self.ram = ram
         self.ram.set_name(f"ram of {self.name}")
-        self.nb_of_cpus = ExplainableQuantity(nb_of_cpus * u.core, f"nb cpus of {self.name}")
-        self.power_usage_effectiveness = ExplainableQuantity(
-            power_usage_effectiveness * u.dimensionless, f"PUE of {self.name}")
+        self.nb_of_cpus = nb_of_cpus
+        self.nb_of_cpus.set_name(f"nb cpus of {self.name}")
+        self.power_usage_effectiveness = power_usage_effectiveness
+        self.power_usage_effectiveness.set_name(f"PUE of {self.name}")
         self.cloud = CloudConfig(cloud)
         self.usage_patterns = set()
 
@@ -138,12 +139,13 @@ class Server(InfraHardware):
                 child_operator="Rounding of server number of instances"
             )
 
-            nb_of_instances = (hour_by_hour_nb_of_instances.sum()
-                               / ExplainableQuantity(24 * u.dimensionless, "24 hours per day"))
+            nb_of_instances = hour_by_hour_nb_of_instances.mean()
 
         elif self.cloud == "On premise":
-            ram_needed_per_day = all_services_ram_needs.max()
-            cpu_needed_per_day = all_services_cpu_needs.max()
+            ram_needed_per_day = all_services_ram_needs.max().define_as_intermediate_calculation(
+                f"Max daily {self.name } RAM need")
+            cpu_needed_per_day = all_services_cpu_needs.max().define_as_intermediate_calculation(
+                f"Max daily {self.name } CPU need")
 
             nb_of_servers_raw = max(ram_needed_per_day / available_ram_per_instance,
                                     cpu_needed_per_day / available_cpu_per_instance).to(u.dimensionless)
@@ -183,8 +185,8 @@ class Servers:
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-        nb_of_cpus=24,
-        power_usage_effectiveness=1.2,
+        nb_of_cpus=SourceValue(24 * u.core, Sources.HYPOTHESIS),
+        power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         country=Countries.GERMANY,
         cloud="Serverless"
     )
