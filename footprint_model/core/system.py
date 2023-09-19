@@ -83,3 +83,7 @@ class System:
         }
 
         return energy_footprints
+
+    def total_footprint(self) -> ExplainableQuantity:
+        return (sum(self.fabrication_footprints().values()) + sum(self.energy_footprints().values())
+                ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")

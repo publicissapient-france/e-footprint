@@ -154,5 +154,9 @@ if __name__ == "__main__":
 
     G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
     G.show("calculus_output_storage.html")
-    G_raw = build_graph(system.energy_footprints()["Servers"], label_len_threshold=0)
-    G_raw.show("calculus_output_server.html")
+    G = build_graph(system.energy_footprints()["Servers"], label_len_threshold=0)
+    G.show("calculus_output_server.html")
+    G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
+    G.show("calculus_output_storage.html")
+    G = build_graph(system.total_footprint(), label_len_threshold=0)
+    G.show("calculus_output_total.html")
