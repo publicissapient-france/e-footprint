@@ -101,16 +101,22 @@ class TestInfraHardware(TestCase):
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_cpu_needs.value)
 
     def test_fraction_of_time_in_use_single_service(self):
-        expected_value = ExplainableQuantity(((24 - 16) / 24) * u.dimensionless, "fraction_of_time_in_use")
-        self.test_infra_hardware_single_service.update_all_services_ram_needs()
-        self.test_infra_hardware_single_service.update_all_services_cpu_needs()
+        self.usage_pattern_single_service.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+            [ExplainableQuantity(1 * u.dimensionless)] * 10 + [ExplainableQuantity(0 * u.dimensionless)] * 14)
+        expected_value = ExplainableQuantity((10 / 24) * u.dimensionless, "fraction_of_time_in_use")
         self.test_infra_hardware_single_service.update_fraction_of_time_in_use()
         self.assertEqual(expected_value.value, self.test_infra_hardware_single_service.fraction_of_time_in_use.value)
 
     def test_fraction_of_time_in_use_multiple_services_with_different_usage(self):
-        expected_value = ExplainableQuantity(((24 - 14) / 24) * u.dimensionless, "fraction_of_time_in_use")
-        self.test_infra_hardware_multiple_services.update_all_services_ram_needs()
-        self.test_infra_hardware_multiple_services.update_all_services_cpu_needs()
+        up_1 = MagicMock()
+        up_2 = MagicMock()
+        up_1.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+            [ExplainableQuantity(1 * u.dimensionless)] * 10 + [ExplainableQuantity(0 * u.dimensionless)] * 14)
+        up_2.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+            [ExplainableQuantity(0 * u.dimensionless)] * 4 + [ExplainableQuantity(1 * u.dimensionless)] * 10
+            + [ExplainableQuantity(0 * u.dimensionless)] * 10)
+        expected_value = ExplainableQuantity((14 / 24) * u.dimensionless, "fraction_of_time_in_use")
+        self.test_infra_hardware_multiple_services.usage_patterns = {up_1, up_2}
         self.test_infra_hardware_multiple_services.update_fraction_of_time_in_use()
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.fraction_of_time_in_use.value)
 

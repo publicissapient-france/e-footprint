@@ -95,12 +95,17 @@ class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
                 [ExplainableQuantity(0 * u.core, "no CPU need")] * 24, f"No CPU need for {self.name} because no associated service")
 
     def update_fraction_of_time_in_use(self):
-        usage_from_ram = self.all_services_ram_needs.to_usage().define_as_intermediate_calculation(
-            f"{self.name} usage pattern from RAM need")
-        usage_from_cpu = self.all_services_cpu_needs.to_usage().define_as_intermediate_calculation(
-            f"{self.name} usage pattern from CPU need")
+        if len(self.usage_patterns) > 0:
+            hourly_usage_list = [
+                usage_pattern.time_intervals.utc_time_intervals for usage_pattern in self.usage_patterns]
+            hourly_usage_sum = sum(hourly_usage_list)
 
-        fraction_of_time_in_use = (usage_from_ram + usage_from_cpu).compute_usage_time_fraction()
+        else:
+            hourly_usage_sum = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.dimensionless, "no activity")] * 24,
+                f"No activity for {self.name} because no associated service")
+
+        fraction_of_time_in_use = hourly_usage_sum.compute_usage_time_fraction()
 
         self.fraction_of_time_in_use = fraction_of_time_in_use.define_as_intermediate_calculation(
             f"Fraction of time in use of {self.name}")
