@@ -2,6 +2,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from footprint_model.constants.countries import Countries
+from footprint_model.constants.sources import SourceValue
 from footprint_model.core.usage.time_intervals import TimeIntervals
 from footprint_model.core.usage.usage_pattern import UsagePattern
 from footprint_model.constants.units import u
@@ -30,7 +31,8 @@ class TestUsagePattern(unittest.TestCase):
         self.up_time_intervals = [[8, 16]]
         self.usage_pattern = UsagePattern(
             "usage_pattern", user_journey, population, network,
-            user_journey_freq_per_user=10 * u.user_journey / (u.user * u.year), time_intervals=self.up_time_intervals
+            user_journey_freq_per_user=SourceValue(10 * u.user_journey / (u.user * u.year)),
+            time_intervals=self.up_time_intervals
         )
 
         self.expected_nb_user_journeys_per_year = 100000 * u.user_journey / u.year

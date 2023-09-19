@@ -16,9 +16,9 @@ class TestStorage(TestCase):
             lifespan=SourceValue(0 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=0,
+            power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             country=MagicMock(),
-            data_replication_factor=0
+            data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
         )
 
     def test_services(self):

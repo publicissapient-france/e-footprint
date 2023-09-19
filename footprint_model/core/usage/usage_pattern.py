@@ -4,18 +4,17 @@ from footprint_model.core.usage.time_intervals import TimeIntervals
 from footprint_model.core.usage.user_journey import UserJourney
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.network import Network
-from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 from typing import List, Set
 import math
-from pint import Quantity
 
 
 class UsagePattern(ModelingObject):
     def __init__(self, name: str, user_journey: UserJourney, device_population: DevicePopulation,
-                 network: Network, user_journey_freq_per_user: Quantity, time_intervals: List[List[int]]):
+                 network: Network, user_journey_freq_per_user: SourceValue, time_intervals: List[List[int]]):
         super().__init__(name)
         self.nb_user_journeys_in_parallel_during_usage = None
         self.user_journey_freq = None
@@ -24,11 +23,11 @@ class UsagePattern(ModelingObject):
         self._user_journey = user_journey
         self._device_population = device_population
         self._network = network
-        if not user_journey_freq_per_user.check("[user_journey] / ([person] * [time])"):
+        if not user_journey_freq_per_user.value.check("[user_journey] / ([person] * [time])"):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
-        self.user_journey_freq_per_user = SourceValue(
-            user_journey_freq_per_user, Sources.USER_INPUT, f"Usage frequency in {self.name}")
+        self.user_journey_freq_per_user = user_journey_freq_per_user
+        self.user_journey_freq_per_user.set_name(f"Usage frequency in {self.name}")
         self.time_intervals = TimeIntervals(f"{self.name} usage time intervals", time_intervals,
                                             device_population.country.timezone)
 

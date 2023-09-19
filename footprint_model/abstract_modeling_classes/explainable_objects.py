@@ -15,7 +15,7 @@ class ExplainableQuantity(ExplainableObject):
             right_child: Type["ExplainableQuantity"] = None, child_operator: str = None):
         if not isinstance(value, Quantity):
             raise ValueError(
-                "Variable 'value' does not correspond to the appropriate 'Quantity' type, "
+                f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
                 "it is indeed mandatory to define a unit"
             )
         super().__init__(value, label, left_child, right_child, child_operator)

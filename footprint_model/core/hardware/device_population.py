@@ -1,6 +1,5 @@
 from footprint_model.constants.countries import Country
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.physical_elements import PhysicalElements
 from footprint_model.core.hardware.hardware_base_classes import Hardware, ObjectLinkedToUsagePatterns
 from footprint_model.constants.sources import SourceValue, Sources
@@ -10,13 +9,14 @@ from typing import List
 
 
 class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
-    def __init__(self, name: str, nb_users: float, country: Country, devices: List[Hardware]):
+    def __init__(self, name: str, nb_devices: SourceValue, country: Country, devices: List[Hardware]):
         super().__init__(name)
         ObjectLinkedToUsagePatterns.__init__(self)
         self.fabrication_footprint = None
         self.energy_footprint = None
         self.power = None
-        self.nb_devices = SourceValue(nb_users * u.user, Sources.USER_INPUT, f"Nb devices in {self.name}")
+        self.nb_devices = nb_devices
+        self.nb_devices.set_name(f"Nb devices in {self.name}")
         self.country = country
         self.devices = devices
 

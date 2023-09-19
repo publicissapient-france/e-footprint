@@ -24,26 +24,28 @@ class IntegrationTest(TestCase):
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=1.2,
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             country=Countries.GERMANY,
-            data_replication_factor=3
+            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
         )
-        service = Service("Youtube", server, storage, base_ram_consumption=300 * u.MB,
-                          base_cpu_consumption=2 * u.core)
+        service = Service("Youtube", server, storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+                          base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
-        streaming_step = UserJourneyStep("20 min streaming on Youtube", service, 50 * u.kB, (2.5 / 3) * u.GB,
-                                         user_time_spent=20 * u.min, request_duration=4 * u.min)
-        upload_step = UserJourneyStep("0.4s of upload", service, 300 * u.kB, 0 * u.GB, user_time_spent=1 * u.s,
-                                      request_duration=0.1 * u.s)
+        streaming_step = UserJourneyStep(
+            "20 min streaming on Youtube", service, SourceValue(50 * u.kB / u.uj), SourceValue((2.5 / 3) * u.GB / u.uj),
+            user_time_spent=SourceValue(20 * u.min / u.uj), request_duration=SourceValue(4 * u.min))
+        upload_step = UserJourneyStep(
+            "0.4s of upload", service, SourceValue(300 * u.kB / u.uj), SourceValue(0 * u.GB / u.uj),
+            user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
 
         default_uj = UserJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])
         default_device_pop = DevicePopulation(
-            "French Youtube users on laptop", 4e7 * 0.3, Countries.FRANCE, [Devices.LAPTOP])
+            "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE, [Devices.LAPTOP])
 
         default_network = Networks.WIFI_NETWORK
         usage_pattern = UsagePattern(
             "Average daily Youtube usage in France on laptop", default_uj, default_device_pop,
-            default_network, 365 * u.user_journey / (u.user * u.year), [[7, 23]])
+            default_network, SourceValue(365 * u.user_journey / (u.user * u.year)), [[7, 23]])
 
         system = System("system 1", [usage_pattern])
 

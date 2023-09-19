@@ -8,8 +8,8 @@ from footprint_model.constants.units import u
 class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
-                 power_usage_effectiveness: float, country: Country, data_replication_factor: int,
-                 storage_need_from_previous_year: ExplainableQuantity = None):
+                 power_usage_effectiveness: SourceValue, country: Country, data_replication_factor: SourceValue,
+                 storage_need_from_previous_year: SourceValue = None):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
         self.all_services_storage_needs = None
         self.long_term_storage_required = None
@@ -21,10 +21,10 @@ class Storage(InfraHardware):
         self.idle_power.set_name(f"Idle power of {self.name}")
         self.storage_capacity = storage_capacity
         self.storage_capacity.set_name(f"Storage capacity of {self.name}")
-        self.power_usage_effectiveness = SourceValue(
-            power_usage_effectiveness * u.dimensionless, Sources.USER_INPUT, f"PUE of {self.name}")
-        self.data_replication_factor = SourceValue(
-            data_replication_factor * u.dimensionless, Sources.USER_INPUT, f"Data replication factor of {self.name}")
+        self.power_usage_effectiveness = power_usage_effectiveness
+        self.power_usage_effectiveness.set_name(f"PUE of {self.name}")
+        self.data_replication_factor = data_replication_factor
+        self.data_replication_factor.set_name(f"Data replication factor of {self.name}")
         # TODO: implement data storage duration logic
         if storage_need_from_previous_year is not None:
             if not storage_need_from_previous_year.value.check("[]"):
@@ -122,9 +122,9 @@ class Storages:
         lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        power_usage_effectiveness=1.2,
+        power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         country=Countries.GERMANY,
-        data_replication_factor=3,
+        data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )
     HDD_STORAGE = Storage(
         "Default HDD storage",
@@ -133,7 +133,7 @@ class Storages:
         lifespan=SourceValue(4 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        power_usage_effectiveness=1.2,
+        power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         country=Countries.GERMANY,
-        data_replication_factor=3,
+        data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )

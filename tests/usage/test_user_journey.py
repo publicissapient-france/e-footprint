@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from footprint_model.constants.sources import u
+from footprint_model.constants.sources import u, SourceValue
 from footprint_model.core.usage.user_journey import UserJourneyStep, UserJourney
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
@@ -12,9 +12,10 @@ class TestUserJourneyStep(TestCase):
         self.service = MagicMock()
 
         self.user_journey_step = UserJourneyStep(
-            "", service=self.service, data_download=200 * u.MB, data_upload=(100 * u.MB),
-            server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
-            user_time_spent=(2 * u.min))
+            "", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+            data_upload=SourceValue(100 * u.MB / u.uj),
+            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            user_time_spent=SourceValue(2 * u.min / u.uj))
 
     def test_update_ram_needed(self):
         self.user_journey_step.update_ram_needed()
@@ -35,9 +36,10 @@ class TestUserJourney(TestCase):
         self.storage.usage_patterns = set()
 
         self.user_journey_step = UserJourneyStep(
-            "", service=self.service, data_download=200 * u.MB, data_upload=(100 * u.MB),
-            server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
-            user_time_spent=(2 * u.min))
+            "", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+            data_upload=SourceValue(100 * u.MB / u.uj),
+            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            user_time_spent=SourceValue(2 * u.min / u.uj))
         self.one_user_journey = ExplainableQuantity(1 * u.user_journey)
         self.user_journey = UserJourney("test user journey", uj_steps=[self.user_journey_step])
 

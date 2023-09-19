@@ -20,7 +20,8 @@ class TestDevicePopulation(TestCase):
         self.device2.carbon_footprint_fabrication = SourceValue(10 * u.kg, Sources.BASE_ADEME_V19)
         self.device2.fraction_of_usage_time = SourceValue(2 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022)
 
-        self.device_population = DevicePopulation("Population", 2000, country, [self.device1, self.device2])
+        self.device_population = DevicePopulation(
+            "Population", SourceValue(2000 * u.user), country, [self.device1, self.device2])
         self.usage_pattern = MagicMock()
         self.device_population.usage_patterns = {self.usage_pattern}
         self.usage_pattern.user_journey_freq = ExplainableQuantity(365.25 * u.user_journey / u.year)

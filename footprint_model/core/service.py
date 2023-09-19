@@ -2,16 +2,14 @@ from footprint_model.abstract_modeling_classes.modeling_object import ModelingOb
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.core.hardware.storage import Storage
 from footprint_model.core.hardware.server import Server
-from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.constants.sources import SourceValue
 from footprint_model.constants.units import u
 from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
 
-from pint import Quantity
-
 
 class Service(ModelingObject, ObjectLinkedToUsagePatterns):
-    def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: Quantity,
-                 base_cpu_consumption: Quantity = 1 * u.core):
+    def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
+                 base_cpu_consumption: SourceValue = SourceValue(1 * u.core)):
         super().__init__(name)
         ObjectLinkedToUsagePatterns.__init__(self)
         self.storage_needed = None
@@ -19,14 +17,14 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         self.hour_by_hour_ram_need = None
         self.server = server
         self.storage = storage
-        if not base_ram_consumption.check("[]"):
+        if not base_ram_consumption.value.check("[]"):
             raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
-        if not base_cpu_consumption.check("[cpu]"):
+        if not base_cpu_consumption.value.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
-        self.base_ram_consumption = SourceValue(
-            base_ram_consumption, Sources.USER_INPUT, f"Base RAM consumption of {self.name}")
-        self.base_cpu_consumption = SourceValue(
-            base_cpu_consumption, Sources.USER_INPUT, f"Base CPU consumption of {self.name}")
+        self.base_ram_consumption = base_ram_consumption
+        self.base_ram_consumption.set_name(f"Base RAM consumption of {self.name}")
+        self.base_cpu_consumption = base_cpu_consumption
+        self.base_cpu_consumption.set_name(f"Base CPU consumption of {self.name}")
 
         self.compute_calculated_attributes()
 

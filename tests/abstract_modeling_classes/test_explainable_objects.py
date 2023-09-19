@@ -108,9 +108,9 @@ class TestExplainableHourlyUsage(unittest.TestCase):
 
         # Check other attributes of converted ExplainableHourlyUsage
         self.assertEqual("", converted_ahead_utc.label)
-        self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.left_child)
-        self.assertEqual(usage, converted_ahead_utc.right_child)
-        self.assertEqual("UTC conversion", converted_ahead_utc.child_operator)
+        self.assertEqual(usage, converted_ahead_utc.left_child)
+        self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_child)
+        self.assertEqual("converted to UTC from", converted_ahead_utc.child_operator)
 
     def test_compute_usage_time_fraction(self):
         fraction = self.hourly_usage1.compute_usage_time_fraction()
