@@ -7,24 +7,29 @@ class TestExplainableObjectBaseClass(TestCase):
     def setUp(self) -> None:
         self.a = ExplainableObject(1, "a")
         self.b = ExplainableObject(2, "b")
-        self.c = ExplainableObject(3, "c")
-        self.d = ExplainableObject(4, "d")
-        self.e = ExplainableObject(5, "")
-        self.f = ExplainableObject(6, "f")
-        self.g = ExplainableObject(2, "g")
 
+        self.c = ExplainableObject(3, "c")
         self.c.left_child = self.a
         self.c.right_child = self.b
         self.c.child_operator = "+"
+
+        self.d = ExplainableObject(4, "d")
         self.d.left_child = self.c
         self.d.right_child = self.a
         self.d.child_operator = "+"
+
+        self.e = ExplainableObject(5, "e")
         self.e.left_child = self.c
         self.e.right_child = self.b
         self.e.child_operator = "+"
+        self.e.label = None
+
+        self.f = ExplainableObject(6, "f")
         self.f.left_child = self.e
         self.f.right_child = self.a
         self.f.child_operator = "+"
+
+        self.g = ExplainableObject(2, "g")
         self.g.left_child = self.d
         self.g.child_operator = "root square"
 

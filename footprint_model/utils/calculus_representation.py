@@ -3,11 +3,11 @@ from pyvis.network import Network
 from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 
 
-def nodes_at_depth(node, depth=0, depth_lists=None, label_len_threshold=-1):
+def nodes_at_depth(node, depth=0, depth_lists=None):
     if depth_lists is None:
         depth_lists = {}
 
-    if len(node.label) > label_len_threshold:
+    if node.label:
         if depth not in depth_lists:
             depth_lists[depth] = []
         for i in range(0, depth):
@@ -18,15 +18,15 @@ def nodes_at_depth(node, depth=0, depth_lists=None, label_len_threshold=-1):
         depth += 1
 
     if node.left_child:
-        nodes_at_depth(node.left_child, depth, depth_lists, label_len_threshold)
+        nodes_at_depth(node.left_child, depth, depth_lists)
     if node.right_child:
-        nodes_at_depth(node.right_child, depth, depth_lists, label_len_threshold)
+        nodes_at_depth(node.right_child, depth, depth_lists)
 
     return depth_lists
 
 
-def calculate_positions(node, label_len_threshold=-1):
-    depth_lists = nodes_at_depth(node, label_len_threshold=label_len_threshold)
+def calculate_positions(node):
+    depth_lists = nodes_at_depth(node)
     max_width = max(len(lst) for lst in depth_lists.values())
     pos = {}
 
@@ -40,14 +40,14 @@ def calculate_positions(node, label_len_threshold=-1):
     return pos
 
 
-def build_graph(root_node, x_multiplier=150, y_multiplier=150, label_len_threshold=0, width="1800px", height="900px"):
+def build_graph(root_node, x_multiplier=150, y_multiplier=150, width="1800px", height="900px"):
     G = Network(notebook=True, directed=True, width=width, height=height)
     G.toggle_physics(False)
 
-    pos = calculate_positions(root_node, label_len_threshold)
+    pos = calculate_positions(root_node)
 
     def add_nodes_edges(node, parent_id=None):
-        if len(node.label) > label_len_threshold and (issubclass(type(node), SourceObject) or node.has_child):
+        if node.label and (issubclass(type(node), SourceObject) or node.has_child):
             if node.left_child is None and node.right_child is None and issubclass(type(node), SourceObject):
                 if node.source == Sources.USER_INPUT:
                     color = "green"
@@ -152,11 +152,11 @@ if __name__ == "__main__":
 
     system = System("system 1", [default_usage_pattern])
 
-    G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
+    G = build_graph(system.energy_footprints()["Storage"])
     G.show("calculus_output_storage.html")
-    G = build_graph(system.energy_footprints()["Servers"], label_len_threshold=0)
+    G = build_graph(system.energy_footprints()["Servers"])
     G.show("calculus_output_server.html")
-    G = build_graph(system.energy_footprints()["Storage"], label_len_threshold=0)
+    G = build_graph(system.energy_footprints()["Storage"])
     G.show("calculus_output_storage.html")
-    G = build_graph(system.total_footprint(), label_len_threshold=0)
+    G = build_graph(system.total_footprint())
     G.show("calculus_output_total.html")

@@ -9,7 +9,7 @@ from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUs
 
 class Service(ModelingObject, ObjectLinkedToUsagePatterns):
     def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
-                 base_cpu_consumption: SourceValue = SourceValue(1 * u.core)):
+                 base_cpu_consumption: SourceValue = None):
         super().__init__(name)
         ObjectLinkedToUsagePatterns.__init__(self)
         self.storage_needed = None
@@ -19,6 +19,8 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         self.storage = storage
         if not base_ram_consumption.value.check("[]"):
             raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
+        if base_cpu_consumption is None:
+            base_cpu_consumption = SourceValue(1 * u.core)
         if not base_cpu_consumption.value.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption

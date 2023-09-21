@@ -1,6 +1,7 @@
 from pint import Quantity
 
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from footprint_model.constants.sources import SourceValue
 from footprint_model.constants.units import u
 
 
@@ -14,20 +15,20 @@ def create_ram_or_cpu_need_list(time_interval, value):
 
 
 def create_ram_need(hours_in_use, ram: Quantity = 100 * u.GB):
-    hour_by_hour_ram_need = [ExplainableQuantity(0 * u.GB)] * 24
+    hour_by_hour_ram_need = [SourceValue(0 * u.GB)] * 24
     for time_interval in hours_in_use:
         start, end = time_interval
         for i in range(start, end):
-            hour_by_hour_ram_need[i] = ExplainableQuantity(ram)
-    return ExplainableHourlyUsage(hour_by_hour_ram_need)
+            hour_by_hour_ram_need[i] = SourceValue(ram)
+    return ExplainableHourlyUsage(hour_by_hour_ram_need, "hour_by_hour_ram_need")
 
 
 def create_cpu_need(hours_in_use, cpu: Quantity = 1 * u.core):
-    hour_by_hour_cpu_need = [ExplainableQuantity(0 * u.core)] * 24
+    hour_by_hour_cpu_need = [SourceValue(0 * u.core)] * 24
     for time_interval in hours_in_use:
         start, end = time_interval
         for i in range(start, end):
-            hour_by_hour_cpu_need[i] = ExplainableQuantity(cpu)
-    return ExplainableHourlyUsage(hour_by_hour_cpu_need)
+            hour_by_hour_cpu_need[i] = SourceValue(cpu)
+    return ExplainableHourlyUsage(hour_by_hour_cpu_need, "hour_by_hour_cpu_need")
 
 

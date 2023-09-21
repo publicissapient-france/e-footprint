@@ -24,37 +24,50 @@ class Network(ObjectLinkedToUsagePatterns, ModelingObject):
         self.update_energy_footprint()
 
     def update_data_upload(self):
-        data_upload = ExplainableQuantity(0 * u.MB / u.year)
-        for usage_pattern in self.usage_patterns:
-            data_upload += usage_pattern.user_journey.data_upload * usage_pattern.user_journey_freq
+        if len(self.usage_patterns) > 0:
+            data_upload = 0
+            for usage_pattern in self.usage_patterns:
+                data_upload += usage_pattern.user_journey.data_upload * usage_pattern.user_journey_freq
 
-        self.data_upload = data_upload.to(u.TB / u.year).define_as_intermediate_calculation(
-            f"Data upload in {self.name}")
+            self.data_upload = data_upload.to(u.TB / u.year).define_as_intermediate_calculation(
+                f"Data upload in {self.name}")
+        else:
+            self.data_download = ExplainableQuantity(
+                0 * u.MB / u.year, f"No data upload for {self.name} because no associated usage pattern")
 
     def update_data_download(self):
-        data_download = ExplainableQuantity(0 * u.MB / u.year)
-        for usage_pattern in self.usage_patterns:
-            data_download += usage_pattern.user_journey.data_download * usage_pattern.user_journey_freq
+        if len(self.usage_patterns) > 0:
+            data_download = 0
+            for usage_pattern in self.usage_patterns:
+                data_download += usage_pattern.user_journey.data_download * usage_pattern.user_journey_freq
 
-        self.data_download = data_download.to(u.TB / u.year).define_as_intermediate_calculation(
-            f"Data download in {self.name}")
+            self.data_download = data_download.to(u.TB / u.year).define_as_intermediate_calculation(
+                f"Data download in {self.name}")
+        else:
+            self.data_download = ExplainableQuantity(
+                0 * u.MB / u.year, f"No data download for {self.name} because no associated usage pattern")
 
     def update_energy_footprint(self):
-        power_footprint = ExplainableQuantity(0 * u.kg / u.year)
-        for usage_pattern in self.usage_patterns:
-            user_journey = usage_pattern.user_journey
-            uj_network_consumption = (
-                        self.bandwidth_energy_intensity
-                        * (user_journey.data_download + user_journey.data_upload)
-            ).to(u.Wh / u.user_journey)
-            uj_network_consumption.define_as_intermediate_calculation(
-                f"{self.name} consumption during {user_journey.name}")
-            power_footprint += (
-                    usage_pattern.user_journey_freq * uj_network_consumption
-                    * usage_pattern.device_population.country.average_carbon_intensity)
+        if len(self.usage_patterns) > 0:
+            power_footprint = 0
+            for usage_pattern in self.usage_patterns:
+                user_journey = usage_pattern.user_journey
+                uj_network_consumption = (
+                            self.bandwidth_energy_intensity
+                            * (user_journey.data_download + user_journey.data_upload)
+                ).to(u.Wh / u.user_journey)
+                uj_network_consumption.define_as_intermediate_calculation(
+                    f"{self.name} consumption during {user_journey.name}")
+                power_footprint += (
+                        usage_pattern.user_journey_freq * uj_network_consumption
+                        * usage_pattern.device_population.country.average_carbon_intensity)
 
-        self.energy_footprint = power_footprint.to(u.kg / u.year).define_as_intermediate_calculation(
-            f"Energy footprint of {self.name}")
+            self.energy_footprint = power_footprint.to(u.kg / u.year).define_as_intermediate_calculation(
+                f"Energy footprint of {self.name}")
+
+        else:
+            self.energy_footprint = ExplainableQuantity(
+                0 * u.kg / u.year, f"No energy footprint for {self.name} because no associated usage pattern")
 
 
 class Networks:

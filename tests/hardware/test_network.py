@@ -1,5 +1,4 @@
 from footprint_model.constants.countries import Countries
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.sources import Sources, SourceValue
 from footprint_model.core.hardware.network import Network
 from footprint_model.constants.physical_elements import PhysicalElements
@@ -15,14 +14,14 @@ class TestNetwork(TestCase):
         self.network = Network(PhysicalElements.WIFI_NETWORK, SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         self.usage_pattern = MagicMock()
-        self.usage_pattern.user_journey.data_upload = ExplainableQuantity(100 * u.MB / u.user_journey, 'data_upload')
-        self.usage_pattern.user_journey.data_download = ExplainableQuantity(
+        self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, 'data_upload')
+        self.usage_pattern.user_journey.data_download = SourceValue(
             200 * u.MB / u.user_journey, 'data_download')
-        self.usage_pattern.user_journey_freq = ExplainableQuantity(250 * u.user_journey / u.year)
+        self.usage_pattern.user_journey_freq = SourceValue(250 * u.user_journey / u.year)
         self.network.usage_patterns = {self.usage_pattern}
         self.usage_pattern.device_population.country = Countries.FRANCE
         self.network_consumption = (
-                self.network.bandwidth_energy_intensity * ExplainableQuantity(300 * u.MB / u.user_journey)
+                self.network.bandwidth_energy_intensity * SourceValue(300 * u.MB / u.user_journey)
         ).to(u.Wh / u.user_journey)
 
     def test_update_data_upload(self):

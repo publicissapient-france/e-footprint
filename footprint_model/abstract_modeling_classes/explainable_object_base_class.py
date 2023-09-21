@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Type
+from copy import deepcopy
 
 
 class UpdateFunctionOutput(ABC):
@@ -15,13 +16,21 @@ class AttributeUsedInCalculation:
     def __init__(self):
         self.pubsub_topic = None
 
+    def __deepcopy__(self, memo):
+        new_instance = deepcopy(super(AttributeUsedInCalculation, self), memo)
+        new_instance.pubsub_topic = None
+
+        return new_instance
+
 
 class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
     def __init__(
-            self, value: object, label: str = "no label", left_child: Type["ExplainableObject"] = None,
+            self, value: object, label: str = None, left_child: Type["ExplainableObject"] = None,
             right_child: Type["ExplainableObject"] = None, child_operator: str = None):
         super().__init__()
         self.value = value
+        if not label and left_child is None and right_child is None:
+            raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
         self.label = label
         left_child_height_level = left_child.height_level if left_child is not None else 0
         right_child_height_level = right_child.height_level if right_child is not None else 0
@@ -60,12 +69,12 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
 
         if pretty_print:
             return self.pretty_print_calculation(
-                f"{self.label} = {self.print_tuple_element(explain_tuples, values=False)}"
-                f" = {self.print_tuple_element(explain_tuples, values=True)}"
+                f"{self.label} = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=False)}"
+                f" = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=True)}"
                 f" = {element_value_to_print}")
         else:
-            return f"{self.label} = {self.print_tuple_element(explain_tuples, values=False)}" \
-                f" = {self.print_tuple_element(explain_tuples, values=True)}" \
+            return f"{self.label} = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=False)}" \
+                f" = {self.print_tuple_element(explain_tuples, print_values_instead_of_labels=True)}" \
                 f" = {element_value_to_print}"
 
     def compute_explain_nested_tuples(self, return_label_if_self_has_one=False):
@@ -101,18 +110,20 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
             except:
                 return f"{tuple_element_value}"
 
-    def print_tuple_element(self, tuple_element, values):
+    def print_tuple_element(self, tuple_element: object, print_values_instead_of_labels: bool):
         if issubclass(type(tuple_element), ExplainableObject):
-            if values:
+            if print_values_instead_of_labels:
                 return self.print_tuple_element_value(tuple_element.value)
             else:
                 return f"{tuple_element.label}"
         elif type(tuple_element) == str:
             return tuple_element
         elif type(tuple_element) == tuple:
+            if tuple_element[1] is None:
+                return f"{self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)}"
             if tuple_element[2] is None:
                 return f"{tuple_element[1]}" \
-                       f" of ({self.print_tuple_element(tuple_element[0], values)})"
+                       f" of ({self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)})"
 
             left_parenthesis = False
             right_parenthesis = False
@@ -142,9 +153,9 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
                 rp_open = "("
                 rp_close = ")"
 
-            return f"{lp_open}{self.print_tuple_element(tuple_element[0], values)}{lp_close}" \
+            return f"{lp_open}{self.print_tuple_element(tuple_element[0], print_values_instead_of_labels)}{lp_close}" \
                    f" {tuple_element[1]}" \
-                   f" {rp_open}{self.print_tuple_element(tuple_element[2], values)}{rp_close}"
+                   f" {rp_open}{self.print_tuple_element(tuple_element[2], print_values_instead_of_labels)}{rp_close}"
 
     @staticmethod
     def pretty_print_calculation(calc_str):

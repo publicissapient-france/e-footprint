@@ -4,7 +4,7 @@ import unittest
 
 from footprint_model.core.system import System
 from footprint_model.constants.units import u
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from footprint_model.constants.sources import SourceValue
 
 
 class TestSystem(TestCase):
@@ -20,14 +20,14 @@ class TestSystem(TestCase):
         self.usage_pattern.device_population = self.device_population
         self.usage_pattern.network = self.network
 
-        self.server.instances_fabrication_footprint = ExplainableQuantity(100 * u.kg / u.year)
-        self.storage.instances_fabrication_footprint = ExplainableQuantity(100 * u.kg / u.year)
-        self.device_population.fabrication_footprint = ExplainableQuantity(100 * u.kg / u.year)
+        self.server.instances_fabrication_footprint = SourceValue(100 * u.kg / u.year)
+        self.storage.instances_fabrication_footprint = SourceValue(100 * u.kg / u.year)
+        self.device_population.fabrication_footprint = SourceValue(100 * u.kg / u.year)
 
-        self.server.energy_footprint = ExplainableQuantity(100 * u.kg / u.year)
-        self.storage.energy_footprint = ExplainableQuantity(100 * u.kg / u.year)
-        self.device_population.energy_footprint = ExplainableQuantity(100 * u.kg / u.year)
-        self.network.energy_footprint = ExplainableQuantity(100 * u.kg / u.year)
+        self.server.energy_footprint = SourceValue(100 * u.kg / u.year)
+        self.storage.energy_footprint = SourceValue(100 * u.kg / u.year)
+        self.device_population.energy_footprint = SourceValue(100 * u.kg / u.year)
+        self.network.energy_footprint = SourceValue(100 * u.kg / u.year)
 
         self.system = System(
             "Non cloud system",
@@ -48,20 +48,20 @@ class TestSystem(TestCase):
 
     def test_fabrication_footprints(self):
         expected_dict = {
-            "Servers": ExplainableQuantity(100 * u.kg / u.year),
-            "Storage": ExplainableQuantity(100 * u.kg / u.year),
-            "Devices": ExplainableQuantity(100 * u.kg / u.year),
-            "Network": ExplainableQuantity(0 * u.kg / u.year)
+            "Servers": SourceValue(100 * u.kg / u.year),
+            "Storage": SourceValue(100 * u.kg / u.year),
+            "Devices": SourceValue(100 * u.kg / u.year),
+            "Network": SourceValue(0 * u.kg / u.year)
         }
         self.assertDictEqual(expected_dict, self.system.fabrication_footprints())
 
     def test_energy_footprints(self):
         energy_footprints = self.system.energy_footprints()
         expected_dict = {
-            "Servers": ExplainableQuantity(100 * u.kg / u.year),
-            "Storage": ExplainableQuantity(100 * u.kg / u.year),
-            "Devices": ExplainableQuantity(100 * u.kg / u.year),
-            "Network": ExplainableQuantity(100 * u.kg / u.year)
+            "Servers": SourceValue(100 * u.kg / u.year),
+            "Storage": SourceValue(100 * u.kg / u.year),
+            "Devices": SourceValue(100 * u.kg / u.year),
+            "Network": SourceValue(100 * u.kg / u.year)
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)

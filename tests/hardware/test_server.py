@@ -1,5 +1,4 @@
 from footprint_model.constants.physical_elements import PhysicalElements
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 from footprint_model.core.hardware.server import Server
@@ -31,13 +30,13 @@ class TestServer(TestCase):
         with patch.object(self.server_base, "cloud", new="Serverless"):
             self.server_base.update_server_utilization_rate()
 
-        self.assertEqual(ExplainableQuantity(0.9 * u.dimensionless), self.server_base.server_utilization_rate)
+        self.assertEqual(SourceValue(0.9 * u.dimensionless), self.server_base.server_utilization_rate)
 
     def test_server_utilization_rate_on_premise(self):
         with patch.object(self.server_base, "cloud", new="On premise"):
             self.server_base.update_server_utilization_rate()
 
-        self.assertEqual(ExplainableQuantity(0.7 * u.dimensionless), self.server_base.server_utilization_rate)
+        self.assertEqual(SourceValue(0.7 * u.dimensionless), self.server_base.server_utilization_rate)
 
     def test_server_utilization_rate_unexisting_cloud_config(self):
         with patch.object(self.server_base, "cloud", new="Unexisting Cloud config"):
@@ -61,50 +60,50 @@ class TestServer(TestCase):
 
     def test_available_cpu_per_instance_single_service(self):
         service = MagicMock()
-        service.base_cpu_consumption = ExplainableQuantity(2 * u.core)
+        service.base_cpu_consumption = SourceValue(2 * u.core)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "nb_of_cpus", ExplainableQuantity(24 * u.core)), \
-                patch.object(self.server_base, "server_utilization_rate", ExplainableQuantity(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "nb_of_cpus", SourceValue(24 * u.core)), \
+                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service}
             self.server_base.update_available_cpu_per_instance()
-            expected_value = ExplainableQuantity((24 * 0.7 - 2) * u.core)
+            expected_value = SourceValue((24 * 0.7 - 2) * u.core)
 
             self.assertEqual(expected_value.value, self.server_base.available_cpu_per_instance.value)
 
     def test_available_ram_per_instance_multiple_services(self):
         service1 = MagicMock()
-        service1.base_ram_consumption = ExplainableQuantity(10 * u.GB)
+        service1.base_ram_consumption = SourceValue(10 * u.GB)
         service2 = MagicMock()
-        service2.base_ram_consumption = ExplainableQuantity(30 * u.GB)
+        service2.base_ram_consumption = SourceValue(30 * u.GB)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "ram", ExplainableQuantity(128 * u.GB)), \
-                patch.object(self.server_base, "server_utilization_rate", ExplainableQuantity(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
+                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service1, service2}
             self.server_base.update_available_ram_per_instance()
-            expected_value = ExplainableQuantity((128 * 0.7 - 10 - 30) * u.GB)
+            expected_value = SourceValue((128 * 0.7 - 10 - 30) * u.GB)
 
             self.assertEqual(expected_value.value, self.server_base.available_ram_per_instance.value)
 
     def test_available_cpu_per_instance_multiple_services(self):
         service1 = MagicMock()
-        service1.base_cpu_consumption = ExplainableQuantity(2 * u.core)
+        service1.base_cpu_consumption = SourceValue(2 * u.core)
         service2 = MagicMock()
-        service2.base_cpu_consumption = ExplainableQuantity(1 * u.core)
+        service2.base_cpu_consumption = SourceValue(1 * u.core)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "nb_of_cpus", ExplainableQuantity(24 * u.core)), \
-                patch.object(self.server_base, "server_utilization_rate", ExplainableQuantity(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "nb_of_cpus", SourceValue(24 * u.core)), \
+                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service1, service2}
             self.server_base.update_available_cpu_per_instance()
-            expected_value = ExplainableQuantity((24 * 0.7 - 2 - 1) * u.core)
+            expected_value = SourceValue((24 * 0.7 - 2 - 1) * u.core)
 
             self.assertEqual(expected_value.value, self.server_base.available_cpu_per_instance.value)
 
     def test_available_ram_per_instance_should_raise_value_error_when_demand_exceeds_server_capacity(self):
         service = MagicMock()
-        service.base_ram_consumption = ExplainableQuantity(129 * u.GB)
+        service.base_ram_consumption = SourceValue(129 * u.GB)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "ram", ExplainableQuantity(128 * u.GB)), \
-                patch.object(self.server_base, "server_utilization_rate", ExplainableQuantity(0.7 * u.dimensionless)):
+                patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
+                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service}
             with self.assertRaises(ValueError):
                 self.server_base.update_available_ram_per_instance()
@@ -115,8 +114,8 @@ class TestServer(TestCase):
 
         with patch.object(self.server_base, "all_services_ram_needs", new= hour_by_hour_ram_need), \
                 patch.object(self.server_base, "all_services_cpu_needs", new=hour_by_hour_cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=ExplainableQuantity(100 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
+                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
+                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(25 * u.core)), \
                 patch.object(self.server_base, "cloud", new="On premise"):
             self.server_base.update_nb_of_instances()
             self.assertEqual(10 * u.dimensionless, self.server_base.nb_of_instances.value)
@@ -127,8 +126,8 @@ class TestServer(TestCase):
 
         with patch.object(self.server_base, "all_services_ram_needs", new=ram_need), \
                 patch.object(self.server_base, "all_services_cpu_needs", new=cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=ExplainableQuantity(100 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
+                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
+                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(25 * u.core)), \
                 patch.object(self.server_base, "cloud", new="Serverless"):
             self.server_base.update_nb_of_instances()
             self.assertEqual(1.25 * u.dimensionless, round(self.server_base.nb_of_instances.value, 2))
@@ -139,44 +138,44 @@ class TestServer(TestCase):
 
         with patch.object(self.server_base, "all_services_ram_needs", new=ram_need), \
                 patch.object(self.server_base, "all_services_cpu_needs", new=cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=ExplainableQuantity(100 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=ExplainableQuantity(25 * u.core)), \
+                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
+                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(25 * u.core)), \
                 patch.object(self.server_base, "cloud", new="Autoscaling"):
             self.server_base.update_nb_of_instances()
             self.assertEqual(1.5 * u.dimensionless, round(self.server_base.nb_of_instances.value, 2))
 
     def test_compute_instances_power(self):
         with patch.object(self.server_base,
-                          "fraction_of_time_in_use", ExplainableQuantity(((24 - 10) / 24) * u.dimensionless)), \
-                patch.object(self.server_base, "nb_of_instances", ExplainableQuantity(10 * u.dimensionless)), \
+                          "fraction_of_time_in_use", SourceValue(((24 - 10) / 24) * u.dimensionless)), \
+                patch.object(self.server_base, "nb_of_instances", SourceValue(10 * u.dimensionless)), \
                 patch.object(self.server_base, "cloud", "On premise"), \
-                patch.object(self.server_base, "power", ExplainableQuantity(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", ExplainableQuantity(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", ExplainableQuantity(1.2 * u.dimensionless)):
+                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
             self.server_base.update_instances_power()
             self.assertEqual(20600.1 * u.kWh / u.year,
                              round(self.server_base.instances_power.value, 2))
 
     def test_compute_instances_power_serverless(self):
         with patch.object(self.server_base,
-                          "fraction_of_time_in_use", ExplainableQuantity(((24 - 10) / 24) * u.dimensionless)), \
-                patch.object(self.server_base, "nb_of_instances", ExplainableQuantity(10 * u.dimensionless)), \
+                          "fraction_of_time_in_use", SourceValue(((24 - 10) / 24) * u.dimensionless)), \
+                patch.object(self.server_base, "nb_of_instances", SourceValue(10 * u.dimensionless)), \
                 patch.object(self.server_base, "cloud", "Serverless"), \
-                patch.object(self.server_base, "power", ExplainableQuantity(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", ExplainableQuantity(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", ExplainableQuantity(1.2 * u.dimensionless)):
+                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
             self.server_base.update_instances_power()
             self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_base.instances_power.value, 2))
 
     def test_compute_instances_power_cloud_autoscaling(self):
         with patch.object(self.server_base,
-                          "fraction_of_time_in_use", ExplainableQuantity(((24 - 10) / 24) * u.dimensionless)), \
-                patch.object(self.server_base, "nb_of_instances", ExplainableQuantity(10 * u.dimensionless)), \
+                          "fraction_of_time_in_use", SourceValue(((24 - 10) / 24) * u.dimensionless)), \
+                patch.object(self.server_base, "nb_of_instances", SourceValue(10 * u.dimensionless)), \
                 patch.object(self.server_base, "cloud", "Autoscaling"), \
-                patch.object(self.server_base, "power", ExplainableQuantity(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", ExplainableQuantity(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", ExplainableQuantity(1.2 * u.dimensionless)):
+                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
+                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
+                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
             self.server_base.update_instances_power()
             self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_base.instances_power.value, 2))

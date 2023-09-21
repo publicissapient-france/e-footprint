@@ -37,10 +37,17 @@ class ModelingObject(ABC):
         super().__setattr__(name, input_value)
         value_elts = convert_to_list(input_value)
 
-        current_pubsub_topic = f"{name}_in_{self.id}"
+        current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
         for value in value_elts:
             if issubclass(type(value), AttributeUsedInCalculation):
-                value.pubsub_topic = current_pubsub_topic
+                if value.pubsub_topic is not None and current_pubsub_topic != value.pubsub_topic:
+                    raise ValueError(
+                        f"An AttributeUsedInCalculation object can’t be linked to more than one pubsub topic. Here "
+                        f"{current_pubsub_topic} is trying to be set in addition to preexisting {value.pubsub_topic}. "
+                        f"A classic reason why this error could happen is that a mutable object (SourceValue for"
+                        f" example) has been set as default value in one of the classes.")
+                else:
+                    value.pubsub_topic = current_pubsub_topic
 
         # Get caller function info
         frame = inspect.currentframe()

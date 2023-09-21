@@ -1,7 +1,6 @@
 import numbers
 from datetime import datetime
 from typing import Type, List
-
 import pytz
 from pint import Quantity
 
@@ -11,7 +10,7 @@ from footprint_model.constants.units import u
 
 class ExplainableQuantity(ExplainableObject):
     def __init__(
-            self, value: Quantity, label: str = "no label", left_child: Type["ExplainableQuantity"] = None,
+            self, value: Quantity, label: str = None, left_child: Type["ExplainableQuantity"] = None,
             right_child: Type["ExplainableQuantity"] = None, child_operator: str = None):
         if not isinstance(value, Quantity):
             raise ValueError(
@@ -41,7 +40,7 @@ class ExplainableQuantity(ExplainableObject):
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return self
+            return ExplainableQuantity(self.value, left_child=self)
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
         else:
@@ -49,7 +48,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return self
+            return ExplainableQuantity(self.value, left_child=self)
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
         else:
@@ -107,7 +106,7 @@ class ExplainableQuantity(ExplainableObject):
 
 class ExplainableHourlyUsage(ExplainableObject):
     def __init__(
-            self, value: List[ExplainableQuantity], label: str = "no label", left_child: ExplainableObject = None,
+            self, value: List[ExplainableQuantity], label: str = None, left_child: ExplainableObject = None,
             right_child: ExplainableObject = None, child_operator: str = None):
         super().__init__(value, label, left_child, right_child, child_operator)
 
@@ -124,7 +123,7 @@ class ExplainableHourlyUsage(ExplainableObject):
     def compute_usage_time_fraction(self):
         unused_hours = 0
         for elt in self.value:
-            if type(elt) != ExplainableQuantity:
+            if not issubclass(type(elt), ExplainableQuantity):
                 raise ValueError("compute_usage_time_fraction should be called on ExplainableQuantity elements")
             else:
                 if elt.magnitude == 0:
@@ -172,7 +171,7 @@ class ExplainableHourlyUsage(ExplainableObject):
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return self
+            return ExplainableHourlyUsage(self.value, left_child=self)
         elif issubclass(type(other), ExplainableHourlyUsage):
             return ExplainableHourlyUsage(
                 [elt1 + elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "+")
@@ -184,7 +183,7 @@ class ExplainableHourlyUsage(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return self
+            return ExplainableHourlyUsage(self.value, left_child=self)
         elif issubclass(type(other), ExplainableHourlyUsage):
             return ExplainableHourlyUsage(
                 [elt1 - elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "-")

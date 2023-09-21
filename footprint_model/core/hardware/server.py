@@ -167,13 +167,15 @@ class Server(InfraHardware):
         effective_idle_power = self.idle_power * self.power_usage_effectiveness
         if self.cloud == "Serverless" or self.cloud == "Autoscaling":
             server_power = (effective_active_power * self.nb_of_instances).to(u.kWh / u.year)
-        else:
-            fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless) - self.fraction_of_time_in_use
+        elif self.cloud == "On premise":
+            fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless, "100%") - self.fraction_of_time_in_use
             server_power = (
                     self.nb_of_instances *
                     ((effective_active_power * self.fraction_of_time_in_use)
                      + (effective_idle_power * fraction_of_time_not_in_use))
             ).to(u.kWh / u.year)
+        else:
+            raise ValueError(f"CloudConfig should be Autoscaling, Serverless or On premise, not {self.cloud.value}")
 
         self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name} instances")
 

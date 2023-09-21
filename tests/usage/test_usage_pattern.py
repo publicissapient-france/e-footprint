@@ -6,7 +6,6 @@ from footprint_model.constants.sources import SourceValue
 from footprint_model.core.usage.time_intervals import TimeIntervals
 from footprint_model.core.usage.usage_pattern import UsagePattern
 from footprint_model.constants.units import u
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 
 class TestUsagePattern(unittest.TestCase):
@@ -17,13 +16,13 @@ class TestUsagePattern(unittest.TestCase):
         self.service2 = MagicMock()
 
         user_journey = MagicMock()
-        user_journey.duration = ExplainableQuantity(2.0 * u.min / u.user_journey, "duration")
-        user_journey.data_upload = ExplainableQuantity(2.0 * u.MB / u.user_journey, "data_upload")
-        user_journey.data_download = ExplainableQuantity(3.0 * u.MB / u.user_journey, "data_download")
+        user_journey.duration = SourceValue(2.0 * u.min / u.user_journey, "duration")
+        user_journey.data_upload = SourceValue(2.0 * u.MB / u.user_journey, "data_upload")
+        user_journey.data_download = SourceValue(3.0 * u.MB / u.user_journey, "data_download")
 
         user_journey.services = {self.service1, self.service2}
         population = MagicMock()
-        population.nb_devices = ExplainableQuantity(10000 * u.user, "population")
+        population.nb_devices = SourceValue(10000 * u.user, "population")
         population.country = Countries.FRANCE
 
         network = MagicMock()
@@ -36,7 +35,7 @@ class TestUsagePattern(unittest.TestCase):
         )
 
         self.expected_nb_user_journeys_per_year = 100000 * u.user_journey / u.year
-        self.expected_nb_uj_in_parallel = ExplainableQuantity(2 * u.user_journey, "number of uj in parallel")
+        self.expected_nb_uj_in_parallel = SourceValue(2 * u.user_journey, "number of uj in parallel")
 
     def test_usage_time_fraction(self):
         self.assertEqual(self.usage_pattern.usage_time_fraction.value, (8 / 24) * u.dimensionless)
@@ -82,8 +81,8 @@ class TestUsagePattern(unittest.TestCase):
         self.assertEqual(self.expected_nb_user_journeys_per_year, self.usage_pattern.user_journey_freq.value)
 
     def test_update_user_journey_freq(self):
-        nb_devices = ExplainableQuantity(2 * u.user, "population")
-        uj_freq_per_user = ExplainableQuantity(10 * u.user_journey / (u.user * u.year))
+        nb_devices = SourceValue(2 * u.user, "population")
+        uj_freq_per_user = SourceValue(10 * u.user_journey / (u.user * u.year))
 
         expected_uj_freq = nb_devices * uj_freq_per_user
         with patch.object(self.usage_pattern.device_population, "nb_devices", new=nb_devices), \
@@ -98,20 +97,20 @@ class TestUsagePattern(unittest.TestCase):
                                actual_nb_user_journeys_in_parallel_during_usage.value)
 
     def test_update_nb_user_journeys_in_parallel_during_usage(self):
-        expected_nb_uj_in_parallel = ExplainableQuantity(4 * u.user_journey)
-        with patch.object(self.usage_pattern, "user_journey_freq", ExplainableQuantity(2 * u.user_journey / u.year)), \
-                patch.object(self.usage_pattern.user_journey, "duration", ExplainableQuantity(1 * u.year / u.user_journey)), \
-                patch.object(self.usage_pattern, "usage_time_fraction", ExplainableQuantity((12 / 24) * u.dimensionless)):
+        expected_nb_uj_in_parallel = SourceValue(4 * u.user_journey)
+        with patch.object(self.usage_pattern, "user_journey_freq", SourceValue(2 * u.user_journey / u.year)), \
+                patch.object(self.usage_pattern.user_journey, "duration", SourceValue(1 * u.year / u.user_journey)), \
+                patch.object(self.usage_pattern, "usage_time_fraction", SourceValue((12 / 24) * u.dimensionless)):
             self.usage_pattern.update_nb_user_journeys_in_parallel_during_usage()
             self.assertEqual(expected_nb_uj_in_parallel.value, self.usage_pattern.nb_user_journeys_in_parallel_during_usage.value)
 
     def test_update_nb_user_journeys_in_parallel_during_usage_round_up(self):
-        expected_nb_uj_in_parallel = ExplainableQuantity(4 * u.user_journey)
-        with patch.object(self.usage_pattern, "user_journey_freq", ExplainableQuantity(2 * u.user_journey / u.year)), \
+        expected_nb_uj_in_parallel = SourceValue(4 * u.user_journey)
+        with patch.object(self.usage_pattern, "user_journey_freq", SourceValue(2 * u.user_journey / u.year)), \
                 patch.object(self.usage_pattern.user_journey, "duration",
-                             ExplainableQuantity(1 * u.year / u.user_journey)), \
+                             SourceValue(1 * u.year / u.user_journey)), \
                 patch.object(self.usage_pattern, "usage_time_fraction",
-                             ExplainableQuantity((14 / 24) * u.dimensionless)):
+                             SourceValue((14 / 24) * u.dimensionless)):
             self.usage_pattern.update_nb_user_journeys_in_parallel_during_usage()
             self.assertEqual(expected_nb_uj_in_parallel.value,
                              self.usage_pattern.nb_user_journeys_in_parallel_during_usage.value)

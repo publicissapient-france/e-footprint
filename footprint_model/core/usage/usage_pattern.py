@@ -4,7 +4,7 @@ from footprint_model.core.usage.time_intervals import TimeIntervals
 from footprint_model.core.usage.user_journey import UserJourney
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.network import Network
-from footprint_model.constants.sources import SourceValue, Sources, SourceObject
+from footprint_model.constants.sources import SourceValue
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
