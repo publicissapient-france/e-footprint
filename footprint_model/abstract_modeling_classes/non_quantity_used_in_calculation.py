@@ -3,13 +3,12 @@ import logging
 
 from pubsub import pub
 
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import AttributeUsedInCalculation
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 
-class NonQuantityUsedInCalculation(AttributeUsedInCalculation):
+class NonQuantityUsedInCalculation(ExplainableObject):
     def __init__(self, value=None):
-        super().__init__()
-        self.value = value
+        super().__init__(value, "non attribute used in calculation")
 
     def get_calling_function(self):
         frame = inspect.currentframe()

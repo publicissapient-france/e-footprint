@@ -1,29 +1,9 @@
-from abc import ABC, abstractmethod
-from typing import List, Type
+from typing import Type
 from copy import deepcopy
+from unittest.mock import MagicMock
 
 
-class UpdateFunctionOutput(ABC):
-    def __init__(self):
-        pass
-
-    @abstractmethod
-    def pubsub_topics_to_listen_to(self) -> List[str]:
-        pass
-
-
-class AttributeUsedInCalculation:
-    def __init__(self):
-        self.pubsub_topic = None
-
-    def __deepcopy__(self, memo):
-        new_instance = deepcopy(super(AttributeUsedInCalculation, self), memo)
-        new_instance.pubsub_topic = None
-
-        return new_instance
-
-
-class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
+class ExplainableObject:
     def __init__(
             self, value: object, label: str = None, left_child: Type["ExplainableObject"] = None,
             right_child: Type["ExplainableObject"] = None, child_operator: str = None):
@@ -32,6 +12,8 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
         if not label and left_child is None and right_child is None:
             raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
         self.label = label
+        self._pubsub_topic = None
+        self.height_level = 0
         left_child_height_level = left_child.height_level if left_child is not None else 0
         right_child_height_level = right_child.height_level if right_child is not None else 0
         self.height_level = max(left_child_height_level, right_child_height_level)
@@ -45,10 +27,43 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
                     self.input_attributes_to_listen_to.append(child)
                 else:
                     self.input_attributes_to_listen_to += child.input_attributes_to_listen_to
+        self.attributes_that_depend_on_self = []
+
+    def __deepcopy__(self, memo):
+        cls = self.__class__
+        new_instance = cls.__new__(cls, "dummy_value", "dummy_label")
+        print(f"\n\nDEEP COPYING {self.label}")
+        memo[id(self)] = new_instance
+
+        for k, v in self.__dict__.items():
+            if k not in ["_pubsub_topic", "input_attributes_to_listen_to", "attributes_that_depend_on_self"]:
+                setattr(new_instance, k, deepcopy(v, memo))
+
+        new_instance._pubsub_topic = None
+        new_instance.input_attributes_to_listen_to = []
+        new_instance.attributes_that_depend_on_self = []
+
+        return new_instance
 
     @property
     def has_child(self):
         return self.left_child is not None or self.right_child is not None
+
+    @property
+    def pubsub_topic(self) -> str:
+        return self._pubsub_topic
+
+    @pubsub_topic.setter
+    def pubsub_topic(self, new_pubsub_topic):
+        self._pubsub_topic = new_pubsub_topic
+        for child in (self.left_child, self.right_child):
+            if child is not None:
+                child.update_attributes_that_depend_on_self(depending_attribute=self)
+
+    def update_attributes_that_depend_on_self(self, depending_attribute):
+        self.attributes_that_depend_on_self.append(depending_attribute)
+        for input_attribute in self.input_attributes_to_listen_to:
+            input_attribute.update_attributes_that_depend_on_self(depending_attribute=depending_attribute)
 
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
         self.height_level += 1
@@ -138,7 +153,10 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
                     left_parenthesis = True
                 if type(tuple_element[2]) == tuple and tuple_element[2][1] != "*":
                     right_parenthesis = True
-            elif tuple_element[1] in ["+", "-"]:
+            elif tuple_element[1] == "-":
+                if type(tuple_element[2]) == tuple and tuple_element[2][1] in ["+", "-"]:
+                    right_parenthesis = True
+            elif tuple_element[1] == "+":
                 pass
 
             lp_open = ""
@@ -159,12 +177,4 @@ class ExplainableObject(AttributeUsedInCalculation, UpdateFunctionOutput):
 
     @staticmethod
     def pretty_print_calculation(calc_str):
-        formatted_str = ""
-
-        for char in calc_str:
-            if char == '=' and formatted_str[-1] == ' ':
-                formatted_str = formatted_str[:-1] + '\n=\n'
-            else:
-                formatted_str += char
-
-        return formatted_str
+        return calc_str.replace(" = ", "\n=\n")

@@ -1,5 +1,4 @@
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import UpdateFunctionOutput, \
-    AttributeUsedInCalculation
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.utils.tools import convert_to_list
 
 import uuid
@@ -17,7 +16,7 @@ def get_subclass_attributes(obj, target_class):
 
 def recursively_send_pubsub_message_for_every_attribute_used_in_calculation(old_attribute_value: List):
     for obj in old_attribute_value:
-        for attr_name, attr_value in get_subclass_attributes(obj, AttributeUsedInCalculation).items():
+        for attr_name, attr_value in get_subclass_attributes(obj, ExplainableObject).items():
             pub.sendMessage(attr_value.pubsub_topic)
         for modeling_object, modeling_object_name in get_subclass_attributes(obj, ModelingObject).items():
             recursively_send_pubsub_message_for_every_attribute_used_in_calculation([modeling_object])
@@ -39,7 +38,7 @@ class ModelingObject(ABC):
 
         current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
         for value in value_elts:
-            if issubclass(type(value), AttributeUsedInCalculation):
+            if issubclass(type(value), ExplainableObject):
                 if value.pubsub_topic is not None and current_pubsub_topic != value.pubsub_topic:
                     raise ValueError(
                         f"An AttributeUsedInCalculation object can’t be linked to more than one pubsub topic. Here "
@@ -63,10 +62,9 @@ class ModelingObject(ABC):
                     f"There shouldn't be objects of different types within the same list, found {type_set}")
             else:
                 values_type = type_set.pop()
-            if issubclass(values_type, AttributeUsedInCalculation):
+            if issubclass(values_type, ExplainableObject):
                 pub.sendMessage(current_pubsub_topic)
                 logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
-            if issubclass(values_type, UpdateFunctionOutput):
                 update_func = getattr(self, f"update_{name}", None)
                 if update_func is None and (input_value.left_child is not None or input_value.right_child is not None):
                     # TODO: Create doc optimization.md

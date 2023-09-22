@@ -37,8 +37,6 @@ class TestNetwork(TestCase):
         self.assertEqual(data_download, self.network.data_download)
 
     def test_update_energy_footprint(self):
-        self.network = deepcopy(self.network)
-
         self.network.update_energy_footprint()
         uj_freq = self.usage_pattern.user_journey_freq
         carbon_intensity = self.usage_pattern.device_population.country.average_carbon_intensity

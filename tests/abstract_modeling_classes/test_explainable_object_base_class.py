@@ -1,6 +1,7 @@
 from unittest import TestCase
 
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from footprint_model.constants.units import u
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -33,6 +34,56 @@ class TestExplainableObjectBaseClass(TestCase):
         self.g.left_child = self.d
         self.g.child_operator = "root square"
 
+    def test_deepcopy_should_set_pubsub_topic_to_none(self):
+        a = ExplainableObject(1, "a")
+        a.pubsub_topic = "topic_a"
+        from copy import deepcopy
+        b = deepcopy(a)
+
+        self.assertEqual("a", b.label)
+        self.assertEqual(1, b.value)
+        self.assertIsNone(b.pubsub_topic)
+
+    def test_creation_with_label(self):
+        eo = ExplainableObject(value=5, label="Label A")
+        self.assertEqual(eo.value, 5)
+        self.assertEqual(eo.label, "Label A")
+        self.assertIsNone(eo.left_child)
+        self.assertIsNone(eo.right_child)
+
+    def test_creation_without_label_and_child(self):
+        with self.assertRaises(ValueError):
+            ExplainableObject(value=5)
+
+    def test_height_level_assignment(self):
+        left_child = ExplainableObject(value=3, label="Label L")
+        right_child = ExplainableObject(value=4, label="Label R")
+
+        eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent")
+        self.assertEqual(eo.height_level, 0)  # since both children have height level of 0
+
+    def test_input_attributes_to_listen_to(self):
+        left_child = ExplainableObject(value=3, label="Label L")
+        right_child = ExplainableObject(value=4, label="Label R")
+        left_child.pubsub_topic = "topicL"
+        right_child.pubsub_topic = "topicR"
+
+        eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent")
+        self.assertEqual(set(eo.pubsub_topics_to_listen_to), {"topicL", "topicR"})
+
+    def test_define_as_intermediate_calculation(self):
+        eo = ExplainableObject(value=5, label="Label A")
+        eo.define_as_intermediate_calculation("Intermediate A")
+        self.assertEqual(eo.label, "Intermediate A")
+        self.assertEqual(eo.height_level, 1)
+
+    def test_has_child_property(self):
+        left_child = ExplainableObject(value=3, label="Label L")
+        eo_with_child = ExplainableObject(value=7, left_child=left_child, label="Parent")
+        eo_without_child = ExplainableObject(value=7, label="Parent")
+        self.assertTrue(eo_with_child.has_child)
+        self.assertFalse(eo_without_child.has_child)
+
     def test_explain_simple_sum(self):
         self.assertEqual("c = a + b = 1 + 2 = 3", self.c.explain(pretty_print=False))
 
@@ -44,3 +95,54 @@ class TestExplainableObjectBaseClass(TestCase):
 
     def test_explain_without_right_child(self):
         self.assertEqual("g = root square of (d) = root square of (4) = 2", self.g.explain(pretty_print=False))
+
+    def test_explain_should_put_right_parenthesis_in_complex_calculations(self):
+        self.d.label = None
+        self.c.label = None
+        h = ExplainableObject(1, None, self.c, self.c, "/")
+        i = ExplainableObject(2, None, h, self.g, "*")
+        j = ExplainableObject(-1, "k", i, self.c, "-")
+        self.assertEqual('k = ((a + b) / (a + b)) * g - (a + b) = ((1 + 2) / (1 + 2)) * 2 - (1 + 2) = -1', j.explain(
+            pretty_print=False))
+
+    def test_explain_without_children(self):
+        eo = ExplainableObject(value=5, label="Label A")
+        result = eo.explain()
+        self.assertEqual(result, "Label A = 5")
+
+    def test_compute_explain_nested_tuples(self):
+        left_child = ExplainableObject(value=3, label="Label L")
+        right_child = ExplainableObject(value=4, label="Label R")
+        eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent",
+                               child_operator="+")
+        result = eo.compute_explain_nested_tuples()
+        self.assertEqual(result, (left_child, '+', right_child))
+
+    def test_print_tuple_element_value(self):
+        self.assertEqual("5.3 W", ExplainableObject.print_tuple_element_value(5.3456 * u.W))
+        self.assertEqual(
+            "[1.1 yr, 2.2 yr, 3.3 yr]", ExplainableObject.print_tuple_element_value(
+                [ExplainableObject(1.123 * u.year, "duration"), ExplainableObject(2.234 * u.year, "duration"),
+                 ExplainableObject(3.345 * u.year, "duration")]))
+        self.assertEqual("[[1, 2], [3, 5]]", ExplainableObject.print_tuple_element_value([[1, 2], [3, 5]]))
+
+    def test_print_tuple_element(self):
+        left_child = ExplainableObject(value=3, label="Label L")
+        right_child = ExplainableObject(value=4, label="Label R")
+        eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent",
+                               child_operator="+")
+
+        self.assertEqual(eo.print_tuple_element((left_child, '+', right_child), False), "Label L + Label R")
+        self.assertEqual(eo.print_tuple_element((left_child, '+', right_child), True), "3 + 4")
+
+    def test_pretty_print_calculation(self):
+        calc_str = "Label A = Label L + Label R = 3 + 4 = 7"
+        result = ExplainableObject.pretty_print_calculation(calc_str)
+        expected_result = """Label A
+=
+Label L + Label R
+=
+3 + 4
+=
+7"""
+        self.assertEqual(expected_result, result)
