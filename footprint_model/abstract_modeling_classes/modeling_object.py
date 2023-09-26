@@ -2,10 +2,9 @@ from footprint_model.abstract_modeling_classes.explainable_object_base_class imp
 from footprint_model.utils.tools import convert_to_list
 
 import uuid
-from abc import ABC, abstractmethod
+from abc import ABCMeta, abstractmethod
 from typing import List
 from pubsub import pub
-import inspect
 import logging
 
 
@@ -22,14 +21,30 @@ def recursively_send_pubsub_message_for_every_attribute_used_in_calculation(old_
             recursively_send_pubsub_message_for_every_attribute_used_in_calculation([modeling_object])
 
 
-class ModelingObject(ABC):
+class AfterInitMeta(type):
+    def __call__(cls, *args, **kwargs):
+        instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
+        instance.after_init()
+        return instance
+
+
+class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
+    pass
+
+
+class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.__dict__["name"] = name
         self.__dict__["id"] = str(uuid.uuid4())[:6]
+        self.init_has_passed = False
+        self.never_send_pubsub_topic_messages = False
 
     @abstractmethod
     def compute_calculated_attributes(self):
         pass
+
+    def after_init(self):
+        self.init_has_passed = True
 
     def __setattr__(self, name, input_value):
         old_value = self.__dict__.get(name, None)
@@ -51,12 +66,7 @@ class ModelingObject(ABC):
                                         f"(id {self.id}) but has no label attached to it.")
                     value.pubsub_topic = current_pubsub_topic
 
-        # Get caller function info
-        frame = inspect.currentframe()
-        caller_frame = frame.f_back
-        info = inspect.getframeinfo(caller_frame)
-
-        if info.function not in ("__init__", "__exit__"):
+        if self.init_has_passed and not self.never_send_pubsub_topic_messages:
             type_set = [type(value) for value in value_elts]
             base_type = type(type_set[0])
 

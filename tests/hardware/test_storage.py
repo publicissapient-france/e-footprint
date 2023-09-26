@@ -19,6 +19,7 @@ class TestStorage(TestCase):
             country=MagicMock(),
             data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
         )
+        self.storage_base.never_send_pubsub_topic_messages = True
 
     def test_services(self):
         usage_pattern1 = MagicMock()

@@ -15,6 +15,7 @@ class TestService(unittest.TestCase):
         self.base_ram = SourceValue(4 * u.GB, Sources.HYPOTHESIS)
         self.base_cpu = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         self.service = Service("Test Service", self.server, self.storage, self.base_ram, self.base_cpu)
+        self.service.never_send_pubsub_topic_messages = True
 
     def test_service_initialization(self):
         self.assertEqual(self.service.name, "Test Service")

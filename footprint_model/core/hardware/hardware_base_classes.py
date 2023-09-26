@@ -1,10 +1,10 @@
-from abc import ABC, abstractmethod
-
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage, ExplainableQuantity
 from footprint_model.constants.countries import Country
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
+
+from abc import abstractmethod
 
 
 class Hardware(ModelingObject):
@@ -26,7 +26,7 @@ class Hardware(ModelingObject):
         pass
 
 
-class ObjectLinkedToUsagePatterns(ABC):
+class ObjectLinkedToUsagePatterns:
     def __init__(self):
         self.usage_patterns = set()
 
