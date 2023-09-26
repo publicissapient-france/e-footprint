@@ -3,8 +3,9 @@ from footprint_model.utils.tools import convert_to_list
 
 import uuid
 from abc import ABCMeta, abstractmethod
-from typing import List
+from typing import List, Set
 from pubsub import pub
+from importlib import import_module
 import logging
 
 
@@ -21,6 +22,17 @@ def recursively_send_pubsub_message_for_every_attribute_used_in_calculation(old_
             recursively_send_pubsub_message_for_every_attribute_used_in_calculation([modeling_object])
 
 
+def check_type_homogeneity_within_list_or_set(input_list_or_set: List | Set):
+    type_set = [type(value) for value in input_list_or_set]
+    base_type = type(type_set[0])
+
+    if not all(isinstance(item, base_type) for item in type_set):
+        raise ValueError(
+            f"There shouldn't be objects of different types within the same list, found {type_set}")
+    else:
+        return type_set.pop()
+
+
 class AfterInitMeta(type):
     def __call__(cls, *args, **kwargs):
         instance = super(AfterInitMeta, cls).__call__(*args, **kwargs)
@@ -34,10 +46,12 @@ class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
-        self.__dict__["name"] = name
-        self.__dict__["id"] = str(uuid.uuid4())[:6]
         self.init_has_passed = False
+        self.name = name
+        self.id = str(uuid.uuid4())[:6]
         self.never_send_pubsub_topic_messages = False
+        old_value = None
+        self.current_pubsub_topic = None
 
     @abstractmethod
     def compute_calculated_attributes(self):
@@ -46,58 +60,56 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def after_init(self):
         self.init_has_passed = True
 
-    def __setattr__(self, name, input_value):
-        old_value = self.__dict__.get(name, None)
-        super().__setattr__(name, input_value)
-        value_elts = convert_to_list(input_value)
+    def handle_explainableobject_update(self, input_value: ExplainableObject, input_attr_name: str,
+                                        old_value: ExplainableObject, current_pubsub_topic: str):
+        if input_value.pubsub_topic is not None and current_pubsub_topic != input_value.pubsub_topic:
+            raise ValueError(
+                f"An ExplainableObject can’t be linked to more than one pubsub topic. Here "
+                f"{current_pubsub_topic} is trying to be set instead of preexisting {input_value.pubsub_topic}."
+                f" A classic reason why this error could happen is that a mutable object (SourceValue for"
+                f" example) has been set as default value in one of the classes.")
+        else:
+            if not input_value.label:
+                logging.warning(f"Intermediate calculation is being set at attribute {input_attr_name} in {self.name} "
+                                f"(id {self.id}) but has no label attached to it.")
+            input_value.pubsub_topic = current_pubsub_topic
+            pub.sendMessage(current_pubsub_topic)
+            logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
+            update_func = getattr(self, f"update_{input_attr_name}", None)
+            if update_func is None and \
+                    (input_value.left_child is not None or input_value.right_child is not None):
+                raise ValueError(
+                    f"update_{input_attr_name} function does not exist. Please create it and checkout optimization.md")
+            elif update_func is not None:
+                if len(input_value.pubsub_topics_to_listen_to) == 0:
+                    logging.warning(
+                        f"Update function update_{input_attr_name} doesn’t listen to any input. "
+                        f"Normal in tests but not at runtime")
+                if old_value is not None:
+                    for pubsub_topic in old_value.pubsub_topics_to_listen_to:
+                        pub.unsubscribe(update_func, pubsub_topic)
+                for pubsub_topic in input_value.pubsub_topics_to_listen_to:
+                    pub.subscribe(update_func, pubsub_topic)
+                logging.debug(f"Subscribed update_{input_attr_name} to {input_value.pubsub_topics_to_listen_to}")
 
-        current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
-        for value in value_elts:
-            if issubclass(type(value), ExplainableObject):
-                if value.pubsub_topic is not None and current_pubsub_topic != value.pubsub_topic:
-                    raise ValueError(
-                        f"An AttributeUsedInCalculation object can’t be linked to more than one pubsub topic. Here "
-                        f"{current_pubsub_topic} is trying to be set in addition to preexisting {value.pubsub_topic}. "
-                        f"A classic reason why this error could happen is that a mutable object (SourceValue for"
-                        f" example) has been set as default value in one of the classes.")
-                else:
-                    if not value.label:
-                        logging.warning(f"Intermediate calculation is being set at attribute {name} in {self.name} "
-                                        f"(id {self.id}) but has no label attached to it.")
-                    value.pubsub_topic = current_pubsub_topic
+    def __setattr__(self, name, input_value):
+        super().__setattr__(name, input_value)
 
         if self.init_has_passed and not self.never_send_pubsub_topic_messages:
-            type_set = [type(value) for value in value_elts]
-            base_type = type(type_set[0])
+            old_value = self.__dict__.get(name, None)
+            current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
 
-            if not all(isinstance(item, base_type) for item in type_set):
-                raise ValueError(
-                    f"There shouldn't be objects of different types within the same list, found {type_set}")
-            else:
-                values_type = type_set.pop()
-            if issubclass(values_type, ExplainableObject):
-                pub.sendMessage(current_pubsub_topic)
-                logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
-                update_func = getattr(self, f"update_{name}", None)
-                if update_func is None and (input_value.left_child is not None or input_value.right_child is not None):
-                    raise ValueError(
-                        f"update_{name} function does not exist. Please create it and checkout optimization.md")
-                elif update_func is not None:
-                    pubsub_topics_to_listen_to = set(
-                        sum((value.pubsub_topics_to_listen_to for value in value_elts), start=[]))
-                    if len(pubsub_topics_to_listen_to) == 0:
-                        logging.warning(
-                            f"Update function update_{name} doesn’t listen to any input. "
-                            f"Normal in tests but not at runtime")
-                    for pubsub_topic in pubsub_topics_to_listen_to:
-                        # TODO: Also unsubscribe from all old_value topics before subscribing
-                        pub.subscribe(update_func, pubsub_topic)
-                    logging.debug(f"Subscribed update_{name} to {pubsub_topics_to_listen_to}")
-            elif issubclass(values_type, ModelingObject):
-                if old_value is not None and old_value != input_value:
-                    old_value_elts = convert_to_list(old_value)
-                    disappearing_objects = [obj for obj in old_value_elts if obj not in value_elts]
-                    for obj in disappearing_objects:
-                        recursively_send_pubsub_message_for_every_attribute_used_in_calculation([obj])
-
+            if issubclass(type(input_value), ExplainableObject):
+                self.handle_explainableobject_update(input_value, name, old_value, current_pubsub_topic)
+            elif type(input_value) == list:
+                values_type = check_type_homogeneity_within_list_or_set(input_value)
+                # DevicePopulation class has a Hardware list attribute and UserJourney has an UserJourneyStep attribute
+                Hardware = import_module("footprint_model.core.hardware.hardware_base_classes").Hardware
+                UserJourneyStep = import_module("footprint_model.core.usage.user_journey").UserJourneyStep
+                assert values_type in [Hardware, UserJourneyStep]
+                self.compute_calculated_attributes()
+            elif type(input_value) == set:
+                values_type = check_type_homogeneity_within_list_or_set(input_value)
+                UsagePattern = import_module("footprint_model.core.usage.usage_pattern").UsagePattern
+                assert values_type == UsagePattern
                 self.compute_calculated_attributes()

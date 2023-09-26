@@ -17,6 +17,7 @@ class TestInfraHardware(TestCase):
                          lifespan: SourceValue, country: Country):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
                 self.services__raw = set()
+                self.never_send_pubsub_topic_messages = True
 
             def update_nb_of_instances(self):
                 self.nb_of_instances = SourceValue(2 * u.dimensionless)

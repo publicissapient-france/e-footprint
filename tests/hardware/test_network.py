@@ -6,17 +6,17 @@ from footprint_model.constants.units import u
 
 from unittest import TestCase
 from unittest.mock import MagicMock
-from copy import deepcopy
 
 
 class TestNetwork(TestCase):
     def setUp(self):
         self.network = Network(PhysicalElements.WIFI_NETWORK, SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        self.network.never_send_pubsub_topic_messages = True
 
         self.usage_pattern = MagicMock()
-        self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, 'data_upload')
+        self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, name='data_upload')
         self.usage_pattern.user_journey.data_download = SourceValue(
-            200 * u.MB / u.user_journey, 'data_download')
+            200 * u.MB / u.user_journey, name='data_download')
         self.usage_pattern.user_journey_freq = SourceValue(250 * u.user_journey / u.year)
         self.network.usage_patterns = {self.usage_pattern}
         self.usage_pattern.device_population.country = Countries.FRANCE
