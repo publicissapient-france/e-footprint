@@ -6,6 +6,8 @@ from footprint_model.constants.sources import SourceValue
 from footprint_model.constants.units import u
 from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
 
+import logging
+
 
 class Service(ModelingObject, ObjectLinkedToUsagePatterns):
     def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
@@ -28,8 +30,6 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         self.base_cpu_consumption = base_cpu_consumption
         self.base_cpu_consumption.set_name(f"Base CPU consumption of {self.name}")
 
-        self.compute_calculated_attributes()
-
     def __hash__(self):
         return hash(self.name)
 
@@ -39,6 +39,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         return False
 
     def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
         if len(self.usage_patterns) > 0:
             self.update_hour_by_hour_cpu_need()
             self.update_hour_by_hour_ram_need()

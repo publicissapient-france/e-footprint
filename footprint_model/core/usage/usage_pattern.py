@@ -10,6 +10,7 @@ from footprint_model.abstract_modeling_classes.explainable_objects import Explai
 
 from typing import List, Set
 import math
+import logging
 
 
 class UsagePattern(ModelingObject):
@@ -46,14 +47,15 @@ class UsagePattern(ModelingObject):
         return False
 
     def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
         self.update_usage_time_fraction()
-        self.update_non_usage_time_fraction()
         self.update_user_journey_freq()
         self.update_nb_user_journeys_in_parallel_during_usage()
 
     def update_usage_time_fraction(self):
-        self.usage_time_fraction = self.time_intervals.utc_time_intervals.compute_usage_time_fraction()
-        self.usage_time_fraction.define_as_intermediate_calculation(f"Usage time fraction of {self.name}")
+        usage_time_fraction = self.time_intervals.utc_time_intervals.compute_usage_time_fraction()
+        self.usage_time_fraction = usage_time_fraction.define_as_intermediate_calculation(
+            f"Usage time fraction of {self.name}")
 
     @property
     def user_journey(self) -> UserJourney:
@@ -89,11 +91,10 @@ class UsagePattern(ModelingObject):
     def services(self) -> Set[Service]:
         return self.user_journey.services
 
-    def update_non_usage_time_fraction(self):
-        self.non_usage_time_fraction = ExplainableQuantity(1 * u.dimensionless, "100%") - self.usage_time_fraction
-
     def update_user_journey_freq(self):
-        self.user_journey_freq = self.device_population.nb_devices * self.user_journey_freq_per_user
+        self.user_journey_freq = (
+                self.device_population.nb_devices * self.user_journey_freq_per_user).define_as_intermediate_calculation(
+            f"User journey frequency of {self.name}")
 
     def update_nb_user_journeys_in_parallel_during_usage(self):
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")

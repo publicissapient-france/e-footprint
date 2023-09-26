@@ -7,6 +7,7 @@ from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
 from typing import List
+import logging
 
 
 class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
@@ -21,13 +22,11 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         self.country = country
         self.devices = devices
 
-        self.compute_calculated_attributes()
-
     def compute_calculated_attributes(self):
-        if len(self.usage_patterns) > 0:
-            self.update_power()
-            self.update_energy_footprint()
-            self.update_fabrication_footprint()
+        logging.info(f"Computing calculated attributes for {self.name}")
+        self.update_power()
+        self.update_energy_footprint()
+        self.update_fabrication_footprint()
 
     def update_power(self):
         if len(self.usage_patterns) > 0:

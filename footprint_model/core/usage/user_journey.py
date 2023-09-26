@@ -3,11 +3,10 @@ from footprint_model.abstract_modeling_classes.modeling_object import ModelingOb
 from footprint_model.constants.sources import SourceValue
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.server import Server
+from footprint_model.core.hardware.storage import Storage
 
 from typing import List, Set
-from copy import deepcopy
-
-from footprint_model.core.hardware.storage import Storage
+import logging
 
 
 class DataTransferredType:
@@ -71,6 +70,7 @@ class UserJourneyStep(ModelingObject):
         raise NotImplementedError
 
     def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
         self.update_ram_needed()
 
     def update_ram_needed(self):
@@ -86,16 +86,15 @@ class UserJourney(ModelingObject):
         self.data_download = None
         self.duration = None
         self.uj_steps = uj_steps
-        self.usage_patterns = set()
         self.compute_calculated_attributes()
 
     def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
         self.update_duration()
         self.update_data_upload()
         self.update_data_download()
 
     def link_usage_pattern(self, usage_pattern):
-        self.usage_patterns = self.usage_patterns | {usage_pattern}
         for service in self.services:
             service.link_usage_pattern(usage_pattern)
         for server in self.servers:
@@ -104,7 +103,6 @@ class UserJourney(ModelingObject):
             storage.link_usage_pattern(usage_pattern)
 
     def unlink_usage_pattern(self, usage_pattern):
-        self.usage_patterns.discard(usage_pattern)
         for service in self.services:
             service.unlink_usage_pattern(usage_pattern)
         for server in self.servers:

@@ -7,6 +7,7 @@ from footprint_model.constants.units import u
 from footprint_model.constants.countries import Country, Countries
 
 import math
+import logging
 
 
 class CloudConfig(NonQuantityUsedInCalculation):
@@ -37,14 +38,12 @@ class Server(InfraHardware):
         self.cloud = CloudConfig(cloud)
         self.usage_patterns = set()
 
-        self.compute_calculated_attributes()
-
     def compute_calculated_attributes(self):
-        if len(self.usage_patterns) > 0:
-            self.update_server_utilization_rate()
-            self.update_available_ram_per_instance()
-            self.update_available_cpu_per_instance()
-            self.update_functions_defined_in_infra_hardware_class()
+        logging.info(f"Computing calculated attributes for {self.name}")
+        self.update_server_utilization_rate()
+        self.update_available_ram_per_instance()
+        self.update_available_cpu_per_instance()
+        self.update_functions_defined_in_infra_hardware_class()
 
     def update_server_utilization_rate(self):
         if self.cloud == "Serverless" or self.cloud == "Autoscaling":

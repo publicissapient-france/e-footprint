@@ -17,7 +17,7 @@ class TestExplainableQuantity(unittest.TestCase):
         self.d.define_as_intermediate_calculation("int calc 2")
         self.e = ExplainableQuantity(3 * u.W, "e")
         for explainable_quantity in (self.a, self.b, self.e):
-            explainable_quantity.pubsub_topic = "Non null topic"
+            explainable_quantity.pubsub_topic = f"Non null topic for {explainable_quantity.label}"
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):

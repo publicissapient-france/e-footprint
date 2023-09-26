@@ -47,9 +47,6 @@ class TestUsagePattern(unittest.TestCase):
             self.usage_pattern.update_usage_time_fraction()
             self.assertEqual(self.usage_pattern.usage_time_fraction.value, (2 / 24) * u.dimensionless)
 
-    def test_non_usage_time_fraction(self):
-        self.assertEqual(self.usage_pattern.non_usage_time_fraction.value, (1 - 8/24) * u.dimensionless)
-
     def test_user_journey_setter(self):
         test_uj = MagicMock()
         old_uj = self.usage_pattern._user_journey

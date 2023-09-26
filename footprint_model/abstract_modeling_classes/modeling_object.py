@@ -46,6 +46,9 @@ class ModelingObject(ABC):
                         f"A classic reason why this error could happen is that a mutable object (SourceValue for"
                         f" example) has been set as default value in one of the classes.")
                 else:
+                    if not value.label:
+                        logging.warning(f"Intermediate calculation is being set at attribute {name} in {self.name} "
+                                        f"(id {self.id}) but has no label attached to it.")
                     value.pubsub_topic = current_pubsub_topic
 
         # Get caller function info
@@ -67,13 +70,15 @@ class ModelingObject(ABC):
                 logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
                 update_func = getattr(self, f"update_{name}", None)
                 if update_func is None and (input_value.left_child is not None or input_value.right_child is not None):
-                    # TODO: Create doc optimization.md
                     raise ValueError(
                         f"update_{name} function does not exist. Please create it and checkout optimization.md")
                 elif update_func is not None:
-                    # TODO: if value is ExplainableQuantity check that left child and right child are not None (raise value error)
                     pubsub_topics_to_listen_to = set(
                         sum((value.pubsub_topics_to_listen_to for value in value_elts), start=[]))
+                    if len(pubsub_topics_to_listen_to) == 0:
+                        logging.warning(
+                            f"Update function update_{name} doesn’t listen to any input. "
+                            f"Normal in tests but not at runtime")
                     for pubsub_topic in pubsub_topics_to_listen_to:
                         # TODO: Also unsubscribe from all old_value topics before subscribing
                         pub.subscribe(update_func, pubsub_topic)
@@ -84,5 +89,5 @@ class ModelingObject(ABC):
                     disappearing_objects = [obj for obj in old_value_elts if obj not in value_elts]
                     for obj in disappearing_objects:
                         recursively_send_pubsub_message_for_every_attribute_used_in_calculation([obj])
-                logging.info(f"Computing calculated attributes for {self.name}")
+
                 self.compute_calculated_attributes()

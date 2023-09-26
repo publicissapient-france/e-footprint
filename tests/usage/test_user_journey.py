@@ -46,10 +46,8 @@ class TestUserJourney(TestCase):
         self.user_journey.usage_patterns = {self.usage_pattern}
 
     def test_link_usage_pattern_add_new_usage_pattern(self):
-        self.user_journey.usage_patterns = {'up'}
         self.user_journey.link_usage_pattern('up2')
 
-        self.assertEqual({'up', 'up2'}, self.user_journey.usage_patterns)
         for server in self.user_journey.servers:
             server.link_usage_pattern.assert_called_once_with('up2')
 
@@ -57,9 +55,7 @@ class TestUserJourney(TestCase):
             storage.link_usage_pattern.assert_called_once_with('up2')
 
     def test_unlink_usage_pattern(self):
-        self.user_journey.usage_patterns = {'up', 'up2'}
         self.user_journey.unlink_usage_pattern('up2')
-        self.assertEqual({'up'}, self.user_journey.usage_patterns)
 
         for server in self.user_journey.servers:
             server.unlink_usage_pattern.assert_called_once_with('up2')

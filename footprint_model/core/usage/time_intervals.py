@@ -5,6 +5,7 @@ from footprint_model.constants.units import u
 
 from typing import List
 import pytz
+import logging
 
 
 class TimeIntervals(ModelingObject):
@@ -40,6 +41,7 @@ class TimeIntervals(ModelingObject):
         return [self.utc_time_intervals]
 
     def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
         self.update_hourly_usage()
         self.update_utc_time_intervals()
 

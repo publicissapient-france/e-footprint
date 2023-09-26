@@ -12,6 +12,9 @@ from footprint_model.core.system import System
 from footprint_model.constants.countries import Countries
 from footprint_model.constants.units import u
 
+import logging
+logging.getLogger().level = logging.INFO
+
 
 class IntegrationTest(TestCase):
     def test_base_use_case(self):

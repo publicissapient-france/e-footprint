@@ -1,13 +1,12 @@
+import logging
 from typing import Type
 from copy import deepcopy
-from unittest.mock import MagicMock
 
 
 class ExplainableObject:
     def __init__(
             self, value: object, label: str = None, left_child: Type["ExplainableObject"] = None,
             right_child: Type["ExplainableObject"] = None, child_operator: str = None):
-        super().__init__()
         self.value = value
         if not label and left_child is None and right_child is None:
             raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
@@ -21,18 +20,17 @@ class ExplainableObject:
         self.right_child = right_child
         self.child_operator = child_operator
         self.input_attributes_to_listen_to = []
+        self.attributes_that_depend_on_self = []
+
         for child in (self.left_child, self.right_child):
             if child is not None:
-                if child.pubsub_topic is not None:
-                    self.input_attributes_to_listen_to.append(child)
-                else:
-                    self.input_attributes_to_listen_to += child.input_attributes_to_listen_to
-        self.attributes_that_depend_on_self = []
+                self.input_attributes_to_listen_to += [
+                    input_attribute for input_attribute in child.return_objects_to_listen_to_to_parent()
+                    if input_attribute.pubsub_topic not in self.pubsub_topics_to_listen_to]
 
     def __deepcopy__(self, memo):
         cls = self.__class__
         new_instance = cls.__new__(cls, "dummy_value", "dummy_label")
-        print(f"\n\nDEEP COPYING {self.label}")
         memo[id(self)] = new_instance
 
         for k, v in self.__dict__.items():
@@ -56,12 +54,45 @@ class ExplainableObject:
     @pubsub_topic.setter
     def pubsub_topic(self, new_pubsub_topic):
         self._pubsub_topic = new_pubsub_topic
-        for child in (self.left_child, self.right_child):
-            if child is not None:
-                child.update_attributes_that_depend_on_self(depending_attribute=self)
+        for input_attribute in self.input_attributes_to_listen_to:
+            input_attribute.update_attributes_that_depend_on_self(depending_attribute=self)
+        self.purge_input_attributes_to_listen_to()
+
+    @property
+    def pubsub_topics_to_listen_to(self):
+        return [input_attribute.pubsub_topic for input_attribute in self.input_attributes_to_listen_to]
+
+    @property
+    def pubsub_topics_that_depend_on_self(self):
+        return [attribute.pubsub_topic for attribute in self.attributes_that_depend_on_self]
+
+    def return_objects_to_listen_to_to_parent(self):
+        if self.pubsub_topic is not None:
+            return [self]
+        else:
+            return self.input_attributes_to_listen_to
+
+    def purge_input_attributes_to_listen_to(self):
+        input_attrs_to_keep = []
+        for i in range(len(self.input_attributes_to_listen_to)):
+            current_input_attr = self.input_attributes_to_listen_to[i]
+            untreated_input_attrs = self.input_attributes_to_listen_to[
+                               min(len(self.input_attributes_to_listen_to) - 1, i + 1):]
+            keep_input_attr = True
+            for input_attr in untreated_input_attrs + input_attrs_to_keep:
+                if input_attr.pubsub_topic in current_input_attr.pubsub_topics_that_depend_on_self:
+                    keep_input_attr = False
+                    logging.info(
+                        f"Not keeping {current_input_attr.pubsub_topic} for {self.label} to listen to because "
+                        f"{input_attr.pubsub_topic} already depends on it")
+            if keep_input_attr:
+                input_attrs_to_keep.append(current_input_attr)
+
+        self.input_attributes_to_listen_to = input_attrs_to_keep
 
     def update_attributes_that_depend_on_self(self, depending_attribute):
-        self.attributes_that_depend_on_self.append(depending_attribute)
+        if depending_attribute.pubsub_topic not in self.pubsub_topics_that_depend_on_self:
+            self.attributes_that_depend_on_self.append(depending_attribute)
         for input_attribute in self.input_attributes_to_listen_to:
             input_attribute.update_attributes_that_depend_on_self(depending_attribute=depending_attribute)
 
@@ -70,10 +101,6 @@ class ExplainableObject:
         self.label = intermediate_calculation_label
 
         return self
-
-    @property
-    def pubsub_topics_to_listen_to(self):
-        return [input_attribute.pubsub_topic for input_attribute in self.input_attributes_to_listen_to]
 
     def explain(self, pretty_print=True):
         element_value_to_print = self.print_tuple_element_value(self.value)
