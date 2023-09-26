@@ -36,11 +36,6 @@ class TestExplainableQuantity(unittest.TestCase):
         self.assertEqual(self.c.right_child, self.b)
         self.assertEqual(self.c.child_operator, '+')
 
-    def test_define_as_intermediate_calculation(self):
-        self.assertEqual(self.c.height_level, 1)
-        self.assertEqual(self.c.label, "int calc")
-        self.assertEqual(self.d.height_level, 2)
-
     def test_operators(self):
         self.assertEqual(self.c.value, 3 * u.W)
         self.assertRaises(ValueError, self.a.__add__, 1)

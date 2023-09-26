@@ -12,10 +12,6 @@ class ExplainableObject:
             raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
         self.label = label
         self._pubsub_topic = None
-        self.height_level = 0
-        left_child_height_level = left_child.height_level if left_child is not None else 0
-        right_child_height_level = right_child.height_level if right_child is not None else 0
-        self.height_level = max(left_child_height_level, right_child_height_level)
         self.left_child = left_child
         self.right_child = right_child
         self.child_operator = child_operator
@@ -97,7 +93,6 @@ class ExplainableObject:
             input_attribute.update_attributes_that_depend_on_self(depending_attribute=depending_attribute)
 
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
-        self.height_level += 1
         self.label = intermediate_calculation_label
 
         return self

@@ -50,8 +50,8 @@ class SourceObject(ExplainableObject):
         self.source = source
 
     def set_name(self, new_name: str):
-        if self.height_level > 0:
-            raise ValueError("Source values should stay at height level of 0.")
+        if self.left_child or self.right_child:
+            raise ValueError("Source values shouldn’t have any child.")
         if self.source != Sources.USER_INPUT:
             self.label = f"{new_name} from {self.source.name}"
         else:

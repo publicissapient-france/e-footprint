@@ -55,13 +55,6 @@ class TestExplainableObjectBaseClass(TestCase):
         with self.assertRaises(ValueError):
             ExplainableObject(value=5)
 
-    def test_height_level_assignment(self):
-        left_child = ExplainableObject(value=3, label="Label L")
-        right_child = ExplainableObject(value=4, label="Label R")
-
-        eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent")
-        self.assertEqual(eo.height_level, 0)  # since both children have height level of 0
-
     def test_input_attributes_to_listen_to(self):
         left_child = ExplainableObject(value=3, label="Label L")
         right_child = ExplainableObject(value=4, label="Label R")
@@ -75,7 +68,6 @@ class TestExplainableObjectBaseClass(TestCase):
         eo = ExplainableObject(value=5, label="Label A")
         eo.define_as_intermediate_calculation("Intermediate A")
         self.assertEqual(eo.label, "Intermediate A")
-        self.assertEqual(eo.height_level, 1)
 
     def test_has_child_property(self):
         left_child = ExplainableObject(value=3, label="Label L")
