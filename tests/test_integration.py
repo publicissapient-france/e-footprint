@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
 from footprint_model.core.hardware.server import Servers
 from footprint_model.core.hardware.storage import Storage
@@ -48,7 +48,8 @@ class IntegrationTest(TestCase):
         default_network = Networks.WIFI_NETWORK
         usage_pattern = UsagePattern(
             "Average daily Youtube usage in France on laptop", default_uj, default_device_pop,
-            default_network, SourceValue(365 * u.user_journey / (u.user * u.year)), [[7, 23]])
+            default_network, SourceValue(365 * u.user_journey / (u.user * u.year)),
+            SourceObject([[7, 23]], Sources.USER_INPUT))
 
         system = System("system 1", [usage_pattern])
 

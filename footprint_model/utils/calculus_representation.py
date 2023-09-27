@@ -148,7 +148,8 @@ if __name__ == "__main__":
 
     default_usage_pattern = UsagePattern(
         "Daily Youtube usage", default_user_journey, default_device_population,
-        default_network, SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_INPUT), [[7, 23]])
+        default_network, SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_INPUT),
+        SourceObject([[7, 23]]))
 
     system = System("system 1", [default_usage_pattern])
 

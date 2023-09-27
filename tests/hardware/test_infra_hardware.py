@@ -17,7 +17,7 @@ class TestInfraHardware(TestCase):
                          lifespan: SourceValue, country: Country):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
                 self.services__raw = set()
-                self.never_send_pubsub_topic_messages = True
+                self.dont_handle_pubsub_topic_messages = True
 
             def update_nb_of_instances(self):
                 self.nb_of_instances = SourceValue(2 * u.dimensionless)
@@ -102,7 +102,7 @@ class TestInfraHardware(TestCase):
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_cpu_needs.value)
 
     def test_fraction_of_time_in_use_single_service(self):
-        self.usage_pattern_single_service.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        self.usage_pattern_single_service.utc_time_intervals = ExplainableHourlyUsage(
             [SourceValue(1 * u.dimensionless)] * 10 + [SourceValue(0 * u.dimensionless)] * 14,
             "expected_fraction_of_time_in_use")
         expected_value = SourceValue((10 / 24) * u.dimensionless, "fraction_of_time_in_use")
@@ -112,9 +112,9 @@ class TestInfraHardware(TestCase):
     def test_fraction_of_time_in_use_multiple_services_with_different_usage(self):
         up_1 = MagicMock()
         up_2 = MagicMock()
-        up_1.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        up_1.utc_time_intervals = ExplainableHourlyUsage(
             [SourceValue(1 * u.dimensionless)] * 10 + [SourceValue(0 * u.dimensionless)] * 14, "utc_time_intervals")
-        up_2.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        up_2.utc_time_intervals = ExplainableHourlyUsage(
             [SourceValue(0 * u.dimensionless)] * 4 + [SourceValue(1 * u.dimensionless)] * 10
             + [SourceValue(0 * u.dimensionless)] * 10, "utc_time_intervals")
         expected_value = SourceValue((14 / 24) * u.dimensionless, "fraction_of_time_in_use")

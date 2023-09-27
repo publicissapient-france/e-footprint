@@ -101,7 +101,7 @@ class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):
     def update_fraction_of_time_in_use(self):
         if len(self.usage_patterns) > 0:
             hourly_usage_list = [
-                usage_pattern.time_intervals.utc_time_intervals for usage_pattern in self.usage_patterns]
+                usage_pattern.utc_time_intervals for usage_pattern in self.usage_patterns]
             hourly_usage_sum = sum(hourly_usage_list)
 
         else:

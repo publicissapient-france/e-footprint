@@ -90,7 +90,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
                         usage_pattern_ram_need += average_uj_ram_needed
                 hour_by_hour_ram_needs += (
                         (usage_pattern_ram_need * usage_pattern.nb_user_journeys_in_parallel_during_usage)
-                        * usage_pattern.time_intervals.utc_time_intervals)
+                        * usage_pattern.utc_time_intervals)
 
             self.hour_by_hour_ram_need = hour_by_hour_ram_needs.define_as_intermediate_calculation(
                 f"{self.name} hour by hour RAM need")
@@ -112,8 +112,9 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
                         average_uj_cpu_needed = average_uj_cpu_needed.define_as_intermediate_calculation(
                             f"Average CPU needed over user journey to process {uj_step.name}")
                         usage_pattern_cpu_need += average_uj_cpu_needed
-                hour_by_hour_cpu_needs += (usage_pattern_cpu_need * usage_pattern.nb_user_journeys_in_parallel_during_usage
-                                           * usage_pattern.time_intervals.utc_time_intervals)
+                hour_by_hour_cpu_needs += (
+                        usage_pattern_cpu_need * usage_pattern.nb_user_journeys_in_parallel_during_usage
+                        * usage_pattern.utc_time_intervals)
 
             self.hour_by_hour_cpu_need = hour_by_hour_cpu_needs.define_as_intermediate_calculation(
                 f"{self.name} hour by hour CPU need")

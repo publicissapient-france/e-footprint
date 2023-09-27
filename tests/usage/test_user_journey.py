@@ -41,7 +41,7 @@ class TestUserJourney(TestCase):
             user_time_spent=SourceValue(2 * u.min / u.uj))
         self.one_user_journey = SourceValue(1 * u.user_journey)
         self.user_journey = UserJourney("test user journey", uj_steps=[self.user_journey_step])
-        self.user_journey.never_send_pubsub_topic_messages = True
+        self.user_journey.dont_handle_pubsub_topic_messages = True
         self.usage_pattern = MagicMock()
         self.user_journey.usage_patterns = {self.usage_pattern}
 
@@ -65,9 +65,6 @@ class TestUserJourney(TestCase):
     def test_add_step(self):
         self.user_journey.add_step(self.user_journey_step)
         self.assertEqual(self.user_journey.uj_steps, [self.user_journey_step, self.user_journey_step])
-        self.assertEqual(self.user_journey.duration.value, 2 * self.user_journey_step.user_time_spent.value)
-        self.assertEqual(self.user_journey.data_download.value, 2 * self.user_journey_step.data_download.value)
-        self.assertEqual(self.user_journey.data_upload.value, 2 * self.user_journey_step.data_upload.value)
 
     def test_servers(self):
         self.assertEqual(self.user_journey.servers, {self.server})

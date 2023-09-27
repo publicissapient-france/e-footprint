@@ -45,7 +45,7 @@ class Sources:
 
 
 class SourceObject(ExplainableObject):
-    def __init__(self, value: object, source: Source, name: str = "unnamed source object"):
+    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, name: str = "unnamed source object"):
         super().__init__(value, label=name)
         self.source = source
 

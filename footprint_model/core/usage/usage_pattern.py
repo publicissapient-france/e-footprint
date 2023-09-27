@@ -1,22 +1,37 @@
 from footprint_model.constants.units import u
 from footprint_model.core.hardware.device_population import DevicePopulation
-from footprint_model.core.usage.time_intervals import TimeIntervals
 from footprint_model.core.usage.user_journey import UserJourney
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.network import Network
-from footprint_model.constants.sources import SourceValue
+from footprint_model.constants.sources import SourceValue, SourceObject
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 
-from typing import List, Set
+from typing import Set
 import math
 import logging
 
 
 class UsagePattern(ModelingObject):
+    @staticmethod
+    def check_time_intervals_validity(sorted_time_intervals):
+        for i in range(len(sorted_time_intervals)):
+            start_time, end_time = sorted_time_intervals[i]
+            if start_time >= end_time:
+                raise ValueError(
+                    f"Invalid time interval {sorted_time_intervals[i]}, start time must be earlier than end time")
+            if i < len(sorted_time_intervals) - 1:
+                next_start_time = sorted_time_intervals[i + 1][0]
+                if next_start_time < end_time:
+                    raise ValueError(
+                        f"Time interval {sorted_time_intervals[i + 1]} starts before time interval"
+                        f" {sorted_time_intervals[i]} ends")
+
     def __init__(self, name: str, user_journey: UserJourney, device_population: DevicePopulation,
-                 network: Network, user_journey_freq_per_user: SourceValue, time_intervals: List[List[int]]):
+                 network: Network, user_journey_freq_per_user: SourceValue, time_intervals: SourceObject):
         super().__init__(name)
+        self.utc_time_intervals = None
+        self.hourly_usage = None
         self.nb_user_journeys_in_parallel_during_usage = None
         self.user_journey_freq = None
         self.non_usage_time_fraction = None
@@ -29,9 +44,12 @@ class UsagePattern(ModelingObject):
                              f"[user_journey] / ([user] * [time]) dimensionality")
         self.user_journey_freq_per_user = user_journey_freq_per_user
         self.user_journey_freq_per_user.set_name(f"Usage frequency in {self.name}")
-        self.time_intervals = TimeIntervals(f"{self.name} usage time intervals", time_intervals,
-                                            device_population.country.timezone)
+        self.check_time_intervals_validity(time_intervals.value)
+        self.time_intervals = time_intervals
+        self.time_intervals.set_name(f"{self.name} local timezone")
 
+    def after_init(self):
+        self.init_has_passed = True
         self.compute_calculated_attributes()
 
         self._user_journey.link_usage_pattern(self)
@@ -45,17 +63,6 @@ class UsagePattern(ModelingObject):
         if isinstance(other, UsagePattern):
             return self.name == other.name
         return False
-
-    def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
-        self.update_usage_time_fraction()
-        self.update_user_journey_freq()
-        self.update_nb_user_journeys_in_parallel_during_usage()
-
-    def update_usage_time_fraction(self):
-        usage_time_fraction = self.time_intervals.utc_time_intervals.compute_usage_time_fraction()
-        self.usage_time_fraction = usage_time_fraction.define_as_intermediate_calculation(
-            f"Usage time fraction of {self.name}")
 
     @property
     def user_journey(self) -> UserJourney:
@@ -90,6 +97,36 @@ class UsagePattern(ModelingObject):
     @property
     def services(self) -> Set[Service]:
         return self.user_journey.services
+
+    def compute_calculated_attributes(self):
+        logging.info(f"Computing calculated attributes for {self.name}")
+        self.update_hourly_usage()
+        self.update_utc_time_intervals()
+        self.update_usage_time_fraction()
+        self.update_user_journey_freq()
+        self.update_nb_user_journeys_in_parallel_during_usage()
+
+    def update_hourly_usage(self):
+        hourly_usage = [
+            ExplainableQuantity(0 * u.dimensionless, f"Non usage hour between {i} and {i+1}") for i in range(24)]
+        for time_interval in self.time_intervals.value:
+            start, end = time_interval
+            for i in range(start, end):
+                hourly_usage[i] = ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i+1}")
+
+        self.hourly_usage = ExplainableHourlyUsage(
+            hourly_usage, f"{self.name} local timezone hourly usage", left_child=self.time_intervals,
+            child_operator="Hourly usage conversion")
+
+    def update_utc_time_intervals(self):
+        utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.device_population.country.timezone)
+        self.utc_time_intervals = utc_time_intervals.define_as_intermediate_calculation(
+            f"{self.name} UTC")
+
+    def update_usage_time_fraction(self):
+        usage_time_fraction = self.utc_time_intervals.compute_usage_time_fraction()
+        self.usage_time_fraction = usage_time_fraction.define_as_intermediate_calculation(
+            f"Usage time fraction of {self.name}")
 
     def update_user_journey_freq(self):
         self.user_journey_freq = (

@@ -62,6 +62,8 @@ class UserJourneyStep(ModelingObject):
         self.cpu_needed = cpu_needed
         self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process request {self.name}")
 
+    def after_init(self):
+        self.init_has_passed = True
         self.compute_calculated_attributes()
 
     def __mul__(self, other):
@@ -86,6 +88,9 @@ class UserJourney(ModelingObject):
         self.data_download = None
         self.duration = None
         self.uj_steps = uj_steps
+
+    def after_init(self):
+        self.init_has_passed = True
         self.compute_calculated_attributes()
 
     def compute_calculated_attributes(self):
@@ -112,7 +117,6 @@ class UserJourney(ModelingObject):
 
     def add_step(self, step: UserJourneyStep) -> None:
         self.uj_steps.append(step)
-        self.compute_calculated_attributes()
 
     @property
     def servers(self) -> Set[Server]:

@@ -15,7 +15,7 @@ class TestService(unittest.TestCase):
         self.base_ram = SourceValue(4 * u.GB, Sources.HYPOTHESIS)
         self.base_cpu = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         self.service = Service("Test Service", self.server, self.storage, self.base_ram, self.base_cpu)
-        self.service.never_send_pubsub_topic_messages = True
+        self.service.dont_handle_pubsub_topic_messages = True
 
     def test_service_initialization(self):
         self.assertEqual(self.service.name, "Test Service")
@@ -90,7 +90,7 @@ class TestService(unittest.TestCase):
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "parallel_uj")
-        usage_pattern.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
             [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc_time_intervals")
         with patch.object(self.service, "usage_patterns", {usage_pattern}):
             self.service.update_hour_by_hour_ram_need()
@@ -120,7 +120,7 @@ class TestService(unittest.TestCase):
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "uj_in_parallel")
-        usage_pattern.time_intervals.utc_time_intervals = ExplainableHourlyUsage(
+        usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
             [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc time intervals")
         with patch.object(self.service, "usage_patterns", {usage_pattern}):
             self.service.update_hour_by_hour_cpu_need()

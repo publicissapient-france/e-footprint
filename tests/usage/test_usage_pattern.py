@@ -1,11 +1,10 @@
-import unittest
-from unittest.mock import MagicMock, patch
-
 from footprint_model.constants.countries import Countries
-from footprint_model.constants.sources import SourceValue
-from footprint_model.core.usage.time_intervals import TimeIntervals
+from footprint_model.constants.sources import SourceValue, SourceObject, Sources
 from footprint_model.core.usage.usage_pattern import UsagePattern
 from footprint_model.constants.units import u
+
+import unittest
+from unittest.mock import MagicMock, patch
 
 
 class TestUsagePattern(unittest.TestCase):
@@ -22,30 +21,49 @@ class TestUsagePattern(unittest.TestCase):
 
         user_journey.services = {self.service1, self.service2}
         population = MagicMock()
-        population.nb_devices = SourceValue(10000 * u.user, "population")
+        population.nb_devices = SourceValue(10000 * u.user, name="population")
         population.country = Countries.FRANCE
 
         network = MagicMock()
 
-        self.up_time_intervals = [[8, 16]]
         self.usage_pattern = UsagePattern(
             "usage_pattern", user_journey, population, network,
             user_journey_freq_per_user=SourceValue(10 * u.user_journey / (u.user * u.year)),
-            time_intervals=self.up_time_intervals
+            time_intervals=SourceObject([[8, 16]], Sources.USER_INPUT)
         )
 
         self.expected_nb_user_journeys_per_year = 100000 * u.user_journey / u.year
-        self.expected_nb_uj_in_parallel = SourceValue(2 * u.user_journey, "number of uj in parallel")
+        self.expected_nb_uj_in_parallel = SourceValue(2 * u.user_journey, name="number of uj in parallel")
+
+    def test_check_time_intervals_validity(self):
+        self.usage_pattern.check_time_intervals_validity([[0, 5], [6, 10], [15, 20]])
+
+    def test_invalid_start_time(self):
+        with self.assertRaises(ValueError):
+            self.usage_pattern.check_time_intervals_validity([[5, 3], [7, 10]])
+
+    def test_interval_overlap(self):
+        with self.assertRaises(ValueError):
+            self.usage_pattern.check_time_intervals_validity([[0, 5], [4, 10]])
 
     def test_usage_time_fraction(self):
         self.assertEqual(self.usage_pattern.usage_time_fraction.value, (8 / 24) * u.dimensionless)
 
     def test_update_usage_time_fraction(self):
-        intervals = TimeIntervals(
-            "usage time intervals", [[8, 10]], self.usage_pattern.device_population.country.timezone)
+        intervals = SourceObject([[8, 10]], Sources.USER_INPUT)
         with patch.object(self.usage_pattern, "time_intervals", intervals):
             self.usage_pattern.update_usage_time_fraction()
             self.assertEqual(self.usage_pattern.usage_time_fraction.value, (2 / 24) * u.dimensionless)
+
+    def test_update_hourly_usage(self):
+        with patch.object(self.usage_pattern, "time_intervals", SourceObject([[0, 5], [6, 10], [15, 20]])):
+            self.usage_pattern.update_hourly_usage()
+
+            for i in range(24):
+                if 0 <= i < 5 or 6 <= i < 10 or 15 <= i < 20:
+                    self.assertEqual(self.usage_pattern.hourly_usage.value[i].value, 1 * u.dimensionless)
+                else:
+                    self.assertEqual(self.usage_pattern.hourly_usage.value[i].value, 0 * u.dimensionless)
 
     def test_user_journey_setter(self):
         test_uj = MagicMock()
