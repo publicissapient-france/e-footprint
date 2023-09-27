@@ -4,7 +4,7 @@ from footprint_model.abstract_modeling_classes.explainable_objects import Explai
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
-import logging
+from footprint_model.logger import logger
 
 
 class Storage(InfraHardware):
@@ -41,7 +41,7 @@ class Storage(InfraHardware):
             self.storage_need_from_previous_year = 0
 
     def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for {self.name}")
         self.update_all_services_storage_needs()
         self.update_active_storage_required()
         self.update_long_term_storage_required()

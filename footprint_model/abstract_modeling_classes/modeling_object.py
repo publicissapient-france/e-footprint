@@ -1,12 +1,11 @@
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from footprint_model.utils.tools import convert_to_list
 
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Set
 from pubsub import pub
 from importlib import import_module
-import logging
+from footprint_model.logger import logger
 
 
 def get_subclass_attributes(obj, target_class):
@@ -67,7 +66,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 f"update_{input_attr_name} function does not exist. Please create it and checkout optimization.md")
         elif update_func is not None:
             if len(input_value.pubsub_topics_to_listen_to) == 0:
-                logging.warning(
+                logger.warning(
                     f"Update function update_{input_attr_name} doesn’t listen to any input. "
                     f"Normal in tests but not at runtime")
             if old_value is not None:
@@ -75,7 +74,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     pub.unsubscribe(update_func, pubsub_topic)
             for pubsub_topic in input_value.pubsub_topics_to_listen_to:
                 pub.subscribe(update_func, pubsub_topic)
-            logging.debug(f"Subscribed update_{input_attr_name} to {input_value.pubsub_topics_to_listen_to}")
+            logger.debug(f"Subscribed update_{input_attr_name} to {input_value.pubsub_topics_to_listen_to}")
 
     def __setattr__(self, name, input_value):
         super().__setattr__(name, input_value)
@@ -90,14 +89,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     f" example) has been set as default value in one of the classes.")
             else:
                 if not input_value.label:
-                    logging.warning(
+                    logger.warning(
                         f"Intermediate calculation is being set at attribute {name} in {self.name} "
                         f"(id {self.id}) but has no label attached to it.")
                 input_value.pubsub_topic = current_pubsub_topic
                 pub.sendMessage(current_pubsub_topic)
-                logging.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
+                logger.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
 
         if self.init_has_passed and not self.dont_handle_pubsub_topic_messages:
+            logger.debug(f"attribute {name} updated in {self.name}")
             old_value = self.__dict__.get(name, None)
 
             if issubclass(type(input_value), ExplainableObject):

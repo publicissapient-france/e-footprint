@@ -7,7 +7,7 @@ from footprint_model.constants.units import u
 from footprint_model.constants.countries import Country, Countries
 
 import math
-import logging
+from footprint_model.logger import logger
 
 
 class CloudConfig(NonQuantityUsedInCalculation):
@@ -39,7 +39,7 @@ class Server(InfraHardware):
         self.usage_patterns = set()
 
     def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for {self.name}")
         self.update_server_utilization_rate()
         self.update_available_ram_per_instance()
         self.update_available_cpu_per_instance()

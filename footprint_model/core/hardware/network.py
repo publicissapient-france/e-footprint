@@ -5,7 +5,7 @@ from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUs
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
-import logging
+from footprint_model.logger import logger
 
 
 class Network(ObjectLinkedToUsagePatterns, ModelingObject):
@@ -19,7 +19,7 @@ class Network(ObjectLinkedToUsagePatterns, ModelingObject):
         self.bandwidth_energy_intensity.set_name(f"bandwith energy intensity of {self.name}")
 
     def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for {self.name}")
         self.update_data_download()
         self.update_data_upload()
         self.update_energy_footprint()

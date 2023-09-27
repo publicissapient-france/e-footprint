@@ -9,7 +9,7 @@ from footprint_model.abstract_modeling_classes.explainable_objects import Explai
 
 from typing import Set
 import math
-import logging
+from footprint_model.logger import logger
 
 
 class UsagePattern(ModelingObject):
@@ -99,7 +99,7 @@ class UsagePattern(ModelingObject):
         return self.user_journey.services
 
     def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for {self.name}")
         self.update_hourly_usage()
         self.update_utc_time_intervals()
         self.update_usage_time_fraction()

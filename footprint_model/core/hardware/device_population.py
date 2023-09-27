@@ -7,7 +7,7 @@ from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
 from typing import List
-import logging
+from footprint_model.logger import logger
 
 
 class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
@@ -23,7 +23,7 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         self.devices = devices
 
     def compute_calculated_attributes(self):
-        logging.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for {self.name}")
         self.update_power()
         self.update_energy_footprint()
         self.update_fabrication_footprint()

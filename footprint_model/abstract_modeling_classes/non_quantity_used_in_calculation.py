@@ -1,5 +1,5 @@
 import inspect
-import logging
+from footprint_model.logger import logger
 
 from pubsub import pub
 
@@ -19,7 +19,7 @@ class NonQuantityUsedInCalculation(ExplainableObject):
             method_obj = getattr(instance_in_prev_frame, calling_function_name, None)
             pubsub_topic_to_listen_to = self.pubsub_topic
             pub.subscribe(method_obj, pubsub_topic_to_listen_to)
-            logging.debug(f"CALLING FUNC - Subscribed {calling_function_name} to {pubsub_topic_to_listen_to}")
+            logger.debug(f"CALLING FUNC - Subscribed {calling_function_name} to {pubsub_topic_to_listen_to}")
 
     def __get__(self, instance, owner):
         self.get_calling_function()

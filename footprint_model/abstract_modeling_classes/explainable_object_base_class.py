@@ -1,4 +1,4 @@
-import logging
+from footprint_model.logger import logger
 from typing import Type
 from copy import deepcopy
 
@@ -78,7 +78,7 @@ class ExplainableObject:
             for input_attr in untreated_input_attrs + input_attrs_to_keep:
                 if input_attr.pubsub_topic in current_input_attr.pubsub_topics_that_depend_on_self:
                     keep_input_attr = False
-                    logging.info(
+                    logger.debug(
                         f"Not keeping {current_input_attr.pubsub_topic} for {self.label} to listen to because "
                         f"{input_attr.pubsub_topic} already depends on it")
             if keep_input_attr:
