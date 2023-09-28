@@ -17,11 +17,11 @@ class TestExplainableQuantity(unittest.TestCase):
         self.d.define_as_intermediate_calculation("int calc 2")
         self.e = ExplainableQuantity(3 * u.W, "e")
         for explainable_quantity in (self.a, self.b, self.e):
-            explainable_quantity.pubsub_topic = f"Non null topic for {explainable_quantity.label}"
+            explainable_quantity.modeling_obj_container = f"Non null topic for {explainable_quantity.label}"
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):
-        self.assertEqual([self.a, self.b, self.e], self.f.input_attributes_to_listen_to)
+        self.assertEqual([self.a, self.b, self.e], self.f.direct_children_with_id)
 
     def test_init(self):
         self.assertEqual(self.a.value, 1 * u.W)

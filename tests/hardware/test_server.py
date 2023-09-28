@@ -25,7 +25,7 @@ class TestServer(TestCase):
             country=MagicMock(),
             cloud="Unexisting cloud"
         )
-        self.server_base.dont_handle_pubsub_topic_messages = True
+        self.server_base.dont_handle_input_updates = True
 
     def test_server_utilization_rate_serverless(self):
         with patch.object(self.server_base, "cloud", new="Serverless"):

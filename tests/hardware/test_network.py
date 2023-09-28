@@ -11,7 +11,7 @@ from unittest.mock import MagicMock
 class TestNetwork(TestCase):
     def setUp(self):
         self.network = Network(PhysicalElements.WIFI_NETWORK, SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
-        self.network.dont_handle_pubsub_topic_messages = True
+        self.network.dont_handle_input_updates = True
 
         self.usage_pattern = MagicMock()
         self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, name='data_upload')

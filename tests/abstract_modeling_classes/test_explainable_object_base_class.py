@@ -36,13 +36,13 @@ class TestExplainableObjectBaseClass(TestCase):
 
     def test_deepcopy_should_set_pubsub_topic_to_none(self):
         a = ExplainableObject(1, "a")
-        a.pubsub_topic = "topic_a"
+        a.modeling_obj_container = "topic_a"
         from copy import deepcopy
         b = deepcopy(a)
 
         self.assertEqual("a", b.label)
         self.assertEqual(1, b.value)
-        self.assertIsNone(b.pubsub_topic)
+        self.assertIsNone(b.modeling_obj_container)
 
     def test_creation_with_label(self):
         eo = ExplainableObject(value=5, label="Label A")
@@ -58,8 +58,8 @@ class TestExplainableObjectBaseClass(TestCase):
     def test_input_attributes_to_listen_to(self):
         left_child = ExplainableObject(value=3, label="Label L")
         right_child = ExplainableObject(value=4, label="Label R")
-        left_child.pubsub_topic = "topicL"
-        right_child.pubsub_topic = "topicR"
+        left_child.modeling_obj_container = "topicL"
+        right_child.modeling_obj_container = "topicR"
 
         eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent")
         self.assertEqual(set(eo.pubsub_topics_to_listen_to), {"topicL", "topicR"})

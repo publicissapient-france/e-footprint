@@ -1,24 +1,14 @@
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Set
-from pubsub import pub
 from importlib import import_module
 from footprint_model.logger import logger
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 
 def get_subclass_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
             if issubclass(type(attr_value), target_class)}
-
-
-def recursively_send_pubsub_message_for_every_attribute_used_in_calculation(old_attribute_value: List):
-    for obj in old_attribute_value:
-        for attr_name, attr_value in get_subclass_attributes(obj, ExplainableObject).items():
-            pub.sendMessage(attr_value.pubsub_topic)
-        for modeling_object, modeling_object_name in get_subclass_attributes(obj, ModelingObject).items():
-            recursively_send_pubsub_message_for_every_attribute_used_in_calculation([modeling_object])
 
 
 def check_type_homogeneity_within_list_or_set(input_list_or_set: List | Set):
@@ -47,8 +37,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.init_has_passed = False
         self.name = name
-        self.id = str(uuid.uuid4())[:6]
-        self.dont_handle_pubsub_topic_messages = False
+        self.id = f"{self.name} {str(uuid.uuid4())[:6]}"
+        self.dont_handle_input_updates = False
 
     @abstractmethod
     def compute_calculated_attributes(self):
@@ -57,52 +47,64 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def after_init(self):
         self.init_has_passed = True
 
-    def handle_explainableobject_update(self, input_value: ExplainableObject, input_attr_name: str,
-                                        old_value: ExplainableObject):
-        update_func = getattr(self, f"update_{input_attr_name}", None)
-        if update_func is None and \
-                (input_value.left_child is not None or input_value.right_child is not None):
-            raise ValueError(
-                f"update_{input_attr_name} function does not exist. Please create it and checkout optimization.md")
-        elif update_func is not None:
-            if len(input_value.pubsub_topics_to_listen_to) == 0:
-                logger.warning(
-                    f"Update function update_{input_attr_name} doesn’t listen to any input. "
-                    f"Normal in tests but not at runtime")
-            if old_value is not None:
-                for pubsub_topic in old_value.pubsub_topics_to_listen_to:
-                    pub.unsubscribe(update_func, pubsub_topic)
-            for pubsub_topic in input_value.pubsub_topics_to_listen_to:
-                pub.subscribe(update_func, pubsub_topic)
-            logger.debug(f"Subscribed update_{input_attr_name} to {input_value.pubsub_topics_to_listen_to}")
+    @staticmethod
+    def handle_model_input_update(old_value_that_gets_updated: ExplainableObject):
+        ancestors = old_value_that_gets_updated.get_all_ancestors_with_id()
+        has_been_recomputed_dict = {ancestor.id: False for ancestor in ancestors}
+        has_been_recomputed_dict[old_value_that_gets_updated.id] = True
+
+        computed_children_with_parents_to_recompute = [old_value_that_gets_updated]
+
+        while len(computed_children_with_parents_to_recompute) > 0:
+            for recomputed_child in computed_children_with_parents_to_recompute:
+                drop_recomputed_child_from_list = True
+                for parent in recomputed_child.direct_parents_with_id:
+                    if not has_been_recomputed_dict[parent.id]:
+                        children_that_belong_to_ancestors = [
+                            child for child in parent.direct_children_with_id
+                            if child.id in [ancestor.id for ancestor in ancestors]]
+                        if all([has_been_recomputed_dict[child.id] for child in children_that_belong_to_ancestors]):
+                            parent_update_func_name = f"update_{parent.attr_name_in_mod_obj_container}"
+                            parent_update_func = getattr(
+                                parent.modeling_obj_container, parent_update_func_name, None)
+                            if parent_update_func is None:
+                                ValueError(
+                                    f"{parent_update_func_name} function does not exist. Please create it and checkout "
+                                    f"optimization.md")
+                            else:
+                                parent_update_func()
+                                has_been_recomputed_dict[parent.id] = True
+                                if len(parent.direct_parents_with_id) > 0:
+                                    computed_children_with_parents_to_recompute.append(parent)
+                        else:
+                            # Wait for next iteration
+                            drop_recomputed_child_from_list = False
+                if drop_recomputed_child_from_list:
+                    computed_children_with_parents_to_recompute = [
+                        child for child in computed_children_with_parents_to_recompute
+                        if child.id != recomputed_child.id]
 
     def __setattr__(self, name, input_value):
+        old_value = self.__dict__.get(name, None)
         super().__setattr__(name, input_value)
         if name not in ["init_has_passed", "name", "id", "dont_handle_pubsub_topic_messages"]:
             logger.debug(f"attribute {name} updated in {self.name}")
 
-        if issubclass(type(input_value), ExplainableObject) and not self.dont_handle_pubsub_topic_messages:
-            current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
-            if input_value.pubsub_topic is not None and current_pubsub_topic != input_value.pubsub_topic:
+        if issubclass(type(input_value), ExplainableObject) and not self.dont_handle_input_updates:
+            if input_value.modeling_obj_container is not None and self.id != input_value.modeling_obj_container.id:
                 raise ValueError(
-                    f"An ExplainableObject can’t be linked to more than one pubsub topic. Here "
-                    f"{current_pubsub_topic} is trying to be set instead of preexisting {input_value.pubsub_topic}."
+                    f"An ExplainableObject can’t be linked attributed to more than one ModelingObject. Here "
+                    f"{input_value.label} is trying to be linked to {self.name} but is already linked to "
+                    f"{input_value.modeling_obj_container.name}."
                     f" A classic reason why this error could happen is that a mutable object (SourceValue for"
                     f" example) has been set as default value in one of the classes.")
             else:
-                if not input_value.label:
-                    logger.warning(
-                        f"Intermediate calculation is being set at attribute {name} in {self.name} "
-                        f"(id {self.id}) but has no label attached to it.")
-                input_value.pubsub_topic = current_pubsub_topic
-                logger.debug(f"Sending message to {current_pubsub_topic} (from obj {self.name})")
-                pub.sendMessage(current_pubsub_topic)
+                input_value.set_modeling_obj_container(self, name)
 
-        if self.init_has_passed and not self.dont_handle_pubsub_topic_messages:
-            old_value = self.__dict__.get(name, None)
-
-            if issubclass(type(input_value), ExplainableObject):
-                self.handle_explainableobject_update(input_value, name, old_value)
+        if self.init_has_passed and not self.dont_handle_input_updates:
+            if issubclass(type(input_value), ExplainableObject) and \
+                    input_value.left_child is None and input_value.right_child is None and old_value is not None: # TODO: remove last condition after server update
+                self.handle_model_input_update(old_value)
             elif type(input_value) == ModelingObject:
                 self.compute_calculated_attributes()
             elif type(input_value) == list:

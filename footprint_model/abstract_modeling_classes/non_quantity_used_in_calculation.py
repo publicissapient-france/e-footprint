@@ -17,7 +17,7 @@ class NonQuantityUsedInCalculation(ExplainableObject):
         if calling_function_name.startswith("update_"):
             instance_in_prev_frame = caller_frame.f_locals.get("self")
             method_obj = getattr(instance_in_prev_frame, calling_function_name, None)
-            pubsub_topic_to_listen_to = self.pubsub_topic
+            pubsub_topic_to_listen_to = self.modeling_obj_container
             pub.subscribe(method_obj, pubsub_topic_to_listen_to)
             logger.debug(f"CALLING FUNC - Subscribed {calling_function_name} to {pubsub_topic_to_listen_to}")
 

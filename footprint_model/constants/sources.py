@@ -61,7 +61,6 @@ class SourceObject(ExplainableObject):
 class SourceValue(SourceObject, ExplainableQuantity):
     def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, name: str = "unnamed source value"):
         super().__init__(value, source, name)
-        self.source = source
 
 
 if __name__ == "__main__":

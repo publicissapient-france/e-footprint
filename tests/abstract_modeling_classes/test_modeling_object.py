@@ -19,7 +19,7 @@ class TestModelingObject(unittest.TestCase):
     def test_setattr_attribute_used_in_calculation(self):
         value = ExplainableObject(1, "test_value")
         self.modeling_object.attribute = value
-        self.assertEqual(f"attribute_in_{self.modeling_object.name}_{self.modeling_object.id}", value.pubsub_topic)
+        self.assertEqual(f"attribute_in_{self.modeling_object.name}_{self.modeling_object.id}", value.modeling_obj_container)
 
     @patch.object(pub, "sendMessage")
     def test_setattr_publishes_message(self, mock_send_message):
