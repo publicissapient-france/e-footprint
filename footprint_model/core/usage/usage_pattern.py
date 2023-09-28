@@ -72,7 +72,10 @@ class UsagePattern(ModelingObject):
     def user_journey(self, new_user_journey):
         self._user_journey.unlink_usage_pattern(self)
         self._user_journey = new_user_journey
+        self.compute_calculated_attributes()
         self._user_journey.link_usage_pattern(self)
+        self.device_population.compute_calculated_attributes()
+        self.network.compute_calculated_attributes()
 
     @property
     def device_population(self) -> DevicePopulation:
@@ -99,7 +102,7 @@ class UsagePattern(ModelingObject):
         return self.user_journey.services
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for usage pattern {self.name}")
         self.update_hourly_usage()
         self.update_utc_time_intervals()
         self.update_usage_time_fraction()

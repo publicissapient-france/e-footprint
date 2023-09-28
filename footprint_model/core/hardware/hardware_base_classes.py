@@ -4,7 +4,7 @@ from footprint_model.abstract_modeling_classes.modeling_object import ModelingOb
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
 
 class Hardware(ModelingObject):
@@ -26,15 +26,21 @@ class Hardware(ModelingObject):
         pass
 
 
-class ObjectLinkedToUsagePatterns:
+class ObjectLinkedToUsagePatterns(ABC):
     def __init__(self):
         self.usage_patterns = set()
 
+    @abstractmethod
+    def compute_calculated_attributes(self):
+        pass
+
     def link_usage_pattern(self, usage_pattern):
         self.usage_patterns = self.usage_patterns | {usage_pattern}
+        self.compute_calculated_attributes()
 
     def unlink_usage_pattern(self, usage_pattern):
         self.usage_patterns.discard(usage_pattern)
+        self.compute_calculated_attributes()
 
 
 class InfraHardware(Hardware, ObjectLinkedToUsagePatterns):

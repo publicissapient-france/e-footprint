@@ -41,7 +41,7 @@ class Storage(InfraHardware):
             self.storage_need_from_previous_year = 0
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for storage {self.name}")
         self.update_all_services_storage_needs()
         self.update_active_storage_required()
         self.update_long_term_storage_required()

@@ -20,10 +20,19 @@ class DevicePopulation(ModelingObject, ObjectLinkedToUsagePatterns):
         self.nb_devices = nb_devices
         self.nb_devices.set_name(f"Nb devices in {self.name}")
         self.country = country
-        self.devices = devices
+        self._devices = devices
+
+    @property
+    def devices(self):
+        return self._devices
+
+    @devices.setter
+    def devices(self, new_devices):
+        self._devices = new_devices
+        self.compute_calculated_attributes()
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for device population {self.name}")
         self.update_power()
         self.update_energy_footprint()
         self.update_fabrication_footprint()

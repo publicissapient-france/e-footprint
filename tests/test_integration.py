@@ -66,4 +66,6 @@ class IntegrationTest(TestCase):
                 new_footprint = system.total_footprint()
                 logger.info(f"system footprint went from {round(initial_total_footprint.value, 1)} "
                              f"to {round(new_footprint.value, 1)}")
+                if round(initial_total_footprint.magnitude, 2) != round(new_footprint.magnitude, 2):
+                    a = 1
                 initial_total_footprint = new_footprint

@@ -87,7 +87,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def __setattr__(self, name, input_value):
         old_value = self.__dict__.get(name, None)
         super().__setattr__(name, input_value)
-        if name not in ["init_has_passed", "name", "id", "dont_handle_pubsub_topic_messages"]:
+        if name not in ["init_has_passed", "name", "id", "dont_handle_input_updates", "usage_patterns"]:
             logger.debug(f"attribute {name} updated in {self.name}")
 
         if issubclass(type(input_value), ExplainableObject) and not self.dont_handle_input_updates:
@@ -105,17 +105,3 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             if issubclass(type(input_value), ExplainableObject) and \
                     input_value.left_child is None and input_value.right_child is None and old_value is not None: # TODO: remove last condition after server update
                 self.handle_model_input_update(old_value)
-            elif type(input_value) == ModelingObject:
-                self.compute_calculated_attributes()
-            elif type(input_value) == list:
-                values_type = check_type_homogeneity_within_list_or_set(input_value)
-                # DevicePopulation class has a Hardware list attribute and UserJourney has an UserJourneyStep attribute
-                Hardware = import_module("footprint_model.core.hardware.hardware_base_classes").Hardware
-                UserJourneyStep = import_module("footprint_model.core.usage.user_journey").UserJourneyStep
-                assert values_type in [Hardware, UserJourneyStep]
-                self.compute_calculated_attributes()
-            elif type(input_value) == set:
-                values_type = check_type_homogeneity_within_list_or_set(input_value)
-                UsagePattern = import_module("footprint_model.core.usage.usage_pattern").UsagePattern
-                assert values_type == UsagePattern
-                self.compute_calculated_attributes()

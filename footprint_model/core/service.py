@@ -39,7 +39,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         return False
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for service {self.name}")
         if len(self.usage_patterns) > 0:
             self.update_hour_by_hour_cpu_need()
             self.update_hour_by_hour_ram_need()

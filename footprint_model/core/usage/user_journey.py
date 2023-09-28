@@ -72,7 +72,7 @@ class UserJourneyStep(ModelingObject):
         raise NotImplementedError
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for user journey step {self.name}")
         self.update_ram_needed()
 
     def update_ram_needed(self):
@@ -94,7 +94,7 @@ class UserJourney(ModelingObject):
         self.compute_calculated_attributes()
 
     def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for {self.name}")
+        logger.info(f"Computing calculated attributes for user journey {self.name}")
         self.update_duration()
         self.update_data_upload()
         self.update_data_download()
