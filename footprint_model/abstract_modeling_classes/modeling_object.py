@@ -78,6 +78,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def __setattr__(self, name, input_value):
         super().__setattr__(name, input_value)
+        if name not in ["init_has_passed", "name", "id", "dont_handle_pubsub_topic_messages"]:
+            logger.debug(f"attribute {name} updated in {self.name}")
 
         if issubclass(type(input_value), ExplainableObject) and not self.dont_handle_pubsub_topic_messages:
             current_pubsub_topic = f"{name}_in_{self.name}_{self.id}"
@@ -93,11 +95,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         f"Intermediate calculation is being set at attribute {name} in {self.name} "
                         f"(id {self.id}) but has no label attached to it.")
                 input_value.pubsub_topic = current_pubsub_topic
+                logger.debug(f"Sending message to {current_pubsub_topic} (from obj {self.name})")
                 pub.sendMessage(current_pubsub_topic)
-                logger.debug(f"Message sent to {current_pubsub_topic} (from obj {self.name})")
 
         if self.init_has_passed and not self.dont_handle_pubsub_topic_messages:
-            logger.debug(f"attribute {name} updated in {self.name}")
             old_value = self.__dict__.get(name, None)
 
             if issubclass(type(input_value), ExplainableObject):

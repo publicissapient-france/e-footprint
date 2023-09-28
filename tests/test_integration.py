@@ -1,5 +1,4 @@
-from unittest import TestCase
-
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
 from footprint_model.core.hardware.server import Servers
@@ -11,9 +10,11 @@ from footprint_model.core.hardware.network import Networks
 from footprint_model.core.system import System
 from footprint_model.constants.countries import Countries
 from footprint_model.constants.units import u
+from footprint_model.abstract_modeling_classes.modeling_object import get_subclass_attributes
 
-import logging
-logging.getLogger().level = logging.INFO
+from unittest import TestCase
+from copy import deepcopy
+from footprint_model.logger import logger
 
 
 class IntegrationTest(TestCase):
@@ -47,11 +48,22 @@ class IntegrationTest(TestCase):
 
         default_network = Networks.WIFI_NETWORK
         usage_pattern = UsagePattern(
-            "Average daily Youtube usage in France on laptop", default_uj, default_device_pop,
+            "Youtube usage in France", default_uj, default_device_pop,
             default_network, SourceValue(365 * u.user_journey / (u.user * u.year)),
             SourceObject([[7, 23]], Sources.USER_INPUT))
 
         system = System("system 1", [usage_pattern])
 
-        system.fabrication_footprints()
-        system.energy_footprints()
+        initial_total_footprint = system.total_footprint()
+        for expl_attr_name, expl_attr in get_subclass_attributes(streaming_step, ExplainableObject).items():
+            if expl_attr.left_child is None and expl_attr.right_child is None:
+                old_value = expl_attr.value
+                expl_attr_new_value = deepcopy(expl_attr)
+                expl_attr_new_value.value *= 100 * u.dimensionless
+                logger.warning(f"{expl_attr.label} changing from {round(old_value, 1)} to"
+                                f" {round(expl_attr_new_value.value, 1)}")
+                streaming_step.__setattr__(expl_attr_name, expl_attr_new_value)
+                new_footprint = system.total_footprint()
+                logger.info(f"system footprint went from {round(initial_total_footprint.value, 1)} "
+                             f"to {round(new_footprint.value, 1)}")
+                initial_total_footprint = new_footprint
