@@ -100,7 +100,7 @@ def set_string_max_width(s, max_width):
 
 if __name__ == "__main__":
     from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-    from footprint_model.core.hardware.server import Servers
+    from footprint_model.core.hardware.servers.server import Servers
     from footprint_model.core.hardware.storage import Storage
     from footprint_model.core.service import Service
     from footprint_model.core.hardware.device_population import DevicePopulation, Devices

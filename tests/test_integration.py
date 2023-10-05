@@ -1,7 +1,7 @@
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-from footprint_model.core.hardware.server import Servers
+from footprint_model.core.hardware.servers.server import Servers
 from footprint_model.core.hardware.storage import Storage
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.device_population import DevicePopulation, Devices

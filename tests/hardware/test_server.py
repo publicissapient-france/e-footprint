@@ -1,7 +1,7 @@
 from footprint_model.constants.physical_elements import PhysicalElements
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
-from footprint_model.core.hardware.server import Server
+from footprint_model.core.hardware.servers.server import Server
 from tests.utils import create_cpu_need, create_ram_need
 
 from unittest import TestCase
