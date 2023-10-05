@@ -2,7 +2,7 @@ from footprint_model.constants.units import u
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.constants.sources import SourceValue
 from footprint_model.core.service import Service
-from footprint_model.core.hardware.servers.server import Server
+from footprint_model.core.hardware.servers.server_base_class import Server
 from footprint_model.core.hardware.storage import Storage
 
 from typing import List, Set

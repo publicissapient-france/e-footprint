@@ -1,7 +1,7 @@
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.sources import SourceValue, Sources, SourceObject
 from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-from footprint_model.core.hardware.servers.server import Servers
+from footprint_model.core.hardware.servers.autoscaling import AUTOSCALING
 from footprint_model.core.hardware.storage import Storage
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.device_population import DevicePopulation, Devices
@@ -19,7 +19,7 @@ from footprint_model.logger import logger
 
 class IntegrationTest(TestCase):
     def test_base_use_case(self):
-        server = Servers.SERVER
+        server = AUTOSCALING
         server.cloud = "Serverless"
         storage = Storage(
             "Default SSD storage",
@@ -62,12 +62,9 @@ class IntegrationTest(TestCase):
                 expl_attr_new_value.value *= 100 * u.dimensionless
                 logger.warning(f"{expl_attr.label} changing from {round(old_value, 1)} to"
                                 f" {round(expl_attr_new_value.value, 1)}")
-                if expl_attr.label == 'Ratio of RAM server used over quantity of data sent to user during 20 min streaming on Youtube from hypothesis':
-                    a = 1
                 streaming_step.__setattr__(expl_attr_name, expl_attr_new_value)
                 new_footprint = system.total_footprint()
                 logger.info(f"system footprint went from {round(initial_total_footprint.value, 1)} "
                             f"to {round(new_footprint.value, 1)}")
-                if round(initial_total_footprint.magnitude, 2) == round(new_footprint.magnitude, 2):
-                    a = 1
+                assert round(initial_total_footprint.magnitude, 2) != round(new_footprint.magnitude, 2)
                 initial_total_footprint = new_footprint

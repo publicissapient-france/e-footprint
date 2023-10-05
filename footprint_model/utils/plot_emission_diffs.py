@@ -147,7 +147,7 @@ if __name__ == "__main__":
     from footprint_model.constants.explainable_quantities import ExplainableQuantity
     from footprint_model.constants.sources import SourceValue, Sources
     from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-    from footprint_model.core.hardware.servers.server import Servers
+    from footprint_model.core.hardware.servers.server_base_class import Servers
     from footprint_model.core.hardware.storage import Storage
     from footprint_model.core.service import Service, Request
     from footprint_model.core.hardware.device_population import DevicePopulation, Devices
