@@ -78,7 +78,7 @@ class UserJourneyStep(ModelingObject):
     def update_ram_needed(self):
         ram_needed = (self.server_ram_per_data_transferred * self.data_download)
 
-        self.ram_needed = ram_needed.define_as_intermediate_calculation(f"Ram needed for {self.name}")
+        self.ram_needed = ram_needed.define_as_intermediate_calculation(f"RAM needed for {self.name}")
 
 
 class UserJourney(ModelingObject):

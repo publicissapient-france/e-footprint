@@ -62,10 +62,12 @@ class IntegrationTest(TestCase):
                 expl_attr_new_value.value *= 100 * u.dimensionless
                 logger.warning(f"{expl_attr.label} changing from {round(old_value, 1)} to"
                                 f" {round(expl_attr_new_value.value, 1)}")
+                if expl_attr.label == 'Ratio of RAM server used over quantity of data sent to user during 20 min streaming on Youtube from hypothesis':
+                    a = 1
                 streaming_step.__setattr__(expl_attr_name, expl_attr_new_value)
                 new_footprint = system.total_footprint()
                 logger.info(f"system footprint went from {round(initial_total_footprint.value, 1)} "
-                             f"to {round(new_footprint.value, 1)}")
-                if round(initial_total_footprint.magnitude, 2) != round(new_footprint.magnitude, 2):
+                            f"to {round(new_footprint.value, 1)}")
+                if round(initial_total_footprint.magnitude, 2) == round(new_footprint.magnitude, 2):
                     a = 1
                 initial_total_footprint = new_footprint

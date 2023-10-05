@@ -100,8 +100,14 @@ class Server(InfraHardware):
             average_cpu_needed_per_day = all_services_cpu_needs.mean().define_as_intermediate_calculation(
                 f"Average CPU need of {self.name}")
 
-            nb_of_servers_raw = max(average_ram_needed_per_day / available_ram_per_instance,
-                                    average_cpu_needed_per_day / available_cpu_per_instance)
+            nb_of_servers_based_on_ram = (
+                    average_ram_needed_per_day / available_ram_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on RAM alone")
+            nb_of_servers_based_on_cpu = (
+                    average_cpu_needed_per_day / available_cpu_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on CPU alone")
+
+            nb_of_servers_raw = nb_of_servers_based_on_ram.compare_with_and_return_max(nb_of_servers_based_on_cpu)
 
             nb_of_instances = nb_of_servers_raw
 
@@ -147,8 +153,16 @@ class Server(InfraHardware):
             cpu_needed_per_day = all_services_cpu_needs.max().define_as_intermediate_calculation(
                 f"Max daily {self.name } CPU need")
 
-            nb_of_servers_raw = max(ram_needed_per_day / available_ram_per_instance,
-                                    cpu_needed_per_day / available_cpu_per_instance).to(u.dimensionless)
+            nb_of_servers_based_on_ram_alone = (
+                    ram_needed_per_day / available_ram_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on RAM alone")
+            nb_of_servers_based_on_cpu_alone = (
+                    cpu_needed_per_day / available_cpu_per_instance).define_as_intermediate_calculation(
+                f"Raw nb of {self.name} instances based on CPU alone")
+
+            nb_of_servers_raw = nb_of_servers_based_on_ram_alone.compare_with_and_return_max(
+                nb_of_servers_based_on_cpu_alone)
+
             if math.ceil(nb_of_servers_raw.magnitude) - nb_of_servers_raw.magnitude != 0:
                 nb_of_instances = nb_of_servers_raw + ExplainableQuantity(
                     (math.ceil(nb_of_servers_raw.magnitude) - nb_of_servers_raw.magnitude)

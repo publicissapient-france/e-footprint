@@ -1,7 +1,4 @@
-from footprint_model.logger import logger
-
 from typing import Type
-from copy import deepcopy
 
 
 class ExplainableObject:
@@ -30,6 +27,9 @@ class ExplainableObject:
         cls = self.__class__
         new_instance = cls.__new__(cls, "dummy_value", "dummy_label")
         new_instance.__init__(self.value, self.label)
+
+        if getattr(self, "source") is not None:
+            new_instance.source = self.source
 
         return new_instance
 

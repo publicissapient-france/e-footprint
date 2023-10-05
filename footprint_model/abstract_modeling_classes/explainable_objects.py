@@ -19,6 +19,24 @@ class ExplainableQuantity(ExplainableObject):
             )
         super().__init__(value, label, left_child, right_child, child_operator)
 
+    def to(self, unit_to_convert_to):
+        self.value = self.value.to(unit_to_convert_to)
+
+        return self
+
+    @property
+    def magnitude(self):
+        return self.value.magnitude
+
+    def compare_with_and_return_max(self, other):
+        if issubclass(type(other), ExplainableQuantity):
+            if self.value >= other.value:
+                return ExplainableQuantity(self.value, left_child=self, right_child=other, child_operator="max")
+            else:
+                return ExplainableQuantity(other.value, left_child=self, right_child=other, child_operator="max")
+        else:
+            raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
+
     def __gt__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return self.value > other.value
@@ -93,15 +111,6 @@ class ExplainableQuantity(ExplainableObject):
     def __round__(self, round_level):
         self.value = round(self.value, round_level)
         return self
-
-    def to(self, unit_to_convert_to):
-        self.value = self.value.to(unit_to_convert_to)
-
-        return self
-
-    @property
-    def magnitude(self):
-        return self.value.magnitude
 
 
 class ExplainableHourlyUsage(ExplainableObject):
