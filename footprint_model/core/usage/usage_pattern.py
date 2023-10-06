@@ -46,7 +46,7 @@ class UsagePattern(ModelingObject):
         self.user_journey_freq_per_user.set_name(f"Usage frequency in {self.name}")
         self.check_time_intervals_validity(time_intervals.value)
         self.time_intervals = time_intervals
-        self.time_intervals.set_name(f"{self.name} local timezone")
+        self.time_intervals.set_name(f"{self.name} time intervals in local timezone")
 
     def after_init(self):
         self.init_has_passed = True

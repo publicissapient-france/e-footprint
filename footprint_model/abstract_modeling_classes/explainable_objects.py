@@ -154,28 +154,15 @@ class ExplainableHourlyUsage(ExplainableObject):
         return ExplainableHourlyUsage(usage_hours, "", left_child=self, child_operator="retrieving usage hours")
 
     def sum(self):
-        result = sum(self.value)
-        result.left_child = self
-        result.right_child = None
-        result.child_operator = "sum"
-
-        return result
+        return ExplainableQuantity(sum(elt.value for elt in self.value), left_child=self, child_operator="sum")
 
     def mean(self):
-        result = sum(self.value) / ExplainableQuantity(24 * u.dimensionless, "24 hours in a day")
-        result.left_child = self
-        result.right_child = None
-        result.child_operator = "mean"
-
-        return result
+        return ExplainableQuantity(
+            sum(elt.value for elt in self.value) / 24, left_child=self, child_operator="mean")
 
     def max(self):
-        result = max(self.value)
-        result.left_child = self
-        result.right_child = None
-        result.child_operator = "max"
-
-        return result
+        return ExplainableQuantity(
+            max(elt.value for elt in self.value), left_child=self, child_operator="max")
 
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:

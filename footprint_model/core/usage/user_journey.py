@@ -43,6 +43,7 @@ class UserJourneyStep(ModelingObject):
         self.request_duration = request_duration
         self.request_duration.set_name(f"Request duration to {self.service.name} in {self.name}")
         if request_duration.value > user_time_spent.value * u.uj:
+            # TODO: define a setter method to make this check also when the attribute is updated
             raise ValueError("Variable 'request_duration' can not be greater than variable 'user_time_spent'")
 
         if server_ram_per_data_transferred is None:

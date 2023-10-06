@@ -15,6 +15,7 @@ from footprint_model.abstract_modeling_classes.modeling_object import get_subcla
 from unittest import TestCase
 from copy import deepcopy
 from footprint_model.logger import logger
+from footprint_model.utils.calculus_representation import build_graph
 
 
 class IntegrationTest(TestCase):
@@ -53,18 +54,25 @@ class IntegrationTest(TestCase):
             SourceObject([[7, 23]], Sources.USER_INPUT))
 
         system = System("system 1", [usage_pattern])
+        G = build_graph(system.total_footprint())
+        G.show("test_integration.html")
 
         initial_total_footprint = system.total_footprint()
         for expl_attr_name, expl_attr in get_subclass_attributes(streaming_step, ExplainableObject).items():
             if expl_attr.left_child is None and expl_attr.right_child is None:
+                if "Request duration" in expl_attr.label:
+                    a = 1
                 old_value = expl_attr.value
                 expl_attr_new_value = deepcopy(expl_attr)
                 expl_attr_new_value.value *= 100 * u.dimensionless
-                logger.warning(f"{expl_attr.label} changing from {round(old_value, 1)} to"
-                                f" {round(expl_attr_new_value.value, 1)}")
+                expl_attr_new_value.label = expl_attr.label
+                logger.warning(f"{expl_attr_new_value.label} changing from {round(old_value, 1)} to"
+                               f" {round(expl_attr_new_value.value, 1)}")
                 streaming_step.__setattr__(expl_attr_name, expl_attr_new_value)
                 new_footprint = system.total_footprint()
                 logger.info(f"system footprint went from {round(initial_total_footprint.value, 1)} "
                             f"to {round(new_footprint.value, 1)}")
+                G = build_graph(system.total_footprint())
+                G.show("test_integration_after_change.html")
                 assert round(initial_total_footprint.magnitude, 2) != round(new_footprint.magnitude, 2)
                 initial_total_footprint = new_footprint
