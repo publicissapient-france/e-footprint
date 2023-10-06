@@ -138,7 +138,14 @@ class TestInfraHardware(TestCase):
 
 class TestObjectLinkedToUsagePatterns(TestCase):
     def setUp(self):
-        self.test_object_linked_to_usage_patterns = ObjectLinkedToUsagePatterns()
+        class TestClassLinkedToUsagePatterns(ObjectLinkedToUsagePatterns):
+            def __init__(self):
+                super().__init__()
+
+            def compute_calculated_attributes(self):
+                pass
+
+        self.test_object_linked_to_usage_patterns = TestClassLinkedToUsagePatterns()
 
     def test_link_usage_pattern_should_return_same_set_if_usage_pattern_already_in_set(self):
         self.test_object_linked_to_usage_patterns.usage_patterns = {"usage_pattern_1"}

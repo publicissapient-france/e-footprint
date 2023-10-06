@@ -28,7 +28,7 @@ class ExplainableObject:
         new_instance = cls.__new__(cls, "dummy_value", "dummy_label")
         new_instance.__init__(self.value, self.label)
 
-        if getattr(self, "source") is not None:
+        if getattr(self, "source", None) is not None:
             new_instance.source = self.source
 
         return new_instance

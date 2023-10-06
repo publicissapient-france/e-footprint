@@ -4,7 +4,7 @@ from footprint_model.core.usage.usage_pattern import UsagePattern
 from footprint_model.constants.units import u
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
 
 class TestUsagePattern(unittest.TestCase):
@@ -68,10 +68,15 @@ class TestUsagePattern(unittest.TestCase):
     def test_user_journey_setter(self):
         test_uj = MagicMock()
         old_uj = self.usage_pattern._user_journey
-        self.usage_pattern.user_journey = test_uj
 
-        old_uj.unlink_usage_pattern.assert_called_once_with(self.usage_pattern)
-        test_uj.link_usage_pattern.assert_called_once_with(self.usage_pattern)
+        with patch.object(self.usage_pattern, "compute_calculated_attributes", new_callable=PropertyMock) as mock_cca:
+            self.usage_pattern.user_journey = test_uj
+
+            mock_cca.assert_called_once()
+            self.usage_pattern.device_population.compute_calculated_attributes.assert_called_once()
+            self.usage_pattern.network.compute_calculated_attributes.assert_called_once()
+            old_uj.unlink_usage_pattern.assert_called_once_with(self.usage_pattern)
+            test_uj.link_usage_pattern.assert_called_once_with(self.usage_pattern)
 
     def test_device_population_setter(self):
         test_dp = MagicMock()

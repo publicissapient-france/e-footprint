@@ -1,7 +1,6 @@
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Set
-from importlib import import_module
 from footprint_model.logger import logger
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
@@ -103,5 +102,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         if self.init_has_passed and not self.dont_handle_input_updates:
             if issubclass(type(input_value), ExplainableObject) and \
-                    input_value.left_child is None and input_value.right_child is None and old_value is not None: # TODO: remove last condition after server update
+                    input_value.left_child is None and input_value.right_child is None and old_value is not None:
+                assert(issubclass(type(old_value), ExplainableObject))
                 self.handle_model_input_update(old_value)

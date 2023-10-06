@@ -1,4 +1,5 @@
 from unittest import TestCase
+from unittest.mock import MagicMock
 
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.units import u
@@ -34,9 +35,9 @@ class TestExplainableObjectBaseClass(TestCase):
         self.g.left_child = self.d
         self.g.child_operator = "root square"
 
-    def test_deepcopy_should_set_pubsub_topic_to_none(self):
+    def test_deepcopy_should_set_modeling_object_to_none(self):
         a = ExplainableObject(1, "a")
-        a.modeling_obj_container = "topic_a"
+        a.modeling_obj_container = "obj"
         from copy import deepcopy
         b = deepcopy(a)
 
@@ -55,14 +56,30 @@ class TestExplainableObjectBaseClass(TestCase):
         with self.assertRaises(ValueError):
             ExplainableObject(value=5)
 
-    def test_input_attributes_to_listen_to(self):
+    def test_set_modeling_obj_container(self):
+        # TODO implement
+        pass
+
+    def test_return_direct_children_with_id_to_parent(self):
+        # TODO implement
+        pass
+
+    def test_update_direct_parents_with_id(self):
+        # TODO implement
+        pass
+
+    def test_get_all_ancestors_with_id(self):
+        # TODO implement
+        pass
+
+    def test_direct_children(self):
         left_child = ExplainableObject(value=3, label="Label L")
         right_child = ExplainableObject(value=4, label="Label R")
-        left_child.modeling_obj_container = "topicL"
-        right_child.modeling_obj_container = "topicR"
+        left_child.modeling_obj_container = MagicMock(name="lc_mod_obj_name", id="lc_mod_obj_id")
+        right_child.modeling_obj_container = MagicMock(name="rc_mod_obj_name", id="rc_mod_obj_id")
 
         eo = ExplainableObject(value=7, left_child=left_child, right_child=right_child, label="Parent")
-        self.assertEqual(set(eo.pubsub_topics_to_listen_to), {"topicL", "topicR"})
+        self.assertEqual([left_child, right_child], eo.direct_children_with_id)
 
     def test_define_as_intermediate_calculation(self):
         eo = ExplainableObject(value=5, label="Label A")

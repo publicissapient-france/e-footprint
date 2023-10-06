@@ -62,6 +62,10 @@ class TestUserJourney(TestCase):
         for storage in self.user_journey.storages:
             storage.unlink_usage_pattern.assert_called_once_with('up2')
 
+    def test_uj_step_setter(self):
+        # TODO: implement
+        pass
+
     def test_add_step(self):
         self.user_journey.add_step(self.user_journey_step)
         self.assertEqual(self.user_journey.uj_steps, [self.user_journey_step, self.user_journey_step])

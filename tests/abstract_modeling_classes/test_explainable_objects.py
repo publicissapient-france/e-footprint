@@ -1,4 +1,6 @@
 import unittest
+from unittest.mock import MagicMock
+
 from pint import UnitRegistry
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
@@ -17,7 +19,7 @@ class TestExplainableQuantity(unittest.TestCase):
         self.d.define_as_intermediate_calculation("int calc 2")
         self.e = ExplainableQuantity(3 * u.W, "e")
         for explainable_quantity in (self.a, self.b, self.e):
-            explainable_quantity.modeling_obj_container = f"Non null topic for {explainable_quantity.label}"
+            explainable_quantity.modeling_obj_container = MagicMock(name="name", id="id")
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):

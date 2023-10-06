@@ -1,6 +1,9 @@
 from footprint_model.constants.units import u
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.constants.sources import SourceValue
+from footprint_model.core.hardware.device_population import DevicePopulation
+from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
+from footprint_model.core.hardware.network import Network
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.servers.server_base_class import Server
 from footprint_model.core.hardware.storage import Storage
@@ -82,42 +85,38 @@ class UserJourneyStep(ModelingObject):
         self.ram_needed = ram_needed.define_as_intermediate_calculation(f"RAM needed for {self.name}")
 
 
-class UserJourney(ModelingObject):
+class UserJourney(ModelingObject, ObjectLinkedToUsagePatterns):
     def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
         super().__init__(name)
+        ObjectLinkedToUsagePatterns.__init__(self)
         self.data_upload = None
         self.data_download = None
         self.duration = None
-        self.uj_steps = uj_steps
+        self._uj_steps = uj_steps
 
     def after_init(self):
         self.init_has_passed = True
         self.compute_calculated_attributes()
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for user journey {self.name}")
-        self.update_duration()
-        self.update_data_upload()
-        self.update_data_download()
+    @property
+    def uj_steps(self):
+        return self._uj_steps
 
-    def link_usage_pattern(self, usage_pattern):
-        for service in self.services:
-            service.link_usage_pattern(usage_pattern)
+    @uj_steps.setter
+    def uj_steps(self, new_uj_steps: List[UserJourneyStep]):
+        self._uj_steps = new_uj_steps
+        self.compute_calculated_attributes()
+        for usage_pattern in self.usage_patterns:
+            usage_pattern.compute_calculated_attributes()
+
         for server in self.servers:
-            server.link_usage_pattern(usage_pattern)
+            server.compute_calculated_attributes()
         for storage in self.storages:
-            storage.link_usage_pattern(usage_pattern)
-
-    def unlink_usage_pattern(self, usage_pattern):
-        for service in self.services:
-            service.unlink_usage_pattern(usage_pattern)
-        for server in self.servers:
-            server.unlink_usage_pattern(usage_pattern)
-        for storage in self.storages:
-            storage.unlink_usage_pattern(usage_pattern)
-
-    def add_step(self, step: UserJourneyStep) -> None:
-        self.uj_steps.append(step)
+            storage.compute_calculated_attributes()
+        for device_pop in self.device_populations:
+            device_pop.compute_calculated_attributes()
+        for network in self.networks:
+            network.compute_calculated_attributes()
 
     @property
     def servers(self) -> Set[Server]:
@@ -142,6 +141,49 @@ class UserJourney(ModelingObject):
             services = services | {uj_step.service}
 
         return services
+
+    @property
+    def device_populations(self) -> Set[DevicePopulation]:
+        device_pops = set()
+        for usage_pattern in self.usage_patterns:
+            device_pops = device_pops | {usage_pattern.device_population}
+
+        return device_pops
+
+    @property
+    def networks(self) -> Set[Network]:
+        networks = set()
+        for usage_pattern in self.usage_patterns:
+            networks = networks | {usage_pattern.network}
+
+        return networks
+
+    def compute_calculated_attributes(self):
+        logger.info(f"Computing calculated attributes for user journey {self.name}")
+        self.update_duration()
+        self.update_data_upload()
+        self.update_data_download()
+
+    def link_usage_pattern(self, usage_pattern):
+        self.usage_patterns = self.usage_patterns | {usage_pattern}
+        for service in self.services:
+            service.link_usage_pattern(usage_pattern)
+        for server in self.servers:
+            server.link_usage_pattern(usage_pattern)
+        for storage in self.storages:
+            storage.link_usage_pattern(usage_pattern)
+
+    def unlink_usage_pattern(self, usage_pattern):
+        self.usage_patterns.discard(usage_pattern)
+        for service in self.services:
+            service.unlink_usage_pattern(usage_pattern)
+        for server in self.servers:
+            server.unlink_usage_pattern(usage_pattern)
+        for storage in self.storages:
+            storage.unlink_usage_pattern(usage_pattern)
+
+    def add_step(self, step: UserJourneyStep) -> None:
+        self.uj_steps.append(step)
 
     def update_duration(self):
         user_time_spent_sum = sum([uj_step.user_time_spent for uj_step in self.uj_steps])

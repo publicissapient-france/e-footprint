@@ -1,9 +1,9 @@
-from unittest import TestCase
-from unittest.mock import MagicMock
-
 from footprint_model.constants.units import u
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.core.hardware.device_population import DevicePopulation
+
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 
 class TestDevicePopulation(TestCase):
@@ -33,8 +33,8 @@ class TestDevicePopulation(TestCase):
         test_device2 = MagicMock()
         test_device2.power = SourceValue(10 * u.W)
 
-        self.device_population.devices = [test_device1, test_device2]
-        self.device_population.update_power()
+        with patch.object(self.device_population, "_devices", new=[test_device1, test_device2]):
+            self.device_population.update_power()
 
         self.assertEqual(365.25 * 15 * 1e-3 * u.kWh / u.year, self.device_population.power.value)
 
