@@ -43,24 +43,7 @@ class TestUserJourney(TestCase):
         self.user_journey = UserJourney("test user journey", uj_steps=[self.user_journey_step])
         self.user_journey.dont_handle_input_updates = True
         self.usage_pattern = MagicMock()
-        self.user_journey.usage_patterns = {self.usage_pattern}
-
-    def test_link_usage_pattern_add_new_usage_pattern(self):
-        self.user_journey.link_usage_pattern('up2')
-
-        for server in self.user_journey.servers:
-            server.link_usage_pattern.assert_called_once_with('up2')
-
-        for storage in self.user_journey.storages:
-            storage.link_usage_pattern.assert_called_once_with('up2')
-
-    def test_unlink_usage_pattern(self):
-        self.user_journey.unlink_usage_pattern('up2')
-
-        for server in self.user_journey.servers:
-            server.unlink_usage_pattern.assert_called_once_with('up2')
-        for storage in self.user_journey.storages:
-            storage.unlink_usage_pattern.assert_called_once_with('up2')
+        self.user_journey.modeling_obj_containers = [self.usage_pattern]
 
     def test_uj_step_setter(self):
         # TODO: implement
@@ -77,7 +60,7 @@ class TestUserJourney(TestCase):
         self.assertEqual(self.user_journey.storages, {self.storage})
 
     def test_services(self):
-        self.assertEqual(self.user_journey.services, {self.service})
+        self.assertEqual(self.user_journey.services, [self.service])
 
     def test_update_duration_with_multiple_steps(self):
         self.user_journey.add_step(self.user_journey_step)

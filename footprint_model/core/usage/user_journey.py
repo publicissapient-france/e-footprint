@@ -1,15 +1,11 @@
 from footprint_model.constants.units import u
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.constants.sources import SourceValue
-from footprint_model.core.hardware.device_population import DevicePopulation
-from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
-from footprint_model.core.hardware.network import Network
 from footprint_model.core.service import Service
 from footprint_model.core.hardware.servers.server_base_class import Server
 from footprint_model.core.hardware.storage import Storage
 
-from typing import List, Set
-from footprint_model.logger import logger
+from typing import List, Set, Type
 
 
 class DataTransferredType:
@@ -66,6 +62,16 @@ class UserJourneyStep(ModelingObject):
         self.cpu_needed = cpu_needed
         self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process request {self.name}")
 
+        self.calculated_attributes = ["ram_needed"]
+
+    @property
+    def usage_patterns(self):
+        return list(set(sum([uj.usage_patterns for uj in self.modeling_obj_containers], start=[])))
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
+        return self.modeling_obj_containers
+
     def after_init(self):
         self.init_has_passed = True
         self.compute_calculated_attributes()
@@ -75,28 +81,23 @@ class UserJourneyStep(ModelingObject):
             raise ValueError(f"Can only multiply UserJourneyStep with int or float, not {type(other)}")
         raise NotImplementedError
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for user journey step {self.name}")
-        self.update_ram_needed()
-
     def update_ram_needed(self):
         ram_needed = (self.server_ram_per_data_transferred * self.data_download)
 
         self.ram_needed = ram_needed.define_as_intermediate_calculation(f"RAM needed for {self.name}")
 
 
-class UserJourney(ModelingObject, ObjectLinkedToUsagePatterns):
+class UserJourney(ModelingObject):
     def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
         super().__init__(name)
-        ObjectLinkedToUsagePatterns.__init__(self)
         self.data_upload = None
         self.data_download = None
         self.duration = None
-        self._uj_steps = uj_steps
+        self.calculated_attributes = ["duration", "data_download", "data_upload"]
 
-    def after_init(self):
-        self.init_has_passed = True
-        self.compute_calculated_attributes()
+        self._uj_steps = []
+        # Triggers computation of calculated attributes
+        self.uj_steps = uj_steps
 
     @property
     def uj_steps(self):
@@ -104,19 +105,14 @@ class UserJourney(ModelingObject, ObjectLinkedToUsagePatterns):
 
     @uj_steps.setter
     def uj_steps(self, new_uj_steps: List[UserJourneyStep]):
+        # Here the observer pattern is implemented manually because uj_steps is a list and hence not handled by
+        # ModelingObject’s __setattr__ logic
+        for step in self._uj_steps:
+            step.remove_obj_from_modeling_obj_containers(self)
         self._uj_steps = new_uj_steps
+        for step in self._uj_steps:
+            step.add_obj_to_modeling_obj_containers(self)
         self.compute_calculated_attributes()
-        for usage_pattern in self.usage_patterns:
-            usage_pattern.compute_calculated_attributes()
-
-        for server in self.servers:
-            server.compute_calculated_attributes()
-        for storage in self.storages:
-            storage.compute_calculated_attributes()
-        for device_pop in self.device_populations:
-            device_pop.compute_calculated_attributes()
-        for network in self.networks:
-            network.compute_calculated_attributes()
 
     @property
     def servers(self) -> Set[Server]:
@@ -135,54 +131,23 @@ class UserJourney(ModelingObject, ObjectLinkedToUsagePatterns):
         return storages
 
     @property
-    def services(self) -> Set[Service]:
+    def services(self) -> List[Service]:
         services = set()
         for uj_step in self.uj_steps:
             services = services | {uj_step.service}
 
-        return services
+        return list(services)
 
     @property
-    def device_populations(self) -> Set[DevicePopulation]:
-        device_pops = set()
-        for usage_pattern in self.usage_patterns:
-            device_pops = device_pops | {usage_pattern.device_population}
-
-        return device_pops
+    def usage_patterns(self):
+        return self.modeling_obj_containers
 
     @property
-    def networks(self) -> Set[Network]:
-        networks = set()
-        for usage_pattern in self.usage_patterns:
-            networks = networks | {usage_pattern.network}
-
-        return networks
-
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for user journey {self.name}")
-        self.update_duration()
-        self.update_data_upload()
-        self.update_data_download()
-
-    def link_usage_pattern(self, usage_pattern):
-        self.usage_patterns = self.usage_patterns | {usage_pattern}
-        for service in self.services:
-            service.link_usage_pattern(usage_pattern)
-        for server in self.servers:
-            server.link_usage_pattern(usage_pattern)
-        for storage in self.storages:
-            storage.link_usage_pattern(usage_pattern)
-
-    def unlink_usage_pattern(self, usage_pattern):
-        self.usage_patterns.discard(usage_pattern)
-        for service in self.services:
-            service.unlink_usage_pattern(usage_pattern)
-        for server in self.servers:
-            server.unlink_usage_pattern(usage_pattern)
-        for storage in self.storages:
-            storage.unlink_usage_pattern(usage_pattern)
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:
+        return self.usage_patterns
 
     def add_step(self, step: UserJourneyStep) -> None:
+        step.add_obj_to_modeling_obj_containers(self)
         self.uj_steps.append(step)
 
     def update_duration(self):

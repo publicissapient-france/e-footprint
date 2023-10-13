@@ -16,24 +16,10 @@ class TestStorage(TestCase):
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
-            country=MagicMock(),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
         )
         self.storage_base.dont_handle_input_updates = True
-
-    def test_services(self):
-        usage_pattern1 = MagicMock()
-        usage_pattern2 = MagicMock()
-        service1 = MagicMock()
-        service1.storage = self.storage_base
-        service2 = MagicMock()
-        service2.storage = "other server"
-        usage_pattern1.services = {service1, service2}
-        service3 = MagicMock()
-        service3.storage = self.storage_base
-        usage_pattern2.services = {service3}
-        with patch.object(self.storage_base, "usage_patterns", new={usage_pattern1, usage_pattern2}):
-            self.assertEqual({service1, service3}, self.storage_base.services)
 
     def test_update_all_services_storage_needs_single_service(self):
         service1 = MagicMock()

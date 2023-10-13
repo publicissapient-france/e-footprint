@@ -1,8 +1,8 @@
-from unittest import TestCase
-from unittest.mock import MagicMock
-
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.units import u
+
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -155,3 +155,11 @@ Label L + Label R
 =
 7"""
         self.assertEqual(expected_result, result)
+
+    def test_set_mod_obj_cont_raises_error_if_value_already_linked_to_another_modeling_obj_container_and_children(self):
+        self.a.modeling_obj_container = MagicMock(id="mod obj id")
+        new_parent_mod_obj = MagicMock(id="another obj id")
+        self.a.left_child = "non null left child"
+
+        with self.assertRaises(ValueError):
+            self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")

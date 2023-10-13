@@ -44,22 +44,28 @@ class Sources:
     STATE_OF_MOBILE_2022 = Source("DATA.AI - STATE OF MOBILE", "https://www.data.ai/en/GB/state-of-mobile-2022")
 
 
+SOURCE_VALUE_DEFAULT_NAME = "unnamed source"
+
+
 class SourceObject(ExplainableObject):
-    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, name: str = "unnamed source object"):
+    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, name: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, label=name)
         self.source = source
 
     def set_name(self, new_name: str):
         if self.left_child or self.right_child:
             raise ValueError("Source values shouldn’t have any child.")
-        if self.source != Sources.USER_INPUT:
-            self.label = f"{new_name} from {self.source.name}"
+        elif self.label == SOURCE_VALUE_DEFAULT_NAME:
+            if self.source != Sources.USER_INPUT:
+                self.label = f"{new_name} from {self.source.name}"
+            else:
+                self.label = f"{new_name}"
         else:
-            self.label = f"{new_name}"
+            raise ValueError(f"Trying to set the new label {new_name} would overwrite {self.label}")
 
 
 class SourceValue(SourceObject, ExplainableQuantity):
-    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, name: str = "unnamed source value"):
+    def __init__(self, value: Quantity, source: Source = Sources.HYPOTHESIS, name: str = SOURCE_VALUE_DEFAULT_NAME):
         super().__init__(value, source, name)
 
 

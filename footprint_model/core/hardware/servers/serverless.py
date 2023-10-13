@@ -8,10 +8,11 @@ from footprint_model.core.hardware.servers.server_base_class import Server
 class Serverless(Server):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
-                 power_usage_effectiveness: SourceValue, country: Country, server_utilization_rate: SourceValue):
+                 power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
+                 server_utilization_rate: SourceValue):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, nb_of_cpus, power_usage_effectiveness,
-            country, server_utilization_rate)
+            average_carbon_intensity, server_utilization_rate)
 
     def update_nb_of_instances(self):
         average_ram_needed_per_day = self.all_services_ram_needs.mean().define_as_intermediate_calculation(
@@ -46,6 +47,6 @@ SERVERLESS = Serverless(
     ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
     nb_of_cpus=SourceValue(24 * u.core, Sources.HYPOTHESIS),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-    country=Countries.GERMANY,
+    average_carbon_intensity=Countries.GERMANY.average_carbon_intensity,
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
 )

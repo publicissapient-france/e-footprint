@@ -4,15 +4,13 @@ from footprint_model.abstract_modeling_classes.explainable_objects import Explai
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
-from footprint_model.logger import logger
-
 
 class Storage(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
-                 power_usage_effectiveness: SourceValue, country: Country, data_replication_factor: SourceValue,
-                 storage_need_from_previous_year: SourceValue = None):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
+                 power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
+                 data_replication_factor: SourceValue, storage_need_from_previous_year: SourceValue = None):
+        super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.all_services_storage_needs = None
         self.long_term_storage_required = None
         self.active_storage_required = None
@@ -40,19 +38,10 @@ class Storage(InfraHardware):
         else:
             self.storage_need_from_previous_year = 0
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for storage {self.name}")
-        self.update_all_services_storage_needs()
-        self.update_active_storage_required()
-        self.update_long_term_storage_required()
-        self.update_nb_of_idle_instances()
-        self.update_nb_of_active_instances()
-        self.update_functions_defined_in_infra_hardware_class()
-
-    @property
-    def services(self):
-        return {service for usage_pattern in self.usage_patterns for service in usage_pattern.services
-                if service.storage == self}
+        self.calculated_attributes = [
+            "all_services_storage_needs", "active_storage_required", "long_term_storage_required",
+            "nb_of_idle_instances", "nb_of_active_instances"
+        ] + self.calculated_attributes_defined_in_infra_hardware_class
 
     def update_all_services_storage_needs(self):
         if len(self.services) > 0:
@@ -126,7 +115,7 @@ class Storages:
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-        country=Countries.GERMANY,
+        average_carbon_intensity=Countries.GERMANY.average_carbon_intensity,
         data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )
     HDD_STORAGE = Storage(
@@ -137,6 +126,6 @@ class Storages:
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-        country=Countries.GERMANY,
+        average_carbon_intensity=Countries.GERMANY.average_carbon_intensity,
         data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )

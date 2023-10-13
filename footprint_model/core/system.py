@@ -68,7 +68,8 @@ class System:
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
-            "Devices": sum(device_population.fabrication_footprint for device_population in self.device_populations),
+            "Devices": sum(device_population.instances_fabrication_footprint
+                           for device_population in self.device_populations),
             "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")
         }
 

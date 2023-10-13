@@ -20,7 +20,7 @@ class TestAutoscaling(TestCase):
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             nb_of_cpus=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
-            country=MagicMock(),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless)
         )
         self.server_base.dont_handle_input_updates = True

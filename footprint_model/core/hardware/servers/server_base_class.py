@@ -1,18 +1,17 @@
-from abc import abstractmethod
-
 from footprint_model.core.hardware.hardware_base_classes import InfraHardware
 from footprint_model.constants.sources import SourceValue
 from footprint_model.constants.units import u
 from footprint_model.constants.countries import Country
 
-from footprint_model.logger import logger
+from abc import abstractmethod
 
 
 class Server(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
-                 power_usage_effectiveness: SourceValue, country: Country, server_utilization_rate: SourceValue):
-        super().__init__(name, carbon_footprint_fabrication, power, lifespan, country)
+                 power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
+                 server_utilization_rate: SourceValue):
+        super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.available_cpu_per_instance = None
         self.available_ram_per_instance = None
         self.server_utilization_rate = None
@@ -28,16 +27,8 @@ class Server(InfraHardware):
         self.server_utilization_rate = server_utilization_rate
         self.server_utilization_rate.set_name(f"{self.name} utilization rate")
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for server {self.name}")
-        self.update_available_ram_per_instance()
-        self.update_available_cpu_per_instance()
-        self.update_functions_defined_in_infra_hardware_class()
-
-    @property
-    def services(self):
-        return {service for usage_pattern in self.usage_patterns for service in usage_pattern.services
-                if service.server == self}
+        self.calculated_attributes = ["available_ram_per_instance", "available_cpu_per_instance"
+                                      ] + self.calculated_attributes_defined_in_infra_hardware_class
 
     def update_available_ram_per_instance(self):
         services_base_ram_consumptions = [service.base_ram_consumption for service in self.services]

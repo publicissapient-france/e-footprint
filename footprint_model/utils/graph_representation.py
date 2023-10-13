@@ -89,7 +89,7 @@ def save_graph_as_both_html_and_png(input_graph, output_filepath, width=WIDTH, h
 
 if __name__ == "__main__":
     from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-    from footprint_model.core.hardware.servers.server_base_class import Servers
+    from footprint_model.core.hardware.servers.autoscaling import AUTOSCALING
     from footprint_model.core.hardware.storage import Storage
     from footprint_model.core.service import Service
     from footprint_model.core.hardware.device_population import DevicePopulation, Devices
@@ -99,8 +99,7 @@ if __name__ == "__main__":
     from footprint_model.constants.countries import Countries
     from footprint_model.constants.units import u
 
-    default_server = Servers.SERVER
-    default_server.cloud = "Autoscaling"
+    default_server = AUTOSCALING
     default_storage = Storage(
         "Default SSD storage",
         carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -109,7 +108,7 @@ if __name__ == "__main__":
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-        country=Countries.GERMANY,
+        average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
         data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )
     default_service = Service(

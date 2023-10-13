@@ -1,5 +1,4 @@
 from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.countries import Country
 from footprint_model.constants.units import u
 from footprint_model.core.hardware.servers.server_base_class import Server
 
@@ -12,12 +11,12 @@ class TestServerBaseClass(TestCase):
         class TestServer(Server):
             def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                          lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
-                         power_usage_effectiveness: SourceValue, country: Country,
+                         power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                          server_utilization_rate: SourceValue):
                 super().__init__(
                     name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, nb_of_cpus,
                     power_usage_effectiveness,
-                    country, server_utilization_rate)
+                    average_carbon_intensity, server_utilization_rate)
 
             def update_nb_of_instances(self):
                 return SourceValue(10 * u.dimensionless)
@@ -35,24 +34,10 @@ class TestServerBaseClass(TestCase):
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
             nb_of_cpus=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
-            country=MagicMock(),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
         )
         self.server_base.dont_handle_input_updates = True
-
-    def test_services_server(self):
-        usage_pattern1 = MagicMock()
-        usage_pattern2 = MagicMock()
-        service1 = MagicMock()
-        service1.server = self.server_base
-        service2 = MagicMock()
-        service2.server = "other server"
-        usage_pattern1.services = {service1, service2}
-        service3 = MagicMock()
-        service3.server = self.server_base
-        usage_pattern2.services = {service3}
-        with patch.object(self.server_base, "usage_patterns", new={usage_pattern1, usage_pattern2}):
-            self.assertEqual({service1, service3}, self.server_base.services)
 
     def test_available_cpu_per_instance_single_service(self):
         service = MagicMock()

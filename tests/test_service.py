@@ -1,6 +1,5 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from copy import deepcopy
 
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.sources import SourceValue, Sources
@@ -37,14 +36,6 @@ class TestService(unittest.TestCase):
         with self.assertRaises(ValueError):
             Service("Invalid CPU Service", self.server, self.storage, self.base_ram, invalid_cpu)
 
-    def test_service_equality(self):
-        service1 = Service("Service A", self.server, self.storage, deepcopy(self.base_ram), deepcopy(self.base_cpu))
-        service2 = Service("Service A", self.server, self.storage, deepcopy(self.base_ram),
-                           SourceValue(10 * u.core, Sources.HYPOTHESIS))
-        service3 = Service("Service B", self.server, self.storage, deepcopy(self.base_ram), deepcopy(self.base_cpu))
-        self.assertEqual(service1, service2)
-        self.assertNotEqual(service1, service3)
-
     def test_update_storage_needed(self):
         usage_pattern1 = MagicMock()
         usage_pattern1.user_journey_freq = ExplainableQuantity(10 * u.user_journey / u.day, "uj_freq")
@@ -54,17 +45,13 @@ class TestService(unittest.TestCase):
         uj_step1 = MagicMock()
         uj_step1.service = self.service
         uj_step1.data_upload = ExplainableQuantity(1 * u.MB / u.user_journey, "data_upload")
+        uj_step1.usage_patterns = [usage_pattern1]
         uj_step2 = MagicMock()
         uj_step2.service = self.service
         uj_step2.data_upload = ExplainableQuantity(3 * u.MB / u.user_journey, "data_upload")
-        uj_step3 = MagicMock()
-        uj_step3.service = "other service"
-        uj_step3.data_upload = ExplainableQuantity(5 * u.MB / u.user_journey, "data_upload")
-        
-        usage_pattern1.user_journey.uj_steps = [uj_step1, uj_step3]
-        usage_pattern2.user_journey.uj_steps = [uj_step2, uj_step3]
-        
-        with patch.object(self.service, "usage_patterns", {usage_pattern1, usage_pattern2}):
+        uj_step2.usage_patterns = [usage_pattern2]
+
+        with patch.object(self.service, "modeling_obj_containers", [uj_step1, uj_step2]):
             self.service.update_storage_needed()
             self.assertEqual(
                 round((310 * u.MB / u.day).to(u.TB / u.year), 3), round(self.service.storage_needed.value, 3))
@@ -80,19 +67,17 @@ class TestService(unittest.TestCase):
         uj_step2.ram_needed = ExplainableQuantity(0.6 * u.GB, "ram_needed")
         uj_step2.request_duration = ExplainableQuantity(10 * u.min, "request_duration")
 
-        uj_step3 = MagicMock()
-        uj_step3.service = "other service"
-        uj_step3.ram_needed = ExplainableQuantity(29 * u.GB, "ram_needed")
-        uj_step3.request_duration = ExplainableQuantity(10 * u.min, "request_duration")
-
         usage_pattern = MagicMock()
-        usage_pattern.user_journey.uj_steps = [uj_step, uj_step2, uj_step3]
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "parallel_uj")
         usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
             [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc_time_intervals")
-        with patch.object(self.service, "usage_patterns", {usage_pattern}):
+
+        for elt in [uj_step, uj_step2]:
+            elt.usage_patterns = [usage_pattern]
+
+        with patch.object(self.service, "modeling_obj_containers", [uj_step, uj_step2]):
             self.service.update_hour_by_hour_ram_need()
 
             self.assertEqual(
@@ -110,19 +95,17 @@ class TestService(unittest.TestCase):
         uj_step2.cpu_needed = ExplainableQuantity(0.6 * u.core, "cpu_needed")
         uj_step2.request_duration = ExplainableQuantity(10 * u.min, "request_duration")
 
-        uj_step3 = MagicMock()
-        uj_step3.service = "other service"
-        uj_step3.cpu_needed = ExplainableQuantity(29 * u.core, "cpu_needed")
-        uj_step3.request_duration = ExplainableQuantity(10 * u.min, "request_duration")
-
         usage_pattern = MagicMock()
-        usage_pattern.user_journey.uj_steps = [uj_step, uj_step2, uj_step3]
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "uj_in_parallel")
         usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
             [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc time intervals")
-        with patch.object(self.service, "usage_patterns", {usage_pattern}):
+
+        for elt in [uj_step, uj_step2]:
+            elt.usage_patterns = [usage_pattern]
+
+        with patch.object(self.service, "modeling_obj_containers", [uj_step, uj_step2]):
             self.service.update_hour_by_hour_cpu_need()
 
             self.assertEqual(

@@ -2,13 +2,18 @@ from footprint_model.abstract_modeling_classes.modeling_object import ModelingOb
 from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 import unittest
-from unittest.mock import patch, MagicMock, PropertyMock
+from unittest.mock import patch, MagicMock
 
 MODELING_OBJ_CLASS_PATH = "footprint_model.abstract_modeling_classes.modeling_object"
+
 
 class TestModelingSubObject(ModelingObject):
     def compute_calculated_attributes(self):
         pass
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
 
 
 class TestModelingObject(unittest.TestCase):
@@ -24,21 +29,14 @@ class TestModelingObject(unittest.TestCase):
 
         value.set_modeling_obj_container.assert_called_once_with(self.modeling_object, "attribute")
 
-    def test_setattr_raises_error_if_value_already_linked_to_another_modeling_obj_container(self):
-        value = MagicMock(modeling_obj_container=MagicMock(id="mod obj id"))
-        self.modeling_object.id = "another obj id"
-
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: ExplainableObject):
-            with self.assertRaises(ValueError):
-                self.modeling_object.attribute = value
-
     def test_handle_model_input_update_triggers(self):
-        value = MagicMock(modeling_obj_container=None, left_child=None, right_child=None)
-        old_value = MagicMock()
+        value = MagicMock(
+            modeling_obj_container=None, left_child=None, right_child=None, mock_type=ExplainableObject)
+        old_value = MagicMock(mock_type=ExplainableObject)
         self.modeling_object.attribute = old_value
         self.modeling_object.handle_model_input_update = MagicMock()
 
-        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: ExplainableObject):
+        with patch(f"{MODELING_OBJ_CLASS_PATH}.type", lambda x: x.mock_type):
             self.modeling_object.attribute = value
 
             self.modeling_object.handle_model_input_update.assert_called_once_with(old_value)
@@ -46,7 +44,6 @@ class TestModelingObject(unittest.TestCase):
     def test_handle_model_input_update(self):
         # TODO implement
         pass
-
 
 
 if __name__ == "__main__":

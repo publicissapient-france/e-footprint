@@ -22,7 +22,7 @@ class TestSystem(TestCase):
 
         self.server.instances_fabrication_footprint = SourceValue(100 * u.kg / u.year)
         self.storage.instances_fabrication_footprint = SourceValue(100 * u.kg / u.year)
-        self.device_population.fabrication_footprint = SourceValue(100 * u.kg / u.year)
+        self.device_population.instances_fabrication_footprint = SourceValue(100 * u.kg / u.year)
 
         self.server.energy_footprint = SourceValue(100 * u.kg / u.year)
         self.storage.energy_footprint = SourceValue(100 * u.kg / u.year)

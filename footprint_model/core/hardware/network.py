@@ -1,28 +1,30 @@
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.physical_elements import PhysicalElements
-from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 
-from footprint_model.logger import logger
+from typing import List
 
 
-class Network(ObjectLinkedToUsagePatterns, ModelingObject):
+class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
-        ModelingObject.__init__(self, name)
-        super().__init__()
+        super().__init__(name)
         self.data_upload = None
         self.data_download = None
         self.energy_footprint = None
+        self.usage_patterns = []
         self.bandwidth_energy_intensity = bandwidth_energy_intensity
         self.bandwidth_energy_intensity.set_name(f"bandwith energy intensity of {self.name}")
 
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for network {self.name}")
-        self.update_data_download()
-        self.update_data_upload()
-        self.update_energy_footprint()
+        self.calculated_attributes = ["usage_patterns", "data_download", "data_upload", "energy_footprint"]
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
+        return []
+
+    def update_usage_patterns(self):
+        self.usage_patterns = self.modeling_obj_containers
 
     def update_data_upload(self):
         if len(self.usage_patterns) > 0:

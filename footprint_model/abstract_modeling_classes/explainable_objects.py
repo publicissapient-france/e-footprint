@@ -1,11 +1,11 @@
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from footprint_model.constants.units import u
+
 import numbers
 from datetime import datetime
 from typing import Type, List
 import pytz
 from pint import Quantity
-
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from footprint_model.constants.units import u
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -144,7 +144,7 @@ class ExplainableHourlyUsage(ExplainableObject):
     def to_usage(self):
         usage_hours = []
         for i, elt in enumerate(self.value):
-            if type(elt) != ExplainableQuantity:
+            if not issubclass(type(elt), ExplainableQuantity):
                 raise ValueError("to_usage method should be called with ExplainableQuantity elements")
             if elt.magnitude != 0:
                 usage_hours.append(ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i + 1}"))

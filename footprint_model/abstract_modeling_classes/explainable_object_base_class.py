@@ -1,12 +1,24 @@
+from footprint_model.logger import logger
+
 from typing import Type
+from abc import ABC, abstractmethod
 
 
-class ExplainableObject:
+class ObjectLinkedToModelingObj(ABC):
+    def __init__(self):
+        self.modeling_obj_container = None
+        self.attr_name_in_mod_obj_container = None
+
+    @abstractmethod
+    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
+        pass
+
+
+class ExplainableObject(ObjectLinkedToModelingObj):
     def __init__(
             self, value: object, label: str = None, left_child: Type["ExplainableObject"] = None,
             right_child: Type["ExplainableObject"] = None, child_operator: str = None):
-        self.modeling_obj_container = None
-        self.attr_name_in_mod_obj_container = None
+        super().__init__()
         self.value = value
         if not label and left_child is None and right_child is None:
             raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
@@ -35,6 +47,10 @@ class ExplainableObject:
 
     @property
     def id(self):
+        if self.modeling_obj_container is None:
+            raise ValueError(
+                f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
+                f"to look for its ancestors")
         return f"{self.attr_name_in_mod_obj_container} in {self.modeling_obj_container.name}" \
                f" ({self.modeling_obj_container.id})"
 
@@ -50,13 +66,24 @@ class ExplainableObject:
     def direct_parents_ids(self):
         return [attr.id for attr in self.direct_parents_with_id]
 
-    def set_modeling_obj_container(self, new_parent_modeling_object, attr_name: str):
+    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
         if not self.label:
             raise ValueError(f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
+        if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
+            logger.warning(
+                f"Linking {self.label} to {new_parent_modeling_object.name}, erasing its existing link to "
+                f"{self.modeling_obj_container.name}.")
+            if self.left_child is not None or self.right_child is not None:
+                raise ValueError(
+                    f"An ExplainableObject with child can’t be attributed to more than one ModelingObject. Here "
+                    f"{self.label} is trying to be linked to {new_parent_modeling_object.name} but is already linked to"
+                    f" {self.modeling_obj_container.name}."
+                    f" A classic reason why this error could happen is that a mutable object (SourceValue for"
+                    f" example) has been set as default value in one of the classes.")
         self.modeling_obj_container = new_parent_modeling_object
         self.attr_name_in_mod_obj_container = attr_name
         for direct_child_with_id in self.direct_children_with_id:
-            direct_child_with_id.update_direct_parents_with_id(direct_parent=self)       
+            direct_child_with_id.update_direct_parents_with_id(direct_parent=self)
 
     def return_direct_children_with_id_to_parent(self):
         if self.modeling_obj_container is not None:
@@ -74,11 +101,6 @@ class ExplainableObject:
         return self
 
     def get_all_ancestors_with_id(self):
-        if self.id is None:
-            raise ValueError(
-                f"{self} doesn’t have an id (so shouldn’t belong to a ModelingObject), hence it makes no sense "
-                f"to look for its ancestors")
-
         all_ancestors = []
 
         def retrieve_ancestors(expl_obj: ExplainableObject, ancestors_list):

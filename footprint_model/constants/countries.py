@@ -1,13 +1,14 @@
-import pytz
-
 from footprint_model.constants.units import u
 from footprint_model.constants.sources import SourceValue, Source, SourceObject, Sources
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+
+import pytz
 
 
-class Country:
+class Country(ModelingObject):
     def __init__(
             self, name: str, short_name: str, average_carbon_intensity: SourceValue, year: int, timezone: SourceObject):
-        self.name = name
+        super().__init__(name)
         self.short_name = short_name
         # "[time]**2 / [length]**2" corresponds to mass over energy I.U.
         if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
@@ -20,6 +21,14 @@ class Country:
         self.year = year
         self.timezone = timezone
         self.timezone.set_name(f"{self.name} timezone")
+
+    @property
+    def device_populations(self):
+        return self.modeling_obj_containers
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return self.device_populations
 
 
 def tz(timezone: str):

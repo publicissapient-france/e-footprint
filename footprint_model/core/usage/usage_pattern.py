@@ -7,9 +7,7 @@ from footprint_model.constants.sources import SourceValue, SourceObject
 from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
 from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 
-from typing import Set
-import math
-from footprint_model.logger import logger
+from typing import List
 
 
 class UsagePattern(ModelingObject):
@@ -30,15 +28,11 @@ class UsagePattern(ModelingObject):
     def __init__(self, name: str, user_journey: UserJourney, device_population: DevicePopulation,
                  network: Network, user_journey_freq_per_user: SourceValue, time_intervals: SourceObject):
         super().__init__(name)
-        self.utc_time_intervals = None
         self.hourly_usage = None
-        self.nb_user_journeys_in_parallel_during_usage = None
-        self.user_journey_freq = None
-        self.non_usage_time_fraction = None
         self.usage_time_fraction = None
-        self._user_journey = user_journey
-        self._device_population = device_population
-        self._network = network
+        self.user_journey = user_journey
+        self.device_population = device_population
+        self.network = network
         if not user_journey_freq_per_user.value.check("[user_journey] / ([person] * [time])"):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
@@ -48,66 +42,20 @@ class UsagePattern(ModelingObject):
         self.time_intervals = time_intervals
         self.time_intervals.set_name(f"{self.name} time intervals in local timezone")
 
+        self.calculated_attributes = [
+            "hourly_usage", "usage_time_fraction"]
+
     def after_init(self):
         self.init_has_passed = True
         self.compute_calculated_attributes()
 
-        self._user_journey.link_usage_pattern(self)
-        self._device_population.link_usage_pattern(self)
-        self._network.link_usage_pattern(self)
-
-    def __hash__(self):
-        return hash(self.name)
-
-    def __eq__(self, other):
-        if isinstance(other, UsagePattern):
-            return self.name == other.name
-        return False
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        return [self.device_population]
 
     @property
-    def user_journey(self) -> UserJourney:
-        return self._user_journey
-
-    @user_journey.setter
-    def user_journey(self, new_user_journey):
-        self._user_journey.unlink_usage_pattern(self)
-        self._user_journey = new_user_journey
-        self.compute_calculated_attributes()
-        self._user_journey.link_usage_pattern(self)
-        self.device_population.compute_calculated_attributes()
-        self.network.compute_calculated_attributes()
-
-    @property
-    def device_population(self) -> DevicePopulation:
-        return self._device_population
-
-    @device_population.setter
-    def device_population(self, new_device_population):
-        self._device_population.unlink_usage_pattern(self)
-        self._device_population = new_device_population
-        self._device_population.link_usage_pattern(self)
-
-    @property
-    def network(self) -> Network:
-        return self._network
-
-    @network.setter
-    def network(self, new_network):
-        self._network.unlink_usage_pattern(self)
-        self._network = new_network
-        self._network.link_usage_pattern(self)
-
-    @property
-    def services(self) -> Set[Service]:
+    def services(self) -> List[Service]:
         return self.user_journey.services
-
-    def compute_calculated_attributes(self):
-        logger.info(f"Computing calculated attributes for usage pattern {self.name}")
-        self.update_hourly_usage()
-        self.update_utc_time_intervals()
-        self.update_usage_time_fraction()
-        self.update_user_journey_freq()
-        self.update_nb_user_journeys_in_parallel_during_usage()
 
     def update_hourly_usage(self):
         hourly_usage = [
@@ -121,33 +69,19 @@ class UsagePattern(ModelingObject):
             hourly_usage, f"{self.name} local timezone hourly usage", left_child=self.time_intervals,
             child_operator="Hourly usage conversion")
 
-    def update_utc_time_intervals(self):
-        utc_time_intervals = self.hourly_usage.convert_to_utc(local_timezone=self.device_population.country.timezone)
-        self.utc_time_intervals = utc_time_intervals.define_as_intermediate_calculation(
-            f"{self.name} UTC")
-
     def update_usage_time_fraction(self):
-        usage_time_fraction = self.utc_time_intervals.compute_usage_time_fraction()
+        usage_time_fraction = self.hourly_usage.compute_usage_time_fraction()
         self.usage_time_fraction = usage_time_fraction.define_as_intermediate_calculation(
             f"Usage time fraction of {self.name}")
 
-    def update_user_journey_freq(self):
-        self.user_journey_freq = (
-                self.device_population.nb_devices * self.user_journey_freq_per_user).define_as_intermediate_calculation(
-            f"User journey frequency of {self.name}")
+    @property
+    def user_journey_freq(self):
+        return self.device_population.user_journey_freq_per_up[self]
 
-    def update_nb_user_journeys_in_parallel_during_usage(self):
-        one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
-        nb_uj_in_parallel__raw = (
-            (one_user_journey * (self.user_journey_freq * self.user_journey.duration / self.usage_time_fraction)).to(
-                u.user_journey))
-        if nb_uj_in_parallel__raw.magnitude != int(nb_uj_in_parallel__raw.magnitude):
-            nb_user_journeys_in_parallel_during_usage = (
-                    nb_uj_in_parallel__raw + ExplainableQuantity(
-                (math.ceil(nb_uj_in_parallel__raw.magnitude) - nb_uj_in_parallel__raw.magnitude)
-                * u.user_journey, "Rounding up of user journeys in parallel to next integer"))
-        else:
-            nb_user_journeys_in_parallel_during_usage = nb_uj_in_parallel__raw
+    @property
+    def nb_user_journeys_in_parallel_during_usage(self):
+        return self.device_population.nb_user_journeys_in_parallel_during_usage_per_up[self]
 
-        self.nb_user_journeys_in_parallel_during_usage = nb_user_journeys_in_parallel_during_usage\
-            .define_as_intermediate_calculation(f"Number of user journeys in parallel during {self.name}")
+    @property
+    def utc_time_intervals(self):
+        return self.device_population.utc_time_intervals_per_up[self]
