@@ -1,62 +1,38 @@
-from footprint_model.constants.countries import Country
-from footprint_model.constants.physical_elements import (Device, Network, PhysicalElements, Devices, Networks, Server)
 from footprint_model.constants.units import u
+from footprint_model.core.device_population import DevicePopulation
 from footprint_model.core.user_journey import UserJourney
+from footprint_model.core.service import Service
+from footprint_model.core.infra_need import InfraNeed
+from footprint_model.core.network import Network
 from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import intermediate_calculation
 
 
-from dataclasses import dataclass
-from typing import Dict
+from typing import Dict, List, Set
+from datetime import datetime
+import pytz
 import math
-
 from pint import Quantity
 
 
-class Population:
-    def __init__(self, name: str, nb_users: float, country: Country):
-        self.name = name
-        self.nb_users = SourceValue(nb_users * u.user, Sources.USER_INPUT, f"nb users in {self.name}")
-        self.country = country
-
-
-@dataclass
-class InfraNeed:
-    ram: ExplainableQuantity
-    storage: ExplainableQuantity
-
-    def __post_init__(self):
-        # Todo: Simplify unit checking by creating a custom dataclass
-        if not self.ram.value.check("[data]"):
-            raise ValueError("Variable 'ram' does not have octet dimensionality")
-        if not self.storage.value.check("[data] / [time]"):
-            raise ValueError("Variable 'storage' does not have octet over time dimensionality")
-
-
 class UsagePattern:
-    def __init__(self, name: str, user_journey: UserJourney, population: Population, frac_smartphone: float,
-                 frac_mobile_network_for_smartphones: float, user_journey_freq_per_user: Quantity,
-                 usage_time_fraction: Quantity, smartphone=Devices.SMARTPHONE, laptop=Devices.LAPTOP):
+    def __init__(self, name: str, user_journey: UserJourney, device_population: DevicePopulation,
+                 network: Network, user_journey_freq_per_user: Quantity, time_intervals: List[List[int]]):
         self.name = name
-        self.user_journey = user_journey
-        self.population = population
-        self.frac_smartphone = SourceValue(
-            frac_smartphone * u.dimensionless, Sources.USER_INPUT, f"fraction of smartphones in {self.name}")
-        self.frac_mobile_network_for_smartphones = SourceValue(
-            frac_mobile_network_for_smartphones * u.dimensionless, Sources.USER_INPUT,
-            f"fraction of mobile network use for smartphones in {self.name}")
+        self._user_journey = user_journey
+        self._user_journey.link_usage_pattern(self)
+        self._device_population = device_population
+        self._device_population.link_usage_pattern(self)
+        self._network = network
+        self._network.link_usage_pattern(self)
         if not user_journey_freq_per_user.check("[user_journey] / ([person] * [time])"):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
         self.user_journey_freq_per_user = SourceValue(
             user_journey_freq_per_user, Sources.USER_INPUT, f"user_journeys frequency per user in {self.name}")
-        if not usage_time_fraction.check("[]"):
-            raise ValueError("Variable 'usage_time_fraction' shouldn’t have any dimensionality."
-                             " It is the fraction of time the service is used.")
-        self.usage_time_fraction = SourceValue(usage_time_fraction, Sources.USER_INPUT,
-                                               f"usage time fraction in {self.name}")
-        self.smartphone = smartphone
-        self.laptop = laptop
+        self._check_time_intervals_validity(time_intervals)
+        self.time_intervals = time_intervals
 
     def __hash__(self):
         return hash(self.name)
@@ -67,9 +43,59 @@ class UsagePattern:
         return False
 
     @property
-    def frac_laptop(self) -> ExplainableQuantity:
+    def usage_time_fraction(self):
         return SourceValue(
-            1 - self.frac_smartphone.value, Sources.USER_INPUT, f"fraction of laptops in {self.name}")
+            (sum(time_interval[1] - time_interval[0] for time_interval in self.time_intervals) / 24) * u.dimensionless,
+            Sources.USER_INPUT, f"usage time fraction in {self.name}")
+
+    @staticmethod
+    def _check_time_intervals_validity(time_intervals: List[List[int]]):
+        sorted_time_intervals = sorted(time_intervals, key=lambda x: x[0])
+        for i in range(len(sorted_time_intervals)):
+            start_time, end_time = sorted_time_intervals[i]
+            if start_time >= end_time:
+                raise ValueError(
+                    f"Invalid time interval {sorted_time_intervals[i]}, start time must be earlier than end time")
+            if i < len(sorted_time_intervals) - 1:
+                next_start_time = sorted_time_intervals[i + 1][0]
+                if next_start_time < end_time:
+                    raise ValueError(
+                        f"Time interval {sorted_time_intervals[i + 1]} starts before time interval"
+                        f" {sorted_time_intervals[i]} ends")
+
+    @property
+    def user_journey(self) -> UserJourney:
+        return self._user_journey
+
+    @user_journey.setter
+    def user_journey(self, new_user_journey):
+        self._user_journey.unlink_usage_pattern(self)
+        self._user_journey = new_user_journey
+        self._user_journey.link_usage_pattern(self)
+
+    @property
+    def device_population(self) -> DevicePopulation:
+        return self._device_population
+
+    @device_population.setter
+    def device_population(self, new_device_population):
+        self._device_population.unlink_usage_pattern(self)
+        self._device_population = new_device_population
+        self._device_population.link_usage_pattern(self)
+
+    @property
+    def network(self) -> Network:
+        return self._network
+
+    @network.setter
+    def network(self, new_network):
+        self._network.unlink_usage_pattern(self)
+        self._network = new_network
+        self._network.link_usage_pattern(self)
+
+    @property
+    def services(self) -> Set[Service]:
+        return self.user_journey.services
 
     @property
     def non_usage_time_fraction(self) -> ExplainableQuantity:
@@ -77,105 +103,56 @@ class UsagePattern:
             1 - self.usage_time_fraction.value, Sources.USER_INPUT, f"fraction of non usage time in {self.name}")
 
     @property
-    def frac_non_mobile_network_for_smartphones(self) -> ExplainableQuantity:
-        return SourceValue(1 - self.frac_mobile_network_for_smartphones.value, Sources.USER_INPUT,
-                           f"fraction of non mobile network use for smartphones in {self.name}")
+    def user_journey_freq(self) -> ExplainableQuantity:
+        return self.device_population.nb_devices * self.user_journey_freq_per_user
 
     @property
-    @intermediate_calculation("Wifi usage fraction")
-    def wifi_usage_fraction(self) -> ExplainableQuantity:
-        return self.frac_laptop + self.frac_smartphone * self.frac_non_mobile_network_for_smartphones
-
-    @property
-    def user_journeys_freq(self) -> ExplainableQuantity:
-        return self.population.nb_users * self.user_journey_freq_per_user
-
-    def compute_device_consumption(self, device: Device, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        device_consumption = (
-                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_device_consumption(device)
-        ).to(u.kWh / u.year)
-        device_consumption.define_as_intermediate_calculation(f"{device.name} energy consumption in {self.name}")
-        return device_consumption
-
-    def compute_device_fabrication_footprint(
-            self, device: Device, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        device_fabrication_footprint = (
-                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_fabrication_footprint(device)
-        ).to(u.kg / u.year)
-        device_fabrication_footprint.define_as_intermediate_calculation(
-            f"{device.name} fabrication footprint in {self.name}")
-        return device_fabrication_footprint
-
-    def compute_network_consumption(
-            self, network: Network, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        network_cons = (
-                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_network_consumption(network)
-        ).to(u.kWh / u.year)
-        network_cons.define_as_intermediate_calculation(f"{network.name} energy consumption in {self.name}")
-        return network_cons
-
-    def compute_energy_consumption(self) -> Dict[PhysicalElements, ExplainableQuantity]:
-        return {
-            PhysicalElements.SMARTPHONE: self.compute_device_consumption(
-                self.smartphone, self.frac_smartphone).to(u.kWh / u.year),
-            PhysicalElements.LAPTOP: self.compute_device_consumption(
-                self.laptop, self.frac_laptop).to(u.kWh / u.year),
-            PhysicalElements.BOX: self.compute_device_consumption(
-                Devices.BOX, self.wifi_usage_fraction).to(u.kWh / u.year),
-            PhysicalElements.SCREEN: self.compute_device_consumption(
-                Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kWh / u.year),
-            PhysicalElements.MOBILE_NETWORK: self.compute_network_consumption(
-                Networks.MOBILE_NETWORK, self.frac_smartphone * self.frac_mobile_network_for_smartphones
-            ).to(u.kWh / u.year),
-            PhysicalElements.WIFI_NETWORK: self.compute_network_consumption(
-                Networks.WIFI_NETWORK, self.wifi_usage_fraction).to(u.kWh / u.year),
-        }
-
-    def compute_fabrication_emissions(self) -> Dict[PhysicalElements, ExplainableQuantity]:
-        return {
-            PhysicalElements.SMARTPHONE: self.compute_device_fabrication_footprint(
-                self.smartphone, self.frac_smartphone).to(u.kg / u.year),
-            PhysicalElements.LAPTOP: self.compute_device_fabrication_footprint(
-                self.laptop, self.frac_laptop).to(u.kg / u.year),
-            PhysicalElements.BOX: self.compute_device_fabrication_footprint(
-                Devices.BOX, self.wifi_usage_fraction).to(u.kg / u.year),
-            PhysicalElements.SCREEN: self.compute_device_fabrication_footprint(
-                Devices.SCREEN, self.frac_laptop * Devices.FRACTION_OF_LAPTOPS_EQUIPED_WITH_SCREEN).to(u.kg / u.year),
-        }
-
-    @property
-    def estimated_infra_need(self) -> InfraNeed:
-        # TODO: Split into estimated_ram_need and estimated_storage_need for optimization
+    @intermediate_calculation("Number of user journeys in parallel during usage")
+    def nb_user_journeys_in_parallel_during_usage(self):
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
         nb_uj_in_parallel__raw = (
-            (one_user_journey * (self.user_journeys_freq * self.user_journey.duration / self.usage_time_fraction)).to(
+            (one_user_journey * (self.user_journey_freq * self.user_journey.duration / self.usage_time_fraction)).to(
                 u.user_journey))
         if nb_uj_in_parallel__raw.magnitude != int(nb_uj_in_parallel__raw.magnitude):
             nb_user_journeys_in_parallel_during_usage = (
-                nb_uj_in_parallel__raw + ExplainableQuantity(
+                    nb_uj_in_parallel__raw + ExplainableQuantity(
                 (math.ceil(nb_uj_in_parallel__raw.magnitude) - nb_uj_in_parallel__raw.magnitude)
-                    * u.user_journey, "Rounding up of user journeys in parallel to next integer"))
+                * u.user_journey, "Rounding up of user journeys in parallel to next integer"))
         else:
             nb_user_journeys_in_parallel_during_usage = nb_uj_in_parallel__raw
-        nb_user_journeys_in_parallel_during_usage.define_as_intermediate_calculation(
-            "Number of user journeys in parallel")
-        total_data_transfered = self.user_journey.data_upload + self.user_journey.data_download
-        total_data_transfered.formulas[0] = f"({total_data_transfered.formulas[0]})"
-        data_transferred_in_parallel = (nb_user_journeys_in_parallel_during_usage * total_data_transfered)
-        ram_needed = Server.SERVER_RAM_PER_DATA_TRANSFERRED * data_transferred_in_parallel
-        ram_needed.define_as_intermediate_calculation(f"Ram needed for {self.name}")
 
-        storage_needed = self.user_journey.data_upload * self.user_journeys_freq
-        storage_needed.define_as_intermediate_calculation(f"Storage needed for {self.name}")
-
-        return InfraNeed(ram_needed.to(u.Go), storage_needed.to(u.To / u.year))
+        return nb_user_journeys_in_parallel_during_usage
 
     @property
-    @intermediate_calculation("Data upload")
-    def data_upload(self) -> ExplainableQuantity:
-        return (self.user_journey.data_upload * self.user_journeys_freq).to(u.To / u.year)
+    def estimated_infra_need(self) -> Dict[Service, InfraNeed]:
+        infra_needs = {}
 
-    @property
-    @intermediate_calculation("Data download")
-    def data_download(self) -> ExplainableQuantity:
-        return (self.user_journey.data_download * self.user_journeys_freq).to(u.To / u.year)
+        ram_per_service = self.user_journey.ram_needed_per_service
+        storage_per_service = self.user_journey.storage_need_per_service
+        cpu_per_service = self.user_journey.cpu_need_per_service
+
+        # determine the time difference between population timezone and UTC
+        utc_tz = pytz.timezone('UTC')
+        current_time = datetime.now()
+        time_diff = self.device_population.country.timezone.utcoffset(current_time) - utc_tz.utcoffset(current_time)
+        time_diff_in_hours = int(time_diff.total_seconds() / 3600)
+
+        for service in ram_per_service.keys():
+            ram_needed = [ExplainableQuantity(0 * u.Mo)] * 24
+            cpu_needed = [ExplainableQuantity(0 * u.core)] * 24
+
+            for time in self.time_intervals:
+                start_time, end_time = time
+
+                for hour in range(start_time, end_time):
+                    # calculate the corresponding hour in UTC
+                    utc_hour = (hour - time_diff_in_hours) % 24
+
+                    ram_needed[utc_hour] += ram_per_service[service] * self.nb_user_journeys_in_parallel_during_usage
+                    cpu_needed[utc_hour] += cpu_per_service[service] * self.nb_user_journeys_in_parallel_during_usage
+
+            storage_needed = (storage_per_service[service] * self.user_journey_freq).to(u.To / u.year)
+
+            infra_needs[service] = InfraNeed(ram_needed, storage_needed, cpu_needed)
+
+        return infra_needs

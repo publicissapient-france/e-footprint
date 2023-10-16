@@ -18,6 +18,6 @@ If you have trouble managing the python versions on your laptop you can check ou
 To execute main.py at the root of the project
 ```shell
 export PYTHONPATH="./:$PYTHONPATH"
-python -m pytest tests
+python -m pytest --cov=tests
 python use_cases/first_use_case.py
 ```

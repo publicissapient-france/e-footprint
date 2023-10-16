@@ -1,3 +1,4 @@
 octet = [data] = o = oct
 user = [person] = user = user
 user_journey = [user_journey] = user_journey = user_journey
+core = [cpu] = core = core

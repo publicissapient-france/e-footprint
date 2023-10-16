@@ -1,11 +1,17 @@
 from footprint_model.constants.units import u
-from footprint_model.constants.physical_elements import Device, Network
 from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
+from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.core.service import Request, Service
+from footprint_model.core.device_population import Device
+from footprint_model.core.server import Server
+from footprint_model.core.network import Network
 
 from dataclasses import dataclass, field
-from typing import List, Optional
+from typing import List, Optional, Dict, Set
 from pint import Quantity
 from copy import deepcopy
+
+from footprint_model.core.storage import Storage
 
 
 class DataTransferredType:
@@ -13,64 +19,64 @@ class DataTransferredType:
     DOWNLOAD = "download"
 
 
-class DataTransferred:
-    def __init__(
-            self, data_transfer_type: DataTransferredType, size: Quantity, is_stored: bool = False,
-            description: str = ""):
-        self.type = data_transfer_type
-        if not size.check("[data]"):
-            raise ValueError("Variable 'size' does not have the appropriate '[data]' dimensionality")
-        self.size = size / u.user_journey
-        self.is_stored = is_stored
-        self.description = description
-
-    def __truediv__(self, other):
-        if other.isinstance(Quantity):
-            self.size = self.size / other
-            return self
-        else:
-            raise ValueError(f"Can only divide DataTransferred with Quantities, not with {type(other)}")
-
-
 class UserJourneyStep:
-    def __init__(self, name: str, data_transferred: List[DataTransferred], duration: Quantity,
-                 tracking_data: Quantity = 0 * u.o, url_pattern: Optional[str] = None):
+    def __init__(self, name: str, request: Request, duration: Quantity, url_pattern: Optional[str] = None):
         self.name = name
-        if not type(data_transferred) == list:
-            raise ValueError("data_transferred should be a list")
-        self.data_transferred = data_transferred
+        self.request = request
         if not duration.check("[time]"):
             raise ValueError("Variable 'duration' does not have the appropriate '[time]' dimensionality")
-        self.duration = ExplainableQuantity(duration / u.user_journey, f"uj step {name} duration")
-        if not tracking_data.check("[data]"):
-            raise ValueError("Variable 'tracking_data' does not have the appropriate '[data]' dimensionality")
-        if tracking_data > 0 * u.o:
-            self.data_transferred.append(DataTransferred(DataTransferredType.UPLOAD, tracking_data))
-        elif tracking_data < 0 * u.o:
-            raise ValueError("Variable 'tracking data' should be positive")
+        self.duration = SourceValue(duration / u.user_journey, Sources.USER_INPUT, f"uj step {name} duration")
         self.url_pattern = url_pattern
 
     def __mul__(self, other):
         if type(other) not in [int, float]:
             raise ValueError(f"Can only multiply UserJourneyStep with int or float, not {type(other)}")
-        data_transfers_copy = self.data_transferred.copy()
-        for data_transfer in data_transfers_copy:
-            data_transfer.size = data_transfer.size * other
-
-        return UserJourneyStep(
-            self.name, data_transfers_copy, self.duration * other, 0 * u.Mo, self.url_pattern)
-    
-    def compute_bandwidth(self, transferred_type: DataTransferredType) -> ExplainableQuantity:
-        return (sum([data_transfer.size for data_transfer in self.data_transferred
-                if data_transfer.type == transferred_type]))
+        raise NotImplementedError
 
 
 @dataclass
 class UserJourney:
     name: str
-    # TODO : add device attribute
-    name: str
     uj_steps: List[UserJourneyStep] = field(default_factory=list)
+    usage_patterns = set()
+
+    def link_usage_pattern(self, usage_pattern):
+        self.usage_patterns = self.usage_patterns | {usage_pattern}
+        for server in self.servers:
+            server.link_usage_pattern(usage_pattern)
+        for storage in self.storages:
+            storage.link_usage_pattern(usage_pattern)
+
+    def unlink_usage_pattern(self, usage_pattern):
+        self.usage_patterns.discard(usage_pattern)
+        for server in self.servers:
+            server.unlink_usage_pattern(usage_pattern)
+        for storage in self.storages:
+            storage.unlink_usage_pattern(usage_pattern)
+
+    @property
+    def servers(self) -> Set[Server]:
+        servers = set()
+        for uj_step in self.uj_steps:
+            servers = servers | {uj_step.request.service.server}
+
+        return servers
+
+    @property
+    def storages(self) -> Set[Storage]:
+        storages = set()
+        for uj_step in self.uj_steps:
+            storages = storages | {uj_step.request.service.storage}
+
+        return storages
+
+    @property
+    def services(self) -> Set[Service]:
+        services = set()
+        for uj_step in self.uj_steps:
+            services = services | {uj_step.request.service}
+
+        return services
 
     @property
     @intermediate_calculation("duration")
@@ -79,24 +85,21 @@ class UserJourney:
         uj_step_duration_sum.formulas[0] = f"({uj_step_duration_sum.formulas[0]})"
         return uj_step_duration_sum
 
-    def _compute_bandwidth(self, transferred_type: DataTransferredType) -> ExplainableQuantity:
-        # TODO: write tests for this function
-        all_data_transferred = []
+    @property
+    @intermediate_calculation("data_download")
+    def data_download(self) -> Quantity:
+        all_data_download = 0
         for uj_step in self.uj_steps:
-            all_data_transferred += uj_step.data_transferred
-        uj_bandwidth = (sum([data_transfer.size for data_transfer in all_data_transferred
-                             if data_transfer.type == transferred_type]))
-        return uj_bandwidth
+            all_data_download += uj_step.request.data_download
+        return all_data_download
 
     @property
-    def data_download(self) -> ExplainableQuantity:
-        return ExplainableQuantity(
-            self._compute_bandwidth(DataTransferredType.DOWNLOAD), f"Data download of step {self.name}")
-
-    @property
-    def data_upload(self) -> ExplainableQuantity:
-        return ExplainableQuantity(
-            self._compute_bandwidth(DataTransferredType.UPLOAD), f"Data upload of step {self.name}")
+    @intermediate_calculation("data_upload")
+    def data_upload(self) -> Quantity:
+        all_data_upload = 0
+        for uj_step in self.uj_steps:
+            all_data_upload += uj_step.request.data_upload
+        return all_data_upload
 
     def add_step(self, step: UserJourneyStep) -> None:
         self.uj_steps.append(step)
@@ -118,3 +121,43 @@ class UserJourney:
             u.Wh / u.user_journey)
         network_consumption.define_as_intermediate_calculation(f"{network.name} consumption during {self.name}")
         return network_consumption
+
+    @property
+    def ram_needed_per_service(self) -> Dict[Service, ExplainableQuantity]:
+        ram_per_service = {}
+        one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
+        for uj_step in self.uj_steps:
+            service = uj_step.request.service
+            ram_per_service[service] = ram_per_service.get(service, 0) + (
+                    uj_step.request.ram_needed * uj_step.request.duration / (self.duration * one_user_journey)
+            ).to(u.Mo / u.user_journey)
+        for service in ram_per_service.keys():
+            ram_per_service[service].define_as_intermediate_calculation(
+                f"Ram need averaged over duration of {self.name} for service {service.name}")
+        return ram_per_service
+
+    @property
+    def storage_need_per_service(self) -> Dict[Service, ExplainableQuantity]:
+        storage_per_service = {}
+        for uj_step in self.uj_steps:
+            service = uj_step.request.service
+            storage_per_service[service] = (
+                    storage_per_service.get(service, 0) + uj_step.request.data_upload).to(u.Mo / u.user_journey)
+        for service in storage_per_service.keys():
+            storage_per_service[service].define_as_intermediate_calculation(
+                f"Storage need of {self.name} for service {service.name}")
+        return storage_per_service
+
+    @property
+    def cpu_need_per_service(self) -> Dict[Service, ExplainableQuantity]:
+        cpu_per_service = {}
+        one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
+        for uj_step in self.uj_steps:
+            service = uj_step.request.service
+            cpu_per_service[service] = cpu_per_service.get(service, 0) + (
+                    uj_step.request.cpu_needed * uj_step.request.duration
+                    / (self.duration * one_user_journey)).to(u.core / u.user_journey)
+        for service in cpu_per_service.keys():
+            cpu_per_service[service].define_as_intermediate_calculation(
+                f"CPU need averaged over duration of {self.name} for service {service.name}")
+        return cpu_per_service

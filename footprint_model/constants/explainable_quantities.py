@@ -1,3 +1,5 @@
+import numbers
+
 from pint import Quantity
 from typing import Dict
 
@@ -83,17 +85,30 @@ class ExplainableQuantity:
             name_formulas_dict=new_name_formulas_dict)
 
     def __add__(self, other):
-        if not issubclass(type(other), ExplainableQuantity) and other == 0:
+        if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
             return self
         elif issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "self + other", self.value + other.value)
+            if self.magnitude == 0:
+                return other
+            elif other.magnitude == 0:
+                return self
+            else:
+                return self.compute_operation(other, "self + other", self.value + other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 
     def __sub__(self, other):
-        if issubclass(type(other), ExplainableQuantity):
-            return self.compute_operation(other, "self - other", self.value - other.value)
+        if issubclass(type(other), numbers.Number) and other == 0:
+            # summing with sum() adds an implicit 0 as starting value
+            return self
+        elif issubclass(type(other), ExplainableQuantity):
+            if self.magnitude == 0:
+                return other
+            elif other.magnitude == 0:
+                return self
+            else:
+                return self.compute_operation(other, "self - other", self.value - other.value)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
 

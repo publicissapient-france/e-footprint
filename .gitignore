@@ -8,3 +8,5 @@ lib
 # To ignore excel cache file
 ~$*
 *.DS_Store
+*.png
+.coverage

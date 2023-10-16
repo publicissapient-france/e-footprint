@@ -1,58 +1,74 @@
 from unittest import TestCase
 
-from footprint_model.constants.countries import Countries
-from footprint_model.core.user_journey import UserJourney, UserJourneyStep, DataTransferred, DataTransferredType, u
-from footprint_model.constants.physical_elements import PhysicalElements
-
+from footprint_model.constants.sources import SourceValue, Sources
+from footprint_model.core.user_journey import UserJourney, UserJourneyStep
+from footprint_model.core.server import Servers
+from footprint_model.core.storage import Storage
+from footprint_model.core.service import Service, Request
+from footprint_model.core.device_population import DevicePopulation, Devices
+from footprint_model.core.usage_pattern import UsagePattern
+from footprint_model.core.network import Networks
 from footprint_model.core.system import System
-from footprint_model.core.usage_pattern import Population, UsagePattern
-from tests.test_utils import extract_values_from_dict
+from footprint_model.constants.countries import Countries
+from footprint_model.constants.units import u
+from footprint_model.utils.tools import round_dict
+from tests.utils import extract_values_from_dict
 
 
 class IntegrationTest(TestCase):
     def test_base_use_case(self):
-        user_journey = UserJourney("test user journey")
-        user_journey_step = UserJourneyStep(
-            "", [DataTransferred(DataTransferredType.DOWNLOAD, 3 * u.Mo)], 5 * u.min, tracking_data=0.1 * u.Mo)
-        user_journey.add_step(user_journey_step)
-        population = Population("buyers_sonepar", 1e6, Countries.FRANCE)
-        usage_pattern = UsagePattern(
-            "usage_pattern", user_journey, population, frac_smartphone=0.5, frac_mobile_network_for_smartphones=0.5,
-            user_journey_freq_per_user=20 * u.user_journey / (u.user * u.year), usage_time_fraction=8 * u.hour / u.day)
-        system = System(
-            "System", [usage_pattern], data_replication_factor=2, data_storage_duration=3 * u.year, cloud=True)
+        server = Servers.SERVER
+        storage = Storage(
+            "Default SSD storage",
+            carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
+            storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            power_usage_effectiveness=1.2,
+            country=Countries.GERMANY,
+            data_replication_factor=3,
+            data_storage_duration=10 * u.year
+        )
+        service = Service("Youtube", server, storage, base_ram_consumption=300 * u.Mo,
+                          base_cpu_consumption=2 * u.core)
 
-        energy_consumption_dict = {usage_pattern: {
-            PhysicalElements.SMARTPHONE: 833.3 * u.kWh / u.year,
-            PhysicalElements.LAPTOP: 41666.7 * u.kWh / u.year,
-            PhysicalElements.BOX: 12500.0 * u.kWh / u.year,
-            PhysicalElements.SCREEN: 5000.0 * u.kWh / u.year,
-            PhysicalElements.MOBILE_NETWORK: 1860.0 * u.kWh / u.year,
-            PhysicalElements.WIFI_NETWORK: 2325.0 * u.kWh / u.year,
-            PhysicalElements.SERVER: 134.7 * u.kWh / u.year,
-            PhysicalElements.SSD: 54.7 * u.kWh / u.year,
-        }}
-        self.assertDictEqual(extract_values_from_dict(system.compute_energy_consumption(), imbricated_dict=True),
-                             energy_consumption_dict)
-        fabrication_dict = {usage_pattern: {
-            PhysicalElements.SMARTPHONE: 6337.6 * u.kg / u.year,
-            PhysicalElements.LAPTOP: 8474.3 * u.kg / u.year,
-            PhysicalElements.BOX: 1853.8 * u.kg / u.year,
-            PhysicalElements.SCREEN: 2411.9 * u.kg / u.year,
-            PhysicalElements.SERVER: 4.3 * u.kg / u.year,
-            PhysicalElements.SSD: 320.0 * u.kg / u.year
-        }}
-        self.assertDictEqual(extract_values_from_dict(system.compute_fabrication_emissions(), imbricated_dict=True),
-                             fabrication_dict)
-        energy_emissions_dict = {usage_pattern: {
-            PhysicalElements.SMARTPHONE: 70.8 * u.kg / u.year,
-            PhysicalElements.LAPTOP: 3541.7 * u.kg / u.year,
-            PhysicalElements.BOX: 1062.5 * u.kg / u.year,
-            PhysicalElements.SCREEN: 425 * u.kg / u.year,
-            PhysicalElements.MOBILE_NETWORK: 158.1 * u.kg / u.year,
-            PhysicalElements.WIFI_NETWORK: 197.6 * u.kg / u.year,
-            PhysicalElements.SERVER: 11.4 * u.kg / u.year,
-            PhysicalElements.SSD: 4.6 * u.kg / u.year,
-        }}
-        self.assertDictEqual(extract_values_from_dict(system.compute_energy_emissions(), imbricated_dict=True),
-                             energy_emissions_dict)
+        streaming_request = Request(
+            "20 min streaming on Youtube", service, 50 * u.ko, (2.5 / 3) * u.Go, duration=4 * u.min)
+        streaming_step = UserJourneyStep("20 min streaming on Youtube", streaming_request, 20 * u.min)
+        upload_request = Request(
+            "0.4 s of upload", service, 300 * u.ko, 0 * u.Go, duration=1 * u.s)
+        upload_step = UserJourneyStep("0.4s of upload", upload_request, 0.1 * u.s)
+
+        default_uj = UserJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])
+
+        default_device_pop = DevicePopulation(
+            "French Youtube users on laptop", 4e7 * 0.3, Countries.FRANCE, [Devices.LAPTOP])
+
+        default_network = Networks.WIFI_NETWORK
+
+        system = System("system 1", [UsagePattern(
+            "Average daily Youtube usage in France on laptop", default_uj, default_device_pop,
+            default_network, 365 * u.user_journey / (u.user * u.year), [[7, 23]])])
+
+        fabrication_dict = {
+            "Servers": 170660 * u.kg / u.year,
+            "Storage": 1226400 * u.kg / u.year,
+            "Devices": 14848211 * u.kg / u.year,
+            "Network": 0 * u.kg / u.year
+        }
+        self.assertDictEqual(
+            fabrication_dict,
+            round_dict(extract_values_from_dict(system.fabrication_footprints(), nested_dict=False), 0)
+        )
+
+        energy_footprints_dict = {
+            "Servers": 2078849 * u.kg / u.year,
+            "Storage": 1 * u.kg / u.year,
+            "Devices": 6205517 * u.kg / u.year,
+            "Network": 15519015 * u.kg / u.year
+        }
+        self.assertDictEqual(
+            energy_footprints_dict,
+            round_dict(extract_values_from_dict(system.energy_footprints(), nested_dict=False), 0)
+        )

@@ -2,3 +2,5 @@ black==23.1.0
 pint
 pytest
 matplotlib
+pytest
+pytest-cov

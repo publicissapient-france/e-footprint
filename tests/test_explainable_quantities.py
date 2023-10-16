@@ -76,6 +76,12 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_magnitude(self):
         self.assertEqual(self.a.magnitude, 1)
 
+    def test_add_with_0(self):
+        self.assertEqual(self.a, self.a + 0)
+
+    def test_subtract_0(self):
+        self.assertEqual(self.a, self.a - 0)
+
 
 if __name__ == "__main__":
     unittest.main()
