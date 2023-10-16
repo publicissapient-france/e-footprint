@@ -61,21 +61,21 @@ class TestInfraHardware(TestCase):
         self.test_infra_hardware_multiple_services.services__raw = {self.service2, self.service3}
 
     def test_update_all_services_ram_needs_single_service(self):
-        expected_value = ExplainableHourlyUsage([ExplainableQuantity(0 * u.Go)] * 24)
+        expected_value = ExplainableHourlyUsage([ExplainableQuantity(0 * u.GB)] * 24)
         for i in range(8):
-            expected_value.value[i] = ExplainableQuantity(100 * u.Go)
+            expected_value.value[i] = ExplainableQuantity(100 * u.GB)
 
         self.test_infra_hardware_single_service.update_all_services_ram_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_single_service.all_services_ram_needs.value)
 
     def test_all_services_infra_needs_multiple_services(self):
-        expected_value = ExplainableHourlyUsage([ExplainableQuantity(0 * u.Go)] * 24)
+        expected_value = ExplainableHourlyUsage([ExplainableQuantity(0 * u.GB)] * 24)
         for i in range(6, 8):
-            expected_value.value[i] = ExplainableQuantity(100 * u.Go)
+            expected_value.value[i] = ExplainableQuantity(100 * u.GB)
         for i in range(8, 14):
-            expected_value.value[i] = ExplainableQuantity(200 * u.Go)
+            expected_value.value[i] = ExplainableQuantity(200 * u.GB)
         for i in range(14, 16):
-            expected_value.value[i] = ExplainableQuantity(100 * u.Go)
+            expected_value.value[i] = ExplainableQuantity(100 * u.GB)
 
         self.test_infra_hardware_multiple_services.update_all_services_ram_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_ram_needs.value)

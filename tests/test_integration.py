@@ -23,17 +23,17 @@ class IntegrationTest(TestCase):
             power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-            storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=1.2,
             country=Countries.GERMANY,
             data_replication_factor=3
         )
-        service = Service("Youtube", server, storage, base_ram_consumption=300 * u.Mo,
+        service = Service("Youtube", server, storage, base_ram_consumption=300 * u.MB,
                           base_cpu_consumption=2 * u.core)
 
-        streaming_step = UserJourneyStep("20 min streaming on Youtube", service, 50 * u.ko, (2.5 / 3) * u.Go,
+        streaming_step = UserJourneyStep("20 min streaming on Youtube", service, 50 * u.kB, (2.5 / 3) * u.GB,
                                          user_time_spent=20 * u.min, request_duration=4 * u.min)
-        upload_step = UserJourneyStep("0.4s of upload", service, 300 * u.ko, 0 * u.Go, user_time_spent=1 * u.s,
+        upload_step = UserJourneyStep("0.4s of upload", service, 300 * u.kB, 0 * u.GB, user_time_spent=1 * u.s,
                                       request_duration=0.1 * u.s)
 
         default_uj = UserJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])

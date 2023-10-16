@@ -27,10 +27,10 @@ class Storage(InfraHardware):
             data_replication_factor * u.dimensionless, Sources.USER_INPUT, f"Data replication factor of {self.name}")
         # TODO: implement data storage duration logic
         if storage_need_from_previous_year is not None:
-            if not storage_need_from_previous_year.value.check("[data]"):
+            if not storage_need_from_previous_year.value.check("[]"):
                 raise ValueError(
                     "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
-                    " '[data]' dimensionality")
+                    " '[]' dimensionality")
             storage_need_from_previous_year.left_child = None
             storage_need_from_previous_year.right_child = None
             storage_need_from_previous_year.label = f"{self.name} storage need from previous year"
@@ -52,7 +52,7 @@ class Storage(InfraHardware):
                 if service.storage == self}
 
     def update_all_services_storage_needs(self):
-        all_services_storage_needs = sum(service.storage_needed for service in self.services).to(u.To / u.year)
+        all_services_storage_needs = sum(service.storage_needed for service in self.services).to(u.TB / u.year)
 
         self.all_services_storage_needs = all_services_storage_needs.define_as_intermediate_calculation(
             f"Storage need of {self.name}")
@@ -73,7 +73,7 @@ class Storage(InfraHardware):
         active_storage_required = (
                 self.all_services_storage_needs
                 * SourceValue(1 * u.hour, Sources.HYPOTHESIS, "Time interval during which active storage is considered")
-        ).to(u.Go)
+        ).to(u.GB)
 
         self.active_storage_required = active_storage_required.define_as_intermediate_calculation(
             f"Active storage required for {self.name}")
@@ -113,7 +113,7 @@ class Storages:
         power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+        storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
         data_replication_factor=3,
@@ -124,7 +124,7 @@ class Storages:
         power=SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         lifespan=SourceValue(4 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+        storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,
         data_replication_factor=3,

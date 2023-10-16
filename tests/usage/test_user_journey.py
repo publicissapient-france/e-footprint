@@ -12,13 +12,13 @@ class TestUserJourneyStep(TestCase):
         self.service = MagicMock()
 
         self.user_journey_step = UserJourneyStep(
-            "", service=self.service, data_download=200 * u.Mo, data_upload=(100 * u.Mo),
+            "", service=self.service, data_download=200 * u.MB, data_upload=(100 * u.MB),
             server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
             user_time_spent=(2 * u.min))
 
     def test_update_ram_needed(self):
         self.user_journey_step.update_ram_needed()
-        expected_ram_needed = ExplainableQuantity(400 * u.Mo / u.user_journey)
+        expected_ram_needed = ExplainableQuantity(400 * u.MB / u.user_journey)
 
         self.assertEqual(expected_ram_needed.value, self.user_journey_step.ram_needed.value)
 
@@ -35,7 +35,7 @@ class TestUserJourney(TestCase):
         self.storage.usage_patterns = set()
 
         self.user_journey_step = UserJourneyStep(
-            "", service=self.service, data_download=200 * u.Mo, data_upload=(100 * u.Mo),
+            "", service=self.service, data_download=200 * u.MB, data_upload=(100 * u.MB),
             server_ram_per_data_transferred=2, cpu_needed=(2 * u.core),
             user_time_spent=(2 * u.min))
         self.one_user_journey = ExplainableQuantity(1 * u.user_journey)
@@ -95,21 +95,21 @@ class TestUserJourney(TestCase):
         self.user_journey.add_step(self.user_journey_step)
 
         for step in self.user_journey.uj_steps:
-            step.data_download = ExplainableQuantity(10 * u.Mo / u.user_journey)
+            step.data_download = ExplainableQuantity(10 * u.MB / u.user_journey)
         self.user_journey.update_data_download()
 
-        expected_data_download = ExplainableQuantity(20 * u.Mo / u.user_journey)
+        expected_data_download = ExplainableQuantity(20 * u.MB / u.user_journey)
 
         self.assertEqual(self.user_journey.data_download.value, expected_data_download.value)
 
     def test_update_data_upload_with_multiple_steps(self):
         self.user_journey.add_step(self.user_journey_step)
         for step in self.user_journey.uj_steps:
-            step.data_upload = ExplainableQuantity(10 * u.Mo / u.user_journey)
+            step.data_upload = ExplainableQuantity(10 * u.MB / u.user_journey)
 
         self.user_journey.update_data_upload()
 
-        expected_data_upload = ExplainableQuantity(20 * u.Mo / u.user_journey)
+        expected_data_upload = ExplainableQuantity(20 * u.MB / u.user_journey)
 
         self.assertEqual(self.user_journey.data_upload.value, expected_data_upload.value)
 

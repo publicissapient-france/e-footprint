@@ -15,7 +15,7 @@ class TestStorage(TestCase):
             power=SourceValue(0 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             lifespan=SourceValue(0 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-            storage_capacity=SourceValue(0 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+            storage_capacity=SourceValue(0 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=0,
             country=MagicMock(),
             data_replication_factor=0
@@ -38,42 +38,42 @@ class TestStorage(TestCase):
     def test_update_all_services_storage_needs_single_service(self):
         service1 = MagicMock()
         service1.storage = self.storage_base
-        service1.storage_needed = ExplainableQuantity(2 * u.To / u.year)
+        service1.storage_needed = ExplainableQuantity(2 * u.TB / u.year)
         service2 = MagicMock()
         service2.storage = self.storage_base
-        service2.storage_needed = ExplainableQuantity(3 * u.To / u.year)
+        service2.storage_needed = ExplainableQuantity(3 * u.TB / u.year)
         with patch.object(Storage, "services", new_callable=PropertyMock) as services_mock:
             services_mock.return_value = {service1, service2}
             self.storage_base.update_all_services_storage_needs()
-            self.assertEqual(5 * u.To / u.year, self.storage_base.all_services_storage_needs.value)
+            self.assertEqual(5 * u.TB / u.year, self.storage_base.all_services_storage_needs.value)
 
     def test_active_storage_required(self):
         active_storage_expected = (
-                ExplainableQuantity(10.1 * u.To / u.year)
+                ExplainableQuantity(10.1 * u.TB / u.year)
                 * SourceValue(1 * u.hour, Sources.HYPOTHESIS, "Time interval during which active storage is considered")
-        ).to(u.Go)
-        with patch.object(self.storage_base, "all_services_storage_needs", new=ExplainableQuantity(10.1 * u.To / u.year)):
+        ).to(u.GB)
+        with patch.object(self.storage_base, "all_services_storage_needs", new=ExplainableQuantity(10.1 * u.TB / u.year)):
             self.storage_base.update_active_storage_required()
             self.assertEqual(active_storage_expected.value, self.storage_base.active_storage_required.value)
 
     def test_long_term_storage_required(self):
-        with patch.object(self.storage_base, "all_services_storage_needs", ExplainableQuantity(10.1 * u.To / u.year)), \
-                patch.object(self.storage_base, "active_storage_required", ExplainableQuantity(1.5 * u.To)), \
+        with patch.object(self.storage_base, "all_services_storage_needs", ExplainableQuantity(10.1 * u.TB / u.year)), \
+                patch.object(self.storage_base, "active_storage_required", ExplainableQuantity(1.5 * u.TB)), \
                 patch.object(self.storage_base, "data_replication_factor", ExplainableQuantity(3 * u.dimensionless)), \
-                patch.object(self.storage_base, "storage_need_from_previous_year", ExplainableQuantity(1 * u.To)):
+                patch.object(self.storage_base, "storage_need_from_previous_year", ExplainableQuantity(1 * u.TB)):
             self.storage_base.update_long_term_storage_required()
 
-            self.assertEqual(29.8 * u.To, round(self.storage_base.long_term_storage_required.value, 1))
+            self.assertEqual(29.8 * u.TB, round(self.storage_base.long_term_storage_required.value, 1))
 
     def test_nb_of_active_instances(self):
-        with patch.object(self.storage_base, "active_storage_required", ExplainableQuantity(500 * u.Go)), \
-                patch.object(self.storage_base, "storage_capacity", ExplainableQuantity(1 * u.To)):
+        with patch.object(self.storage_base, "active_storage_required", ExplainableQuantity(500 * u.GB)), \
+                patch.object(self.storage_base, "storage_capacity", ExplainableQuantity(1 * u.TB)):
             self.storage_base.update_nb_of_active_instances()
             self.assertEqual(0.5, round(self.storage_base.nb_of_active_instances.value, 1))
 
     def test_nb_of_idle_instances(self):
-        with patch.object(self.storage_base, "long_term_storage_required", ExplainableQuantity(5 * u.Go)), \
-                patch.object(self.storage_base, "storage_capacity", ExplainableQuantity(1 * u.Go)):
+        with patch.object(self.storage_base, "long_term_storage_required", ExplainableQuantity(5 * u.GB)), \
+                patch.object(self.storage_base, "storage_capacity", ExplainableQuantity(1 * u.GB)):
             self.storage_base.update_nb_of_idle_instances()
             self.assertEqual(5, self.storage_base.nb_of_idle_instances.value)
 

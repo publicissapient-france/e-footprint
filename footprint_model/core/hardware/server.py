@@ -66,7 +66,7 @@ class Server(InfraHardware):
         available_ram_per_instance = self.ram * self.server_utilization_rate
         for service_base_resource_consumption in services_base_ram_consumptions:
             available_ram_per_instance -= service_base_resource_consumption
-            if available_ram_per_instance.value < 0:
+            if available_ram_per_instance.value < 0 * u.B:
                 services_resource_need = sum(services_base_ram_consumptions)
                 raise ValueError(
                     f"server has available capacity of "
@@ -183,7 +183,7 @@ class Servers:
         power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-        ram=SourceValue(128 * u.Go, Sources.HYPOTHESIS),
+        ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
         nb_of_cpus=24,
         power_usage_effectiveness=1.2,
         country=Countries.GERMANY,

@@ -5,13 +5,6 @@ lib
 *.html
 *.png
 *.log
-# To ignore excel cache file
-~$*
-*.DS_Store
-*.png
 .coverage
 .ipynb_checkpoints
-*.log
 *.ipynb
-*.html
-lib

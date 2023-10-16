@@ -24,10 +24,10 @@ class UserJourneyStep(ModelingObject):
         super().__init__(name)
         self.ram_needed = None
         self.service = service
-        if not data_upload.check("[data]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[data]' dimensionality")
-        if not data_download.check("[data]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[data]' dimensionality")
+        if not data_upload.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+        if not data_download.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
         self.data_upload = SourceValue(
             data_upload / u.user_journey, Sources.USER_INPUT, f"Data upload of request {self.name}")
         self.data_download = SourceValue(
@@ -136,7 +136,7 @@ class UserJourney(ModelingObject):
 
     def update_data_download(self):
         uj_steps_data_downloads = [uj_step.data_download for uj_step in self.uj_steps]
-        all_data_download = ExplainableQuantity(0 * u.Mo / u.user_journey)
+        all_data_download = ExplainableQuantity(0 * u.MB / u.user_journey)
         for data_download in uj_steps_data_downloads:
             all_data_download += data_download
 
@@ -144,7 +144,7 @@ class UserJourney(ModelingObject):
 
     def update_data_upload(self):
         uj_steps_data_uploads = [uj_step.data_upload for uj_step in self.uj_steps]
-        all_data_upload = ExplainableQuantity(0 * u.Mo / u.user_journey)
+        all_data_upload = ExplainableQuantity(0 * u.MB / u.user_journey)
         for data_upload in uj_steps_data_uploads:
             all_data_upload += data_upload
 

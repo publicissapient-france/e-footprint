@@ -10,7 +10,7 @@ class TestService(unittest.TestCase):
     def setUp(self):
         self.server = MagicMock()
         self.storage = MagicMock()
-        self.base_ram = 4 * u.Go
+        self.base_ram = 4 * u.GB
         self.base_cpu = 2 * u.core
         self.service = Service("Test Service", self.server, self.storage, self.base_ram, self.base_cpu)
 
@@ -49,13 +49,13 @@ class TestService(unittest.TestCase):
         
         uj_step1 = MagicMock()
         uj_step1.service = self.service
-        uj_step1.data_upload = ExplainableQuantity(1 * u.Mo / u.user_journey)
+        uj_step1.data_upload = ExplainableQuantity(1 * u.MB / u.user_journey)
         uj_step2 = MagicMock()
         uj_step2.service = self.service
-        uj_step2.data_upload = ExplainableQuantity(3 * u.Mo / u.user_journey)
+        uj_step2.data_upload = ExplainableQuantity(3 * u.MB / u.user_journey)
         uj_step3 = MagicMock()
         uj_step3.service = "other service"
-        uj_step3.data_upload = ExplainableQuantity(5 * u.Mo / u.user_journey)
+        uj_step3.data_upload = ExplainableQuantity(5 * u.MB / u.user_journey)
         
         usage_pattern1.user_journey.uj_steps = [uj_step1, uj_step3]
         usage_pattern2.user_journey.uj_steps = [uj_step2, uj_step3]
@@ -63,22 +63,22 @@ class TestService(unittest.TestCase):
         with patch.object(self.service, "usage_patterns", {usage_pattern1, usage_pattern2}):
             self.service.update_storage_needed()
             self.assertEqual(
-                round((310 * u.Mo / u.day).to(u.To / u.year), 3), round(self.service.storage_needed.value, 3))
+                round((310 * u.MB / u.day).to(u.TB / u.year), 3), round(self.service.storage_needed.value, 3))
 
     def test_update_hour_by_hour_ram_need(self):
         uj_step = MagicMock()
         uj_step.service = self.service
-        uj_step.ram_needed = ExplainableQuantity(1.8 * u.Go)
+        uj_step.ram_needed = ExplainableQuantity(1.8 * u.GB)
         uj_step.request_duration = ExplainableQuantity(10 * u.min)
 
         uj_step2 = MagicMock()
         uj_step2.service = self.service
-        uj_step2.ram_needed = ExplainableQuantity(0.6 * u.Go)
+        uj_step2.ram_needed = ExplainableQuantity(0.6 * u.GB)
         uj_step2.request_duration = ExplainableQuantity(10 * u.min)
 
         uj_step3 = MagicMock()
         uj_step3.service = "other service"
-        uj_step3.ram_needed = ExplainableQuantity(29 * u.Go)
+        uj_step3.ram_needed = ExplainableQuantity(29 * u.GB)
         uj_step3.request_duration = ExplainableQuantity(10 * u.min)
 
         usage_pattern = MagicMock()
@@ -91,7 +91,7 @@ class TestService(unittest.TestCase):
             self.service.update_hour_by_hour_ram_need()
 
             self.assertEqual(
-                [4 * u.Go] * 24,
+                [4 * u.GB] * 24,
                 [round(elt.value, 2) for elt in self.service.hour_by_hour_ram_need.value])
 
     def test_update_hour_by_hour_cpu_need(self):

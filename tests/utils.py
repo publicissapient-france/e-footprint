@@ -13,8 +13,8 @@ def create_ram_or_cpu_need_list(time_interval, value):
     return need_list
 
 
-def create_ram_need(hours_in_use, ram: Quantity = 100 * u.Go):
-    hour_by_hour_ram_need = [ExplainableQuantity(0 * u.Go)] * 24
+def create_ram_need(hours_in_use, ram: Quantity = 100 * u.GB):
+    hour_by_hour_ram_need = [ExplainableQuantity(0 * u.GB)] * 24
     for time_interval in hours_in_use:
         start, end = time_interval
         for i in range(start, end):

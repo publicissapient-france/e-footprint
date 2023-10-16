@@ -1,4 +1,3 @@
-octet = [data] = o
 user = [person] = user
 user_journey = [user_journey] = uj
 core = [cpu] = core

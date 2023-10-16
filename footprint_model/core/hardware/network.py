@@ -24,19 +24,19 @@ class Network(ObjectLinkedToUsagePatterns, ModelingObject):
         self.update_energy_footprint()
 
     def update_data_upload(self):
-        data_upload = ExplainableQuantity(0 * u.Mo / u.year)
+        data_upload = ExplainableQuantity(0 * u.MB / u.year)
         for usage_pattern in self.usage_patterns:
             data_upload += usage_pattern.user_journey.data_upload * usage_pattern.user_journey_freq
 
-        self.data_upload = data_upload.to(u.To / u.year).define_as_intermediate_calculation(
+        self.data_upload = data_upload.to(u.TB / u.year).define_as_intermediate_calculation(
             f"Data upload in {self.name}")
 
     def update_data_download(self):
-        data_download = ExplainableQuantity(0 * u.Mo / u.year)
+        data_download = ExplainableQuantity(0 * u.MB / u.year)
         for usage_pattern in self.usage_patterns:
             data_download += usage_pattern.user_journey.data_download * usage_pattern.user_journey_freq
 
-        self.data_download = data_download.to(u.To / u.year).define_as_intermediate_calculation(
+        self.data_download = data_download.to(u.TB / u.year).define_as_intermediate_calculation(
             f"Data download in {self.name}")
 
     def update_energy_footprint(self):
@@ -60,12 +60,12 @@ class Network(ObjectLinkedToUsagePatterns, ModelingObject):
 class Networks:
     WIFI_NETWORK = Network(
         PhysicalElements.WIFI_NETWORK,
-        SourceValue(0.05 * u("kWh/Go"), Sources.TRAFICOM_STUDY),
+        SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY),
         # TODO: enable list for multiple sources
-        # SourceValue(0.08 * u("kWh/Go"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
+        # SourceValue(0.08 * u("kWh/GB"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
     )
     MOBILE_NETWORK = Network(
         PhysicalElements.MOBILE_NETWORK,
-        SourceValue(0.12 * u("kWh/Go"), Sources.TRAFICOM_STUDY),
-        # SourceValue(0.06 * u("kWh/Go"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
+        SourceValue(0.12 * u("kWh/GB"), Sources.TRAFICOM_STUDY),
+        # SourceValue(0.06 * u("kWh/GB"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
     )

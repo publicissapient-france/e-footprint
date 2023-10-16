@@ -19,7 +19,7 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
         self.hour_by_hour_ram_need = None
         self.server = server
         self.storage = storage
-        if not base_ram_consumption.check("[data]"):
+        if not base_ram_consumption.check("[]"):
             raise ValueError("variable 'base_ram_consumption' does not have byte dimensionality")
         if not base_cpu_consumption.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
@@ -45,15 +45,15 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
             self.update_storage_needed()
 
     def update_storage_needed(self):
-        usage_patterns_storage_needs = ExplainableQuantity(0 * u.To / u.year)
+        usage_patterns_storage_needs = ExplainableQuantity(0 * u.TB / u.year)
         for usage_pattern in self.usage_patterns:
-            uj_steps_storage_needs = ExplainableQuantity(0 * u.Mo / u.user_journey)
+            uj_steps_storage_needs = ExplainableQuantity(0 * u.MB / u.user_journey)
             for uj_step in usage_pattern.user_journey.uj_steps:
                 if uj_step.service == self:
                     uj_steps_storage_needs += uj_step.data_upload
             usage_patterns_storage_needs += uj_steps_storage_needs * usage_pattern.user_journey_freq
 
-        self.storage_needed = usage_patterns_storage_needs.to(u.To / u.year).define_as_intermediate_calculation(
+        self.storage_needed = usage_patterns_storage_needs.to(u.TB / u.year).define_as_intermediate_calculation(
             f"Storage needed for {self.name}")
 
     @staticmethod
@@ -69,12 +69,12 @@ class Service(ModelingObject, ObjectLinkedToUsagePatterns):
     def update_hour_by_hour_ram_need(self):
         hour_by_hour_ram_needs = 0
         for usage_pattern in self.usage_patterns:
-            usage_pattern_ram_need = ExplainableQuantity(0 * u.Go / u.user_journey)
+            usage_pattern_ram_need = ExplainableQuantity(0 * u.GB / u.user_journey)
             for uj_step in usage_pattern.user_journey.uj_steps:
                 if uj_step.service == self:
                     average_uj_ram_needed = self.compute_resource_needed_averaged_over_user_journey(
                         uj_step.ram_needed, uj_step.request_duration, usage_pattern.user_journey.duration,
-                        u.Go / u.user_journey)
+                        u.GB / u.user_journey)
                     average_uj_ram_needed = average_uj_ram_needed.define_as_intermediate_calculation(
                         f"ram needed on server {self.server.name} to process {uj_step.name}, "
                         f"averaged over user journey duration")

@@ -17,8 +17,8 @@ class TestUsagePattern(unittest.TestCase):
 
         user_journey = MagicMock()
         user_journey.duration = ExplainableQuantity(2.0 * u.min / u.user_journey, "duration")
-        user_journey.data_upload = ExplainableQuantity(2.0 * u.Mo / u.user_journey, "data_upload")
-        user_journey.data_download = ExplainableQuantity(3.0 * u.Mo / u.user_journey, "data_download")
+        user_journey.data_upload = ExplainableQuantity(2.0 * u.MB / u.user_journey, "data_upload")
+        user_journey.data_download = ExplainableQuantity(3.0 * u.MB / u.user_journey, "data_download")
 
         user_journey.services = {self.service1, self.service2}
         population = MagicMock()
