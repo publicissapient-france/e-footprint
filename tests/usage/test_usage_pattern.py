@@ -2,10 +2,10 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from footprint_model.constants.countries import Countries
-from footprint_model.core.time_intervals import TimeIntervals
-from footprint_model.core.usage_pattern import UsagePattern
+from footprint_model.core.usage.time_intervals import TimeIntervals
+from footprint_model.core.usage.usage_pattern import UsagePattern
 from footprint_model.constants.units import u
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 
 class TestUsagePattern(unittest.TestCase):

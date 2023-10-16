@@ -1,7 +1,7 @@
 import unittest
 from footprint_model.constants.units import u
 from pytz import UnknownTimeZoneError
-from footprint_model.core.time_intervals import TimeIntervals
+from footprint_model.core.usage.time_intervals import TimeIntervals
 
 
 class TestTimeIntervals(unittest.TestCase):

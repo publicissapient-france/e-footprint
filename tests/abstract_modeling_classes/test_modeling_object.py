@@ -1,5 +1,6 @@
-from footprint_model.constants.explainable_quantities import AttributeUsedInCalculation, ModelingObject, \
-    UpdateFunctionOutput
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import UpdateFunctionOutput, \
+    AttributeUsedInCalculation
 
 import unittest
 from unittest.mock import patch, Mock, call

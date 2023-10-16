@@ -67,13 +67,13 @@ def build_graph(root_node, x_multiplier=150, y_multiplier=250, label_len_thresho
 
 if __name__ == "__main__":
     from footprint_model.constants.sources import SourceValue, Sources
-    from footprint_model.core.user_journey import UserJourney, UserJourneyStep
-    from footprint_model.core.server import Servers
-    from footprint_model.core.storage import Storage
+    from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
+    from footprint_model.core.hardware.server import Servers
+    from footprint_model.core.hardware.storage import Storage
     from footprint_model.core.service import Service
-    from footprint_model.core.device_population import DevicePopulation, Devices
-    from footprint_model.core.usage_pattern import UsagePattern
-    from footprint_model.core.network import Networks
+    from footprint_model.core.hardware.device_population import DevicePopulation, Devices
+    from footprint_model.core.usage.usage_pattern import UsagePattern
+    from footprint_model.core.hardware.network import Networks
     from footprint_model.core.system import System
     from footprint_model.constants.countries import Countries
     from footprint_model.constants.units import u

@@ -1,10 +1,10 @@
 from footprint_model.constants.units import u
-from footprint_model.core.network import Network
-from footprint_model.core.device_population import DevicePopulation
-from footprint_model.core.server import Server
-from footprint_model.core.storage import Storage
-from footprint_model.core.usage_pattern import UsagePattern
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.core.hardware.network import Network
+from footprint_model.core.hardware.device_population import DevicePopulation
+from footprint_model.core.hardware.server import Server
+from footprint_model.core.hardware.storage import Storage
+from footprint_model.core.usage.usage_pattern import UsagePattern
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 from typing import Dict, List, Set
 

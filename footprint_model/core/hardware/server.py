@@ -1,6 +1,7 @@
-from footprint_model.constants.physical_elements import InfraHardware, PhysicalElements
-from footprint_model.constants.explainable_quantities import (ExplainableQuantity, NonQuantityUsedInCalculation,
-                                                              ExplainableHourlyUsage)
+from footprint_model.constants.physical_elements import PhysicalElements
+from footprint_model.core.hardware.hardware_base_classes import InfraHardware
+from footprint_model.abstract_modeling_classes.non_quantity_used_in_calculation import NonQuantityUsedInCalculation
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 from footprint_model.constants.countries import Country, Countries

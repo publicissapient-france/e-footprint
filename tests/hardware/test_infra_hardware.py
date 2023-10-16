@@ -1,6 +1,6 @@
 from footprint_model.constants.countries import Country
-from footprint_model.constants.physical_elements import InfraHardware, ObjectLinkedToUsagePatterns
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, ExplainableHourlyUsage
+from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns, InfraHardware
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
 from tests.utils import create_cpu_need, create_ram_need

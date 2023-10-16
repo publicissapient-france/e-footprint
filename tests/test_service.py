@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, ExplainableHourlyUsage
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from footprint_model.constants.units import u
 from footprint_model.core.service import Service
 

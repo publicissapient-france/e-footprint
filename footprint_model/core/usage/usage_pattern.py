@@ -1,11 +1,12 @@
 from footprint_model.constants.units import u
-from footprint_model.core.device_population import DevicePopulation
-from footprint_model.core.time_intervals import TimeIntervals
-from footprint_model.core.user_journey import UserJourney
+from footprint_model.core.hardware.device_population import DevicePopulation
+from footprint_model.core.usage.time_intervals import TimeIntervals
+from footprint_model.core.usage.user_journey import UserJourney
 from footprint_model.core.service import Service
-from footprint_model.core.network import Network
+from footprint_model.core.hardware.network import Network
 from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, ModelingObject
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 from typing import List, Set
 import math

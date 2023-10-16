@@ -1,14 +1,15 @@
 from footprint_model.constants.units import u
-from footprint_model.constants.explainable_quantities import (ExplainableQuantity, ModelingObject)
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.core.service import Service
-from footprint_model.core.server import Server
+from footprint_model.core.hardware.server import Server
 
 from typing import List, Set
 from pint import Quantity
 from copy import deepcopy
 
-from footprint_model.core.storage import Storage
+from footprint_model.core.hardware.storage import Storage
 
 
 class DataTransferredType:

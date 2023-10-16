@@ -1,5 +1,6 @@
-from footprint_model.constants.explainable_quantities import ModelingObject, \
-    ExplainableObject, ExplainableHourlyUsage, ExplainableQuantity
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from footprint_model.constants.units import u
 
 from typing import List

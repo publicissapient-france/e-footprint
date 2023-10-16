@@ -3,8 +3,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 
 from footprint_model.constants.sources import u
-from footprint_model.core.user_journey import UserJourneyStep, UserJourney
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.core.usage.user_journey import UserJourneyStep, UserJourney
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 
 class TestUserJourneyStep(TestCase):

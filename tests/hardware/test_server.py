@@ -1,8 +1,8 @@
 from footprint_model.constants.physical_elements import PhysicalElements
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
-from footprint_model.core.server import Server
+from footprint_model.core.hardware.server import Server
 from tests.utils import create_cpu_need, create_ram_need
 
 from unittest import TestCase

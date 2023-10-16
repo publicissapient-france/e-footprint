@@ -1,7 +1,7 @@
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
-from footprint_model.core.storage import Storage
+from footprint_model.core.hardware.storage import Storage
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock

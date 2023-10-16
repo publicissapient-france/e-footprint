@@ -1,9 +1,10 @@
-from footprint_model.constants.explainable_quantities import ExplainableQuantity, ModelingObject
-from footprint_model.core.storage import Storage
-from footprint_model.core.server import Server
+from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from footprint_model.core.hardware.storage import Storage
+from footprint_model.core.hardware.server import Server
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.units import u
-from footprint_model.constants.physical_elements import ObjectLinkedToUsagePatterns
+from footprint_model.core.hardware.hardware_base_classes import ObjectLinkedToUsagePatterns
 
 from pint import Quantity
 

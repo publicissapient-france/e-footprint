@@ -4,7 +4,7 @@ import unittest
 
 from footprint_model.core.system import System
 from footprint_model.constants.units import u
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 
 class TestSystem(TestCase):
