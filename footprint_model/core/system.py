@@ -201,3 +201,11 @@ class System:
         fabrication_emissions[PhysicalElements.SSD] = self.compute_storage_fabrication_footprint()
 
         return round_dict(fabrication_emissions, 1)
+
+    def compute_energy_emissions(self):
+        output_dict = {}
+        energy_consumption = self.compute_energy_consumption()
+        for key in energy_consumption:
+            output_dict[key] = (
+                    energy_consumption[key] * self.usage_pattern.population.country.average_carbon_intensity).to(u.kg)
+        return round_dict(output_dict, 1)
