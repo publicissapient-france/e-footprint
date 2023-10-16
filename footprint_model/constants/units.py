@@ -1,7 +1,7 @@
-from footprint_model.constants.files import PROJECT_ROOT_PATH
+from footprint_model.constants.files import CUSTOM_UNITS_PATH
 
 import os
 from pint import UnitRegistry
 
 u = UnitRegistry()
-u.load_definitions(os.path.join(PROJECT_ROOT_PATH, "custom_units.txt"))
+u.load_definitions(CUSTOM_UNITS_PATH)

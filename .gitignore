@@ -7,3 +7,4 @@ lib
 *.log
 # To ignore excel cache file
 ~$*
+*.DS_Store

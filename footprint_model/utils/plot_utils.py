@@ -1,14 +1,12 @@
-import matplotlib.pyplot as plt
 import numpy as np
 
 from footprint_model.constants.physical_elements import PhysicalElements
 from footprint_model.constants.units import u
 
 
-def plot_emissions(input_dicts, legend_labels):
+def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
     elements = [element.value for element in PhysicalElements]
 
-    fig, ax1 = plt.subplots()
     index = np.arange(len(elements))
     bar_width = 0.4
 
@@ -22,27 +20,30 @@ def plot_emissions(input_dicts, legend_labels):
         proportions = [(value / total_emissions) * 100 for value in values]
 
         # Plot the values with proportions as secondary scale
-        rects = ax1.bar(index + i * bar_width, values, bar_width, label=legend_labels[i])
+        rects = ax.bar(index + i * bar_width, values, bar_width, label=legend_labels[i])
 
         # Add labels to bars
         for rect, proportion in zip(rects, proportions):
             height = rect.get_height()
-            ax1.text(rect.get_x() + rect.get_width() / 2, height, f"{proportion:.0f}%", ha="center", va="bottom")
+            ax.text(rect.get_x() + rect.get_width() / 2, height, f"{proportion:.0f}%", ha="center", va="bottom")
 
-    ax1.set_xlabel("Physical Elements")
-    ax1.set_ylabel("kg CO2 emissions / year")
-    ax1.set_title(f"CO2 emissions (total {round(total_emissions / 1000, 0)} tons)")
-    ax1.set_xticks(index + bar_width / 2)
-    ax1.set_xticklabels(elements, rotation=45, ha="right")
+    ax.set_xlabel("Physical Elements")
+    ax.set_ylabel("kg CO2 emissions / year")
+    ax.set_title(title, fontsize=24, fontweight="bold", y=1.12)
+    rounded_sum_in_tons = round(total_emissions / 1000, rounding_value)
+    if rounding_value == 0:
+        rounded_sum_in_tons = int(rounded_sum_in_tons)
+    ax.text(0.5, 1.1, f"CO2 emissions (total {rounded_sum_in_tons} tons)",
+            transform=ax.transAxes, fontsize=12, va="top", ha="center")
+    ax.set_xticks(index + bar_width / 2)
+    ax.set_xticklabels(elements, rotation=45, ha="right")
 
-    ax2 = ax1.twinx()
+    ax2 = ax.twinx()
     max_value = max([max(input_dict.values()) for input_dict in input_dicts]).to(u.kg).magnitude
-    ax2.set_ylim(0, 100 * (max_value / total_emissions) * (ax1.get_ylim()[1] / max_value))
+    ax2.set_ylim(0, 100 * (max_value / total_emissions) * (ax.get_ylim()[1] / max_value))
     ax2.set_ylabel("Proportions (%)")
 
-    ax1.legend()
-    fig.tight_layout()
-    plt.show()
+    ax.legend()
 
 
 if __name__ == "__main__":

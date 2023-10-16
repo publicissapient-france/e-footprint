@@ -31,6 +31,7 @@ class InfraNeed:
 
 @dataclass
 class UsagePattern:
+    name: str
     user_journey: UserJourney
     population: Population
     # TODO: attach fraction of use to device type
@@ -42,6 +43,14 @@ class UsagePattern:
     def __post_init__(self):
         if not self.daily_usage_window.check("[time]"):
             raise ValueError("Variable 'daily_usage_window' does not have time dimensionality")
+
+    def __hash__(self):
+        return hash(self.name)
+
+    def __eq__(self, other):
+        if isinstance(other, UsagePattern):
+            return self.name == other.name
+        return False
 
     @property
     def frac_laptop(self) -> float:
@@ -94,11 +103,13 @@ class UsagePattern:
 
     @property
     def estimated_infra_need(self) -> InfraNeed:
+        # TODO: Split into estimated_ram_need and estimated_storage_need for optimization
         nb_visits_per_usage_window = self.nb_visits_per_year / 365
-        nb_visitors_in_parallel_during_usage_window = max(1,
-                nb_visits_per_usage_window * self.user_journey.duration / self.daily_usage_window)
+        nb_visitors_in_parallel_during_usage_window = max(
+            1,
+            (nb_visits_per_usage_window * self.user_journey.duration / self.daily_usage_window).to(u.s / u.s).magnitude)
         data_transferred_in_parallel = (nb_visitors_in_parallel_during_usage_window
-                                       * (self.user_journey.data_upload + self.user_journey.data_download))
+                                        * (self.user_journey.data_upload + self.user_journey.data_download))
         ram_needed = Server.SERVER_RAM_PER_DATA_TRANSFERRED * data_transferred_in_parallel
 
         storage_needed = self.user_journey.data_upload * self.nb_visits_per_year

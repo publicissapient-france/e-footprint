@@ -21,7 +21,7 @@ class TestUsagePattern(unittest.TestCase):
         population.nb_users = 10000
 
         self.usage_pattern = UsagePattern(
-            user_journey, population, frac_smartphone=0.5, frac_mobile_network_for_smartphones=0.6,
+            "usage_pattern", user_journey, population, frac_smartphone=0.5, frac_mobile_network_for_smartphones=0.6,
             nb_visits_per_user_per_year=10, daily_usage_window=8 * u.hour
         )
 

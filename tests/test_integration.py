@@ -15,12 +15,12 @@ class IntegrationTest(TestCase):
             "", [DataTransferred(DataTransferredType.DOWNLOAD, 3 * u.Mo)], 5 * u.min, tracking_data=0.1 * u.Mo)
         user_journey.add_step(user_journey_step)
         population = Population("buyers_sonepar", 1e6, Countries.FRANCE)
-        usage_pattern = UsagePattern(user_journey, population, frac_smartphone=0.5,
+        usage_pattern = UsagePattern("usage_pattern", user_journey, population, frac_smartphone=0.5,
                                      frac_mobile_network_for_smartphones=0.5,
                                      nb_visits_per_user_per_year=20, daily_usage_window=8 * u.hour)
-        system = System(usage_pattern, data_replication_factor=2, data_storage_duration=3 * u.year, cloud=True)
+        system = System([usage_pattern], data_replication_factor=2, data_storage_duration=3 * u.year, cloud=True)
 
-        energy_consumption_dict = {
+        energy_consumption_dict = {usage_pattern: {
             PhysicalElements.SMARTPHONE: 833.3 * u.kWh,
             PhysicalElements.LAPTOP: 41666.7 * u.kWh,
             PhysicalElements.BOX: 12500.0 * u.kWh,
@@ -29,17 +29,18 @@ class IntegrationTest(TestCase):
             PhysicalElements.WIFI_NETWORK: 2325.0 * u.kWh,
             PhysicalElements.SERVER: 134.6 * u.kWh,
             PhysicalElements.SSD: 54.7 * u.kWh,
-        }
+        }}
         self.assertDictEqual(system.compute_energy_consumption(), energy_consumption_dict)
-        fabrication_dict = {
+        fabrication_dict = {usage_pattern: {
             PhysicalElements.SMARTPHONE: 6337.6 * u.kg,
             PhysicalElements.LAPTOP: 8474.3 * u.kg,
             PhysicalElements.BOX: 1853.8 * u.kg,
             PhysicalElements.SCREEN: 2411.9 * u.kg,
             PhysicalElements.SERVER: 4.3 * u.kg,
-            PhysicalElements.SSD: 320.0 * u.kg}
+            PhysicalElements.SSD: 320.0 * u.kg
+        }}
         self.assertDictEqual(system.compute_fabrication_emissions(), fabrication_dict)
-        energy_emissions_dict = {
+        energy_emissions_dict = {usage_pattern: {
             PhysicalElements.SMARTPHONE: 50.0 * u.kg,
             PhysicalElements.LAPTOP: 2500.0 * u.kg,
             PhysicalElements.BOX: 750.0 * u.kg,
@@ -48,5 +49,5 @@ class IntegrationTest(TestCase):
             PhysicalElements.WIFI_NETWORK: 139.5 * u.kg,
             PhysicalElements.SERVER: 8.1 * u.kg,
             PhysicalElements.SSD: 3.3 * u.kg,
-        }
+        }}
         self.assertDictEqual(system.compute_energy_emissions(), energy_emissions_dict)
