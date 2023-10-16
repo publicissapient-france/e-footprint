@@ -1,20 +1,56 @@
-import numpy as np
-
 from footprint_model.constants.physical_elements import PhysicalElements
 from footprint_model.constants.units import u
 
+import numpy as np
+import enum
+
+
+class DisplayCategories(str, enum.Enum):
+    LAPTOPS = "Laptops"
+    SMARTPHONES = "Smartphones"
+    WIFI_NETWORK = "Wifi network"
+    MOBILE_NETWORK = "Mobile network"
+    SERVER = "Servers"
+    STORAGE = "Storage"
+
+
+DISPLAY_CATEGORIES = {
+    DisplayCategories.SMARTPHONES: [PhysicalElements.SMARTPHONE],
+    DisplayCategories.LAPTOPS: [PhysicalElements.LAPTOP, PhysicalElements.SCREEN],
+    DisplayCategories.WIFI_NETWORK: [PhysicalElements.BOX, PhysicalElements.WIFI_NETWORK],
+    DisplayCategories.MOBILE_NETWORK: [PhysicalElements.MOBILE_NETWORK],
+    DisplayCategories.SERVER: [PhysicalElements.SERVER],
+    DisplayCategories.STORAGE: [PhysicalElements.SSD, PhysicalElements.HDD]
+    }
+
+
+def group_emissions_by_category(input_dict: dict) -> dict:
+    grouped_dict = {category: 0 * u.kg for category in DISPLAY_CATEGORIES.keys()}
+
+    for key, value in input_dict.items():
+        for category, keys in DISPLAY_CATEGORIES.items():
+            if key in keys:
+                grouped_dict[category] += value
+                break
+        else:
+            raise ValueError(f"Unknown physical element: {key}")
+
+    return grouped_dict
+
 
 def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
-    elements = [element.value for element in PhysicalElements]
+    formatted_input_dicts = [group_emissions_by_category(input_dict) for input_dict in input_dicts]
+
+    elements = [element.value for element in DisplayCategories]
 
     index = np.arange(len(elements))
     bar_width = 0.4
 
     total_emissions_in_kg = 0
-    for input_dict in input_dicts:
+    for input_dict in formatted_input_dicts:
         total_emissions_in_kg += sum(input_dict.values()).to(u.kg).magnitude
 
-    for i, input_dict in enumerate(input_dicts):
+    for i, input_dict in enumerate(formatted_input_dicts):
         values = [input_dict.get(element, 0 * u.kg).to(u.kg).magnitude for element in elements]
 
         proportions = [(value / total_emissions_in_kg) * 100 for value in values]
@@ -45,7 +81,7 @@ def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
     ax.set_xticklabels(elements, rotation=45, ha="right")
 
     ax2 = ax.twinx()
-    max_value = max([max(input_dict.values()) for input_dict in input_dicts]).to(u.kg).magnitude
+    max_value = max([max(input_dict.values()) for input_dict in formatted_input_dicts]).to(u.kg).magnitude
     ax2.set_ylim(0, 100 * (max_value / total_emissions_in_kg) * (ax.get_ylim()[1] / max_value))
     ax2.set_ylabel("Proportions (%)")
 

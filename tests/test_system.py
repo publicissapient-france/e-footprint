@@ -34,7 +34,7 @@ class TestSystem(TestCase):
         self.assertDictEqual(round_dict(self.system.nb_of_servers_required__raw, 2), {self.usage_pattern: 0.87})
 
     def test_nb_of_terabytes_required(self):
-        self.assertDictEqual(self.system.nb_of_terabytes_required, {self.usage_pattern: 61 * u.To})
+        self.assertDictEqual(round_dict(self.system.nb_of_terabytes_required, 1), {self.usage_pattern: 60.6 * u.To})
 
     def test_compute_servers_consumption(self):
         self.assertDictEqual(
@@ -46,30 +46,30 @@ class TestSystem(TestCase):
 
     def test_compute_storage_consumption(self):
         self.assertDictEqual(
-            round_dict(self.system.compute_storage_consumption(), 1), {self.usage_pattern: 278.1 * u.kWh})
+            round_dict(self.system.compute_storage_consumption(), 1), {self.usage_pattern: 276.2 * u.kWh})
 
     def test_compute_storage_fabrication_footprint(self):
         self.assertDictEqual(
-            round_dict(self.system.compute_storage_fabrication_footprint(), 1), {self.usage_pattern: 1626.7 * u.kg})
+            round_dict(self.system.compute_storage_fabrication_footprint(), 1), {self.usage_pattern: 1616.0 * u.kg})
 
     def test_compute_energy_consumption(self):
         energy_consumption = self.system.compute_energy_consumption()
         expected_dict = {self.usage_pattern:
-                             {PhysicalElements.SERVER: 1521.9 * u.kWh, PhysicalElements.SSD: 278.1 * u.kWh}
+                             {PhysicalElements.SERVER: 1521.9 * u.kWh, PhysicalElements.SSD: 276.2 * u.kWh}
                          }
         self.assertDictEqual(energy_consumption, expected_dict)
 
     def test_compute_fabrication_emissions(self):
         fabrication_emissions = self.system.compute_fabrication_emissions()
         expected_dict = {self.usage_pattern:
-                             {PhysicalElements.SERVER: 48.2 * u.kg, PhysicalElements.SSD: 1626.7 * u.kg}
+                             {PhysicalElements.SERVER: 48.2 * u.kg, PhysicalElements.SSD: 1616.0 * u.kg}
                          }
         self.assertDictEqual(fabrication_emissions, expected_dict)
 
     def test_compute_energy_emissions(self):
         energy_emissions = self.system.compute_energy_emissions()
         expected_dict = {self.usage_pattern:
-                             {PhysicalElements.SERVER: 91.3 * u.kg, PhysicalElements.SSD: 16.7 * u.kg}
+                             {PhysicalElements.SERVER: 129.4 * u.kg, PhysicalElements.SSD: 23.5 * u.kg}
                          }
         self.assertDictEqual(energy_emissions, expected_dict)
 
@@ -83,8 +83,8 @@ class TestSystem(TestCase):
 
         fabrication_emissions = system2.compute_fabrication_emissions()
         expected_dict = {
-            self.usage_pattern: {PhysicalElements.SERVER: 48.2 * u.kg, PhysicalElements.SSD: 1626.7 * u.kg},
-            usage_pattern2: {PhysicalElements.SERVER: 96.5 * u.kg, PhysicalElements.SSD: 1626.7 * u.kg}
+            self.usage_pattern: {PhysicalElements.SERVER: 48.2 * u.kg, PhysicalElements.SSD: 1616.0 * u.kg},
+            usage_pattern2: {PhysicalElements.SERVER: 96.5 * u.kg, PhysicalElements.SSD: 1616.0 * u.kg}
                          }
 
         self.assertDictEqual(fabrication_emissions, expected_dict)

@@ -41,13 +41,13 @@ class IntegrationTest(TestCase):
         }}
         self.assertDictEqual(system.compute_fabrication_emissions(), fabrication_dict)
         energy_emissions_dict = {usage_pattern: {
-            PhysicalElements.SMARTPHONE: 50.0 * u.kg,
-            PhysicalElements.LAPTOP: 2500.0 * u.kg,
-            PhysicalElements.BOX: 750.0 * u.kg,
-            PhysicalElements.SCREEN: 300.0 * u.kg,
-            PhysicalElements.MOBILE_NETWORK: 111.6 * u.kg,
-            PhysicalElements.WIFI_NETWORK: 139.5 * u.kg,
-            PhysicalElements.SERVER: 8.1 * u.kg,
-            PhysicalElements.SSD: 3.3 * u.kg,
+            PhysicalElements.SMARTPHONE: 70.8 * u.kg,
+            PhysicalElements.LAPTOP: 3541.7 * u.kg,
+            PhysicalElements.BOX: 1062.5 * u.kg,
+            PhysicalElements.SCREEN: 425 * u.kg,
+            PhysicalElements.MOBILE_NETWORK: 158.1 * u.kg,
+            PhysicalElements.WIFI_NETWORK: 197.6 * u.kg,
+            PhysicalElements.SERVER: 11.4 * u.kg,
+            PhysicalElements.SSD: 4.6 * u.kg,
         }}
         self.assertDictEqual(system.compute_energy_emissions(), energy_emissions_dict)

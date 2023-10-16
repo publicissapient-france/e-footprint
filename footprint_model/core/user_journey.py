@@ -4,10 +4,9 @@ from footprint_model.constants.physical_elements import Device, Network
 from dataclasses import dataclass, field
 from typing import List, Optional
 from pint import Quantity
-import enum
 
 
-class DataTransferredType(str, enum.Enum):
+class DataTransferredType:
     UPLOAD = "upload"
     DOWNLOAD = "download"
 
@@ -17,6 +16,7 @@ class DataTransferred:
     type: DataTransferredType
     size: Quantity
     is_stored: bool = False
+    description: str = ""
 
     def __post_init__(self):
         if not self.size.check("[data]"):
@@ -58,6 +58,7 @@ class UserJourneyStep:
 @dataclass
 class UserJourney:
     # TODO : add device attribute
+    name: str
     uj_steps: List[UserJourneyStep] = field(default_factory=list)
 
     @property

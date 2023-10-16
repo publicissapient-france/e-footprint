@@ -151,7 +151,7 @@ class System:
 
         return energy_emissions
 
-    def plot_emissions(self, export_file, rounding_value=0):
+    def plot_emissions(self, export_file, rounding_value=0, return_fig_for_streamlit=False):
         energy_emissions = self.compute_energy_emissions()
         fabrication_emissions = self.compute_fabrication_emissions()
         if len(self.usage_patterns) == 1:
@@ -192,5 +192,9 @@ class System:
                 autopct='%1.0f%%')
             axs[-1].set_title("Emissions distribution", fontsize=24, fontweight="bold")
         fig.tight_layout()
-        plt.savefig(os.path.join(PDF_EXPORTS, export_file))
-        plt.show()
+
+        if return_fig_for_streamlit:
+            return fig
+        else:
+            plt.savefig(os.path.join(PDF_EXPORTS, export_file))
+            plt.show()
