@@ -4,7 +4,8 @@ from footprint_model.constants.countries import Countries
 from footprint_model.core.user_journey import UserJourney, UserJourneyStep, DataTransferred, DataTransferredType, u
 from footprint_model.constants.physical_elements import PhysicalElements
 
-from footprint_model.core.system import Population, UsagePattern, System
+from footprint_model.core.system import System
+from footprint_model.core.usage_pattern import Population, UsagePattern
 
 
 class IntegrationTest(TestCase):

@@ -2,7 +2,8 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 import unittest
 
-from footprint_model.core.system import UsagePattern, Population, System
+from footprint_model.core.system import System
+from footprint_model.core.usage_pattern import Population, UsagePattern
 from footprint_model.constants.physical_elements import Device, Network, PhysicalElements, Devices
 from footprint_model.constants.units import u
 from footprint_model.constants.countries import Countries

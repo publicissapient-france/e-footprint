@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from footprint_model.core.system import UsagePattern, UserJourney, Population, InfraNeed
+from footprint_model.core.user_journey import UserJourney
+from footprint_model.core.usage_pattern import Population, InfraNeed, UsagePattern
 from footprint_model.constants.physical_elements import Device, Network, PhysicalElements, Devices
 from footprint_model.constants.units import u
 
