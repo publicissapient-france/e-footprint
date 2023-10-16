@@ -3,7 +3,7 @@ from footprint_model.constants.physical_elements import (Device, Network, Physic
 from footprint_model.constants.units import u
 from footprint_model.core.user_journey import UserJourney
 from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
 
 
 from dataclasses import dataclass
@@ -66,38 +66,52 @@ class UsagePattern:
         return False
 
     @property
-    def frac_laptop(self) -> float:
+    def frac_laptop(self) -> ExplainableQuantity:
         return SourceValue(
             1 - self.frac_smartphone.value, Sources.USER_INPUT, f"fraction of laptops in {self.name}")
 
     @property
-    def non_usage_time_fraction(self):
+    def non_usage_time_fraction(self) -> ExplainableQuantity:
         return SourceValue(
             1 - self.usage_time_fraction.value, Sources.USER_INPUT, f"fraction of non usage time in {self.name}")
 
     @property
-    def frac_non_mobile_network_for_smartphones(self):
+    def frac_non_mobile_network_for_smartphones(self) -> ExplainableQuantity:
         return SourceValue(1 - self.frac_mobile_network_for_smartphones.value, Sources.USER_INPUT,
                            f"fraction of non mobile network use for smartphones in {self.name}")
 
     @property
-    def wifi_usage_fraction(self) -> float:
+    @intermediate_calculation("Wifi usage fraction")
+    def wifi_usage_fraction(self) -> ExplainableQuantity:
         return self.frac_laptop + self.frac_smartphone * self.frac_non_mobile_network_for_smartphones
 
     @property
-    def user_journeys_freq(self) -> float:
+    def user_journeys_freq(self) -> ExplainableQuantity:
         return self.population.nb_users * self.user_journey_freq_per_user
 
     def compute_device_consumption(self, device: Device, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        return frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_device_consumption(device)
+        device_consumption = (
+                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_device_consumption(device)
+        ).to(u.kWh / u.year)
+        device_consumption.define_as_intermediate_calculation(f"{device.name} energy consumption in {self.name}")
+        return device_consumption
 
     def compute_device_fabrication_footprint(
             self, device: Device, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        return frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_fabrication_footprint(device)
+        device_fabrication_footprint = (
+                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_fabrication_footprint(device)
+        ).to(u.kg / u.year)
+        device_fabrication_footprint.define_as_intermediate_calculation(
+            f"{device.name} fabrication footprint in {self.name}")
+        return device_fabrication_footprint
 
     def compute_network_consumption(
             self, network: Network, frac_user_journeys: ExplainableQuantity) -> ExplainableQuantity:
-        return frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_network_consumption(network)
+        network_cons = (
+                frac_user_journeys * self.user_journeys_freq * self.user_journey.compute_network_consumption(network)
+        ).to(u.kWh / u.year)
+        network_cons.define_as_intermediate_calculation(f"{network.name} energy consumption in {self.name}")
+        return network_cons
 
     def compute_energy_consumption(self) -> Dict[PhysicalElements, ExplainableQuantity]:
         return {
@@ -138,18 +152,22 @@ class UsagePattern:
                 u.user_journey)
         )
         total_data_transfered = self.user_journey.data_upload + self.user_journey.data_download
-        total_data_transfered.formula = f"({total_data_transfered.formula})"
+        total_data_transfered.formulas[0] = f"({total_data_transfered.formulas[0]})"
         data_transferred_in_parallel = (nb_user_journeys_in_parallel_during_usage * total_data_transfered)
         ram_needed = Server.SERVER_RAM_PER_DATA_TRANSFERRED * data_transferred_in_parallel
+        ram_needed.define_as_intermediate_calculation(f"Ram needed for {self.name}")
 
         storage_needed = self.user_journey.data_upload * self.user_journeys_freq
+        storage_needed.define_as_intermediate_calculation(f"Storage needed for {self.name}")
 
         return InfraNeed(ram_needed.to(u.Go), storage_needed.to(u.To / u.year))
 
     @property
+    @intermediate_calculation("Data upload")
     def data_upload(self) -> ExplainableQuantity:
         return (self.user_journey.data_upload * self.user_journeys_freq).to(u.To / u.year)
 
     @property
+    @intermediate_calculation("Data download")
     def data_download(self) -> ExplainableQuantity:
         return (self.user_journey.data_download * self.user_journeys_freq).to(u.To / u.year)

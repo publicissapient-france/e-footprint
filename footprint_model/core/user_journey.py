@@ -1,6 +1,6 @@
 from footprint_model.constants.units import u
 from footprint_model.constants.physical_elements import Device, Network
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
 
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -68,9 +68,10 @@ class UserJourney:
     uj_steps: List[UserJourneyStep] = field(default_factory=list)
 
     @property
+    @intermediate_calculation("duration")
     def duration(self) -> ExplainableQuantity:
         uj_step_duration_sum = sum(elt.duration for elt in self.uj_steps)
-        uj_step_duration_sum.formula = f"({uj_step_duration_sum.formula})"
+        uj_step_duration_sum.formulas[0] = f"({uj_step_duration_sum.formulas[0]})"
         return uj_step_duration_sum
 
     def _compute_bandwidth(self, transferred_type: DataTransferredType) -> Quantity:
@@ -95,13 +96,19 @@ class UserJourney:
     def add_step(self, step: UserJourneyStep) -> None:
         self.uj_steps.append(step)
 
+    @intermediate_calculation("Device energy consumption")
     def compute_device_consumption(self, device: Device) -> Quantity:
-        return device.power * self.duration
+        device_consumption = device.power * self.duration
+        return device_consumption
 
     def compute_fabrication_footprint(self, device: Device) -> Quantity:
         uj_fabrication_footprint = (device.carbon_footprint_fabrication * self.duration
                                     / (device.lifespan * device.fraction_of_usage_time))
+        uj_fabrication_footprint.define_as_intermediate_calculation(
+            f"{device.name} fabrication footprint during {self.name}")
         return uj_fabrication_footprint
 
     def compute_network_consumption(self, network: Network) -> Quantity:
-        return network.bandwidth_energy_intensity * (self.data_download + self.data_upload)
+        network_consumption = network.bandwidth_energy_intensity * (self.data_download + self.data_upload)
+        network_consumption.define_as_intermediate_calculation(f"{network.name} consumption during {self.name}")
+        return network_consumption

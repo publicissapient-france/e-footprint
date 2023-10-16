@@ -4,7 +4,7 @@ from footprint_model.core.usage_pattern import UsagePattern
 from footprint_model.utils.tools import round_dict
 from footprint_model.utils.plot_utils import plot_emissions
 from footprint_model.constants.files import PDF_EXPORTS
-from footprint_model.constants.explainable_quantities import ExplainableQuantity
+from footprint_model.constants.explainable_quantities import ExplainableQuantity, intermediate_calculation
 
 from typing import Dict, List
 from pint import Quantity
@@ -34,15 +34,18 @@ class System:
         for usage_pattern in self.usage_patterns:
             nb_of_servers_required[usage_pattern] = (
                     usage_pattern.estimated_infra_need.ram
-                    / (Servers.SERVER.ram * Server.server_utilization_rate(self.cloud)))
+                    / (Servers.SERVER.ram * Server.server_utilization_rate(self.cloud))
+            ).define_as_intermediate_calculation(f"Nb of servers required for {usage_pattern.name}")
         return nb_of_servers_required
 
     @property
     def storage_required(self) -> Dict[UsagePattern, ExplainableQuantity]:
         storage_required = {}
         for usage_pattern in self.usage_patterns:
-            storage_required[usage_pattern] = (usage_pattern.estimated_infra_need.storage.to(u.To / u.year)
-                                               * self.data_replication_factor * self.data_storage_duration)
+            storage_required[usage_pattern] = (
+                    usage_pattern.estimated_infra_need.storage.to(u.To / u.year)
+                    * self.data_replication_factor * self.data_storage_duration
+            ).define_as_intermediate_calculation(f"Storage required for {usage_pattern.name}")
         return storage_required
 
     def compute_servers_consumption(self) -> Dict[UsagePattern, ExplainableQuantity]:
@@ -58,7 +61,8 @@ class System:
                                 usage_pattern.usage_time_fraction
                                 + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                         )
-                ).to(u.kWh / u.year)
+                ).to(u.kWh / u.year).define_as_intermediate_calculation(
+                    f"Server energy consumption of {usage_pattern.name}")
             else:
                 nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
                 # TODO: Take idle time into account
@@ -79,7 +83,8 @@ class System:
                             + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                     )
                     / Servers.SERVER.lifespan
-                ).to(u.kg / u.year)
+                ).to(u.kg / u.year).define_as_intermediate_calculation(
+                    f"Server fabrication emissions of {usage_pattern.name}")
             else:
                 # TODO: debug math.ceil with ExplainableQuantity
                 nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
@@ -96,7 +101,8 @@ class System:
                                         * (storage_required[usage_pattern]
                                            / Storages.SSD_STORAGE.storage_capacity))
             storage_consumption[usage_pattern] = (storage_power_during_use * usage_pattern.usage_time_fraction).to(
-                u.kWh / u.year)
+                u.kWh / u.year).define_as_intermediate_calculation(
+                f"Storage energy consumption of {usage_pattern.name}")
         return storage_consumption
 
     def compute_storage_fabrication_footprint(self) -> Dict[UsagePattern, ExplainableQuantity]:
@@ -106,7 +112,8 @@ class System:
             storage_fabrication_footprint[usage_pattern] = (
                     storage_required[usage_pattern]
                     * (Storages.SSD_STORAGE.carbon_footprint_fabrication / Storages.SSD_STORAGE.storage_capacity)
-                    / Storages.SSD_STORAGE.lifespan)
+                    / Storages.SSD_STORAGE.lifespan).define_as_intermediate_calculation(
+                    f"Storage fabrication emissions of {usage_pattern.name}")
         return storage_fabrication_footprint
 
     def compute_energy_consumption(self) -> Dict[UsagePattern, Dict[PhysicalElements, Quantity]]:

@@ -43,21 +43,27 @@ class TestUsagePattern(unittest.TestCase):
 
     def test_compute_device_consumption(self):
         device = MagicMock(spec=Device)
+        device.name = "device name"
         result = self.usage_pattern.compute_device_consumption(
             device, ExplainableQuantity(0.6 * u.dimensionless, "frac_smartphones"))
-        self.assertEqual(result.value, 0.6 * self.expected_nb_user_journeys_per_year * 10.0 * u.J / u.user_journey)
+        expected_result = (0.6 * self.expected_nb_user_journeys_per_year * 10.0 * u.J / u.user_journey)
+        self.assertEqual(result.value, expected_result.to(u.kWh / u.year))
 
     def test_compute_device_fabrication_footprint(self):
         device = MagicMock(spec=Device)
+        device.name = "device name"
         result = self.usage_pattern.compute_device_fabrication_footprint(
             device, ExplainableQuantity(0.6 * u.dimensionless, "frac_smartphones"))
-        self.assertEqual(result.value, 0.6 * self.expected_nb_user_journeys_per_year * 0.5 * u.g / u.user_journey)
+        expected_result = 0.6 * self.expected_nb_user_journeys_per_year * 0.5 * u.g / u.user_journey
+        self.assertEqual(result.value, expected_result.to(u.kg / u.year))
 
     def test_compute_network_consumption(self):
         network = MagicMock(spec=Network)
+        network.name = "network name"
         result = self.usage_pattern.compute_network_consumption(
             network, ExplainableQuantity(0.6 * u.dimensionless, "frac_smartphones"))
-        self.assertEqual(result.value, 0.6 * self.expected_nb_user_journeys_per_year * 7.0 * u.J / u.user_journey)
+        expected_result = 0.6 * self.expected_nb_user_journeys_per_year * 7.0 * u.J / u.user_journey
+        self.assertEqual(result.value, expected_result.to(u.kWh / u.year))
 
     def test_compute_energy_consumption(self):
         energy_consumption = self.usage_pattern.compute_energy_consumption()

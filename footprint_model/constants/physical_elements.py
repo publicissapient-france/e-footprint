@@ -2,8 +2,6 @@ from footprint_model.constants.units import u
 from footprint_model.constants.sources import SourceValue, Sources
 from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
-import enum
-
 
 class PhysicalElements:
     LAPTOP = "laptop"
