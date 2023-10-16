@@ -121,6 +121,7 @@ class System:
     usage_pattern: UsagePattern
     data_replication_factor: int
     data_storage_duration: Quantity
+    cloud: bool
 
     def __post_init__(self):
         if not self.data_storage_duration.check("[time]"):
@@ -128,7 +129,8 @@ class System:
 
     @property
     def nb_of_servers_required__raw(self) -> float:
-        return self.usage_pattern.estimated_infra_need.ram / (Servers.SERVER.ram.value * Server.SERVER_UTILISATION_RATE)
+        return (self.usage_pattern.estimated_infra_need.ram
+                / (Servers.SERVER.ram * Server.server_utilization_rate(self.cloud)))
 
     @property
     def nb_of_terabytes_required(self) -> Quantity:
@@ -138,19 +140,45 @@ class System:
         ) * u.To
 
     def compute_servers_consumption(self) -> Quantity:
-        nb_servers = math.ceil(self.nb_of_servers_required__raw)
-        # TODO: Take idle time into account
-        return (Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers * u.year).to(u.kWh)
+        if self.cloud:
+            nb_servers = self.nb_of_servers_required__raw
+            duration_per_year_at_100_percent = (self.usage_pattern.daily_usage_window / u.day) * u.year
+            duration_per_year_downscaled = 1 * u.year - duration_per_year_at_100_percent
+            effective_power = Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness
+            return (
+                    nb_servers * effective_power
+                    * (
+                            duration_per_year_at_100_percent
+                            + (duration_per_year_downscaled / Server.CLOUD_DOWNSCALING_FACTOR)
+                    )
+            ).to(u.kWh)
+        else:
+            nb_servers = math.ceil(self.nb_of_servers_required__raw)
+            # TODO: Take idle time into account
+            return (Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers * u.year).to(u.kWh)
 
     def compute_servers_fabrication_footprint(self) -> Quantity:
-        nb_servers = math.ceil(self.nb_of_servers_required__raw)
-        servers_fab_footprint = (Servers.SERVER.carbon_footprint_fabrication * nb_servers
-                                 * (1 * u.year / Servers.SERVER.lifespan.value))
-        return servers_fab_footprint.to(u.kg)
+        if self.cloud:
+            nb_servers = self.nb_of_servers_required__raw
+            duration_per_year_at_100_percent = (self.usage_pattern.daily_usage_window / u.day) * u.year
+            duration_per_year_downscaled = 1 * u.year - duration_per_year_at_100_percent
+            return (
+                nb_servers * Servers.SERVER.carbon_footprint_fabrication.value
+                * (
+                        duration_per_year_at_100_percent
+                        + (duration_per_year_downscaled / Server.CLOUD_DOWNSCALING_FACTOR)
+                )
+                / Servers.SERVER.lifespan.value
+            ).to(u.kg)
+        else:
+            nb_servers = math.ceil(self.nb_of_servers_required__raw)
+            servers_fab_footprint = (Servers.SERVER.carbon_footprint_fabrication * nb_servers
+                                     * (1 * u.year / Servers.SERVER.lifespan.value))
+            return servers_fab_footprint.to(u.kg)
 
     def compute_storage_consumption(self) -> Quantity:
-        storage_power_during_use = ((self.nb_of_terabytes_required / Storages.SSD_STORAGE.storage_capacity.value)
-                                    * Storages.SSD_STORAGE.power * Storages.SSD_STORAGE.power_usage_effectiveness)
+        storage_power_during_use = (Storages.SSD_STORAGE.power * Storages.SSD_STORAGE.power_usage_effectiveness
+                                    * (self.nb_of_terabytes_required / Storages.SSD_STORAGE.storage_capacity.value))
         usage_time_per_year = (self.usage_pattern.daily_usage_window / u.day) * u.year
         return (storage_power_during_use * usage_time_per_year).to(u.kWh)
 

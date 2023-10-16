@@ -76,7 +76,14 @@ class Server(Hardware):
 
     # Number of Mo of RAM the server needs to generate and transfer 1 Mo of data. To improve
     SERVER_RAM_PER_DATA_TRANSFERRED = 5
-    SERVER_UTILISATION_RATE = 0.7
+    CLOUD_DOWNSCALING_FACTOR = 3
+
+    @staticmethod
+    def server_utilization_rate(cloud):
+        if cloud:
+            return 0.9
+        else:
+            return 0.7
 
 
 class Servers:
