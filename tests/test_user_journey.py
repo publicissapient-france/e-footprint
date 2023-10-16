@@ -10,34 +10,37 @@ from footprint_model.core.user_journey import DataTransferred, DataTransferredTy
 class TestUserJourney(TestCase):
     def test_add_step(self):
         user_journey = UserJourney()
-        user_journey_step = UserJourneyStep("", DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo), 10 * u.s)
+        user_journey_step = UserJourneyStep(
+            "", [DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo)], 10 * u.s, tracking_data=0.1 * u.Mo)
         user_journey.add_step(user_journey_step)
-        self.assertEqual(user_journey.list_actions, [user_journey_step])
+        self.assertEqual(user_journey.uj_steps, [user_journey_step])
 
     def test_duration(self):
         duration1 = 10 * u.s
         duration2 = 30 * u.s
-        user_journey_step1 = UserJourneyStep("", DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo), duration1)
-        user_journey_step2 = UserJourneyStep("", DataTransferred(DataTransferredType.UPLOAD, 30 * u.Mo), duration2)
-        self.assertEqual(UserJourney(list_actions=[user_journey_step1]).duration, duration1)
-        self.assertEqual(UserJourney(list_actions=[user_journey_step2]).duration, duration2)
+        user_journey_step1 = UserJourneyStep(
+            "", [DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo)], duration1, tracking_data=0.1 * u.Mo)
+        user_journey_step2 = UserJourneyStep(
+            "", [DataTransferred(DataTransferredType.UPLOAD, 30 * u.Mo)], duration2, tracking_data=0.1 * u.Mo)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step1]).duration, duration1)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step2]).duration, duration2)
         self.assertEqual(
-            UserJourney(list_actions=[user_journey_step1, user_journey_step2]).duration, duration1 + duration2
+            UserJourney(uj_steps=[user_journey_step1, user_journey_step2]).duration, duration1 + duration2
         )
 
     def test_data_download(self):
         data_download = 30 * u.Mo
         data_upload = 40 * u.Mo
         user_journey_step_download = UserJourneyStep(
-            "", DataTransferred(DataTransferredType.DOWNLOAD, data_download), 10 * u.s
+            "", [DataTransferred(DataTransferredType.DOWNLOAD, data_download)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
         user_journey_step_upload = UserJourneyStep(
-            "", DataTransferred(DataTransferredType.UPLOAD, data_upload), 10 * u.s
+            "", [DataTransferred(DataTransferredType.UPLOAD, data_upload)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
-        self.assertEqual(UserJourney(list_actions=[user_journey_step_download]).data_download, data_download)
-        self.assertEqual(UserJourney(list_actions=[user_journey_step_download] * 2).data_download, data_download * 2)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step_download]).data_download, data_download)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step_download] * 2).data_download, data_download * 2)
         self.assertEqual(
-            UserJourney(list_actions=[user_journey_step_download, user_journey_step_upload]).data_download,
+            UserJourney(uj_steps=[user_journey_step_download, user_journey_step_upload]).data_download,
             data_download,
         )
 
@@ -45,15 +48,17 @@ class TestUserJourney(TestCase):
         data_download = 30 * u.Mo
         data_upload = 40 * u.Mo
         user_journey_step_download = UserJourneyStep(
-            "", DataTransferred(DataTransferredType.DOWNLOAD, data_download), 10 * u.s
+            "", [DataTransferred(DataTransferredType.DOWNLOAD, data_download)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
         user_journey_step_upload = UserJourneyStep(
-            "", DataTransferred(DataTransferredType.UPLOAD, data_upload), 10 * u.s
+            "", [DataTransferred(DataTransferredType.UPLOAD, data_upload)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
-        self.assertEqual(UserJourney(list_actions=[user_journey_step_upload]).data_upload, data_upload)
-        self.assertEqual(UserJourney(list_actions=[user_journey_step_upload] * 2).data_upload, data_upload * 2)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step_upload]).data_upload, data_upload + 0.1 * u.Mo)
+        self.assertEqual(UserJourney(uj_steps=[user_journey_step_upload] * 2).data_upload, data_upload * 2 + 0.2 * u.Mo)
         self.assertEqual(
-            UserJourney(list_actions=[user_journey_step_download, user_journey_step_upload]).data_upload, data_upload
+            UserJourney(uj_steps=[user_journey_step_download, user_journey_step_upload]).data_upload,
+            # Strangely this conversion is needed for the comparison to work...
+            (data_upload + 0.2 * u.Mo).to(u.o)
         )
 
     def test_compute_device_consumption(self):
@@ -65,7 +70,7 @@ class TestUserJourney(TestCase):
             carbon_footprint_fabrication=SourceValue(60 * u.W, Sources.BASE_ADEME_V19),
             power=SourceValue(device_power, Sources.HYPOTHESIS),
             lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
-            average_usage_duration_per_day=SourceValue(3 * u.year, Sources.HYPOTHESIS),
+            fraction_of_usage_per_day=SourceValue(3 * u.hour / u.year, Sources.HYPOTHESIS),
         )
         with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration
@@ -76,15 +81,15 @@ class TestUserJourney(TestCase):
     def test_compute_fabrication_footprint(self):
         duration = 10 * u.s
         carbon_footprint_fabrication = 60 * u.kg
-        average_usage_duration_per_day = 3 * u.hour
+        average_fraction_of_usage_per_day = 3 * u.hour / u.day
         lifespan = 3 * u.year
-        fabrication_footprint = carbon_footprint_fabrication * duration / (lifespan * average_usage_duration_per_day)
+        fabrication_footprint = carbon_footprint_fabrication * duration / (lifespan * average_fraction_of_usage_per_day)
         device = Device(
             PhysicalElements.SMARTPHONE,
             carbon_footprint_fabrication=SourceValue(carbon_footprint_fabrication, Sources.BASE_ADEME_V19),
             power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(lifespan, Sources.HYPOTHESIS),
-            average_usage_duration_per_day=SourceValue(average_usage_duration_per_day, Sources.HYPOTHESIS),
+            fraction_of_usage_per_day=SourceValue(average_fraction_of_usage_per_day, Sources.HYPOTHESIS),
         )
         with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration

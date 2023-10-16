@@ -20,5 +20,5 @@ class Country:
 
 
 class Countries:
-    FRANCE = Country("France", "FR", 100 * u.g / u.kWh)
+    FRANCE = Country("France", "FR", 60 * u.g / u.kWh)
     EUROPE = Country("Europe", "EU", 250 * u.g / u.kWh)

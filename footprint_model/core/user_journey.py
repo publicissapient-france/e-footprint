@@ -15,7 +15,7 @@ class DataTransferredType(str, enum.Enum):
 @dataclass
 class DataTransferred:
     type: DataTransferredType
-    size: Quantity = 10 * u.Mo  # MB
+    size: Quantity
     is_stored: bool = False
 
     def __post_init__(self):
@@ -26,28 +26,41 @@ class DataTransferred:
 @dataclass
 class UserJourneyStep:
     name: str
-    data_transferred: DataTransferred
+    data_transferred: List[DataTransferred]
     duration: Quantity
+    tracking_data: Quantity
     url_pattern: Optional[str] = None
 
     def __post_init__(self):
         if not self.duration.check("[time]"):
             raise ValueError("Variable 'duration' does not have the appropriate '[time]' dimensionality")
 
+        if not self.tracking_data.check("[data]"):
+            raise ValueError("Variable 'tracking_data' does not have the appropriate '[data]' dimensionality")
+
+        if not type(self.data_transferred) == list:
+            raise ValueError("data_transferred should be a list")
+
+        if self.tracking_data > 0 * u.o:
+            self.data_transferred.append(DataTransferred(DataTransferredType.UPLOAD, self.tracking_data))
+
 
 @dataclass
 class UserJourney:
     # TODO : add device attribute
-    list_actions: List[UserJourneyStep] = field(default_factory=list)
+    uj_steps: List[UserJourneyStep] = field(default_factory=list)
 
     @property
     def duration(self) -> Quantity:
-        return sum(elt.duration for elt in self.list_actions)
+        return sum(elt.duration for elt in self.uj_steps)
 
     def _compute_bandwidth(self, transferred_type: DataTransferredType) -> Quantity:
         # TODO: write tests for this function
+        all_data_transferred = []
+        for uj_step in self.uj_steps:
+            all_data_transferred += uj_step.data_transferred
         return sum(
-            [elt.data_transferred.size for elt in self.list_actions if elt.data_transferred.type == transferred_type],
+            [data_transfer.size for data_transfer in all_data_transferred if data_transfer.type == transferred_type],
             # Specify starting value of sum to keep the unit
             0 * u.o
         )
@@ -61,7 +74,7 @@ class UserJourney:
         return self._compute_bandwidth(DataTransferredType.UPLOAD)
 
     def add_step(self, step: UserJourneyStep) -> None:
-        self.list_actions.append(step)
+        self.uj_steps.append(step)
 
     def compute_device_consumption(self, device: Device) -> Quantity:
         return device.power.value * self.duration
@@ -70,8 +83,8 @@ class UserJourney:
         return (
             device.carbon_footprint_fabrication.value
             * self.duration
-            / (device.lifespan.value * device.average_usage_duration_per_day.value)
-        )
+            / (device.lifespan.value * device.fraction_of_usage_per_day.value)
+        ).to(u.kg)
 
     def compute_network_consumption(self, network: Network) -> Quantity:
         return (self.data_download + self.data_upload) * network.bandwidth_energy_intensity.value

@@ -27,23 +27,27 @@ class Hardware:
 
 @dataclass
 class Device(Hardware):
-    average_usage_duration_per_day: SourceValue
+    fraction_of_usage_per_day: SourceValue
+
+    def __post_init__(self):
+        if not self.fraction_of_usage_per_day.value.check("[]"):
+            raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
 
 
 class Devices:
     SMARTPHONE = Device(
         PhysicalElements.SMARTPHONE,
-        carbon_footprint_fabrication=SourceValue(60 * u.kg, Sources.BASE_ADEME_V19),
+        carbon_footprint_fabrication=SourceValue(30 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
-        average_usage_duration_per_day=SourceValue(3 * u.hour, Sources.HYPOTHESIS),
+        fraction_of_usage_per_day=SourceValue(3 * u.hour / u.day, Sources.HYPOTHESIS),
     )
     LAPTOP = Device(
         PhysicalElements.LAPTOP,
         carbon_footprint_fabrication=SourceValue(156 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        average_usage_duration_per_day=SourceValue(7 * u.hour, Sources.HYPOTHESIS),
+        fraction_of_usage_per_day=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
     )
 
 
@@ -52,6 +56,11 @@ class Server(Hardware):
     idle_power: SourceValue
     ram: SourceValue
     nb_of_cpus: SourceValue
+    power_usage_effectiveness: float
+
+    # Number of Mo of RAM the server needs to generate and transfer 1 Mo of data. To improve
+    SERVER_RAM_PER_DATA_TRANSFERRED = 5
+    SERVER_UTILISATION_RATE = 0.7
 
 
 class Servers:
@@ -62,7 +71,8 @@ class Servers:
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         ram=SourceValue(128 * u.Go, Sources.HYPOTHESIS),
-        nb_of_cpus=24
+        nb_of_cpus=24,
+        power_usage_effectiveness=1.2
     )
 
 
@@ -70,6 +80,7 @@ class Servers:
 class Storage(Hardware):
     idle_power: SourceValue
     storage_capacity: SourceValue
+    power_usage_effectiveness: float
 
 
 class Storages:
@@ -79,7 +90,8 @@ class Storages:
         power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         lifespan=SourceValue(4 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+        power_usage_effectiveness=1.2
     )
     HDD_STORAGE = Storage(
         PhysicalElements.HDD,
@@ -87,7 +99,8 @@ class Storages:
         power=SourceValue(4.2 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         lifespan=SourceValue(4 * u.years, Sources.HYPOTHESIS),
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY)
+        storage_capacity=SourceValue(1 * u.To, Sources.STORAGE_EMBODIED_CARBON_STUDY),
+        power_usage_effectiveness=1.2
     )
 
 @dataclass

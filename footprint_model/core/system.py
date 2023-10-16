@@ -1,12 +1,13 @@
 from footprint_model.constants.units import u
 from footprint_model.constants.countries import Country
-from footprint_model.constants.physical_elements import Device, Network, PhysicalElements, Devices, Networks
+from footprint_model.constants.physical_elements import (Device, Network, PhysicalElements, Devices, Networks, Servers,
+                                                         Server, Storages)
 from footprint_model.core.user_journey import UserJourney
-from footprint_model.constants.abstract_constants import SERVER_RAM_PER_DATA_TRANSFERED
 
 from dataclasses import dataclass
 from typing import Dict
 from pint import Quantity
+import math
 
 
 @dataclass
@@ -50,7 +51,7 @@ class UsagePattern:
     def compute_device_consumption(self, device: Device, frac_visits: float) -> Quantity:
         return frac_visits * self.nb_visits_per_year * self.user_journey.compute_device_consumption(device)
 
-    def compute_fabrication_footprint(self, device: Device, frac_visits: float) -> Quantity:
+    def compute_device_fabrication_footprint(self, device: Device, frac_visits: float) -> Quantity:
         return frac_visits * self.nb_visits_per_year * self.user_journey.compute_fabrication_footprint(device)
 
     def compute_network_consumption(self, network: Network, frac_visits: float) -> Quantity:
@@ -73,18 +74,34 @@ class UsagePattern:
             ).to(u.kWh),
         }
 
+    def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
+        return {
+            PhysicalElements.SMARTPHONE: self.compute_device_fabrication_footprint(
+                Devices.SMARTPHONE, self.frac_smartphone).to(u.kg),
+            PhysicalElements.LAPTOP: self.compute_device_fabrication_footprint(
+                Devices.LAPTOP, 1 - self.frac_smartphone).to(u.kg),
+        }
+
     @property
-    def estimated_server_need(self):
+    def estimated_infra_need(self) -> InfraNeed:
         nb_visits_per_usage_window = self.nb_visits_per_year / 365
         nb_visitors_in_parallel_during_usage_window = (
                 nb_visits_per_usage_window * self.user_journey.duration / self.daily_usage_window)
-        data_transfered_in_parallel = (nb_visitors_in_parallel_during_usage_window
+        data_transferred_in_parallel = (nb_visitors_in_parallel_during_usage_window
                                        * (self.user_journey.data_upload + self.user_journey.data_download))
-        ram_needed = SERVER_RAM_PER_DATA_TRANSFERED * data_transfered_in_parallel
+        ram_needed = Server.SERVER_RAM_PER_DATA_TRANSFERRED * data_transferred_in_parallel
 
-        storage_needed = self.user_journey.data_upload
+        storage_needed = self.user_journey.data_upload * self.nb_visits_per_year
 
         return InfraNeed(ram_needed.to(u.Go), storage_needed.to(u.To))
+
+    @property
+    def data_upload(self) -> Quantity:
+        return (self.user_journey.data_upload * self.nb_visits_per_year).to(u.To)
+
+    @property
+    def data_download(self) -> Quantity:
+        return (self.user_journey.data_download * self.nb_visits_per_year).to(u.To)
 
 
 @dataclass
@@ -92,4 +109,45 @@ class System:
     # TODO: a list of UsagePattern could be considered afterwards
     usage_pattern: UsagePattern
     data_replication_factor: int
-    data_storage_duration: int
+    data_storage_duration: Quantity
+
+    def __post_init__(self):
+        if not self.data_storage_duration.check("[time]"):
+            raise ValueError("Variable 'data_storage_duration' does not have time dimensionality")
+
+    @property
+    def number_of_servers_needed__raw(self) -> float:
+        return self.usage_pattern.estimated_infra_need.ram / (Servers.SERVER.ram.value * Server.SERVER_UTILISATION_RATE)
+
+    def compute_servers_consumption(self) -> Quantity:
+        nb_servers = math.ceil(self.number_of_servers_needed__raw)
+        # TODO: Take idle time into account
+        return (nb_servers * u.year * Servers.SERVER.power.value * Servers.SERVER.power_usage_effectiveness).to(u.kWh)
+
+    def compute_servers_fabrication_footprint(self) -> Quantity:
+        nb_servers = math.ceil(self.number_of_servers_needed__raw)
+        servers_fab_footprint = (nb_servers * Servers.SERVER.carbon_footprint_fabrication.value
+                                 * (1 * u.year / Servers.SERVER.lifespan.value))
+        return servers_fab_footprint.to(u.kg)
+
+    def compute_storage_consumption(self) -> Quantity:
+        nb_of_terabytes_required = math.ceil(
+            (self.usage_pattern.estimated_infra_need.storage.to(u.To) * self.data_replication_factor
+             * self.data_storage_duration / u.year).magnitude) * u.To
+        storage_power_during_use = ((nb_of_terabytes_required / Storages.SSD_STORAGE.storage_capacity.value)
+                                    * Storages.SSD_STORAGE.power.value * Storages.SSD_STORAGE.power_usage_effectiveness)
+        usage_time_per_year = (self.usage_pattern.daily_usage_window / u.day) * u.year
+        return (storage_power_during_use * usage_time_per_year).to(u.kWh)
+
+    def compute_energy_consumption(self) -> Dict[PhysicalElements, Quantity]:
+        energy_consumption = self.usage_pattern.compute_energy_consumption()
+        energy_consumption[PhysicalElements.SERVER] = self.compute_servers_consumption()
+        energy_consumption[PhysicalElements.SSD] = self.compute_storage_consumption()
+
+        return energy_consumption
+
+    def compute_fabrication_emissions(self) -> Dict[PhysicalElements, Quantity]:
+        fabrication_emissions = self.usage_pattern.compute_fabrication_emissions()
+        fabrication_emissions[PhysicalElements.SERVER] = self.compute_servers_fabrication_footprint()
+
+        return fabrication_emissions
