@@ -4,6 +4,7 @@ from footprint_model.constants.physical_elements import (Device, Network, Physic
                                                          Server, Storages)
 from footprint_model.core.user_journey import UserJourney
 from footprint_model.utils.tools import round_dict
+from footprint_model.utils.plot_utils import plot_emissions
 
 from dataclasses import dataclass
 from typing import Dict
@@ -209,3 +210,7 @@ class System:
             output_dict[key] = (
                     energy_consumption[key] * self.usage_pattern.population.country.average_carbon_intensity).to(u.kg)
         return round_dict(output_dict, 1)
+
+    def plot_emissions(self):
+        plot_emissions([self.compute_energy_emissions(), self.compute_fabrication_emissions()],
+                       ["Electricity consumption", "Fabrication"])
