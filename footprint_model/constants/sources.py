@@ -1,4 +1,5 @@
 from footprint_model.constants.units import u
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 from dataclasses import dataclass
 from typing import Optional
@@ -42,36 +43,17 @@ class Sources:
     STATE_OF_MOBILE_2022 = Source("DATA.AI - STATE OF MOBILE", "https://www.data.ai/en/go/state-of-mobile-2022")
 
 
-@dataclass
-class SourceValue:
-    value: Quantity
-    source: Source
+class SourceValue(ExplainableQuantity):
+    def __init__(self, value: Quantity, source: Source, name: str = "unnamed value"):
+        super().__init__(value, formula=name)
+        self.source = source
 
-    def __post_init__(self):
-        if not isinstance(self.value, Quantity):
-            raise ValueError(
-                "Variable 'value' does not correspond to the appropriate 'Quantity' type, "
-                "it is indeed mandatory to define a unit"
-            )
-
-    @staticmethod
-    def _type_conversion_for_operation(operation_value):
-        if isinstance(operation_value, SourceValue):
-            return operation_value.value
+    def set_name(self, new_name: str):
+        if self.source != Sources.USER_INPUT:
+            self.formula = f"{new_name} from {self.source.name}"
         else:
-            return operation_value
-
-    def __add__(self, other):
-        return self.value + self._type_conversion_for_operation(other)
-
-    def __truediv__(self, other):
-        return self.value / self._type_conversion_for_operation(other)
-
-    def __mul__(self, other):
-        return self.value * self._type_conversion_for_operation(other)
-
-    def __rmul__(self, other):
-        return self.value * self._type_conversion_for_operation(other)
+            self.formula = f"{new_name}"
+        self.name_values_dict = {self.formula: self.value}
 
 
 if __name__ == "__main__":

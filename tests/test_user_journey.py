@@ -5,11 +5,12 @@ from unittest.mock import PropertyMock
 from footprint_model.constants.physical_elements import Network, PhysicalElements, Device
 from footprint_model.constants.sources import SourceValue, Sources, u
 from footprint_model.core.user_journey import DataTransferred, DataTransferredType, UserJourneyStep, UserJourney
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 
 class TestUserJourney(TestCase):
     def test_add_step(self):
-        user_journey = UserJourney()
+        user_journey = UserJourney("test user journey")
         user_journey_step = UserJourneyStep(
             "", [DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo)], 10 * u.s, tracking_data=0.1 * u.Mo)
         user_journey.add_step(user_journey_step)
@@ -22,10 +23,11 @@ class TestUserJourney(TestCase):
             "", [DataTransferred(DataTransferredType.DOWNLOAD, 30 * u.Mo)], duration1, tracking_data=0.1 * u.Mo)
         user_journey_step2 = UserJourneyStep(
             "", [DataTransferred(DataTransferredType.UPLOAD, 30 * u.Mo)], duration2, tracking_data=0.1 * u.Mo)
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step1]).duration, duration1)
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step2]).duration, duration2)
+        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step1]).duration.value, duration1 / u.user_journey)
+        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step2]).duration.value, duration2 / u.user_journey)
         self.assertEqual(
-            UserJourney(uj_steps=[user_journey_step1, user_journey_step2]).duration, duration1 + duration2
+            UserJourney("uj", uj_steps=[user_journey_step1, user_journey_step2]).duration.value,
+            (duration1 + duration2) / u.user_journey
         )
 
     def test_data_download(self):
@@ -37,11 +39,13 @@ class TestUserJourney(TestCase):
         user_journey_step_upload = UserJourneyStep(
             "", [DataTransferred(DataTransferredType.UPLOAD, data_upload)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step_download]).data_download, data_download)
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step_download] * 2).data_download, data_download * 2)
+        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_download]).data_download.value,
+                         data_download / u.user_journey)
+        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_download] * 2).data_download.value,
+                         data_download * 2 / u.user_journey)
         self.assertEqual(
-            UserJourney(uj_steps=[user_journey_step_download, user_journey_step_upload]).data_download,
-            data_download,
+            UserJourney("uj", uj_steps=[user_journey_step_download, user_journey_step_upload]).data_download.value,
+            data_download / u.user_journey,
         )
 
     def test_data_upload(self):
@@ -53,57 +57,61 @@ class TestUserJourney(TestCase):
         user_journey_step_upload = UserJourneyStep(
             "", [DataTransferred(DataTransferredType.UPLOAD, data_upload)], 10 * u.s, tracking_data=0.1 * u.Mo
         )
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step_upload]).data_upload, data_upload + 0.1 * u.Mo)
-        self.assertEqual(UserJourney(uj_steps=[user_journey_step_upload] * 2).data_upload, data_upload * 2 + 0.2 * u.Mo)
+        self.assertEqual(UserJourney("uj", uj_steps=[user_journey_step_upload]).data_upload.value,
+                         (data_upload + 0.1 * u.Mo) / u.user_journey)
+        self.assertEqual(round(UserJourney("uj", uj_steps=[user_journey_step_upload] * 2).data_upload.value, 2),
+                         (data_upload * 2 + 0.2 * u.Mo) / u.user_journey)
         self.assertEqual(
-            UserJourney(uj_steps=[user_journey_step_download, user_journey_step_upload]).data_upload,
+            UserJourney("uj", uj_steps=[user_journey_step_download, user_journey_step_upload]).data_upload.value,
             # Strangely this conversion is needed for the comparison to work...
-            (data_upload + 0.2 * u.Mo).to(u.o)
+            (data_upload + 0.2 * u.Mo).to(u.o) / u.user_journey
         )
 
     def test_compute_device_consumption(self):
-        duration = 10 * u.s
+        duration = ExplainableQuantity(10 * u.s, "duration")
         device_power = 3 * u.W
-        device_consumption = device_power * duration
+        device_consumption = device_power * duration.value
         device = Device(
             PhysicalElements.SMARTPHONE,
             carbon_footprint_fabrication=SourceValue(60 * u.W, Sources.BASE_ADEME_V19),
             power=SourceValue(device_power, Sources.HYPOTHESIS),
             lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
-            fraction_of_usage_per_day=SourceValue(3 * u.hour / u.year, Sources.HYPOTHESIS),
+            fraction_of_usage_time=SourceValue(3 * u.hour / u.year, Sources.HYPOTHESIS),
             data_usage=SourceValue(12.7 * u.Go / u.month, Sources.ARCEP_2022_MOBILE_NETWORK_STUDY)
         )
-        with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
+        with unittest.mock.patch(
+                "footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration
-            user_journey = UserJourney()
+            user_journey = UserJourney("test user journey")
             device_consumption_computed = user_journey.compute_device_consumption(device)
-            self.assertEqual(device_consumption_computed, device_consumption)
+            self.assertEqual(device_consumption_computed.value, device_consumption)
 
     def test_compute_fabrication_footprint(self):
-        duration = 10 * u.s
+        duration = ExplainableQuantity(10 * u.s, "duration")
         carbon_footprint_fabrication = 60 * u.kg
         average_fraction_of_usage_per_day = 3 * u.hour / u.day
         lifespan = 3 * u.year
-        fabrication_footprint = carbon_footprint_fabrication * duration / (lifespan * average_fraction_of_usage_per_day)
+        fabrication_footprint = (carbon_footprint_fabrication * duration.value /
+                                 (lifespan * average_fraction_of_usage_per_day))
         device = Device(
             PhysicalElements.SMARTPHONE,
             carbon_footprint_fabrication=SourceValue(carbon_footprint_fabrication, Sources.BASE_ADEME_V19),
             power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(lifespan, Sources.HYPOTHESIS),
-            fraction_of_usage_per_day=SourceValue(average_fraction_of_usage_per_day, Sources.HYPOTHESIS),
+            fraction_of_usage_time=SourceValue(average_fraction_of_usage_per_day, Sources.HYPOTHESIS),
             data_usage=SourceValue(12.7 * u.Go / u.month, Sources.ARCEP_2022_MOBILE_NETWORK_STUDY)
         )
         with unittest.mock.patch("footprint_model.core.user_journey.UserJourney.duration", new_callable=PropertyMock) as mock_duration:
             mock_duration.return_value = duration
-            user_journey = UserJourney()
+            user_journey = UserJourney("test user journey")
             fabrication_footprint_computed = user_journey.compute_fabrication_footprint(device)
-            self.assertEqual(fabrication_footprint_computed, fabrication_footprint)
+            self.assertEqual(fabrication_footprint_computed.value, fabrication_footprint)
 
     def test_compute_network_consumption(self):
-        data_download = 10 * u.Mo
-        data_upload = 20 * u.Mo
+        data_download = ExplainableQuantity(10 * u.Mo, "data_download")
+        data_upload = ExplainableQuantity(20 * u.Mo, "data_upload")
         bandwidth_energy_intensity = 0.05 * u("kWh/Go")
-        network_consumption = (data_download + data_upload) * bandwidth_energy_intensity
+        network_consumption = (data_download.value + data_upload.value) * bandwidth_energy_intensity
         network = Network(
             PhysicalElements.WIFI_NETWORK,
             SourceValue(bandwidth_energy_intensity, Sources.TRAFICOM_STUDY),
@@ -115,9 +123,9 @@ class TestUserJourney(TestCase):
         ) as mock_data_upload:
             mock_data_download.return_value = data_download
             mock_data_upload.return_value = data_upload
-            user_journey = UserJourney()
+            user_journey = UserJourney("test user journey")
             network_consumption_computed = user_journey.compute_network_consumption(network)
-            self.assertEqual(network_consumption_computed, network_consumption)
+            self.assertEqual(network_consumption_computed.value, network_consumption)
 
 
 if __name__ == "__main__":

@@ -4,8 +4,8 @@ from footprint_model.core.usage_pattern import UsagePattern
 from footprint_model.utils.tools import round_dict
 from footprint_model.utils.plot_utils import plot_emissions
 from footprint_model.constants.files import PDF_EXPORTS
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
-from dataclasses import dataclass
 from typing import Dict, List
 from pint import Quantity
 import math
@@ -13,20 +13,20 @@ import matplotlib.pyplot as plt
 import os
 
 
-@dataclass
 class System:
-    # TODO: a list of UsagePattern could be considered afterwards
-    usage_patterns: List[UsagePattern]
-    data_replication_factor: int
-    data_storage_duration: Quantity
-    cloud: bool
-
-    def __post_init__(self):
-        if not self.data_storage_duration.check("[time]"):
-            raise ValueError("Variable 'data_storage_duration' does not have time dimensionality")
-        usage_pattern_names = [usage_pattern.name for usage_pattern in self.usage_patterns]
+    def __init__(self, name: str, usage_patterns: List[UsagePattern], data_replication_factor: int,
+                 data_storage_duration: Quantity, cloud: bool):
+        self.name = name
+        usage_pattern_names = [usage_pattern.name for usage_pattern in usage_patterns]
         if len(usage_pattern_names) != len(set(usage_pattern_names)):
             raise ValueError("You can’t have 2 usage patterns with the same name within a System")
+        self.usage_patterns = usage_patterns
+        self.data_replication_factor = ExplainableQuantity(
+            data_replication_factor * u.dimensionless, f"Data replication factor of {self.name}")
+        if not data_storage_duration.check("[time]"):
+            raise ValueError("Variable 'data_storage_duration' does not have time dimensionality")
+        self.data_storage_duration = ExplainableQuantity(data_storage_duration, f"Data storage duration of {self.name}")
+        self.cloud = cloud
 
     @property
     def nb_of_servers_required__raw(self) -> Dict[UsagePattern, float]:
@@ -38,79 +38,75 @@ class System:
         return nb_of_servers_required
 
     @property
-    def nb_of_terabytes_required(self) -> Dict[UsagePattern, Quantity]:
-        nb_of_terabytes_required = {}
+    def storage_required(self) -> Dict[UsagePattern, ExplainableQuantity]:
+        storage_required = {}
         for usage_pattern in self.usage_patterns:
-            nb_of_terabytes_required[usage_pattern] = (
-                (usage_pattern.estimated_infra_need.storage.to(u.To)
-                 * self.data_replication_factor * self.data_storage_duration / u.year).magnitude) * u.To
-        return nb_of_terabytes_required
+            storage_required[usage_pattern] = (usage_pattern.estimated_infra_need.storage.to(u.To / u.year)
+                                               * self.data_replication_factor * self.data_storage_duration)
+        return storage_required
 
-    def compute_servers_consumption(self) -> Dict[UsagePattern, Quantity]:
+    def compute_servers_consumption(self) -> Dict[UsagePattern, ExplainableQuantity]:
         servers_consumption = {}
         nb_of_servers_required__raw = self.nb_of_servers_required__raw
         for usage_pattern in self.usage_patterns:
             if self.cloud:
                 nb_servers = nb_of_servers_required__raw[usage_pattern]
-                duration_per_year_at_100_percent = (usage_pattern.daily_usage_window / u.day) * u.year
-                duration_per_year_downscaled = 1 * u.year - duration_per_year_at_100_percent
                 effective_power = Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness
                 servers_consumption[usage_pattern] = (
                         nb_servers * effective_power
                         * (
-                                duration_per_year_at_100_percent
-                                + (duration_per_year_downscaled / Server.CLOUD_DOWNSCALING_FACTOR)
+                                usage_pattern.usage_time_fraction
+                                + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                         )
-                ).to(u.kWh)
+                ).to(u.kWh / u.year)
             else:
                 nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
                 # TODO: Take idle time into account
                 servers_consumption[usage_pattern] = (
-                        Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers * u.year).to(u.kWh)
+                        Servers.SERVER.power * Servers.SERVER.power_usage_effectiveness * nb_servers).to(u.kWh / u.year)
         return servers_consumption
 
-    def compute_servers_fabrication_footprint(self) -> Dict[UsagePattern, Quantity]:
+    def compute_servers_fabrication_footprint(self) -> Dict[UsagePattern, ExplainableQuantity]:
         servers_fabrication_footprint = {}
         nb_of_servers_required__raw = self.nb_of_servers_required__raw
         for usage_pattern in self.usage_patterns:
             if self.cloud:
                 nb_servers = nb_of_servers_required__raw[usage_pattern]
-                duration_per_year_at_100_percent = (usage_pattern.daily_usage_window / u.day) * u.year
-                duration_per_year_downscaled = 1 * u.year - duration_per_year_at_100_percent
                 servers_fabrication_footprint[usage_pattern] = (
-                    nb_servers * Servers.SERVER.carbon_footprint_fabrication.value
+                    nb_servers * Servers.SERVER.carbon_footprint_fabrication
                     * (
-                            duration_per_year_at_100_percent
-                            + (duration_per_year_downscaled / Server.CLOUD_DOWNSCALING_FACTOR)
+                            usage_pattern.usage_time_fraction
+                            + (usage_pattern.non_usage_time_fraction / Server.CLOUD_DOWNSCALING_FACTOR)
                     )
-                    / Servers.SERVER.lifespan.value
-                ).to(u.kg)
+                    / Servers.SERVER.lifespan
+                ).to(u.kg / u.year)
             else:
+                # TODO: debug math.ceil with ExplainableQuantity
                 nb_servers = math.ceil(nb_of_servers_required__raw[usage_pattern])
                 servers_fab_footprint = (Servers.SERVER.carbon_footprint_fabrication * nb_servers
-                                         * (1 * u.year / Servers.SERVER.lifespan.value))
-                servers_fabrication_footprint[usage_pattern] = servers_fab_footprint.to(u.kg)
+                                         / Servers.SERVER.lifespan)
+                servers_fabrication_footprint[usage_pattern] = servers_fab_footprint.to(u.kg / u.year)
         return servers_fabrication_footprint
 
-    def compute_storage_consumption(self) -> Dict[UsagePattern, Quantity]:
+    def compute_storage_consumption(self) -> Dict[UsagePattern, ExplainableQuantity]:
         storage_consumption = {}
-        nb_of_terabytes_required = self.nb_of_terabytes_required
+        storage_required = self.storage_required
         for usage_pattern in self.usage_patterns:
             storage_power_during_use = (Storages.SSD_STORAGE.power * Storages.SSD_STORAGE.power_usage_effectiveness
-                                        * (nb_of_terabytes_required[usage_pattern]
-                                           / Storages.SSD_STORAGE.storage_capacity.value))
-            usage_time_per_year = (usage_pattern.daily_usage_window / u.day) * u.year
-            storage_consumption[usage_pattern] = (storage_power_during_use * usage_time_per_year).to(u.kWh)
+                                        * (storage_required[usage_pattern]
+                                           / Storages.SSD_STORAGE.storage_capacity))
+            storage_consumption[usage_pattern] = (storage_power_during_use * usage_pattern.usage_time_fraction).to(
+                u.kWh / u.year)
         return storage_consumption
 
-    def compute_storage_fabrication_footprint(self) -> Dict[UsagePattern, Quantity]:
+    def compute_storage_fabrication_footprint(self) -> Dict[UsagePattern, ExplainableQuantity]:
         storage_fabrication_footprint = {}
-        nb_of_terabytes_required = self.nb_of_terabytes_required
+        storage_required = self.storage_required
         for usage_pattern in self.usage_patterns:
             storage_fabrication_footprint[usage_pattern] = (
-                    nb_of_terabytes_required[usage_pattern]
+                    storage_required[usage_pattern]
                     * (Storages.SSD_STORAGE.carbon_footprint_fabrication / Storages.SSD_STORAGE.storage_capacity)
-                    * 1 * u.year / Storages.SSD_STORAGE.lifespan.value)
+                    / Storages.SSD_STORAGE.lifespan)
         return storage_fabrication_footprint
 
     def compute_energy_consumption(self) -> Dict[UsagePattern, Dict[PhysicalElements, Quantity]]:
@@ -146,12 +142,14 @@ class System:
             energy_consumption = up_energy_consumption[usage_pattern]
             for key in energy_consumption:
                 output_dict[key] = (
-                        energy_consumption[key] * usage_pattern.population.country.average_carbon_intensity).to(u.kg)
+                        energy_consumption[key] * usage_pattern.population.country.average_carbon_intensity).to(
+                    u.kg / u.year)
             energy_emissions[usage_pattern] = round_dict(output_dict, 1)
 
         return energy_emissions
 
-    def plot_emissions(self, export_file, rounding_value=0, return_fig_for_streamlit=False):
+    def plot_emissions(self, export_file, rounding_value=0, timespan=1 * u.year, return_fig_for_streamlit=True):
+        timespan = ExplainableQuantity(timespan, "Study timespan")
         energy_emissions = self.compute_energy_emissions()
         fabrication_emissions = self.compute_fabrication_emissions()
         if len(self.usage_patterns) == 1:
@@ -162,7 +160,8 @@ class System:
                 [energy_emissions[usage_pattern], fabrication_emissions[usage_pattern]],
                 ["Electricity consumption", "Fabrication"],
                 usage_pattern.name,
-                rounding_value)
+                rounding_value,
+                timespan)
         else:
             nb_rows = len(self.usage_patterns) + 2
             fig, axs = plt.subplots(nrows=nb_rows, ncols=1, figsize=(12, 6 * nb_rows))
@@ -173,7 +172,8 @@ class System:
                      ],
                     ["Electricity consumption", "Fabrication"],
                     usage_pattern.name,
-                    rounding_value
+                    rounding_value,
+                    timespan
                 )
             total_energy_emissions = {
                 key: sum(d[key] for d in energy_emissions.values())
@@ -183,9 +183,12 @@ class System:
                 for key in fabrication_emissions[self.usage_patterns[0]].keys()}
             plot_emissions(
                 axs[-2], [total_energy_emissions, total_fabrication_emissions],
-                ["Electricity consumption", "Fabrication"], title="Total emissions", rounding_value=0)
+                ["Electricity consumption", "Fabrication"], title="Total emissions", rounding_value=0,
+                timespan=timespan)
             total_emissions_by_up_dict = {
-                up.name: (sum(fabrication_emissions[up].values()) + sum(energy_emissions[up].values())).magnitude / 1000
+                up.name: (
+                        (sum(fabrication_emissions[up].values()) + sum(energy_emissions[up].values())) * timespan
+                ).value.magnitude
                 for up in fabrication_emissions.keys()}
             axs[-1].pie(
                 list(total_emissions_by_up_dict.values()), labels=list(total_emissions_by_up_dict.keys()),

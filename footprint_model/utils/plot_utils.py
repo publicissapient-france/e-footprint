@@ -1,5 +1,6 @@
 from footprint_model.constants.physical_elements import PhysicalElements
 from footprint_model.constants.units import u
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 import numpy as np
 import enum
@@ -25,20 +26,27 @@ DISPLAY_CATEGORIES = {
 
 
 def group_emissions_by_category(input_dict: dict) -> dict:
-    grouped_dict = {category: 0 * u.kg for category in DISPLAY_CATEGORIES.keys()}
+    grouped_dict = {}
 
-    for key, value in input_dict.items():
+    for key, explainable_value in input_dict.items():
         for category, keys in DISPLAY_CATEGORIES.items():
             if key in keys:
-                grouped_dict[category] += value
+                if category in grouped_dict.keys():
+                    grouped_dict[category] += explainable_value
+                else:
+                    grouped_dict[category] = explainable_value
                 break
         else:
             raise ValueError(f"Unknown physical element: {key}")
 
+    for category in DISPLAY_CATEGORIES.keys():
+        if category not in grouped_dict.keys():
+            grouped_dict[category] = ExplainableQuantity(0 * u.kg / u.year, f"no emissions for category {category}")
+
     return grouped_dict
 
 
-def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
+def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value, timespan):
     formatted_input_dicts = [group_emissions_by_category(input_dict) for input_dict in input_dicts]
 
     elements = [element.value for element in DisplayCategories]
@@ -48,10 +56,10 @@ def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
 
     total_emissions_in_kg = 0
     for input_dict in formatted_input_dicts:
-        total_emissions_in_kg += sum(input_dict.values()).to(u.kg).magnitude
+        total_emissions_in_kg += (sum(input_dict.values()) * timespan).to(u.kg).magnitude
 
     for i, input_dict in enumerate(formatted_input_dicts):
-        values = [input_dict.get(element, 0 * u.kg).to(u.kg).magnitude for element in elements]
+        values = [(input_dict.get(element, 0 * u.kg / u.year) * timespan).to(u.kg).magnitude for element in elements]
 
         proportions = [(value / total_emissions_in_kg) * 100 for value in values]
 
@@ -81,7 +89,8 @@ def plot_emissions(ax, input_dicts, legend_labels, title, rounding_value):
     ax.set_xticklabels(elements, rotation=45, ha="right")
 
     ax2 = ax.twinx()
-    max_value = max([max(input_dict.values()) for input_dict in formatted_input_dicts]).to(u.kg).magnitude
+    max_value = max(
+        [max(input_dict.values()) * timespan for input_dict in formatted_input_dicts]).to(u.kg).magnitude
     ax2.set_ylim(0, 100 * (max_value / total_emissions_in_kg) * (ax.get_ylim()[1] / max_value))
     ax2.set_ylabel("Proportions (%)")
 

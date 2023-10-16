@@ -1,5 +1,6 @@
 from footprint_model.constants.units import u
 from footprint_model.constants.physical_elements import Device, Network
+from footprint_model.constants.explainable_quantities import ExplainableQuantity
 
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -11,38 +12,42 @@ class DataTransferredType:
     DOWNLOAD = "download"
 
 
-@dataclass
 class DataTransferred:
-    type: DataTransferredType
-    size: Quantity
-    is_stored: bool = False
-    description: str = ""
-
-    def __post_init__(self):
-        if not self.size.check("[data]"):
+    def __init__(
+            self, data_transfer_type: DataTransferredType, size: Quantity, is_stored: bool = False,
+            description: str = ""):
+        self.type = data_transfer_type
+        if not size.check("[data]"):
             raise ValueError("Variable 'size' does not have the appropriate '[data]' dimensionality")
+        self.size = size / u.user_journey
+        self.is_stored = is_stored
+        self.description = description
+
+    def __truediv__(self, other):
+        if other.isinstance(Quantity):
+            self.size = self.size / other
+            return self
+        else:
+            raise ValueError(f"Can only divide DataTransferred with Quantities, not with {type(other)}")
 
 
-@dataclass
 class UserJourneyStep:
-    name: str
-    data_transferred: List[DataTransferred]
-    duration: Quantity
-    tracking_data: Quantity
-    url_pattern: Optional[str] = None
-
-    def __post_init__(self):
-        if not self.duration.check("[time]"):
-            raise ValueError("Variable 'duration' does not have the appropriate '[time]' dimensionality")
-
-        if not self.tracking_data.check("[data]"):
-            raise ValueError("Variable 'tracking_data' does not have the appropriate '[data]' dimensionality")
-
-        if not type(self.data_transferred) == list:
+    def __init__(self, name: str, data_transferred: List[DataTransferred], duration: Quantity,
+                 tracking_data: Quantity = 0 * u.o, url_pattern: Optional[str] = None):
+        self.name = name
+        if not type(data_transferred) == list:
             raise ValueError("data_transferred should be a list")
-
-        if self.tracking_data > 0 * u.o:
-            self.data_transferred.append(DataTransferred(DataTransferredType.UPLOAD, self.tracking_data))
+        self.data_transferred = data_transferred
+        if not duration.check("[time]"):
+            raise ValueError("Variable 'duration' does not have the appropriate '[time]' dimensionality")
+        self.duration = ExplainableQuantity(duration / u.user_journey, f"uj step {name} duration")
+        if not tracking_data.check("[data]"):
+            raise ValueError("Variable 'tracking_data' does not have the appropriate '[data]' dimensionality")
+        if tracking_data > 0 * u.o:
+            self.data_transferred.append(DataTransferred(DataTransferredType.UPLOAD, tracking_data))
+        elif tracking_data < 0 * u.o:
+            raise ValueError("Variable 'tracking data' should be positive")
+        self.url_pattern = url_pattern
 
     def __mul__(self, other):
         if type(other) not in [int, float]:
@@ -57,32 +62,35 @@ class UserJourneyStep:
 
 @dataclass
 class UserJourney:
+    name: str
     # TODO : add device attribute
     name: str
     uj_steps: List[UserJourneyStep] = field(default_factory=list)
 
     @property
-    def duration(self) -> Quantity:
-        return sum(elt.duration for elt in self.uj_steps)
+    def duration(self) -> ExplainableQuantity:
+        uj_step_duration_sum = sum(elt.duration for elt in self.uj_steps)
+        uj_step_duration_sum.formula = f"({uj_step_duration_sum.formula})"
+        return uj_step_duration_sum
 
     def _compute_bandwidth(self, transferred_type: DataTransferredType) -> Quantity:
         # TODO: write tests for this function
         all_data_transferred = []
         for uj_step in self.uj_steps:
             all_data_transferred += uj_step.data_transferred
-        return sum(
-            [data_transfer.size for data_transfer in all_data_transferred if data_transfer.type == transferred_type],
-            # Specify starting value of sum to keep the unit
-            0 * u.o
-        )
+        uj_bandwidth = (sum([data_transfer.size for data_transfer in all_data_transferred
+                             if data_transfer.type == transferred_type]))
+        return uj_bandwidth
 
     @property
     def data_download(self) -> Quantity:
-        return self._compute_bandwidth(DataTransferredType.DOWNLOAD)
+        return ExplainableQuantity(
+            self._compute_bandwidth(DataTransferredType.DOWNLOAD), f"Data download of step {self.name}")
 
     @property
     def data_upload(self) -> Quantity:
-        return self._compute_bandwidth(DataTransferredType.UPLOAD)
+        return ExplainableQuantity(
+            self._compute_bandwidth(DataTransferredType.UPLOAD), f"Data upload of step {self.name}")
 
     def add_step(self, step: UserJourneyStep) -> None:
         self.uj_steps.append(step)
@@ -91,11 +99,9 @@ class UserJourney:
         return device.power * self.duration
 
     def compute_fabrication_footprint(self, device: Device) -> Quantity:
-        return (
-            device.carbon_footprint_fabrication
-            * self.duration
-            / (device.lifespan * device.fraction_of_usage_per_day)
-        ).to(u.kg)
+        uj_fabrication_footprint = (device.carbon_footprint_fabrication * self.duration
+                                    / (device.lifespan * device.fraction_of_usage_time))
+        return uj_fabrication_footprint
 
     def compute_network_consumption(self, network: Network) -> Quantity:
         return network.bandwidth_energy_intensity * (self.data_download + self.data_upload)
