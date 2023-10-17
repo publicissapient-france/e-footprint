@@ -47,7 +47,9 @@ class UserJourney:
     def _compute_bandwidth(self, transferred_type: DataTransferredType) -> Quantity:
         # TODO: write tests for this function
         return sum(
-            elt.data_transferred.size for elt in self.list_actions if elt.data_transferred.type == transferred_type
+            [elt.data_transferred.size for elt in self.list_actions if elt.data_transferred.type == transferred_type],
+            # Specify starting value of sum to keep the unit
+            0 * u.o
         )
 
     @property

@@ -62,6 +62,7 @@ class Servers:
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         ram=SourceValue(128 * u.Go, Sources.HYPOTHESIS),
+        nb_of_cpus=24
     )
 
 
