@@ -7,18 +7,17 @@ from unittest.mock import patch, MagicMock
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
-class TestModelingSubObject(ModelingObject):
-    def compute_calculated_attributes(self):
-        pass
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return []
-
-
 class TestModelingObject(unittest.TestCase):
 
     def setUp(self):
+        class TestModelingSubObject(ModelingObject):
+            def compute_calculated_attributes(self):
+                pass
+
+            @property
+            def modeling_objects_whose_attributes_depend_directly_on_me(self):
+                return []
+
         self.modeling_object = TestModelingSubObject("test_object")
 
     def test_setattr_sets_modeling_obj_container(self):

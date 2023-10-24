@@ -1,4 +1,4 @@
-from efootprint.constants.countries import Country, Countries
+from efootprint.constants.countries import Countries
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.constants.sources import SourceValue, Sources
@@ -115,7 +115,7 @@ class Storages:
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-        average_carbon_intensity=Countries.GERMANY.average_carbon_intensity,
+        average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )
     HDD_STORAGE = Storage(
@@ -126,6 +126,6 @@ class Storages:
         idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
         storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-        average_carbon_intensity=Countries.GERMANY.average_carbon_intensity,
+        average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
     )

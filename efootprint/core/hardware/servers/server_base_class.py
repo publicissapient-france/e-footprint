@@ -1,7 +1,6 @@
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.constants.sources import SourceValue
 from efootprint.constants.units import u
-from efootprint.constants.countries import Country
 
 from abc import abstractmethod
 

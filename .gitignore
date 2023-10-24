@@ -8,3 +8,5 @@ lib
 .coverage
 .ipynb_checkpoints
 *.ipynb
+dist
+*.egg-info

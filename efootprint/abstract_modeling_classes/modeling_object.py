@@ -12,7 +12,7 @@ def get_subclass_attributes(obj, target_class):
             if issubclass(type(attr_value), target_class)}
 
 
-def check_type_homogeneity_within_list_or_set(input_list_or_set: List | Set):
+def check_type_homogeneity_within_list_or_set(input_list_or_set):
     type_set = [type(value) for value in input_list_or_set]
     base_type = type(type_set[0])
 

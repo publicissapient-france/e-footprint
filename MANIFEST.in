@@ -1,0 +1,3 @@
+include requirements.txt
+include efootprint/constants/custom_units.txt
+include README.md
