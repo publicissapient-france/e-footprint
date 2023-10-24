@@ -2,9 +2,9 @@ from unittest import TestCase
 from unittest.mock import MagicMock
 import unittest
 
-from footprint_model.core.system import System
-from footprint_model.constants.units import u
-from footprint_model.constants.sources import SourceValue
+from efootprint.core.system import System
+from efootprint.constants.units import u
+from efootprint.constants.sources import SourceValue
 
 
 class TestSystem(TestCase):

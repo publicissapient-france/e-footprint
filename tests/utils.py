@@ -1,8 +1,8 @@
 from pint import Quantity
 
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
-from footprint_model.constants.sources import SourceValue
-from footprint_model.constants.units import u
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from efootprint.constants.sources import SourceValue
+from efootprint.constants.units import u
 
 
 def create_ram_or_cpu_need_list(time_interval, value):

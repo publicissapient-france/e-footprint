@@ -1,7 +1,7 @@
-from footprint_model.core.hardware.hardware_base_classes import InfraHardware
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
-from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.units import u
+from efootprint.core.hardware.hardware_base_classes import InfraHardware
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.units import u
 from tests.utils import create_cpu_need, create_ram_need
 
 from copy import deepcopy

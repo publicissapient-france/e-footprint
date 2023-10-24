@@ -1,10 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, patch
 
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
-from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.units import u
-from footprint_model.core.service import Service
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.units import u
+from efootprint.core.service import Service
 
 
 class TestService(unittest.TestCase):

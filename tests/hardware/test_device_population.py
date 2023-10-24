@@ -1,6 +1,6 @@
-from footprint_model.constants.units import u
-from footprint_model.constants.sources import SourceValue, Sources, SourceObject
-from footprint_model.core.hardware.device_population import DevicePopulation
+from efootprint.constants.units import u
+from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.core.hardware.device_population import DevicePopulation
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch

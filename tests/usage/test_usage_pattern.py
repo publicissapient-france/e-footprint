@@ -1,7 +1,7 @@
-from footprint_model.constants.countries import Countries
-from footprint_model.constants.sources import SourceValue, SourceObject, Sources
-from footprint_model.core.usage.usage_pattern import UsagePattern
-from footprint_model.constants.units import u
+from efootprint.constants.countries import Countries
+from efootprint.constants.sources import SourceValue, SourceObject, Sources
+from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.constants.units import u
 
 import unittest
 from unittest.mock import MagicMock, patch

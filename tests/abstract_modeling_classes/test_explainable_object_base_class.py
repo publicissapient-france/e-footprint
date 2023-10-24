@@ -1,5 +1,5 @@
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from footprint_model.constants.units import u
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.constants.units import u
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch

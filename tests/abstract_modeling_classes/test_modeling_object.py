@@ -1,10 +1,10 @@
-from footprint_model.abstract_modeling_classes.modeling_object import ModelingObject
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 import unittest
 from unittest.mock import patch, MagicMock
 
-MODELING_OBJ_CLASS_PATH = "footprint_model.abstract_modeling_classes.modeling_object"
+MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
 class TestModelingSubObject(ModelingObject):

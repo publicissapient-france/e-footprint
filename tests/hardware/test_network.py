@@ -1,8 +1,8 @@
-from footprint_model.constants.countries import Countries
-from footprint_model.constants.sources import Sources, SourceValue
-from footprint_model.core.hardware.network import Network
-from footprint_model.constants.physical_elements import PhysicalElements
-from footprint_model.constants.units import u
+from efootprint.constants.countries import Countries
+from efootprint.constants.sources import Sources, SourceValue
+from efootprint.core.hardware.network import Network
+from efootprint.constants.physical_elements import PhysicalElements
+from efootprint.constants.units import u
 
 from unittest import TestCase
 from unittest.mock import MagicMock

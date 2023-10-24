@@ -2,8 +2,8 @@ import unittest
 from unittest import TestCase
 from unittest.mock import MagicMock
 
-from footprint_model.constants.sources import u, SourceValue
-from footprint_model.core.usage.user_journey import UserJourneyStep, UserJourney
+from efootprint.constants.sources import u, SourceValue
+from efootprint.core.usage.user_journey import UserJourneyStep, UserJourney
 
 
 class TestUserJourneyStep(TestCase):

@@ -1,18 +1,18 @@
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from footprint_model.constants.sources import SourceValue, Sources, SourceObject
-from footprint_model.core.usage.user_journey import UserJourney, UserJourneyStep
-from footprint_model.core.hardware.servers.autoscaling import Autoscaling
-from footprint_model.core.hardware.storage import Storage
-from footprint_model.core.service import Service
-from footprint_model.core.hardware.device_population import DevicePopulation, Devices
-from footprint_model.core.usage.usage_pattern import UsagePattern
-from footprint_model.core.hardware.network import Network
-from footprint_model.core.system import System
-from footprint_model.constants.countries import Countries
-from footprint_model.constants.units import u
-from footprint_model.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
-from footprint_model.logger import logger
-from footprint_model.utils.calculus_representation import build_graph
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
+from efootprint.core.hardware.servers.autoscaling import Autoscaling
+from efootprint.core.hardware.storage import Storage
+from efootprint.core.service import Service
+from efootprint.core.hardware.device_population import DevicePopulation, Devices
+from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.core.hardware.network import Network
+from efootprint.core.system import System
+from efootprint.constants.countries import Countries
+from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
+from efootprint.logger import logger
+from efootprint.utils.calculus_representation import build_graph
 
 from unittest import TestCase
 from copy import deepcopy

@@ -1,6 +1,6 @@
-from footprint_model.constants.sources import SourceValue, Sources
-from footprint_model.constants.units import u
-from footprint_model.core.hardware.servers.server_base_class import Server
+from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.units import u
+from efootprint.core.hardware.servers.server_base_class import Server
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock

@@ -2,8 +2,8 @@ import unittest
 from unittest.mock import MagicMock
 
 from pint import UnitRegistry
-from footprint_model.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
-from footprint_model.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 import pytz
 
 u = UnitRegistry()
