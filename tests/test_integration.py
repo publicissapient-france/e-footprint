@@ -12,7 +12,7 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
 from efootprint.logger import logger
-from efootprint.utils.calculus_representation import build_graph
+from efootprint.utils.calculus_graph import build_calculus_graph
 
 from unittest import TestCase
 from copy import deepcopy
@@ -67,7 +67,7 @@ class IntegrationTest(TestCase):
             SourceObject([[7, 23]], Sources.USER_INPUT))
 
         self.system = System("system 1", [self.usage_pattern])
-        graph = build_graph(self.system.total_footprint())
+        graph = build_calculus_graph(self.system.total_footprint())
         graph.show("test_integration.html")
 
         self.initial_footprint = self.system.total_footprint()
