@@ -5,8 +5,7 @@ from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 
-from typing import List, Set, Type
-
+from typing import List, Set, Type, Optional
 
 class DataTransferredType:
     UPLOAD = "upload"
@@ -14,7 +13,7 @@ class DataTransferredType:
 
 
 class UserJourneyStep(ModelingObject):
-    def __init__(self, name: str, service: Service, data_upload: SourceValue, data_download: SourceValue,
+    def __init__(self, name: str, service: Optional[Service], data_upload: SourceValue, data_download: SourceValue,
                  user_time_spent: SourceValue, request_duration: SourceValue = None,
                  cpu_needed: SourceValue = None, server_ram_per_data_transferred: SourceValue = None):
         super().__init__(name)
@@ -35,34 +34,41 @@ class UserJourneyStep(ModelingObject):
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_name(f"Time spent on step {self.name}")
 
-        if request_duration is None:
-            request_duration = SourceValue(1 * u.s)
-        if not request_duration.value.check("[time]"):
-            raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
-        self.request_duration = request_duration
-        self.request_duration.set_name(f"Request duration to {self.service.name} in {self.name}")
-        if request_duration.value > user_time_spent.value * u.uj:
-            # TODO: define a setter method to make this check also when the attribute is updated
-            raise ValueError("Variable 'request_duration' can not be greater than variable 'user_time_spent'")
+        if self.service is None:
+            if (self.data_download.magnitude > 0 or self.data_upload.magnitude > 0 or request_duration
+                    or server_ram_per_data_transferred or cpu_needed):
+                raise ValueError(
+                    f"When creating a user journey without service there should be no data transfer and no request"
+                    f" duration or resource need")
+        else:
+            if request_duration is None:
+                request_duration = SourceValue(1 * u.s)
+            if not request_duration.value.check("[time]"):
+                raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
+            self.request_duration = request_duration
+            self.request_duration.set_name(f"Request duration to {self.service.name} in {self.name}")
+            if request_duration.value > user_time_spent.value * u.uj:
+                # TODO: define a setter method to make this check also when the attribute is updated
+                raise ValueError("Variable 'request_duration' can not be greater than variable 'user_time_spent'")
 
-        if server_ram_per_data_transferred is None:
-            server_ram_per_data_transferred = SourceValue(2 * u.dimensionless)
-        if not server_ram_per_data_transferred.value.check("[]"):
-            raise ValueError(
-                "Variable 'server_ram_per_data_transferred' does not have the appropriate '[]' dimensionality")
-        self.server_ram_per_data_transferred = server_ram_per_data_transferred
-        self.server_ram_per_data_transferred.set_name(
-            f"Ratio of RAM server used over quantity of data sent to user during {self.name}")
+            if server_ram_per_data_transferred is None:
+                server_ram_per_data_transferred = SourceValue(2 * u.dimensionless)
+            if not server_ram_per_data_transferred.value.check("[]"):
+                raise ValueError(
+                    "Variable 'server_ram_per_data_transferred' does not have the appropriate '[]' dimensionality")
+            self.server_ram_per_data_transferred = server_ram_per_data_transferred
+            self.server_ram_per_data_transferred.set_name(
+                f"Ratio of RAM server used over quantity of data sent to user during {self.name}")
 
-        if cpu_needed is None:
-            cpu_needed = SourceValue(1 * u.core / u.uj)
-        if not cpu_needed.value.check("[cpu] / [user_journey]"):
-            raise ValueError(
-                "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
-        self.cpu_needed = cpu_needed
-        self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process request {self.name}")
+            if cpu_needed is None:
+                cpu_needed = SourceValue(1 * u.core / u.uj)
+            if not cpu_needed.value.check("[cpu] / [user_journey]"):
+                raise ValueError(
+                    "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
+            self.cpu_needed = cpu_needed
+            self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process request {self.name}")
 
-        self.calculated_attributes = ["ram_needed"]
+            self.calculated_attributes = ["ram_needed"]
 
     @property
     def usage_patterns(self):
@@ -118,7 +124,8 @@ class UserJourney(ModelingObject):
     def servers(self) -> Set[Server]:
         servers = set()
         for uj_step in self.uj_steps:
-            servers = servers | {uj_step.service.server}
+            if uj_step.service is not None:
+                servers = servers | {uj_step.service.server}
 
         return servers
 
@@ -126,7 +133,8 @@ class UserJourney(ModelingObject):
     def storages(self) -> Set[Storage]:
         storages = set()
         for uj_step in self.uj_steps:
-            storages = storages | {uj_step.service.storage}
+            if uj_step.service is not None:
+                storages = storages | {uj_step.service.storage}
 
         return storages
 
@@ -134,7 +142,8 @@ class UserJourney(ModelingObject):
     def services(self) -> List[Service]:
         services = set()
         for uj_step in self.uj_steps:
-            services = services | {uj_step.service}
+            if uj_step.service is not None:
+                services = services | {uj_step.service}
 
         return list(services)
 
@@ -148,7 +157,7 @@ class UserJourney(ModelingObject):
 
     def add_step(self, step: UserJourneyStep) -> None:
         step.add_obj_to_modeling_obj_containers(self)
-        self.uj_steps.append(step)
+        self.uj_steps = self.uj_steps + [step]
 
     def update_duration(self):
         user_time_spent_sum = sum([uj_step.user_time_spent for uj_step in self.uj_steps])

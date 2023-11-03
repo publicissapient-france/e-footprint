@@ -311,3 +311,22 @@ class IntegrationTest(TestCase):
         self.assertEqual(0, new_network.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.network])
         self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+
+    def test_add_uj_step_without_service(self):
+        logger.warning("Add uj step without service")
+
+        step_without_service = UserJourneyStep(
+            "User checks her phone", None, SourceValue(0 * u.kB / u.uj),
+            SourceValue(0 * u.GB / u.uj),
+            user_time_spent=SourceValue(20 * u.min / u.uj))
+
+        self.uj.add_step(step_without_service)
+
+        self.footprint_has_not_changed([self.server, self.storage])
+        self.footprint_has_changed([self.device_population])
+        self.assertNotEqual(self.system.total_footprint().value, self.initial_footprint.value)
+
+        logger.warning("Setting user time spent of the new step to 0s")
+        step_without_service.user_time_spent = SourceValue(0 * u.min / u.uj)
+        self.footprint_has_not_changed([self.server, self.storage])
+        self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)

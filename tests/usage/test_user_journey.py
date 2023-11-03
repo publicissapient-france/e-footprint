@@ -11,7 +11,7 @@ class TestUserJourneyStep(TestCase):
         self.service = MagicMock()
 
         self.user_journey_step = UserJourneyStep(
-            "", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+            "test uj step", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
             server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
@@ -21,6 +21,19 @@ class TestUserJourneyStep(TestCase):
         expected_ram_needed = SourceValue(400 * u.MB / u.user_journey)
 
         self.assertEqual(expected_ram_needed.value, self.user_journey_step.ram_needed.value)
+
+    def test_user_journey_step_with_null_service_doesnt_break(self):
+        uj_step_without_service = UserJourneyStep(
+            "", service=None, data_download=SourceValue(0 * u.MB / u.uj),
+            data_upload=SourceValue(0 * u.MB / u.uj),
+            user_time_spent=SourceValue(2 * u.min / u.uj))
+
+    def test_user_journey_step_with_null_service_breaks_if_non_null_data_transfer(self):
+        with self.assertRaises(ValueError):
+            uj_step_without_service = UserJourneyStep(
+                "", service=None, data_download=SourceValue(10 * u.MB / u.uj),
+                data_upload=SourceValue(0 * u.MB / u.uj),
+                user_time_spent=SourceValue(2 * u.min / u.uj))
 
 
 class TestUserJourney(TestCase):

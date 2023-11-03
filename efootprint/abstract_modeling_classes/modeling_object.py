@@ -4,7 +4,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 
 import uuid
 from abc import ABCMeta, abstractmethod
-from typing import List, Set, Type
+from typing import List, Type
 
 
 def get_subclass_attributes(obj, target_class):
