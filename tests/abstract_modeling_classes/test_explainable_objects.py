@@ -1,9 +1,10 @@
-import unittest
-from unittest.mock import MagicMock
-
-from pint import UnitRegistry
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+
+import unittest
+from unittest.mock import MagicMock, patch
+from pint import UnitRegistry
+from datetime import datetime
 import pytz
 
 u = UnitRegistry()
@@ -82,9 +83,12 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         for value in result.value:
             self.assertEqual(value, ExplainableQuantity(1 * u.W, "1W"))
 
-    def test_convert_to_utc(self):
-        # Create a simple ExplainableHourlyUsage instance with values [1,2,3,4,5]
-        usage = ExplainableHourlyUsage([ExplainableQuantity(i * u.dimensionless, f"{i}") for i in range(1, 6)], "usage")
+    @patch('efootprint.abstract_modeling_classes.explainable_objects.datetime')
+    def test_convert_to_utc(self, mock_datetime):
+        # Artificially fix datetime to avoid test crashing because of annual time changes.
+        mock_datetime.now.return_value = datetime(2023, 10, 1)
+        usage = ExplainableHourlyUsage(
+            [ExplainableQuantity(i * u.dimensionless, f"{i}") for i in range(1, 6)], "usage")
 
         # Let's say the local timezone is 2 hours ahead of UTC
         local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'), "local timezone ahead UTC")
@@ -93,15 +97,16 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         converted_ahead_utc = usage.convert_to_utc(local_tz_ahead_utc)
         converted_behind_utc = usage.convert_to_utc(local_tz_behind_utc)
 
-        # Convert the values back to simple list for comparison
         converted_values_ahead_utc = [q.value for q in converted_ahead_utc.value]
         converted_values_behind_utc = [q.value for q in converted_behind_utc.value]
 
-        # If Berlin is 2 hours ahead, converting to UTC would result in the array shifted by 2 positions to the left.
-        self.assertEqual(converted_values_ahead_utc, [3 * u.dimensionless, 4 * u.dimensionless, 5 * u.dimensionless,
-                                            1 * u.dimensionless, 2 * u.dimensionless])
-        self.assertEqual(converted_values_behind_utc, [2 * u.dimensionless, 3 * u.dimensionless, 4 * u.dimensionless,
-                                                       5 * u.dimensionless, 1 * u.dimensionless])
+        # If Berlin is 2 hours ahead, converting to UTC would result in the array shifted by 2 positions to the left
+        self.assertEqual(
+            converted_values_ahead_utc, [3 * u.dimensionless, 4 * u.dimensionless, 5 * u.dimensionless,
+                                         1 * u.dimensionless, 2 * u.dimensionless])
+        self.assertEqual(
+            converted_values_behind_utc, [2 * u.dimensionless, 3 * u.dimensionless, 4 * u.dimensionless,
+                                          5 * u.dimensionless, 1 * u.dimensionless])
 
         # Check other attributes of converted ExplainableHourlyUsage
         self.assertEqual("", converted_ahead_utc.label)
