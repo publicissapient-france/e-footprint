@@ -47,7 +47,7 @@ class UsagePattern(ModelingObject):
 
     def after_init(self):
         self.init_has_passed = True
-        self.compute_calculated_attributes()
+        self.launch_attributes_computation_chain()
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:

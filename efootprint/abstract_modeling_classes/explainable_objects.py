@@ -164,6 +164,20 @@ class ExplainableHourlyUsage(ExplainableObject):
         return ExplainableQuantity(
             max(elt.value for elt in self.value), left_child=self, child_operator="max")
 
+    def __eq__(self, other):
+        if issubclass(type(other), ExplainableHourlyUsage):
+            if len(self.value) != len(other.value):
+                raise ValueError(
+                    f"Can only compare ExplainableHourlyUsages with values of same length. Here we are trying to "
+                    f"compare {self.value} and {other.value}.")
+            return_bool = True
+            for i in range(len(self.value)):
+                if self.value[i] != other.value[i]:
+                    return_bool = False
+            return return_bool
+        else:
+            raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
+
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value

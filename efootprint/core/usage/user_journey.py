@@ -7,10 +7,6 @@ from efootprint.core.hardware.storage import Storage
 
 from typing import List, Set, Type, Optional
 
-class DataTransferredType:
-    UPLOAD = "upload"
-    DOWNLOAD = "download"
-
 
 class UserJourneyStep(ModelingObject):
     def __init__(self, name: str, service: Optional[Service], data_upload: SourceValue, data_download: SourceValue,
@@ -71,12 +67,19 @@ class UserJourneyStep(ModelingObject):
             self.calculated_attributes = ["ram_needed"]
 
     @property
-    def usage_patterns(self):
-        return list(set(sum([uj.usage_patterns for uj in self.modeling_obj_containers], start=[])))
+    def user_journeys(self):
+        return self.modeling_obj_containers
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
-        return self.modeling_obj_containers
+    def usage_patterns(self):
+        return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
+        if len(self.user_journeys) > 0:
+            return self.user_journeys
+        else:
+            return [self.service]
 
     def after_init(self):
         self.init_has_passed = True
@@ -113,12 +116,16 @@ class UserJourney(ModelingObject):
     def uj_steps(self, new_uj_steps: List[UserJourneyStep]):
         # Here the observer pattern is implemented manually because uj_steps is a list and hence not handled by
         # ModelingObject’s __setattr__ logic
+        removed_steps = [step for step in self.uj_steps if step not in new_uj_steps]
         for step in self._uj_steps:
             step.remove_obj_from_modeling_obj_containers(self)
         self._uj_steps = new_uj_steps
         for step in self._uj_steps:
             step.add_obj_to_modeling_obj_containers(self)
-        self.compute_calculated_attributes()
+        for step in removed_steps:
+            if len(step.user_journeys) == 0:
+                step.launch_attributes_computation_chain()
+        self.launch_attributes_computation_chain()
 
     @property
     def servers(self) -> Set[Server]:

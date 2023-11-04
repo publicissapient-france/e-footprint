@@ -12,9 +12,14 @@ class Service(ModelingObject):
     def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue = None):
         super().__init__(name)
-        self.storage_needed = None
-        self.hour_by_hour_cpu_need = None
-        self.hour_by_hour_ram_need = None
+        self.storage_needed = ExplainableQuantity(
+            0 * u.TB / u.year, f"No storage need for {self.name} because no associated uj step with usage pattern.")
+        self.hour_by_hour_cpu_need = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.core, "no CPU need")] * 24,
+                f"No CPU need for {self.name} because no associated uj step with usage pattern")
+        self.hour_by_hour_ram_need = ExplainableHourlyUsage(
+                [ExplainableQuantity(0 * u.GB, "no RAM need")] * 24,
+                f"No RAM need for {self.name} because no associated uj step with usage pattern")
         self.server = server
         self.storage = storage
         if not base_ram_consumption.value.check("[]"):
@@ -41,10 +46,15 @@ class Service(ModelingObject):
     def uj_steps(self):
         return self.modeling_obj_containers
 
+    @property
+    def usage_patterns(self):
+        return list(set(sum([uj_step.usage_patterns for uj_step in self.uj_steps], start=[])))
+
     def update_storage_needed(self):
-        if len(self.uj_steps) == 0:
+        if len(self.usage_patterns) == 0:
             self.storage_needed = ExplainableQuantity(
-                0 * u.TB, f"No storage for {self.name} because no associated user journey steps")
+                0 * u.TB / u.year,
+                f"No storage for {self.name} because no associated user journey steps with usage pattern")
         else:
             storage_needs = 0
             for uj_step in self.uj_steps:
@@ -58,15 +68,14 @@ class Service(ModelingObject):
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
-        if len(self.uj_steps) == 0:
-            self.__setattr__(f"hour_by_hour_{resource}_need", ExplainableHourlyUsage(
+        if len(self.usage_patterns) == 0:
+            return ExplainableHourlyUsage(
                 [ExplainableQuantity(0 * resource_unit, f"0 {resource}")] * 24,
-                f"No {resource} need for {self.name} because no associated user journey steps"))
+                f"No {resource} need for {self.name} because no associated user journey steps with usage pattern")
         else:
             hour_by_hour_resource_needs = 0
             for uj_step in self.uj_steps:
-                uj_step_up = uj_step.usage_patterns
-                for usage_pattern in uj_step_up:
+                for usage_pattern in uj_step.usage_patterns:
                     average_uj_resource_needed_for_up = (
                         getattr(uj_step, f"{resource}_needed") * uj_step.request_duration /
                         (usage_pattern.user_journey.duration * one_user_journey)).to(

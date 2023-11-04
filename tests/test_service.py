@@ -22,8 +22,10 @@ class TestService(unittest.TestCase):
         self.assertEqual(self.service.storage, self.storage)
         self.assertEqual(self.service.base_ram_consumption, self.base_ram)
         self.assertEqual(self.service.base_cpu_consumption, self.base_cpu)
-        self.assertEqual(self.service.hour_by_hour_ram_need, None)
-        self.assertEqual(self.service.hour_by_hour_cpu_need, None)
+        self.assertEqual(ExplainableHourlyUsage([ExplainableQuantity(0 * u.GB, " ")] * 24, " "),
+                         self.service.hour_by_hour_ram_need)
+        self.assertEqual(ExplainableHourlyUsage([ExplainableQuantity(0 * u.core, " ")] * 24, " "),
+                         self.service.hour_by_hour_cpu_need)
         self.assertEqual(self.service.storage_needed, None)
 
     def test_service_invalid_ram_consumption(self):

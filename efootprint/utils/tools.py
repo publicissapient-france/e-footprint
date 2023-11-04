@@ -23,7 +23,9 @@ def time_it(func):
         start_time = time.time()
         result = func(*args, **kwargs)
         end_time = time.time()
-        print(f"Function {func.__name__} took {end_time - start_time:.5f} seconds to execute.")
+        diff = end_time - start_time
+        if diff > 0.001:
+            print(f"Function {func.__name__} took {diff:.5f} seconds to execute.")
         return result
     return wrapper
 

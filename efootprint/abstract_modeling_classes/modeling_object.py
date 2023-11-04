@@ -54,8 +54,19 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             update_func = self.retrieve_update_function_from_attribute_name(self, attr_name)
             update_func()
 
-        for modeling_obj in self.modeling_objects_whose_attributes_depend_directly_on_me:
-            modeling_obj.compute_calculated_attributes()
+    def launch_attributes_computation_chain(self):
+        self.compute_calculated_attributes()
+
+        mod_objs_with_attributes_to_compute = self.modeling_objects_whose_attributes_depend_directly_on_me
+
+        while len(mod_objs_with_attributes_to_compute) > 0:
+            current_mod_obj_to_update = mod_objs_with_attributes_to_compute[0]
+            current_mod_obj_to_update.compute_calculated_attributes()
+            mod_objs_with_attributes_to_compute = mod_objs_with_attributes_to_compute[1:]
+
+            for mod_obj in current_mod_obj_to_update.modeling_objects_whose_attributes_depend_directly_on_me:
+                if mod_obj not in mod_objs_with_attributes_to_compute:
+                    mod_objs_with_attributes_to_compute.append(mod_obj)
 
     def after_init(self):
         self.init_has_passed = True
@@ -145,12 +156,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
             old_value.remove_obj_from_modeling_obj_containers(self)
             super().__setattr__(name, input_value)
-            self.compute_calculated_attributes()
+            self.launch_attributes_computation_chain()
         else:
             old_value.remove_obj_from_modeling_obj_containers(self)
             super().__setattr__(name, input_value)
-            input_value.compute_calculated_attributes()
-            old_value.compute_calculated_attributes()
+            input_value.launch_attributes_computation_chain()
+            old_value.launch_attributes_computation_chain()
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers:

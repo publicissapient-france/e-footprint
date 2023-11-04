@@ -13,13 +13,13 @@ from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
-from unittest import TestCase
 from copy import deepcopy
 from typing import List
 
 
-class IntegrationTest(TestCase):
+class IntegrationTest(IntegrationTestBaseClass):
     def setUp(self):
         self.server = Autoscaling(
             "Default server",

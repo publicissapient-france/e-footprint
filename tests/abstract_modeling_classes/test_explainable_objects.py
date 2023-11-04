@@ -131,6 +131,12 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         maximum = self.hourly_usage1.max()
         self.assertEqual(maximum, ExplainableQuantity(1 * u.W, "1 W"))
 
+    def test_eq_returns_true_when_equal(self):
+        self.assertTrue(self.hourly_usage1 == self.hourly_usage1)
+
+    def test_eq_returns_false_when_not_equal(self):
+        self.assertFalse(self.hourly_usage1 == self.hourly_usage2)
+
 
 if __name__ == "__main__":
     unittest.main()
