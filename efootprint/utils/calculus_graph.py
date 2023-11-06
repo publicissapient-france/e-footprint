@@ -29,6 +29,7 @@ def nodes_at_depth(node, depth=0, depth_lists=None):
 def calculate_positions(node):
     depth_lists = nodes_at_depth(node)
     max_width = max(len(lst) for lst in depth_lists.values())
+    max_depth = len(depth_lists.keys())
     pos = {}
 
     for depth, nodes in depth_lists.items():
@@ -36,7 +37,7 @@ def calculate_positions(node):
         for i, n in enumerate(nodes):
             offset = (num_nodes - 1) / 2
             x = (i - offset) * (max_width / num_nodes)
-            pos[n.label] = (x, depth)
+            pos[n.label] = (x, max_depth - depth)
 
     return pos
 
@@ -61,7 +62,7 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
                 title=set_string_max_width(str(node.explain()), 80),
                 x=pos[node.label][0]*x_multiplier, y=pos[node.label][1]*y_multiplier, color=color, size=15)
             if parent_id:
-                G.add_edge(parent_id, node.label)
+                G.add_edge(node.label, parent_id)
             current_id = node.label
         else:
             current_id = parent_id

@@ -27,10 +27,10 @@ class IntegrationTest(TestCase):
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-            nb_of_cpus=SourceValue(24 * u.core, Sources.HYPOTHESIS),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
+            ram=SourceValue(128 * u.GB, Sources.USER_INPUT),
+            nb_of_cpus=SourceValue(24 * u.core, Sources.USER_INPUT),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_INPUT),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_INPUT),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
         )
         self.storage = Storage(
@@ -40,9 +40,9 @@ class IntegrationTest(TestCase):
             lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             idle_power=SourceValue(0.1 * u.W, Sources.HYPOTHESIS),
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(3 * u.dimensionless)
         )
         self.service = Service(
             "Youtube", self.server, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
@@ -58,7 +58,8 @@ class IntegrationTest(TestCase):
 
         self.uj = UserJourney("Daily Youtube usage", uj_steps=[self.streaming_step, self.upload_step])
         self.device_population = DevicePopulation(
-            "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE, [Devices.LAPTOP])
+            "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE,
+            [Devices.LAPTOP])
 
         self.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         self.usage_pattern = UsagePattern(
