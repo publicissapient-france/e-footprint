@@ -18,10 +18,10 @@ def nodes_at_depth(node, depth=0, depth_lists=None):
 
         depth += 1
 
-    if node.left_child:
-        nodes_at_depth(node.left_child, depth, depth_lists)
-    if node.right_child:
-        nodes_at_depth(node.right_child, depth, depth_lists)
+    if node.left_parent:
+        nodes_at_depth(node.left_parent, depth, depth_lists)
+    if node.right_parent:
+        nodes_at_depth(node.right_parent, depth, depth_lists)
 
     return depth_lists
 
@@ -48,8 +48,8 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
     pos = calculate_positions(root_node)
 
     def add_nodes_edges(node, parent_id=None):
-        if node.label and (issubclass(type(node), SourceObject) or node.has_child):
-            if node.left_child is None and node.right_child is None and issubclass(type(node), SourceObject):
+        if node.label and (issubclass(type(node), SourceObject) or node.has_parent):
+            if node.left_parent is None and node.right_parent is None and issubclass(type(node), SourceObject):
                 if node.source == Sources.USER_INPUT:
                     color = "green"
                 else:
@@ -66,10 +66,10 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
         else:
             current_id = parent_id
 
-        if node.left_child:
-            add_nodes_edges(node.left_child, current_id)
-        if node.right_child:
-            add_nodes_edges(node.right_child, current_id)
+        if node.left_parent:
+            add_nodes_edges(node.left_parent, current_id)
+        if node.right_parent:
+            add_nodes_edges(node.right_parent, current_id)
 
     add_nodes_edges(root_node)
 

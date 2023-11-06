@@ -53,7 +53,7 @@ class SourceObject(ExplainableObject):
         self.source = source
 
     def set_name(self, new_name: str):
-        if self.left_child or self.right_child:
+        if self.left_parent or self.right_parent:
             raise ValueError("Source values shouldn’t have any child.")
         elif self.label == SOURCE_VALUE_DEFAULT_NAME:
             if self.source != Sources.USER_INPUT:

@@ -16,24 +16,24 @@ class ObjectLinkedToModelingObj(ABC):
 
 class ExplainableObject(ObjectLinkedToModelingObj):
     def __init__(
-            self, value: object, label: str = None, left_child: Type["ExplainableObject"] = None,
-            right_child: Type["ExplainableObject"] = None, child_operator: str = None):
+            self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
+            right_parent: Type["ExplainableObject"] = None, operator: str = None):
         super().__init__()
         self.value = value
-        if not label and left_child is None and right_child is None:
-            raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any child")
+        if not label and left_parent is None and right_parent is None:
+            raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any parent")
         self.label = label
-        self.left_child = left_child
-        self.right_child = right_child
-        self.child_operator = child_operator
+        self.left_parent = left_parent
+        self.right_parent = right_parent
+        self.operator = operator
+        self.direct_ancestors_with_id = []
         self.direct_children_with_id = []
-        self.direct_parents_with_id = []
 
-        for child in (self.left_child, self.right_child):
-            if child is not None:
-                self.direct_children_with_id += [
-                    child_with_id for child_with_id in child.return_direct_children_with_id_to_parent()
-                    if child_with_id.id not in self.direct_children_ids]
+        for parent in (self.left_parent, self.right_parent):
+            if parent is not None:
+                self.direct_ancestors_with_id += [
+                    ancestor_with_id for ancestor_with_id in parent.return_direct_ancestors_with_id_to_child()
+                    if ancestor_with_id.id not in self.direct_ancestor_ids]
 
     def __deepcopy__(self, memo):
         cls = self.__class__
@@ -55,68 +55,68 @@ class ExplainableObject(ObjectLinkedToModelingObj):
                f" ({self.modeling_obj_container.id})"
 
     @property
-    def has_child(self):
-        return self.left_child is not None or self.right_child is not None
+    def has_parent(self):
+        return self.left_parent is not None or self.right_parent is not None
 
     @property
-    def direct_children_ids(self):
+    def direct_ancestor_ids(self):
+        return [attr.id for attr in self.direct_ancestors_with_id]
+
+    @property
+    def direct_child_ids(self):
         return [attr.id for attr in self.direct_children_with_id]
 
-    @property
-    def direct_parents_ids(self):
-        return [attr.id for attr in self.direct_parents_with_id]
-
-    def set_modeling_obj_container(self, new_parent_modeling_object: Type["ModelingObject"], attr_name: str):
+    def set_modeling_obj_container(self, new_modeling_obj_container: Type["ModelingObject"], attr_name: str):
         if not self.label:
             raise ValueError(f"ExplainableObjects that are attributes of a ModelingObject should always have a label.")
-        if self.modeling_obj_container is not None and new_parent_modeling_object.id != self.modeling_obj_container.id:
+        if self.modeling_obj_container is not None and new_modeling_obj_container.id != self.modeling_obj_container.id:
             logger.warning(
-                f"Linking {self.label} to {new_parent_modeling_object.name}, erasing its existing link to "
+                f"Linking {self.label} to {new_modeling_obj_container.name}, erasing its existing link to "
                 f"{self.modeling_obj_container.name}.")
-            if self.left_child is not None or self.right_child is not None:
+            if self.left_parent is not None or self.right_parent is not None:
                 raise ValueError(
-                    f"An ExplainableObject with child can’t be attributed to more than one ModelingObject. Here "
-                    f"{self.label} is trying to be linked to {new_parent_modeling_object.name} but is already linked to"
+                    f"An ExplainableObject with parent can’t be attributed to more than one ModelingObject. Here "
+                    f"{self.label} is trying to be linked to {new_modeling_obj_container.name} but is already linked to"
                     f" {self.modeling_obj_container.name}."
-                    f" A classic reason why this error could happen is that a mutable object (SourceValue for"
+                    f" A common reason why this error could happen is that a mutable object (SourceValue for"
                     f" example) has been set as default value in one of the classes.")
-        self.modeling_obj_container = new_parent_modeling_object
+        self.modeling_obj_container = new_modeling_obj_container
         self.attr_name_in_mod_obj_container = attr_name
-        for direct_child_with_id in self.direct_children_with_id:
-            direct_child_with_id.update_direct_parents_with_id(direct_parent=self)
+        for direct_ancestor_with_id in self.direct_ancestors_with_id:
+            direct_ancestor_with_id.update_direct_children_with_id(direct_child=self)
 
-    def return_direct_children_with_id_to_parent(self):
+    def return_direct_ancestors_with_id_to_child(self):
         if self.modeling_obj_container is not None:
             return [self]
         else:
-            return self.direct_children_with_id
+            return self.direct_ancestors_with_id
 
-    def update_direct_parents_with_id(self, direct_parent):
-        if direct_parent.id not in self.direct_parents_ids:
-            self.direct_parents_with_id.append(direct_parent)
+    def update_direct_children_with_id(self, direct_child):
+        if direct_child.id not in self.direct_child_ids:
+            self.direct_children_with_id.append(direct_child)
 
     def define_as_intermediate_calculation(self, intermediate_calculation_label):
         self.label = intermediate_calculation_label
 
         return self
 
-    def get_all_ancestors_with_id(self):
-        all_ancestors = []
+    def get_all_descendants_with_id(self):
+        all_descendants = []
 
-        def retrieve_ancestors(expl_obj: ExplainableObject, ancestors_list):
-            for parent in expl_obj.direct_parents_with_id:
-                if parent.id not in [elt.id for elt in ancestors_list]:
-                    ancestors_list.append(parent)
-                retrieve_ancestors(parent, ancestors_list)
+        def retrieve_descendants(expl_obj: ExplainableObject, descendants_list):
+            for child in expl_obj.direct_children_with_id:
+                if child.id not in [elt.id for elt in descendants_list]:
+                    descendants_list.append(child)
+                retrieve_descendants(child, descendants_list)
 
-        retrieve_ancestors(self, all_ancestors)
+        retrieve_descendants(self, all_descendants)
 
-        return all_ancestors
+        return all_descendants
 
     def explain(self, pretty_print=True):
         element_value_to_print = self.print_tuple_element_value(self.value)
 
-        if self.left_child is None and self.right_child is None:
+        if self.left_parent is None and self.right_parent is None:
             return f"{self.label} = {element_value_to_print}"
         explain_tuples = self.compute_explain_nested_tuples()
 
@@ -137,15 +137,15 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         left_explanation = None
         right_explanation = None
 
-        if self.left_child:
-            left_explanation = self.left_child.compute_explain_nested_tuples(return_label_if_self_has_one=True)
-        if self.right_child:
-            right_explanation = self.right_child.compute_explain_nested_tuples(return_label_if_self_has_one=True)
+        if self.left_parent:
+            left_explanation = self.left_parent.compute_explain_nested_tuples(return_label_if_self_has_one=True)
+        if self.right_parent:
+            right_explanation = self.right_parent.compute_explain_nested_tuples(return_label_if_self_has_one=True)
 
         if left_explanation is None and right_explanation is None:
             raise ValueError("Object to explain should have at least one child")
 
-        return left_explanation, self.child_operator, right_explanation
+        return left_explanation, self.operator, right_explanation
 
     @staticmethod
     def print_tuple_element_value(tuple_element_value):

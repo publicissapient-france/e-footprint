@@ -24,20 +24,20 @@ class TestExplainableQuantity(unittest.TestCase):
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):
-        self.assertEqual([self.a, self.b, self.e], self.f.direct_children_with_id)
+        self.assertEqual([self.a, self.b, self.e], self.f.direct_ancestors_with_id)
 
     def test_init(self):
         self.assertEqual(self.a.value, 1 * u.W)
         self.assertEqual(self.a.label, "1 Watt")
-        self.assertEqual(self.a.left_child, None)
-        self.assertEqual(self.a.right_child, None)
-        self.assertEqual(self.a.child_operator, None)
+        self.assertEqual(self.a.left_parent, None)
+        self.assertEqual(self.a.right_parent, None)
+        self.assertEqual(self.a.operator, None)
 
         self.assertEqual(self.c.value, 3 * u.W)
         self.assertEqual(self.c.label, "int calc")
-        self.assertEqual(self.c.left_child, self.a)
-        self.assertEqual(self.c.right_child, self.b)
-        self.assertEqual(self.c.child_operator, '+')
+        self.assertEqual(self.c.left_parent, self.a)
+        self.assertEqual(self.c.right_parent, self.b)
+        self.assertEqual(self.c.operator, '+')
 
     def test_operators(self):
         self.assertEqual(self.c.value, 3 * u.W)
@@ -110,9 +110,9 @@ class TestExplainableHourlyUsage(unittest.TestCase):
 
         # Check other attributes of converted ExplainableHourlyUsage
         self.assertEqual("", converted_ahead_utc.label)
-        self.assertEqual(usage, converted_ahead_utc.left_child)
-        self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_child)
-        self.assertEqual("converted to UTC from", converted_ahead_utc.child_operator)
+        self.assertEqual(usage, converted_ahead_utc.left_parent)
+        self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_parent)
+        self.assertEqual("converted to UTC from", converted_ahead_utc.operator)
 
     def test_compute_usage_time_fraction(self):
         fraction = self.hourly_usage1.compute_usage_time_fraction()

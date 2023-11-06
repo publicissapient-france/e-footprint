@@ -31,8 +31,8 @@ class Storage(InfraHardware):
                 raise ValueError(
                     "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
                     " '[]' dimensionality")
-            storage_need_from_previous_year.left_child = None
-            storage_need_from_previous_year.right_child = None
+            storage_need_from_previous_year.left_parent = None
+            storage_need_from_previous_year.right_parent = None
             storage_need_from_previous_year.label = f"{self.name} storage need from previous year"
             self.storage_need_from_previous_year = storage_need_from_previous_year
         else:

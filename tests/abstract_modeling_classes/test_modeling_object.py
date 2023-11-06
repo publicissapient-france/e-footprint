@@ -30,7 +30,7 @@ class TestModelingObject(unittest.TestCase):
 
     def test_handle_model_input_update_triggers(self):
         value = MagicMock(
-            modeling_obj_container=None, left_child=None, right_child=None, mock_type=ExplainableObject)
+            modeling_obj_container=None, left_parent=None, right_parent=None, mock_type=ExplainableObject)
         old_value = MagicMock(mock_type=ExplainableObject)
         self.modeling_object.attribute = old_value
         self.modeling_object.handle_model_input_update = MagicMock()

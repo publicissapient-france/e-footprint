@@ -120,7 +120,7 @@ class IntegrationTest(TestCase):
                 attrs_to_skip = []
             logger.warning(f"Testing input variations on {input_object.name}")
             for expl_attr_name, expl_attr in get_subclass_attributes(input_object, ExplainableObject).items():
-                if expl_attr.left_child is None and expl_attr.right_child is None \
+                if expl_attr.left_parent is None and expl_attr.right_parent is None \
                         and expl_attr_name not in attrs_to_skip:
                     old_value = expl_attr.value
                     expl_attr_new_value = deepcopy(expl_attr)
