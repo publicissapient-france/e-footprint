@@ -111,6 +111,20 @@ class TestService(unittest.TestCase):
                 [4 * u.core] * 24,
                 [round(elt, 2) for elt in self.service.hour_by_hour_cpu_need.value])
 
+    def test_self_delete_should_raise_error_if_self_has_associated_uj_steps(self):
+        self.service.modeling_obj_containers = ["uj_step"]
+        with self.assertRaises(PermissionError):
+            self.service.self_delete()
+
+    def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
+        self.server.modeling_obj_containers = [self.service]
+        self.storage.modeling_obj_containers = [self.service]
+        self.service.self_delete()
+        self.assertEqual([], self.server.modeling_obj_containers)
+        self.assertEqual([], self.storage.modeling_obj_containers)
+        self.server.compute_calculated_attributes.assert_called_once()
+        self.storage.compute_calculated_attributes.assert_called_once()
+
 
 if __name__ == '__main__':
     unittest.main()

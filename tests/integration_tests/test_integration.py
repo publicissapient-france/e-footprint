@@ -13,10 +13,13 @@ from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.modeling_object import get_subclass_attributes, ModelingObject
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
+from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
+    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 from copy import deepcopy
 from typing import List
+import os
 
 
 class IntegrationTest(IntegrationTestBaseClass):
@@ -68,8 +71,6 @@ class IntegrationTest(IntegrationTestBaseClass):
             SourceObject([[7, 23]], Sources.USER_INPUT))
 
         self.system = System("system 1", [self.usage_pattern])
-        graph = build_calculus_graph(self.system.total_footprint())
-        graph.show("test_integration.html")
 
         self.initial_footprint = self.system.total_footprint()
         self.initial_fab_footprints = {
@@ -83,6 +84,16 @@ class IntegrationTest(IntegrationTestBaseClass):
             self.network: self.network.energy_footprint,
             self.device_population: self.device_population.energy_footprint,
         }
+
+    def test_calculation_graph(self):
+        graph = build_calculus_graph(self.system.total_footprint())
+        graph.show(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"))
+
+    def test_object_relationship_graph(self):
+        object_relationships_graph = build_object_relationships_graph(
+            self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
+        object_relationships_graph.show(
+            os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"))
 
     def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:

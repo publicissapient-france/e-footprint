@@ -35,6 +35,17 @@ class TestUserJourneyStep(TestCase):
                 data_upload=SourceValue(0 * u.MB / u.uj),
                 user_time_spent=SourceValue(2 * u.min / u.uj))
 
+    def test_self_delete_should_raise_error_if_self_has_associated_uj(self):
+        self.user_journey_step.modeling_obj_containers = ["uj"]
+        with self.assertRaises(PermissionError):
+            self.user_journey_step.self_delete()
+
+    def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
+        self.service.modeling_obj_containers = [self.user_journey_step]
+        self.user_journey_step.self_delete()
+        self.assertEqual([], self.service.modeling_obj_containers)
+        self.service.launch_attributes_computation_chain.assert_called_once()
+
 
 class TestUserJourney(TestCase):
     def setUp(self):

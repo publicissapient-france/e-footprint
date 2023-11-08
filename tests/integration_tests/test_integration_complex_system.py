@@ -94,3 +94,24 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint())
+
+    def test_add_new_service(self):
+        logger.warning("Adding service")
+        new_service = Service(
+            "new service", self.server, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
+        new_uj = UserJourneyStep(
+            "new uj step", new_service, SourceValue(300 * u.kB / u.uj), SourceValue(300 * u.kB / u.uj),
+            user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
+        self.uj.uj_steps += [new_uj]
+
+        self.footprint_has_changed([self.server, self.storage])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
+
+        logger.warning("Removing new service")
+        self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step]
+        new_uj.self_delete()
+        new_service.self_delete()
+
+        self.footprint_has_not_changed([self.server, self.storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint())

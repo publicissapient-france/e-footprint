@@ -48,6 +48,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
         pass
 
+    # TODO: add abstractmethod self_delete
+
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
         for attr_name in self.calculated_attributes:

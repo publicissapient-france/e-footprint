@@ -4,6 +4,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.constants.sources import SourceValue
 from efootprint.constants.units import u
+from efootprint.logger import logger
 
 from typing import List
 
@@ -50,6 +51,16 @@ class Service(ModelingObject):
     def usage_patterns(self):
         return list(set(sum([uj_step.usage_patterns for uj_step in self.uj_steps], start=[])))
 
+    def self_delete(self):
+        logger.warning(f"Deleting {self.name}, removing the backward links of its server and storage")
+        if self.uj_steps:
+            raise PermissionError(f"You can’t delete {self.name} because it has at least a uj step that points to it.")
+        for attr in [self.server, self.storage]:
+            attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
+            attr.compute_calculated_attributes()
+
+        del self
+
     def update_storage_needed(self):
         if len(self.usage_patterns) == 0:
             self.storage_needed = ExplainableQuantity(
@@ -69,6 +80,11 @@ class Service(ModelingObject):
         resource_unit = u(self.resources_unit_dict[resource])
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
         if len(self.usage_patterns) == 0:
+            base_resource_consumption = getattr(self, f"base_{resource}_consumption")
+            if base_resource_consumption.magnitude > 0:
+                logger.warning(
+                    f"{self.name} is installed on {self.server.name} but unused, so it consumes "
+                    f"{base_resource_consumption.value} of {resource} for nothing.")
             return ExplainableHourlyUsage(
                 [0 * resource_unit] * 24,
                 f"No {resource} need for {self.name} because no associated user journey steps with usage pattern")
