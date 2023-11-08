@@ -3,6 +3,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
+from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
@@ -15,7 +16,19 @@ class System:
         usage_pattern_names = [usage_pattern.name for usage_pattern in usage_patterns]
         if len(usage_pattern_names) != len(set(usage_pattern_names)):
             raise ValueError("You can’t have 2 usage patterns with the same name within a System")
-        self.usage_patterns = usage_patterns
+        self._usage_patterns = usage_patterns
+
+        self.launch_computations()
+
+    @property
+    def usage_patterns(self):
+        return self._usage_patterns
+
+    @usage_patterns.setter
+    def usage_patterns(self, new_usage_patterns):
+        self._usage_patterns = new_usage_patterns
+
+        self.launch_computations()
 
     @property
     def servers(self) -> Set[Server]:
@@ -34,6 +47,14 @@ class System:
         return output_set
 
     @property
+    def services(self) -> Set[Service]:
+        output_set = set()
+        for usage_pattern in self.usage_patterns:
+            output_set.update(usage_pattern.user_journey.services)
+
+        return output_set
+
+    @property
     def device_populations(self) -> Set[DevicePopulation]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
@@ -48,6 +69,20 @@ class System:
             output_set.update({usage_pattern.network})
 
         return output_set
+
+    def launch_computations(self):
+        for usage_pattern in self.usage_patterns:
+            usage_pattern.compute_calculated_attributes()
+        for device_population in self.device_populations:
+            device_population.compute_calculated_attributes()
+        for service in self.services:
+            service.compute_calculated_attributes()
+        for network in self.networks:
+            network.compute_calculated_attributes()
+        for server in self.servers:
+            server.compute_calculated_attributes()
+        for storage in self.storages:
+            storage.compute_calculated_attributes()
 
     def get_storage_by_name(self, storage_name) -> Storage:
         for storage in self.storages:
