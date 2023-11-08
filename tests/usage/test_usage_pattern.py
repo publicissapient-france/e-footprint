@@ -1,3 +1,4 @@
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
 from efootprint.constants.countries import Countries
 from efootprint.constants.sources import SourceValue, SourceObject, Sources
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -43,14 +44,11 @@ class TestUsagePattern(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.usage_pattern.check_time_intervals_validity([[0, 5], [4, 10]])
 
-    def test_usage_time_fraction(self):
-        self.assertEqual(self.usage_pattern.usage_time_fraction.value, (8 / 24) * u.dimensionless)
-
     def test_update_usage_time_fraction(self):
-        intervals = SourceObject([[8, 10]], Sources.USER_INPUT)
-        with patch.object(self.usage_pattern, "time_intervals", intervals):
+        hourly_usage = ExplainableHourlyUsage([1 * u.dimensionless] * 2 + [0 * u.dimensionless] * 22, "hourly usage")
+        with patch.object(self.usage_pattern, "hourly_usage", hourly_usage):
             self.usage_pattern.update_usage_time_fraction()
-            self.assertEqual(self.usage_pattern.usage_time_fraction.value, (2 / 24) * u.dimensionless)
+            self.assertEqual((2 / 24) * u.dimensionless, self.usage_pattern.usage_time_fraction.value)
 
     def test_update_hourly_usage(self):
         with patch.object(self.usage_pattern, "time_intervals", SourceObject([[0, 5], [6, 10], [15, 20]])):
@@ -58,9 +56,9 @@ class TestUsagePattern(unittest.TestCase):
 
             for i in range(24):
                 if 0 <= i < 5 or 6 <= i < 10 or 15 <= i < 20:
-                    self.assertEqual(self.usage_pattern.hourly_usage.value[i].value, 1 * u.dimensionless)
+                    self.assertEqual(self.usage_pattern.hourly_usage.value[i], 1 * u.dimensionless)
                 else:
-                    self.assertEqual(self.usage_pattern.hourly_usage.value[i].value, 0 * u.dimensionless)
+                    self.assertEqual(self.usage_pattern.hourly_usage.value[i], 0 * u.dimensionless)
 
     def test_services(self):
         self.assertEqual([self.service1, self.service2], self.usage_pattern.services)

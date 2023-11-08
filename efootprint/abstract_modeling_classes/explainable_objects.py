@@ -115,7 +115,7 @@ class ExplainableQuantity(ExplainableObject):
 
 class ExplainableHourlyUsage(ExplainableObject):
     def __init__(
-            self, value: List[ExplainableQuantity], label: str = None, left_child: ExplainableObject = None,
+            self, value: List[Quantity], label: str = None, left_child: ExplainableObject = None,
             right_child: ExplainableObject = None, child_operator: str = None):
         super().__init__(value, label, left_child, right_child, child_operator)
 
@@ -132,8 +132,8 @@ class ExplainableHourlyUsage(ExplainableObject):
     def compute_usage_time_fraction(self):
         unused_hours = 0
         for elt in self.value:
-            if not issubclass(type(elt), ExplainableQuantity):
-                raise ValueError("compute_usage_time_fraction should be called on ExplainableQuantity elements")
+            if not issubclass(type(elt), Quantity):
+                raise ValueError("compute_usage_time_fraction should be called on pint Quantity elements")
             else:
                 if elt.magnitude == 0:
                     unused_hours += 1
@@ -144,25 +144,23 @@ class ExplainableHourlyUsage(ExplainableObject):
     def to_usage(self):
         usage_hours = []
         for i, elt in enumerate(self.value):
-            if not issubclass(type(elt), ExplainableQuantity):
-                raise ValueError("to_usage method should be called with ExplainableQuantity elements")
+            if not issubclass(type(elt), Quantity):
+                raise ValueError("to_usage method should be called with pint Quantity elements")
             if elt.magnitude != 0:
-                usage_hours.append(ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i + 1}"))
+                usage_hours.append(1 * u.dimensionless)
             else:
-                usage_hours.append(ExplainableQuantity(0 * u.dimensionless, f" Non usage between {i} and {i + 1}"))
+                usage_hours.append(0 * u.dimensionless)
 
         return ExplainableHourlyUsage(usage_hours, "", left_child=self, child_operator="retrieving usage hours")
 
     def sum(self):
-        return ExplainableQuantity(sum(elt.value for elt in self.value), left_child=self, child_operator="sum")
+        return ExplainableQuantity(sum(self.value), left_child=self, child_operator="sum")
 
     def mean(self):
-        return ExplainableQuantity(
-            sum(elt.value for elt in self.value) / 24, left_child=self, child_operator="mean")
+        return ExplainableQuantity(sum(self.value) / 24, left_child=self, child_operator="mean")
 
     def max(self):
-        return ExplainableQuantity(
-            max(elt.value for elt in self.value), left_child=self, child_operator="max")
+        return ExplainableQuantity(max(self.value), left_child=self, child_operator="max")
 
     def __eq__(self, other):
         if issubclass(type(other), ExplainableHourlyUsage):
@@ -211,7 +209,7 @@ class ExplainableHourlyUsage(ExplainableObject):
         if issubclass(type(other), ExplainableHourlyUsage):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([other * elt for elt in self.value], "", self, other, "*")
+            return ExplainableHourlyUsage([other.value * elt for elt in self.value], "", self, other, "*")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
@@ -223,7 +221,7 @@ class ExplainableHourlyUsage(ExplainableObject):
         if issubclass(type(other), ExplainableHourlyUsage):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([elt / other for elt in self.value], "", self, other, "/")
+            return ExplainableHourlyUsage([elt / other.value for elt in self.value], "", self, other, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
@@ -232,7 +230,7 @@ class ExplainableHourlyUsage(ExplainableObject):
         if issubclass(type(other), ExplainableHourlyUsage):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([other / elt for elt in self.value], "", other, self, "/")
+            return ExplainableHourlyUsage([other.value / elt for elt in self.value], "", other, self, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")

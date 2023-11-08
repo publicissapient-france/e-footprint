@@ -15,20 +15,20 @@ def create_ram_or_cpu_need_list(time_interval, value):
 
 
 def create_ram_need(hours_in_use, ram: Quantity = 100 * u.GB):
-    hour_by_hour_ram_need = [SourceValue(0 * u.GB)] * 24
+    hour_by_hour_ram_need = [0 * u.GB] * 24
     for time_interval in hours_in_use:
         start, end = time_interval
         for i in range(start, end):
-            hour_by_hour_ram_need[i] = SourceValue(ram)
+            hour_by_hour_ram_need[i] = ram
     return ExplainableHourlyUsage(hour_by_hour_ram_need, "hour_by_hour_ram_need")
 
 
 def create_cpu_need(hours_in_use, cpu: Quantity = 1 * u.core):
-    hour_by_hour_cpu_need = [SourceValue(0 * u.core)] * 24
+    hour_by_hour_cpu_need = [0 * u.core] * 24
     for time_interval in hours_in_use:
         start, end = time_interval
         for i in range(start, end):
-            hour_by_hour_cpu_need[i] = SourceValue(cpu)
+            hour_by_hour_cpu_need[i] = cpu
     return ExplainableHourlyUsage(hour_by_hour_cpu_need, "hour_by_hour_cpu_need")
 
 

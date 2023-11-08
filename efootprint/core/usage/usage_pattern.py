@@ -54,12 +54,11 @@ class UsagePattern(ModelingObject):
         return self.user_journey.services
 
     def update_hourly_usage(self):
-        hourly_usage = [
-            ExplainableQuantity(0 * u.dimensionless, f"Non usage hour between {i} and {i+1}") for i in range(24)]
+        hourly_usage = [0 * u.dimensionless] * 24
         for time_interval in self.time_intervals.value:
             start, end = time_interval
             for i in range(start, end):
-                hourly_usage[i] = ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i+1}")
+                hourly_usage[i] = 1 * u.dimensionless
 
         self.hourly_usage = ExplainableHourlyUsage(
             hourly_usage, f"{self.name} local timezone hourly usage", left_child=self.time_intervals,

@@ -50,9 +50,9 @@ class TestInfraHardware(TestCase):
         self.test_infra_hardware_multiple_services.modeling_obj_containers = [self.service2, self.service3]
 
     def test_update_all_services_ram_needs_single_service(self):
-        expected_value = ExplainableHourlyUsage([SourceValue(0 * u.GB)] * 24, "expected_ram_needs")
+        expected_value = ExplainableHourlyUsage([0 * u.GB] * 24, "expected hourly usage")
         for i in range(8):
-            expected_value.value[i] = SourceValue(100 * u.GB)
+            expected_value.value[i] = 100 * u.GB
 
         self.test_infra_hardware_single_service.update_all_services_ram_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_single_service.all_services_ram_needs.value)
@@ -65,33 +65,33 @@ class TestInfraHardware(TestCase):
             self.assertEqual([service1, service2], self.test_infra_hardware_multiple_services.services)
 
     def test_all_services_infra_needs_multiple_services(self):
-        expected_value = ExplainableHourlyUsage([SourceValue(0 * u.GB)] * 24, "expected_ram_needs")
+        expected_value = ExplainableHourlyUsage([0 * u.GB] * 24, "expected hourly usage")
         for i in range(6, 8):
-            expected_value.value[i] = SourceValue(100 * u.GB)
+            expected_value.value[i] = 100 * u.GB
         for i in range(8, 14):
-            expected_value.value[i] = SourceValue(200 * u.GB)
+            expected_value.value[i] = 200 * u.GB
         for i in range(14, 16):
-            expected_value.value[i] = SourceValue(100 * u.GB)
+            expected_value.value[i] = 100 * u.GB
 
         self.test_infra_hardware_multiple_services.update_all_services_ram_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_ram_needs.value)
 
     def test_all_services_cpu_needs_single_service(self):
-        expected_value = ExplainableHourlyUsage([SourceValue(0 * u.core)] * 24, "expected_cpu_needs")
+        expected_value = ExplainableHourlyUsage([0 * u.core] * 24, "expected hourly usage")
         for i in range(8):
-            expected_value.value[i] = SourceValue(1 * u.core)
+            expected_value.value[i] = 1 * u.core
 
         self.test_infra_hardware_single_service.update_all_services_cpu_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_single_service.all_services_cpu_needs.value)
 
     def test_all_services_cpu_needs_multiple_services(self):
-        expected_value = ExplainableHourlyUsage([SourceValue(0 * u.core)] * 24, "expected_cpu_needs")
+        expected_value = ExplainableHourlyUsage([0 * u.core] * 24, "expected hourly usage")
         for i in range(6, 8):
-            expected_value.value[i] = SourceValue(1 * u.core)
+            expected_value.value[i] = 1 * u.core
         for i in range(8, 14):
-            expected_value.value[i] = SourceValue(2 * u.core)
+            expected_value.value[i] = 2 * u.core
         for i in range(14, 16):
-            expected_value.value[i] = SourceValue(1 * u.core)
+            expected_value.value[i] = 1 * u.core
 
         self.test_infra_hardware_multiple_services.update_all_services_cpu_needs()
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_cpu_needs.value)

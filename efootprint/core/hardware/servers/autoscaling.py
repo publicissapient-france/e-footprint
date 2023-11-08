@@ -38,9 +38,9 @@ class Autoscaling(Server):
         for hour in range(24):
             nb_of_servers_raw_that_hour = nb_of_servers_raw.value[hour]
             if math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude != 0:
-                nb_of_instances_per_hour = nb_of_servers_raw_that_hour + ExplainableQuantity(
-                    (math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude)
-                    * u.dimensionless, "Extra server capacity because number of servers must be an integer")
+                nb_of_instances_per_hour = nb_of_servers_raw_that_hour + (
+                        math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude
+                ) * u.dimensionless
             else:
                 nb_of_instances_per_hour = nb_of_servers_raw_that_hour
 

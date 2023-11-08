@@ -15,10 +15,10 @@ class Service(ModelingObject):
         self.storage_needed = ExplainableQuantity(
             0 * u.TB / u.year, f"No storage need for {self.name} because no associated uj step with usage pattern.")
         self.hour_by_hour_cpu_need = ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * u.core, "no CPU need")] * 24,
+                [0 * u.core] * 24,
                 f"No CPU need for {self.name} because no associated uj step with usage pattern")
         self.hour_by_hour_ram_need = ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * u.GB, "no RAM need")] * 24,
+                [0 * u.GB] * 24,
                 f"No RAM need for {self.name} because no associated uj step with usage pattern")
         self.server = server
         self.storage = storage
@@ -70,7 +70,7 @@ class Service(ModelingObject):
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
         if len(self.usage_patterns) == 0:
             return ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * resource_unit, f"0 {resource}")] * 24,
+                [0 * resource_unit] * 24,
                 f"No {resource} need for {self.name} because no associated user journey steps with usage pattern")
         else:
             hour_by_hour_resource_needs = 0

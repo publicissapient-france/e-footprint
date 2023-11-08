@@ -131,8 +131,7 @@ class TestExplainableObjectBaseClass(TestCase):
         self.assertEqual("5.3 W", ExplainableObject.print_tuple_element_value(5.3456 * u.W))
         self.assertEqual(
             "[1.1 yr, 2.2 yr, 3.3 yr]", ExplainableObject.print_tuple_element_value(
-                [ExplainableObject(1.123 * u.year, "duration"), ExplainableObject(2.234 * u.year, "duration"),
-                 ExplainableObject(3.345 * u.year, "duration")]))
+                [1.123 * u.year, 2.234 * u.year, 3.345 * u.year]))
         self.assertEqual("[[1, 2], [3, 5]]", ExplainableObject.print_tuple_element_value([[1, 2], [3, 5]]))
 
     def test_print_tuple_element(self):

@@ -80,7 +80,7 @@ class InfraHardware(Hardware):
                 f"RAM needs of all services running on {self.name}")
         else:
             self.all_services_ram_needs = ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * u.GB, "no RAM need")] * 24,
+                [0 * u.GB] * 24,
                 f"No RAM need for {self.name} because no associated service")
 
     def update_all_services_cpu_needs(self):
@@ -92,7 +92,7 @@ class InfraHardware(Hardware):
                 f"CPU needs of all services running on {self.name}")
         else:
             self.all_services_cpu_needs = ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * u.core, "no CPU need")] * 24,
+                [0 * u.core] * 24,
                 f"No CPU need for {self.name} because no associated service")
 
     def update_fraction_of_time_in_use(self):
@@ -101,7 +101,7 @@ class InfraHardware(Hardware):
 
         else:
             hourly_usage_sum = ExplainableHourlyUsage(
-                [ExplainableQuantity(0 * u.dimensionless, "no activity")] * 24,
+                [0 * u.dimensionless] * 24,
                 f"No activity for {self.name} because no associated service")
 
         fraction_of_time_in_use = hourly_usage_sum.compute_usage_time_fraction()

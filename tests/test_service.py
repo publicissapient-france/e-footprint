@@ -1,10 +1,10 @@
-import unittest
-from unittest.mock import MagicMock, patch
-
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.constants.sources import SourceValue, Sources
 from efootprint.constants.units import u
 from efootprint.core.service import Service
+
+import unittest
+from unittest.mock import MagicMock, patch
 
 
 class TestService(unittest.TestCase):
@@ -22,11 +22,9 @@ class TestService(unittest.TestCase):
         self.assertEqual(self.service.storage, self.storage)
         self.assertEqual(self.service.base_ram_consumption, self.base_ram)
         self.assertEqual(self.service.base_cpu_consumption, self.base_cpu)
-        self.assertEqual(ExplainableHourlyUsage([ExplainableQuantity(0 * u.GB, " ")] * 24, " "),
-                         self.service.hour_by_hour_ram_need)
-        self.assertEqual(ExplainableHourlyUsage([ExplainableQuantity(0 * u.core, " ")] * 24, " "),
-                         self.service.hour_by_hour_cpu_need)
-        self.assertEqual(self.service.storage_needed, None)
+        self.assertEqual(ExplainableHourlyUsage([0 * u.GB] * 24, " "), self.service.hour_by_hour_ram_need)
+        self.assertEqual(ExplainableHourlyUsage([0 * u.core] * 24, " "), self.service.hour_by_hour_cpu_need)
+        self.assertEqual(ExplainableQuantity(0 * u.TB / u.year, " "), self.service.storage_needed)
 
     def test_service_invalid_ram_consumption(self):
         invalid_ram = SourceValue(4 * u.min)
@@ -74,7 +72,7 @@ class TestService(unittest.TestCase):
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "parallel_uj")
         usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
-            [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc_time_intervals")
+            [1 * u.dimensionless] * 24, "utc_time_intervals")
 
         for elt in [uj_step, uj_step2]:
             elt.usage_patterns = [usage_pattern]
@@ -84,7 +82,7 @@ class TestService(unittest.TestCase):
 
             self.assertEqual(
                 [4 * u.GB] * 24,
-                [round(elt.value, 2) for elt in self.service.hour_by_hour_ram_need.value])
+                [round(elt, 2) for elt in self.service.hour_by_hour_ram_need.value])
 
     def test_update_hour_by_hour_cpu_need(self):
         uj_step = MagicMock()
@@ -101,8 +99,7 @@ class TestService(unittest.TestCase):
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "uj_in_parallel")
-        usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
-            [ExplainableQuantity(1 * u.dimensionless, "1")] * 24, "utc time intervals")
+        usage_pattern.utc_time_intervals = ExplainableHourlyUsage([1 * u.dimensionless] * 24, "utc time intervals")
 
         for elt in [uj_step, uj_step2]:
             elt.usage_patterns = [usage_pattern]
@@ -112,7 +109,7 @@ class TestService(unittest.TestCase):
 
             self.assertEqual(
                 [4 * u.core] * 24,
-                [round(elt.value, 2) for elt in self.service.hour_by_hour_cpu_need.value])
+                [round(elt, 2) for elt in self.service.hour_by_hour_cpu_need.value])
 
 
 if __name__ == '__main__':

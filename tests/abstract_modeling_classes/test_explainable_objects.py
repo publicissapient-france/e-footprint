@@ -63,8 +63,8 @@ class TestExplainableQuantity(unittest.TestCase):
 class TestExplainableHourlyUsage(unittest.TestCase):
 
     def setUp(self):
-        self.usage1 = [ExplainableQuantity(1 * u.W, "1 Watt") for _ in range(24)]
-        self.usage2 = [ExplainableQuantity(2 * u.W, "2 Watt") for _ in range(24)]
+        self.usage1 = [1 * u.W] * 24
+        self.usage2 = [2 * u.W] * 24
         self.hourly_usage1 = ExplainableHourlyUsage(self.usage1, "Usage 1")
         self.hourly_usage2 = ExplainableHourlyUsage(self.usage2, "Usage 2")
         self.sum_hourly_usage = self.hourly_usage1 + self.hourly_usage2
@@ -74,21 +74,21 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         self.assertEqual(len(self.hourly_usage1.value), 24)
 
     def test_addition(self):
-        result_usage = [ExplainableQuantity(3 * u.W, "3W") for _ in range(24)]
+        result_usage = [3 * u.W] * 24
         for value, expected in zip(self.sum_hourly_usage.value, result_usage):
-            self.assertEqual(value, expected)
+            self.assertEqual(expected, value)
 
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1
         for value in result.value:
-            self.assertEqual(value, ExplainableQuantity(1 * u.W, "1W"))
+            self.assertEqual(1 * u.W, value)
 
     @patch('efootprint.abstract_modeling_classes.explainable_objects.datetime')
     def test_convert_to_utc(self, mock_datetime):
         # Artificially fix datetime to avoid test crashing because of annual time changes.
         mock_datetime.now.return_value = datetime(2023, 10, 1)
         usage = ExplainableHourlyUsage(
-            [ExplainableQuantity(i * u.dimensionless, f"{i}") for i in range(1, 6)], "usage")
+            [i * u.dimensionless for i in range(1, 6)], "usage")
 
         # Let's say the local timezone is 2 hours ahead of UTC
         local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'), "local timezone ahead UTC")
@@ -97,16 +97,9 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         converted_ahead_utc = usage.convert_to_utc(local_tz_ahead_utc)
         converted_behind_utc = usage.convert_to_utc(local_tz_behind_utc)
 
-        converted_values_ahead_utc = [q.value for q in converted_ahead_utc.value]
-        converted_values_behind_utc = [q.value for q in converted_behind_utc.value]
-
         # If Berlin is 2 hours ahead, converting to UTC would result in the array shifted by 2 positions to the left
-        self.assertEqual(
-            converted_values_ahead_utc, [3 * u.dimensionless, 4 * u.dimensionless, 5 * u.dimensionless,
-                                         1 * u.dimensionless, 2 * u.dimensionless])
-        self.assertEqual(
-            converted_values_behind_utc, [2 * u.dimensionless, 3 * u.dimensionless, 4 * u.dimensionless,
-                                          5 * u.dimensionless, 1 * u.dimensionless])
+        self.assertEqual([i * u.dimensionless for i in [3, 4, 5, 1, 2]], converted_ahead_utc.value)
+        self.assertEqual([i * u.dimensionless for i in [2,3, 4, 5, 1]], converted_behind_utc.value)
 
         # Check other attributes of converted ExplainableHourlyUsage
         self.assertEqual("", converted_ahead_utc.label)
@@ -121,7 +114,7 @@ class TestExplainableHourlyUsage(unittest.TestCase):
     def test_to_usage(self):
         usage = self.hourly_usage1.to_usage()
         for i, elt in enumerate(usage.value):
-            self.assertEqual(elt, ExplainableQuantity(1 * u.dimensionless, f"Usage between {i} and {i+1}"))
+            self.assertEqual(1 * u.dimensionless, elt)
 
     def test_sum(self):
         summed = self.hourly_usage1.sum()
