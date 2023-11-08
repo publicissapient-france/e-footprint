@@ -52,9 +52,9 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
         if node.label and (issubclass(type(node), SourceObject) or node.has_parent):
             if node.left_parent is None and node.right_parent is None and issubclass(type(node), SourceObject):
                 if node.source == Sources.USER_INPUT:
-                    color = "green"
+                    color = "gold"
                 else:
-                    color = "red"
+                    color = "darkred"
             else:
                 color = None
             G.add_node(
