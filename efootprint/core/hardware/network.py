@@ -77,7 +77,6 @@ class Networks:
     WIFI_NETWORK = Network(
         PhysicalElements.WIFI_NETWORK,
         SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY),
-        # TODO: enable list for multiple sources
         # SourceValue(0.08 * u("kWh/GB"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
     )
     MOBILE_NETWORK = Network(

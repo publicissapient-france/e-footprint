@@ -149,7 +149,6 @@ class Devices:
         power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         fraction_of_usage_time=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
-        # TODO: get data
     )
 
     BOX = Hardware(
@@ -158,11 +157,9 @@ class Devices:
         power=SourceValue(10 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
         fraction_of_usage_time=SourceValue(24 * u.hour / u.day, Sources.HYPOTHESIS),
-        # TODO: get data
     )
     SCREEN = Hardware(
         PhysicalElements.SCREEN,
-        # TODO: To update
         carbon_footprint_fabrication=SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
         power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
         lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),

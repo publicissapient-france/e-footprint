@@ -23,8 +23,9 @@ import os
 
 
 class IntegrationTest(IntegrationTestBaseClass):
-    def setUp(self):
-        self.server = Autoscaling(
+    @classmethod
+    def setUpClass(cls):
+        cls.server = Autoscaling(
             "Default server",
             carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
@@ -36,7 +37,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_INPUT),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
         )
-        self.storage = Storage(
+        cls.storage = Storage(
             "Default SSD storage",
             carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -47,42 +48,42 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless)
         )
-        self.service = Service(
-            "Youtube", self.server, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+        cls.service = Service(
+            "Youtube", cls.server, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
-        self.streaming_step = UserJourneyStep(
-            "20 min streaming on Youtube", self.service, SourceValue(50 * u.kB / u.uj),
+        cls.streaming_step = UserJourneyStep(
+            "20 min streaming on Youtube", cls.service, SourceValue(50 * u.kB / u.uj),
             SourceValue((2.5 / 3) * u.GB / u.uj),
             user_time_spent=SourceValue(20 * u.min / u.uj), request_duration=SourceValue(4 * u.min))
-        self.upload_step = UserJourneyStep(
-            "0.4s of upload", self.service, SourceValue(300 * u.kB / u.uj), SourceValue(0 * u.kB / u.uj),
+        cls.upload_step = UserJourneyStep(
+            "0.4s of upload", cls.service, SourceValue(300 * u.kB / u.uj), SourceValue(0 * u.kB / u.uj),
             user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
 
-        self.uj = UserJourney("Daily Youtube usage", uj_steps=[self.streaming_step, self.upload_step])
-        self.device_population = DevicePopulation(
+        cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
+        cls.device_population = DevicePopulation(
             "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE,
             [Devices.LAPTOP])
 
-        self.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
-        self.usage_pattern = UsagePattern(
-            "Youtube usage in France", self.uj, self.device_population,
-            self.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
+        cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        cls.usage_pattern = UsagePattern(
+            "Youtube usage in France", cls.uj, cls.device_population,
+            cls.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
             SourceObject([[7, 23]], Sources.USER_INPUT))
 
-        self.system = System("system 1", [self.usage_pattern])
+        cls.system = System("system 1", [cls.usage_pattern])
 
-        self.initial_footprint = self.system.total_footprint()
-        self.initial_fab_footprints = {
-            self.storage: self.storage.instances_fabrication_footprint,
-            self.server: self.server.instances_fabrication_footprint,
-            self.device_population: self.device_population.instances_fabrication_footprint,
+        cls.initial_footprint = cls.system.total_footprint()
+        cls.initial_fab_footprints = {
+            cls.storage: cls.storage.instances_fabrication_footprint,
+            cls.server: cls.server.instances_fabrication_footprint,
+            cls.device_population: cls.device_population.instances_fabrication_footprint,
         }
-        self.initial_energy_footprints = {
-            self.storage: self.storage.energy_footprint,
-            self.server: self.server.energy_footprint,
-            self.network: self.network.energy_footprint,
-            self.device_population: self.device_population.energy_footprint,
+        cls.initial_energy_footprints = {
+            cls.storage: cls.storage.energy_footprint,
+            cls.server: cls.server.energy_footprint,
+            cls.network: cls.network.energy_footprint,
+            cls.device_population: cls.device_population.energy_footprint,
         }
 
     def test_calculation_graph(self):
@@ -202,7 +203,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
         )
-        
+
         logger.warning("Changing service server")
         self.service.server = new_server
 

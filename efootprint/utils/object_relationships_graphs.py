@@ -11,10 +11,10 @@ COLOR_MAP = {
     "Hardware": "darkred",
     "Storage": "darkred",
     "Service": "deepskyblue",
-    "UsagePattern": "gray",
+    "UsagePattern": "wheat",
     "DevicePopulation": "darkred",
     "UserJourney": "gold",
-    "UserJourneyStep": "gold",
+    "UserJourneyStep": "khaki",
     "TimeIntervals": "gold",
 }
 
@@ -42,7 +42,7 @@ def build_object_relationships_graph(
     node_type = type(node).__name__
     if node_type not in classes_to_ignore:
         input_graph.add_node(
-            id(node), label=set_string_max_width(f"{type(node).__name__} {node.name}", 20),
+            id(node), label=set_string_max_width(f"{node.name}", 20),
             color=COLOR_MAP.get(node_type, "gray"))
 
     for attr_name, attr_value in vars(node).items():
@@ -52,7 +52,7 @@ def build_object_relationships_graph(
                 value_type = type(value).__name__
                 if value_type not in classes_to_ignore:
                     input_graph.add_node(
-                        id(value), label=set_string_max_width(f"{type(value).__name__} {value.name}", 20),
+                        id(value), label=set_string_max_width(f"{value.name}", 20),
                         color=COLOR_MAP.get(value_type, "gray"))
                     if node_type not in classes_to_ignore:
                         input_graph.add_edge(id(node), id(value), title=attr_name)

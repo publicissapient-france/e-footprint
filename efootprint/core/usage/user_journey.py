@@ -79,8 +79,10 @@ class UserJourneyStep(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         if len(self.user_journeys) > 0:
             return self.user_journeys
-        else:
+        elif self.service is not None:
             return [self.service]
+        else:
+            return []
 
     def self_delete(self):
         logger.warning(f"Deleting {self.name} and removing backward link in its service")
