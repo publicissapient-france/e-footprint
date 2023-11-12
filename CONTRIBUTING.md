@@ -12,6 +12,8 @@ Make your changes and ensure that the tests pass.
 
     python -m pytest tests
 
+Update the [change log](./CHANGELOG.md) and the version number in [efootprint/\_\_init__.py](./efootprint/__init__.py)
+
 Commit your changes with a clear and concise commit message, **and sign it using the -s or --signoff flag to declare that you adhere to the Developer Certificate of Origin (see below)**:
 
     git commit -s -m "Add your commit message here"

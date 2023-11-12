@@ -3,6 +3,19 @@ All notable changes to this project will be documented in this file.
  
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
+
+## [1.1.2] - 2023-11-10
+
+### Added
+- Missing tests.
+- Optimisations that can lead to 10x+ improvements in complex systems initiation speed.
+
+### Changed
+- Clarification of vocabulary in ExplainableObject class: an ExplainableObject now links to its children, to follow a genealogical logic.
+- Graph colors for more color blindness friendliness. Reach out if this is still unsatisfactory !
+
+### Fixed
+- Object link recomputation logic: the launch_attributes_computation_chain function in the [ModelingObject class](./efootprint/abstract_modeling_classes/modeling_object.py) now allows for a breadth first exploration of the object link graph to recompute object attributes in the right order. 
  
 ## [1.1.1] - 2023-11-03
 
