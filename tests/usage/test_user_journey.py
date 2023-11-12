@@ -1,9 +1,9 @@
-import unittest
-from unittest import TestCase
-from unittest.mock import MagicMock
-
 from efootprint.constants.sources import u, SourceValue
 from efootprint.core.usage.user_journey import UserJourneyStep, UserJourney
+
+import unittest
+from unittest import TestCase
+from unittest.mock import MagicMock, patch, PropertyMock
 
 
 class TestUserJourneyStep(TestCase):
@@ -55,27 +55,52 @@ class TestUserJourney(TestCase):
         self.service.server = self.server
         self.service.storage = self.storage
 
-        self.server.usage_patterns = set()
-        self.storage.usage_patterns = set()
-
-        self.user_journey_step = UserJourneyStep(
-            "test_uj_step", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+        self.step1 = UserJourneyStep(
+            "test_uj_step1", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+            data_upload=SourceValue(100 * u.MB / u.uj),
+            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            user_time_spent=SourceValue(2 * u.min / u.uj))
+        self.step2 = UserJourneyStep(
+            "test_uj_step2", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
+            data_upload=SourceValue(100 * u.MB / u.uj),
+            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            user_time_spent=SourceValue(2 * u.min / u.uj))
+        self.step3 = UserJourneyStep(
+            "test_uj_step3", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
             server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
         self.one_user_journey = SourceValue(1 * u.user_journey)
-        self.user_journey = UserJourney("test user journey", uj_steps=[self.user_journey_step])
+        self.user_journey = UserJourney("test user journey", uj_steps=[self.step1])
         self.user_journey.dont_handle_input_updates = True
         self.usage_pattern = MagicMock()
         self.user_journey.modeling_obj_containers = [self.usage_pattern]
 
-    def test_uj_step_setter(self):
-        # TODO: implement
-        pass
+        for step in [self.step1, self.step2, self.step3]:
+            step.remove_obj_from_modeling_obj_containers = MagicMock()
+            step.add_obj_to_modeling_obj_containers = MagicMock()
+            step.launch_attributes_computation_chain = MagicMock()
+
+    def test_uj_steps_setter(self):
+        with patch.object(self.user_journey, "launch_attributes_computation_chain", new_callable=PropertyMock) \
+                as mock_computation_chain_launcher:
+            self.user_journey.uj_steps = [self.step2, self.step3]
+            self.assertEqual(self.user_journey.uj_steps, [self.step2, self.step3])
+
+            self.step1.remove_obj_from_modeling_obj_containers.assert_called_once_with(self.user_journey)
+            self.step1.add_obj_to_modeling_obj_containers.assert_not_called()
+            self.step3.remove_obj_from_modeling_obj_containers.assert_not_called()
+            self.step3.add_obj_to_modeling_obj_containers.assert_called_once_with(self.user_journey)
+            mock_computation_chain_launcher.assert_called()
+
+    def test_uj_steps_setter_triggers_computation_chain_for_removed_steps_without_uj(self):
+        self.step1.modeling_obj_containers = []
+        self.user_journey.uj_steps = [self.step2]
+        self.step1.launch_attributes_computation_chain.assert_called_once()
 
     def test_add_step(self):
-        self.user_journey.add_step(self.user_journey_step)
-        self.assertEqual(self.user_journey.uj_steps, [self.user_journey_step, self.user_journey_step])
+        self.user_journey.add_step(self.step1)
+        self.assertEqual(self.user_journey.uj_steps, [self.step1, self.step1])
 
     def test_servers(self):
         self.assertEqual(self.user_journey.servers, {self.server})
@@ -87,7 +112,7 @@ class TestUserJourney(TestCase):
         self.assertEqual(self.user_journey.services, [self.service])
 
     def test_update_duration_with_multiple_steps(self):
-        self.user_journey.add_step(self.user_journey_step)
+        self.user_journey.add_step(self.step1)
         for step in self.user_journey.uj_steps:
             step.user_time_spent = SourceValue(5 * u.min / u.user_journey)
 
@@ -97,7 +122,7 @@ class TestUserJourney(TestCase):
         self.assertEqual(self.user_journey.duration.value, expected_duration.value)
 
     def test_update_data_download_with_multiple_steps(self):
-        self.user_journey.add_step(self.user_journey_step)
+        self.user_journey.add_step(self.step1)
 
         for step in self.user_journey.uj_steps:
             step.data_download = SourceValue(10 * u.MB / u.user_journey)
@@ -108,7 +133,7 @@ class TestUserJourney(TestCase):
         self.assertEqual(self.user_journey.data_download.value, expected_data_download.value)
 
     def test_update_data_upload_with_multiple_steps(self):
-        self.user_journey.add_step(self.user_journey_step)
+        self.user_journey.add_step(self.step1)
         for step in self.user_journey.uj_steps:
             step.data_upload = SourceValue(10 * u.MB / u.user_journey)
 

@@ -2,7 +2,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.constants.units import u
 
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -35,6 +35,10 @@ class TestExplainableObjectBaseClass(TestCase):
         self.g.left_parent = self.d
         self.g.operator = "root square"
 
+        self.modeling_obj_container_mock = MagicMock()
+        self.modeling_obj_container_mock.id = 1
+        self.modeling_obj_container_mock.name = "Model1"
+
     def test_deepcopy_should_set_modeling_object_to_none(self):
         a = ExplainableObject(1, "a")
         a.modeling_obj_container = "obj"
@@ -56,21 +60,58 @@ class TestExplainableObjectBaseClass(TestCase):
         with self.assertRaises(ValueError):
             ExplainableObject(value=5)
 
-    def test_set_modeling_obj_container(self):
-        # TODO implement
-        pass
+    def test_set_modeling_obj_container_without_label(self):
+        self.a.label = None
+        with self.assertRaises(ValueError):
+            self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
 
-    def test_return_direct_children_with_id_to_parent(self):
-        # TODO implement
-        pass
+    def test_set_modeling_obj_container_with_different_modeling_object_for_non_input_should_raise_ValueError(self):
+        self.a.left_parent = MagicMock()
+        self.a.modeling_obj_container = MagicMock()
+        self.a.modeling_obj_container.id = 2
+        self.a.modeling_obj_container.name = "Model2"
+        with self.assertRaises(ValueError):
+            self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
 
-    def test_update_direct_parents_with_id(self):
-        # TODO implement
-        pass
+    def test_set_modeling_obj_container_success(self):
+        self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
+        self.assertEqual(self.a.modeling_obj_container, self.modeling_obj_container_mock)
+        self.assertEqual(self.a.attr_name_in_mod_obj_container, "attr1")
 
-    def test_get_all_ancestors_with_id(self):
-        # TODO implement
-        pass
+    def test_set_modeling_obj_container_should_trigger_update_direct_children_with_id(self):
+        ancestor = MagicMock()
+        self.a.direct_ancestors_with_id = [ancestor]
+        self.a.set_modeling_obj_container(self.modeling_obj_container_mock, "attr1")
+        ancestor.update_direct_children_with_id.assert_called_once_with(direct_child=self.a)
+
+    def test_update_direct_children_with_id_shouldnt_update_list_if_child_already_in_list(self):
+        self.a.direct_children_with_id = [self.c]
+        self.c.modeling_obj_container = self.modeling_obj_container_mock
+        self.a.update_direct_children_with_id(self.c)
+
+        self.assertEqual([self.c], self.a.direct_children_with_id)
+
+    def test_get_all_descendants_with_id(self):
+        root = ExplainableObject(0, "root")
+        child1 = ExplainableObject(1, "child1")
+        child1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
+        child2 = ExplainableObject(2, "child2")
+        child2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
+        grandchild1 = ExplainableObject(3, "grandchild1")
+        grandchild1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
+        grandchild2 = ExplainableObject(4, "grandchild2")
+        grandchild2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
+
+        root.direct_children_with_id.append(child1)
+        root.direct_children_with_id.append(child2)
+        child1.direct_children_with_id.append(grandchild1)
+        child2.direct_children_with_id.append(grandchild2)
+
+        descendants = root.get_all_descendants_with_id()
+        descendants_labels = [descendant.label for descendant in descendants]
+
+        self.assertEqual(len(descendants), 4)
+        self.assertListEqual(descendants_labels, ['child1', 'grandchild1', 'child2', 'grandchild2'])
 
     def test_direct_children(self):
         left_parent = ExplainableObject(value=3, label="Label L")
