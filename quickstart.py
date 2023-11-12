@@ -1,4 +1,3 @@
-from efootprint.constants.files import README_IMAGES_PATH
 from efootprint.constants.sources import SourceValue, Sources, SourceObject
 from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
@@ -75,9 +74,11 @@ system = System("system 1", [usage_pattern])
 print(f"Server carbon footprint is {(server.energy_footprint + server.instances_fabrication_footprint).value}")
 print(f"Total system carbon footprint is {system.total_footprint().value}")
 
+current_dir = os.path.abspath(os.path.dirname(__file__))
+
 calculus_graph = build_calculus_graph(device_population.instances_fabrication_footprint)
-calculus_graph.show(os.path.join(README_IMAGES_PATH, "device_population_fab_footprint_calculus_graph.html"))
+calculus_graph.show(os.path.join(current_dir, "device_population_fab_footprint_calculus_graph.html"))
 
 object_relationships_graph = build_object_relationships_graph(
     usage_pattern, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
-object_relationships_graph.show(os.path.join(README_IMAGES_PATH, "object_relationships_graph.html"))
+object_relationships_graph.show(os.path.join(current_dir, "object_relationships_graph.html"))

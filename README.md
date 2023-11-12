@@ -9,16 +9,16 @@ The current perimeter is the carbon footprint associated with the fabrication an
 
     pip install efootprint
 
-You can then run the [quickstart](quickstart.py) script to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as html files in the ./images folder.
+You can then run the [quickstart](quickstart.py) script to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as html files in the current folder.
 
 <figure>
-    <img src="images/obj_relationships_graph_example.png" width="400" alt="object relationships graph">
-    <figcaption>Object relationships graph: usage objects in green, hardware in brown, and service in blue</figcaption>
+    <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
+    <figcaption>Object relationships graph: usage pattern in wheat, user journey in gold, user journey steps in khaki, hardware in darkred, and service in blue</figcaption>
 </figure>
 
 <figure>
-    <img src="images/device_population_fab_footprint_calculus_graph_example.png" width="800" alt="simple calculation graph">
-    <figcaption>Calculus graph: user inputs in green, hypothesis in red, and intermediate calculations in pale blue. Hover over a node to read the formula.</figcaption>
+    <img src="images/device_population_fab_footprint_calculus_graph_example.png" width="900" alt="simple calculation graph">
+    <figcaption>Calculus graph: user inputs in gold, hypothesis in darkred, and intermediate calculations in pale blue. Hover over a node to read the formula.</figcaption>
 </figure>
 
 ## Dev setup
