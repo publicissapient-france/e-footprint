@@ -9,4 +9,3 @@ def create_folder(path):
 
 EFOOTPRINT_ROOT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 CUSTOM_UNITS_PATH = os.path.join(EFOOTPRINT_ROOT_PATH, "constants", "custom_units.txt")
-DATA_PATH = create_folder(os.path.join(EFOOTPRINT_ROOT_PATH, "data"))

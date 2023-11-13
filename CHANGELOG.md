@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.4] - 2023-11-13
+
+### Added
+
+### Changed
+
+### Fixed
+- Don’t write logs to file by default to avoid unnecessary storage usage + be compliant with Streamlit Cloud security.
+
 ## [1.1.3] - 2023-11-13
 
 ### Added

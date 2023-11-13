@@ -2,24 +2,23 @@ import logging
 import os
 from datetime import datetime
 
-from efootprint.constants.files import create_folder, DATA_PATH
-
-LOG_PATH = create_folder(os.path.join(DATA_PATH, "logs"))
-today_str = datetime.now().strftime("%Y-%m-%d")
-LOG_FILE = os.path.join(LOG_PATH, today_str + ".log")
+from efootprint.constants.files import create_folder, EFOOTPRINT_ROOT_PATH
 
 logger = logging.getLogger('footprint-model')
 logger.setLevel(logging.DEBUG)
-# create file handler which logs even debug messages
-fh = logging.FileHandler(LOG_FILE)
-fh.setLevel(logging.INFO)
-# create console handler with a higher log level
+
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-# create formatter and add it to the handlers
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
-fh.setFormatter(formatter)
 ch.setFormatter(formatter)
-# add the handlers to the logger
-logger.addHandler(fh)
 logger.addHandler(ch)
+
+
+def write_logs_to_file(input_logger=logger, input_formatter=formatter, log_level=logging.INFO):
+    log_path = create_folder(os.path.join(EFOOTPRINT_ROOT_PATH, "logs"))
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    log_file = os.path.join(log_path, today_str + ".log")
+    fh = logging.FileHandler(log_file)
+    fh.setFormatter(input_formatter)
+    fh.setLevel(log_level)
+    input_logger.addHandler(fh)
