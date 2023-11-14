@@ -6,8 +6,12 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 from typing import Dict, List, Set
+import plotly.express as px
+import plotly
+import pandas as pd
 
 
 class System:
@@ -99,7 +103,29 @@ class System:
             if usage_pattern.name == usage_pattern_name:
                 return usage_pattern
 
-    def fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
+        fab_footprints = {
+            "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
+            "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
+            "Devices": {device_population.name: device_population.instances_fabrication_footprint
+                        for device_population in self.device_populations},
+            "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")}
+        }
+
+        return fab_footprints
+
+    def energy_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
+        energy_footprints = {
+            "Servers": {server.name: server.energy_footprint for server in self.servers},
+            "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
+            "Devices": {device_population.name: device_population.energy_footprint
+                        for device_population in self.device_populations},
+            "Network": {network.name: network.energy_footprint for network in self.networks},
+        }
+
+        return energy_footprints
+
+    def total_fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
@@ -110,7 +136,7 @@ class System:
 
         return fab_footprints
 
-    def energy_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def total_energy_footprints(self) -> Dict[str, ExplainableQuantity]:
         energy_footprints = {
             "Servers": sum(server.energy_footprint for server in self.servers),
             "Storage": sum(storage.energy_footprint for storage in self.storages),
@@ -121,5 +147,60 @@ class System:
         return energy_footprints
 
     def total_footprint(self) -> ExplainableQuantity:
-        return (sum(self.fabrication_footprints().values()) + sum(self.energy_footprints().values())
-                ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")
+        return (
+            sum(
+                sum(
+                    self.fabrication_footprints()[key].values()) + sum(self.energy_footprints()[key].values())
+                for key in self.fabrication_footprints().keys()
+            )
+        ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")
+
+    def plot_footprints_by_category_and_object(self, filename=None):
+        fab_footprints = self.fabrication_footprints()
+        energy_footprints = self.energy_footprints()
+        categories = list(fab_footprints.keys())
+
+        rows_as_dicts = []
+
+        value_colname = "Carbon footprints in tons CO2eq / year"
+        for category in categories:
+            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
+            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
+
+            for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
+                data_dicts = [
+                    {"Type": color, "Category": category, "Object": obj[0],
+                     value_colname: obj[1].value.magnitude / 1000,
+                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))} / year"}
+                    for obj in objs]
+                rows_as_dicts += data_dicts
+
+        df = pd.DataFrame.from_records(rows_as_dicts)
+
+        total_co2 = df[value_colname].sum()
+
+        fig = px.bar(
+            df, x="Category", y=value_colname, color='Type', barmode='group', height=400,
+            hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
+            template="plotly_white", width=800,
+            title=f"Total CO2 emissions from {self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000))} / year")
+
+        total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
+
+        for category, source_type in total_co2_per_category_and_type.keys():
+            height = total_co2_per_category_and_type.loc[category, source_type]
+            x_shift_direction = 1 if source_type == 'Fabrication' else -1
+
+            fig.add_annotation(
+                x=category,
+                y=height,
+                text=f"{int((height / total_co2) * 100)}%",  # Format the label as a percentage
+                showarrow=False,
+                yshift=10,  # Shift the label slightly above the stack
+                xshift=30 * x_shift_direction
+            )
+
+        if filename is None:
+            filename = f"{self.name} footprints"
+
+        plotly.offline.plot(fig, filename=filename)

@@ -2,3 +2,6 @@ pint==0.22
 matplotlib==3.8.0
 pytz==2023.3.post1
 pyvis==0.3.2
+plotly==5.18.*
+pandas==2.1.*
+requests==2.31.*

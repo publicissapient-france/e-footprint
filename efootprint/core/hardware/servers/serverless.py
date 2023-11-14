@@ -1,4 +1,3 @@
-from efootprint.constants.countries import Country, Countries
 from efootprint.constants.physical_elements import PhysicalElements
 from efootprint.constants.sources import SourceValue, Sources
 from efootprint.constants.units import u

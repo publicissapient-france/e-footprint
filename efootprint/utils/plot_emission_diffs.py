@@ -67,7 +67,6 @@ class EmissionPlotter:
             proportion = (value_new / self.total_emissions_in_kg__new) * 100
             self.ax.text(rect.get_x() + rect.get_width() / 2, value_new, f"{proportion:.0f}%", ha="center", va="bottom")
 
-    # A function to handle titles and labels
     def set_axes_labels(self):
         self.ax.set_xlabel("Physical Elements")
         self.ax.set_ylabel(f"kg CO2 emissions / {self.timespan.value}")
@@ -141,73 +140,3 @@ class EmissionPlotter:
     def add_legend(self):
         handles = [plt.Rectangle((0, 0), 1, 1, color=color) for color in self.colors]
         self.ax.legend(handles, self.legend_labels)
-
-
-if __name__ == "__main__":
-    from efootprint.constants.explainable_quantities import ExplainableQuantity
-    from efootprint.constants.sources import SourceValue, Sources
-    from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
-    from efootprint.core.hardware.servers.server_base_class import Servers
-    from efootprint.core.hardware.storage import Storage
-    from efootprint.core.service import Service, Request
-    from efootprint.core.hardware.device_population import DevicePopulation, Devices
-    from efootprint.core.usage.usage_pattern import UsagePattern
-    from efootprint.core.hardware.network import Networks
-    from efootprint.core.system import System
-    from efootprint.constants.countries import Countries
-
-    from copy import deepcopy
-
-    server = Servers.SERVER
-    storage = Storage(
-        "Default SSD storage",
-        carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        power=SourceValue(1.3 * u.W, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
-        idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
-        storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
-        power_usage_effectiveness=1.2,
-        country=Countries.GERMANY,
-        data_replication_factor=3,
-        data_storage_duration=10 * u.year
-    )
-    service = Service("Youtube", server, storage, base_ram_consumption=300 * u.MB,
-                              base_cpu_consumption=2 * u.core)
-
-    streaming_request = Request(
-        "20 min streaming on Youtube", service, 50 * u.kB, (2.5 / 3) * u.GB, duration=4 * u.min)
-    streaming_step = UserJourneyStep("20 min streaming on Youtube", streaming_request, 20 * u.min)
-    upload_request = Request(
-        "0.4 s of upload", service, 300 * u.kB, 0 * u.GB, duration=1 * u.s)
-    upload_step = UserJourneyStep("0.4s of upload", upload_request, 0.1 * u.s)
-
-    default_uj = UserJourney("Daily Youtube usage", uj_steps=[streaming_step, upload_step])
-
-    default_device_pop = DevicePopulation(
-        "French Youtube users on laptop", 4e7 * 0.3, Countries.FRANCE, [Devices.LAPTOP])
-
-    dp_uj = deepcopy(default_uj)
-    dp_device_pop = deepcopy(default_device_pop)
-    dp_device_pop.country = Countries.GERMANY
-
-    default_network = Networks.WIFI_NETWORK
-    dp_default_network = deepcopy(default_network)
-
-    system_1 = System("system 1", [UsagePattern(
-        "Average daily Youtube usage in France on laptop", default_uj, default_device_pop,
-        default_network, 365 * u.user_journey / (u.user * u.year), [[7, 23]])])
-
-    system_2 = System("system 2", [UsagePattern(
-        "Average daily Youtube usage in France on laptop 2", dp_uj, dp_device_pop, dp_default_network,
-        250 * u.user_journey / (u.user * u.year), [[7, 23]])])
-
-    emissions_dict__old = [system_1.energy_footprints(), system_1.fabrication_footprints()]
-    emissions_dict__new = [system_2.energy_footprints(), system_2.fabrication_footprints()]
-
-    fig, ax = plt.subplots(nrows=1, ncols=1, figsize=(12, 8))
-
-    EmissionPlotter(
-        ax, emissions_dict__old, emissions_dict__new, title=system_1.name, rounding_value=1,
-        timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
-
-    plt.show()

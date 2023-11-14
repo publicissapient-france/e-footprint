@@ -1,5 +1,4 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-from efootprint.constants.countries import Country, Countries
 from efootprint.constants.physical_elements import PhysicalElements
 from efootprint.constants.sources import SourceValue, Sources
 from efootprint.constants.units import u
