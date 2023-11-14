@@ -2,17 +2,17 @@
 
 A toolkit for exhaustively modeling the environmental impact of digital services.
 
-The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end user devices necessary for the existence of a digital service. Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
+The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end-user devices necessary for the existence of a digital service. Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
 
 # Getting started
 ## Didactic interface
-You can explore the model’s didactic interface at [this link](https://publicis-sapient-e-footprint-model.streamlit.app/). This interface allows for a limited use of the model (only one user journey on a single service when the code allows for an unlimited amount of objects) but is useful to discover the inputs and explore the calculation graphs (see below).
+You can explore the model’s [didactic interface](https://publicis-sapient-e-footprint-model.streamlit.app/). This interface allows for a limited use of the model, with only one user journey on a single service when the code allows for an unlimited amount of objects). The goal is to let users discover the inputs and explore the calculation graphs (see below).
 
 ## Quickstart
 
     pip install efootprint
 
-You can then run the [quickstart](quickstart.py) script to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as html files in the current folder.
+You can then run the [quickstart](quickstart.py) script to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 
 <figure>
     <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
