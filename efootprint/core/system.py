@@ -99,27 +99,76 @@ class System:
             if usage_pattern.name == usage_pattern_name:
                 return usage_pattern
 
-    def fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
         fab_footprints = {
-            "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
-            "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
-            "Devices": sum(device_population.instances_fabrication_footprint
-                           for device_population in self.device_populations),
-            "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")
+            "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
+            "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
+            "Devices": {device_population.name: device_population.instances_fabrication_footprint
+                        for device_population in self.device_populations},
+            "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")}
         }
 
         return fab_footprints
 
-    def energy_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def energy_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
         energy_footprints = {
-            "Servers": sum(server.energy_footprint for server in self.servers),
-            "Storage": sum(storage.energy_footprint for storage in self.storages),
-            "Devices": sum(device_population.energy_footprint for device_population in self.device_populations),
-            "Network": sum(network.energy_footprint for network in self.networks)
+            "Servers": {server.name: server.energy_footprint for server in self.servers},
+            "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
+            "Devices": {device_population.name: device_population.energy_footprint
+                        for device_population in self.device_populations},
+            "Network": {network.name: network.energy_footprint for network in self.networks},
         }
 
         return energy_footprints
 
     def total_footprint(self) -> ExplainableQuantity:
-        return (sum(self.fabrication_footprints().values()) + sum(self.energy_footprints().values())
-                ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")
+        return (
+            sum(
+                sum(
+                    self.fabrication_footprints()[key].values()) + sum(self.energy_footprints()[key].values())
+                for key in self.fabrication_footprints().keys()
+            )
+        ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")
+
+    def plot_footprints(self):
+        import matplotlib.pyplot as plt
+        import numpy as np
+        # Get the footprints
+        fab_footprints = self.fabrication_footprints()
+        energy_footprints = self.energy_footprints()
+
+        # Prepare data for plotting
+        categories = ['Servers', 'Storage', 'Devices', 'Network']
+        fab_data = {category: [fab_footprints[category][name].value.magnitude for name in fab_footprints[category]] for category in categories}
+        energy_data = {category: [energy_footprints[category][name].value.magnitude for name in energy_footprints[category]] for category in categories}
+
+        # Calculate total footprints for normalization
+        fab_totals = {category: sum(fab_data[category]) for category in categories}
+        energy_totals = {category: sum(energy_data[category]) for category in categories}
+
+        # Normalize data for percentage stacking
+        fab_percentages = {category: [value / fab_totals[category] * 100 if fab_totals[category] > 0 else 0 for value in fab_data[category]] for category in categories}
+        energy_percentages = {category: [value / energy_totals[category] * 100 if energy_totals[category] > 0 else 0 for value in energy_data[category]] for category in categories}
+
+        # Plotting
+        fig, ax = plt.subplots()
+        width = 0.35  # the width of the bars
+        ind = np.arange(len(categories))  # the x locations for the groups
+
+        # Stacked bars for fabrication
+        fab_bottoms = np.zeros(len(categories))
+        for i, category in enumerate(categories):
+            ax.bar(ind[i], fab_percentages[category], width, bottom=fab_bottoms[i], label=f'{category} Fabrication')
+
+        # Stacked bars for energy
+        energy_bottoms = np.zeros(len(categories))
+        for i, category in enumerate(categories):
+            ax.bar(ind[i] + width, energy_percentages[category], width, bottom=energy_bottoms[i], label=f'{category} Energy')
+
+        ax.set_ylabel('kg CO2 emissions / Year and Proportions (%)')
+        ax.set_title('Footprints by object and type')
+        ax.set_xticks(ind + width / 2)
+        ax.set_xticklabels(categories)
+        ax.legend()
+
+        plt.show()
