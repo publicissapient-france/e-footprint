@@ -121,6 +121,27 @@ class System:
 
         return energy_footprints
 
+    def total_fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
+        fab_footprints = {
+            "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
+            "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
+            "Devices": sum(device_population.instances_fabrication_footprint
+                           for device_population in self.device_populations),
+            "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")
+        }
+
+        return fab_footprints
+
+    def total_energy_footprints(self) -> Dict[str, ExplainableQuantity]:
+        energy_footprints = {
+            "Servers": sum(server.energy_footprint for server in self.servers),
+            "Storage": sum(storage.energy_footprint for storage in self.storages),
+            "Devices": sum(device_population.energy_footprint for device_population in self.device_populations),
+            "Network": sum(network.energy_footprint for network in self.networks)
+        }
+
+        return energy_footprints
+
     def total_footprint(self) -> ExplainableQuantity:
         return (
             sum(
@@ -136,39 +157,114 @@ class System:
         # Get the footprints
         fab_footprints = self.fabrication_footprints()
         energy_footprints = self.energy_footprints()
+        categories = list(fab_footprints.keys())
 
-        # Prepare data for plotting
-        categories = ['Servers', 'Storage', 'Devices', 'Network']
-        fab_data = {category: [fab_footprints[category][name].value.magnitude for name in fab_footprints[category]] for category in categories}
-        energy_data = {category: [energy_footprints[category][name].value.magnitude for name in energy_footprints[category]] for category in categories}
-
-        # Calculate total footprints for normalization
-        fab_totals = {category: sum(fab_data[category]) for category in categories}
-        energy_totals = {category: sum(energy_data[category]) for category in categories}
-
-        # Normalize data for percentage stacking
-        fab_percentages = {category: [value / fab_totals[category] * 100 if fab_totals[category] > 0 else 0 for value in fab_data[category]] for category in categories}
-        energy_percentages = {category: [value / energy_totals[category] * 100 if energy_totals[category] > 0 else 0 for value in energy_data[category]] for category in categories}
-
-        # Plotting
-        fig, ax = plt.subplots()
+        # Setup the figure and axes
+        fig, ax = plt.subplots(figsize=(10, 8))
         width = 0.35  # the width of the bars
         ind = np.arange(len(categories))  # the x locations for the groups
 
-        # Stacked bars for fabrication
-        fab_bottoms = np.zeros(len(categories))
-        for i, category in enumerate(categories):
-            ax.bar(ind[i], fab_percentages[category], width, bottom=fab_bottoms[i], label=f'{category} Fabrication')
+        # Stacked bars for fabrication and energy
+        for idx, category in enumerate(categories):
+            fab_bottom = 0
+            energy_bottom = 0
 
-        # Stacked bars for energy
-        energy_bottoms = np.zeros(len(categories))
-        for i, category in enumerate(categories):
-            ax.bar(ind[i] + width, energy_percentages[category], width, bottom=energy_bottoms[i], label=f'{category} Energy')
+            # Sort the objects by name to maintain consistent order
+            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
+            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
 
-        ax.set_ylabel('kg CO2 emissions / Year and Proportions (%)')
+            for (fab_name, fab_value), (energy_name, energy_value) in zip(fab_objects, energy_objects):
+                # Fabrication
+                fab_val = fab_value.value.magnitude
+                fab_rect = ax.bar(ind[idx], fab_val, width, bottom=fab_bottom, color='blue', edgecolor='white')
+                fab_bottom += fab_val
+
+                # Label for fabrication
+                height = fab_rect[0].get_height()
+                ax.text(fab_rect[0].get_x() + fab_rect[0].get_width() / 2, fab_bottom - (height / 2), fab_name,
+                        ha='center', va='center', color='black', fontsize=8)
+
+                # Energy
+                energy_val = energy_value.value.magnitude
+                energy_rect = ax.bar(ind[idx] + width, energy_val, width, bottom=energy_bottom, color='orange', edgecolor='white')
+                energy_bottom += energy_val
+
+                # Label for energy
+                height = energy_rect[0].get_height()
+                ax.text(energy_rect[0].get_x() + energy_rect[0].get_width() / 2, energy_bottom - (height / 2), energy_name,
+                        ha='center', va='center', color='black', fontsize=8)
+
+        # Add the legend
+        ax.legend(['Fabrication', 'Electricity Consumption'], loc='upper left')
+
+        # Set labels and titles
+        ax.set_ylabel('kg CO2 emissions / Year')
         ax.set_title('Footprints by object and type')
         ax.set_xticks(ind + width / 2)
         ax.set_xticklabels(categories)
-        ax.legend()
 
+        # Display the plot
         plt.show()
+
+    def plotly_footprints_plot(self):
+        import plotly.graph_objs as go
+        from plotly.offline import plot
+        # Get the footprints
+        fab_footprints = self.fabrication_footprints()
+        energy_footprints = self.energy_footprints()
+        categories = list(fab_footprints.keys())
+
+        # Create an empty list to hold all the bar objects
+        bars = []
+
+        # Loop through each category to create the stacked bar chart
+        for idx, category in enumerate(categories):
+            fab_bottom = 0
+            energy_bottom = 0
+
+            # Sort the objects by name to maintain consistent order
+            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
+            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
+
+            for (fab_name, fab_value), (energy_name, energy_value) in zip(fab_objects, energy_objects):
+                # Fabrication footprint
+                fab_val = fab_value.value.magnitude
+                bars.append(go.Bar(
+                    x=[category],
+                    y=[fab_val],
+                    name=f'{fab_name} Fabrication',
+                    text=f'{fab_name}: {fab_val:.2f} kg CO2/year',
+                    hoverinfo='text',
+                    marker=dict(color='blue'),
+                    width=0.4,
+                    offset=-0.2,
+                    base=fab_bottom
+                ))
+                fab_bottom += fab_val
+
+                # Energy footprint
+                energy_val = energy_value.value.magnitude
+                bars.append(go.Bar(
+                    x=[category],
+                    y=[energy_val],
+                    name=f'{energy_name} Energy',
+                    text=f'{energy_name}: {energy_val:.2f} kg CO2/year',
+                    hoverinfo='text',
+                    marker=dict(color='orange'),
+                    width=0.4,
+                    base=energy_bottom
+                ))
+                energy_bottom += energy_val
+
+        # Update the layout
+        layout = go.Layout(
+            barmode='stack',
+            title='Footprints by object and type',
+            xaxis=dict(title='Categories'),
+            yaxis=dict(title='kg CO2 emissions / Year'),
+            legend=dict(x=0.8, y=1.2, orientation="h"),
+            hovermode='closest'
+        )
+
+        fig = go.Figure(data=bars, layout=layout)
+        plot(fig, filename='footprints.html')

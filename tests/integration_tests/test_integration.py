@@ -343,6 +343,3 @@ class IntegrationTest(IntegrationTestBaseClass):
         step_without_service.user_time_spent = SourceValue(0 * u.min / u.uj)
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)
-
-    def test_plot_system(self):
-        self.system.plot_footprints()

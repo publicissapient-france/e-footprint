@@ -5,16 +5,16 @@ from efootprint.utils.tools import convert_to_list
 from pyvis.network import Network
 
 COLOR_MAP = {
-    "Autoscaling": "darkred",
-    "OnPremise": "darkred",
-    "Serverless": "darkred",
-    "Hardware": "darkred",
-    "Storage": "darkred",
+    "Autoscaling": "red",
+    "OnPremise": "red",
+    "Serverless": "red",
+    "Hardware": "red",
+    "Storage": "red",
     "Service": "deepskyblue",
-    "UsagePattern": "wheat",
-    "DevicePopulation": "darkred",
+    "UsagePattern": "blueviolet",
+    "DevicePopulation": "red",
     "UserJourney": "gold",
-    "UserJourneyStep": "khaki",
+    "UserJourneyStep": "gold",
     "TimeIntervals": "gold",
 }
 
