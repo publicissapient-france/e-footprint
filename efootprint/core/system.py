@@ -8,6 +8,9 @@ from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 from typing import Dict, List, Set
+import plotly.graph_objs as go
+from plotly.offline import plot
+import pandas as pd
 
 
 class System:
@@ -186,13 +189,14 @@ class System:
 
                 # Energy
                 energy_val = energy_value.value.magnitude
-                energy_rect = ax.bar(ind[idx] + width, energy_val, width, bottom=energy_bottom, color='orange', edgecolor='white')
+                energy_rect = ax.bar(
+                    ind[idx] + width, energy_val, width, bottom=energy_bottom, color='orange', edgecolor='white')
                 energy_bottom += energy_val
 
                 # Label for energy
                 height = energy_rect[0].get_height()
-                ax.text(energy_rect[0].get_x() + energy_rect[0].get_width() / 2, energy_bottom - (height / 2), energy_name,
-                        ha='center', va='center', color='black', fontsize=8)
+                ax.text(energy_rect[0].get_x() + energy_rect[0].get_width() / 2, energy_bottom - (height / 2),
+                        energy_name, ha='center', va='center', color='black', fontsize=8)
 
         # Add the legend
         ax.legend(['Fabrication', 'Electricity Consumption'], loc='upper left')
@@ -206,9 +210,40 @@ class System:
         # Display the plot
         plt.show()
 
+    def plotly_express_footprints_plot(self):
+        import plotly.express as px
+
+        fab_footprints = self.fabrication_footprints()
+        energy_footprints = self.energy_footprints()
+        categories = list(fab_footprints.keys())
+
+        rows_as_dicts = []
+
+        for category in categories:
+            fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
+            energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
+
+            for objs, color in zip([fab_objects, energy_objects], ["Fabrication", "Electricity"]):
+                data_dicts = [
+                    {"Type": color, "Category": category, "Object name": obj[0], "Value": obj[1].value.magnitude} for obj in objs]
+                rows_as_dicts += data_dicts
+
+        df = pd.DataFrame.from_records(rows_as_dicts)
+
+        fig = px.bar(df, x="Category", y="Value",
+                     color='Type', barmode='group',
+                     height=400
+                     )
+        # Update hovertemplate for each trace
+        for trace in fig.data:
+            trace.hovertemplate = '%{customdata} <extra></extra>'
+
+        # Add the custom hover data
+        fig.update_traces(customdata=df['Object name'] + " (" + df["Value"].astype(str) + ")")
+
+        fig.show()
+
     def plotly_footprints_plot(self):
-        import plotly.graph_objs as go
-        from plotly.offline import plot
         # Get the footprints
         fab_footprints = self.fabrication_footprints()
         energy_footprints = self.energy_footprints()
@@ -233,11 +268,8 @@ class System:
                     x=[category],
                     y=[fab_val],
                     name=f'{fab_name} Fabrication',
-                    text=f'{fab_name}: {fab_val:.2f} kg CO2/year',
-                    hoverinfo='text',
+                    hovertext=f'{fab_name}: {fab_val:.0f} kg CO2/year',
                     marker=dict(color='blue'),
-                    width=0.4,
-                    offset=-0.2,
                     base=fab_bottom
                 ))
                 fab_bottom += fab_val
@@ -248,23 +280,47 @@ class System:
                     x=[category],
                     y=[energy_val],
                     name=f'{energy_name} Energy',
-                    text=f'{energy_name}: {energy_val:.2f} kg CO2/year',
-                    hoverinfo='text',
+                    hovertext=f'{energy_name}: {energy_val:.2f} kg CO2/year',
                     marker=dict(color='orange'),
-                    width=0.4,
                     base=energy_bottom
                 ))
                 energy_bottom += energy_val
 
         # Update the layout
         layout = go.Layout(
-            barmode='stack',
+            barmode='group',
             title='Footprints by object and type',
             xaxis=dict(title='Categories'),
             yaxis=dict(title='kg CO2 emissions / Year'),
             legend=dict(x=0.8, y=1.2, orientation="h"),
-            hovermode='closest'
+            hovermode='x'
         )
 
         fig = go.Figure(data=bars, layout=layout)
         plot(fig, filename='footprints.html')
+
+
+if __name__ == "__main__":
+    import plotly.graph_objects as go
+    import pandas as pd
+
+    import plotly.express as px
+
+    df = px.data.tips()
+
+    # Create a new column for custom hover text
+    df['hover_text'] = df['day'] + ', ' + df['time'] + ' (' + df['sex'] + ')'
+
+    # Create the bar graph
+    fig = px.bar(df, x="sex", y="total_bill",
+                 color='smoker', barmode='group',
+                 height=400)
+
+    # Update hovertemplate for each trace
+    for trace in fig.data:
+        trace.hovertemplate = '%{customdata} <extra></extra>'
+
+    # Add the custom hover data
+    fig.update_traces(customdata=df['hover_text'])
+
+    fig.show()

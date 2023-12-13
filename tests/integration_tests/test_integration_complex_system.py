@@ -122,7 +122,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         logger.warning("Adding service")
         new_service = Service(
             "new service", self.server1, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
+            base_cpu_consumption=SourceValue(1 * u.core, Sources.HYPOTHESIS))
         new_uj = UserJourneyStep(
             "new uj step", new_service, SourceValue(300 * u.kB / u.uj), SourceValue(300 * u.kB / u.uj),
             user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
@@ -132,7 +132,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
 
         logger.warning("Removing new service")
-        self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step]
+        self.uj.uj_steps = self.uj.uj_steps[:-1]
         new_uj.self_delete()
         new_service.self_delete()
 
@@ -144,4 +144,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_plotly_plot_system(self):
         self.system.plotly_footprints_plot()
-        
+
+    def test_plotly_express_plot_system(self):
+        self.system.plotly_express_footprints_plot()
+
+    def test_plot_emission_diffs(self):
+        raise NotImplementedError
