@@ -39,3 +39,17 @@ def convert_to_list(input_value):
         value_elts = [input_value]
 
     return value_elts
+
+
+def format_co2_amount(co2_amount_in_kg: int, rounding_value=1):
+    if co2_amount_in_kg < 501:
+        unit = "kg"
+        dividing_number = 1
+    else:
+        unit = "ton"
+        dividing_number = 1000
+    rounded_total__new = round(co2_amount_in_kg / dividing_number, rounding_value)
+    if rounding_value == 0:
+        rounded_total__new = int(rounded_total__new)
+
+    return rounded_total__new, unit

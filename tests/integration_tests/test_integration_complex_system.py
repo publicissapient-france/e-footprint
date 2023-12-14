@@ -139,14 +139,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint())
 
-    def test_plot_system(self):
-        self.system.plot_footprints()
-
-    def test_plotly_plot_system(self):
-        self.system.plotly_footprints_plot()
-
-    def test_plotly_express_plot_system(self):
-        self.system.plotly_express_footprints_plot()
+    def test_plot_footprints_by_category_and_object(self):
+        self.system.plot_footprints_by_category_and_object()
 
     def test_plot_emission_diffs(self):
         raise NotImplementedError
