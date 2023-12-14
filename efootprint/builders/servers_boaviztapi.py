@@ -57,7 +57,7 @@ def get_cloud_server(
         lifespan=lifespan,
         idle_power=idle_power,
         ram=SourceValue(ram_spec["units"]["value"] * u.GB, impact_source),
-        nb_of_cpus=SourceValue(cpu_spec["units"]["value"] * u.core, impact_source),
+        nb_of_cpus=SourceValue(cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
@@ -68,4 +68,4 @@ if __name__ == "__main__":
 
     print(get_archetype_configuration('compute_low'))
 
-    aws_server = get_cloud_server("aws", "m5d.24xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
+    aws_server = get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
