@@ -53,3 +53,9 @@ def format_co2_amount(co2_amount_in_kg: int, rounding_value=1):
         rounded_total__new = int(rounded_total__new)
 
     return rounded_total__new, unit
+
+
+def display_co2_amount(num_value_and_unit_tuple):
+    num_value, unit = num_value_and_unit_tuple
+
+    return f"{num_value} {unit}s"

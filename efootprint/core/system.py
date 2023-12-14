@@ -6,7 +6,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-from efootprint.utils.tools import format_co2_amount
+from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 from typing import Dict, List, Set
 import plotly.express as px
@@ -166,32 +166,29 @@ class System:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
 
-            def display_co2_amount(num_value_and_unit_tuple):
-                num_value, unit = num_value_and_unit_tuple
-
-                return f"{num_value} {unit}s"
-
-            for objs, color in zip([fab_objects, energy_objects], ["Fabrication", "Electricity"]):
+            for objs, color in zip([energy_objects, fab_objects], ["Electricity", "Fabrication"]):
                 data_dicts = [
                     {"Type": color, "Category": category, "Object": obj[0],
                      value_colname: obj[1].value.magnitude / 1000,
-                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))}"}
+                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))} / year"}
                     for obj in objs]
                 rows_as_dicts += data_dicts
 
         df = pd.DataFrame.from_records(rows_as_dicts)
 
+        total_co2 = df[value_colname].sum()
+
         fig = px.bar(
             df, x="Category", y=value_colname, color='Type', barmode='group', height=400,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
-            template="plotly_white", width=800)
+            template="plotly_white", width=800,
+            title=f"Total CO2 emissions from {self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000))} / year")
 
-        total_co2 = df[value_colname].sum()
         total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
 
-        for category, type in total_co2_per_category_and_type.keys():
-            height = total_co2_per_category_and_type.loc[category, type]
-            x_shift_direction = -1 if type == 'Fabrication' else 1
+        for category, source_type in total_co2_per_category_and_type.keys():
+            height = total_co2_per_category_and_type.loc[category, source_type]
+            x_shift_direction = 1 if source_type == 'Fabrication' else -1
 
             fig.add_annotation(
                 x=category,
