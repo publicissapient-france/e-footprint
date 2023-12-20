@@ -16,14 +16,50 @@ def call_boaviztapi(url, headers=None, params=None):
         raise ConnectionError(f"Request failed with status code {response.status_code}")
 
 
-def get_archetypes():
-    return call_boaviztapi('https://api.boavizta.org/v1/server/archetypes')
+def get_archetypes_and_their_configs_and_impacts():
+    output_dict = {}
+    for archetype in call_boaviztapi('https://api.boavizta.org/v1/server/archetypes'):
+        configuration = call_boaviztapi(
+            url="https://api.boavizta.org/v1/server/archetype_config", params={"archetype": archetype})
+        impact = call_boaviztapi(
+            url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
+        output_dict[archetype] = {}
+        output_dict[archetype]["config"] = configuration
+        output_dict[archetype]["impact"] = impact
+
+    return output_dict
 
 
-def get_archetype_configuration(archetype):
-    assert archetype in get_archetypes()
+def print_archetypes_and_their_configs():
+    archetypes_data = get_archetypes_and_their_configs_and_impacts()
 
-    return call_boaviztapi(url="https://api.boavizta.org/v1/server/archetype_config", params={"archetype": archetype})
+    for archetype in archetypes_data.keys():
+        config = archetypes_data[archetype]["config"]
+        impact = archetypes_data[archetype]["impact"]
+        units_with_tab_car = 'units\t'
+        print(
+            f"{archetype}: \n    {config['CASE']['case_type']['default']},\n"
+            f"    {config['CPU']['units']['default']} cpu units with {config['CPU']['core_units']['default']} core units,\n"
+            f"    {config['RAM']['units']['default']} RAM units with {config['RAM']['capacity']['default']} GB capacity,\n"
+            f"    {config['SSD'][units_with_tab_car]['default']} SSD units with {config['SSD']['capacity']['default']} GB capacity,\n")
+        if len(config["HDD"]["units"].keys()) > 0:
+            print(f"    {config['HDD']['units']['default']} HDD units with {config['HDD']['capacity']['default']} GB capacity,\n")
+
+        total_gwp_embedded_value = impact["impacts"]["gwp"]["embedded"]["value"]
+        ssd_gwp_embedded_value = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["embedded"]["value"]
+
+        total_gwp_embedded_unit = impact["impacts"]["gwp"]["unit"]
+        ssd_gwp_embedded_unit = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["unit"]
+
+        assert total_gwp_embedded_unit == ssd_gwp_embedded_unit
+
+        average_power_value = impact["verbose"]["avg_power"]["value"]
+        average_power_unit = impact["verbose"]["avg_power"]["unit"]
+
+        print(
+            f"    Impact fabrication compute: {total_gwp_embedded_value - ssd_gwp_embedded_value} {total_gwp_embedded_unit},\n"
+            f"    Impact fabrication SSD: {ssd_gwp_embedded_value} {ssd_gwp_embedded_unit},\n"
+            f"    Average power: {average_power_value} {average_power_unit}")
 
 
 def get_cloud_server(
@@ -63,9 +99,20 @@ def get_cloud_server(
         server_utilization_rate=server_utilization_rate)
 
 
-if __name__ == "__main__":
-    archetypes = get_archetypes()
+def on_premise_server_from_config(
+        nb_of_cpus, nb_of_core_units, nb_of_ram, ram_quantity_per_ram_unit, average_power):
+    impact_url = "https://api.boavizta.org/v1/server"
+    params = {"archetype": "compute-medium", "criteria": "gwp"}
+    data = {"model": {"type": "rack"},
+            "configuration": {"cpu": {"units": nb_of_cpus, "core_units": nb_of_core_units},
+                              "ram": {"units": nb_of_ram, "capacity": ram_quantity_per_ram_unit}}}
 
-    print(get_archetype_configuration('compute_low'))
+    impact_source = Source(name="Boavizta API servers",
+                           link=f"{impact_url}?{'&'.join([key + '=' + params[key] for key in params.keys()])}")
+    impact_data = call_boaviztapi(url=impact_url, params=params)
+
+
+if __name__ == "__main__":
+    print_archetypes_and_their_configs()
 
     aws_server = get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))

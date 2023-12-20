@@ -19,6 +19,7 @@ class Server(InfraHardware):
         self.idle_power.set_name(f"Idle power of {self.name}")
         self.ram = ram
         self.ram.set_name(f"RAM of {self.name}")
+        # TODO: Add the concept of cpu core or replace nb_of_cpus by nb_of_cores ?
         self.nb_of_cpus = nb_of_cpus
         self.nb_of_cpus.set_name(f"Nb cpus of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness
