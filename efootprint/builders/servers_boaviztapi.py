@@ -37,16 +37,22 @@ def print_archetypes_and_their_configs():
         config = archetypes_data[archetype]["config"]
         impact = archetypes_data[archetype]["impact"]
         units_with_tab_car = 'units\t'
+        # Correction for https://github.com/Boavizta/boaviztapi/issues/257
+        nb_of_ssd_units = config['SSD'][units_with_tab_car]['default']
+        if "," in str(nb_of_ssd_units):
+            nb_of_ssd_units = int(nb_of_ssd_units.split(",")[0])
         print(
-            f"{archetype}: \n    {config['CASE']['case_type']['default']},\n"
+            f"{archetype}: type {config['CASE']['case_type']['default']},\n"
             f"    {config['CPU']['units']['default']} cpu units with {config['CPU']['core_units']['default']} core units,\n"
             f"    {config['RAM']['units']['default']} RAM units with {config['RAM']['capacity']['default']} GB capacity,\n"
-            f"    {config['SSD'][units_with_tab_car]['default']} SSD units with {config['SSD']['capacity']['default']} GB capacity,\n")
+            f"    {nb_of_ssd_units} SSD units with {config['SSD']['capacity']['default']} GB capacity,")
         if len(config["HDD"]["units"].keys()) > 0:
-            print(f"    {config['HDD']['units']['default']} HDD units with {config['HDD']['capacity']['default']} GB capacity,\n")
+            print(f"    {config['HDD']['units']['default']} HDD units with {config['HDD']['capacity']['default']} GB capacity,")
 
         total_gwp_embedded_value = impact["impacts"]["gwp"]["embedded"]["value"]
-        ssd_gwp_embedded_value = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["embedded"]["value"]
+        # Correction for https://github.com/Boavizta/boaviztapi/issues/256 by multiplying by nb of SSD units
+        ssd_gwp_embedded_value__raw = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["embedded"]["value"]
+        ssd_gwp_embedded_value__corrected = ssd_gwp_embedded_value__raw * nb_of_ssd_units
 
         total_gwp_embedded_unit = impact["impacts"]["gwp"]["unit"]
         ssd_gwp_embedded_unit = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["unit"]
@@ -57,9 +63,9 @@ def print_archetypes_and_their_configs():
         average_power_unit = impact["verbose"]["avg_power"]["unit"]
 
         print(
-            f"    Impact fabrication compute: {total_gwp_embedded_value - ssd_gwp_embedded_value} {total_gwp_embedded_unit},\n"
-            f"    Impact fabrication SSD: {ssd_gwp_embedded_value} {ssd_gwp_embedded_unit},\n"
-            f"    Average power: {average_power_value} {average_power_unit}")
+            f"    Impact fabrication compute: {total_gwp_embedded_value - ssd_gwp_embedded_value__raw} {total_gwp_embedded_unit},\n"
+            f"    Impact fabrication SSD: {ssd_gwp_embedded_value__corrected} {ssd_gwp_embedded_unit},\n"
+            f"    Average power: {round(average_power_value, 1)} {average_power_unit}\n")
 
 
 def get_cloud_server(
