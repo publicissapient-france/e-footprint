@@ -4,11 +4,16 @@ from efootprint.constants.units import u
 
 import requests
 
+from efootprint.core.hardware.servers.on_premise import OnPremise
 
-def call_boaviztapi(url, headers=None, params=None):
-    if headers is None:
-        headers = {'accept': 'application/json'}
-    response = requests.get(url, headers=headers, params=params)
+
+def call_boaviztapi(url, method="GET", **kwargs):
+    headers = {'accept': 'application/json'}
+    if method == "GET":
+        response = requests.get(url, headers=headers, **kwargs)
+    elif method == "POST":
+        headers["Content-Type"] = "application/json"
+        response = requests.post(url, headers=headers, **kwargs)
 
     if response.status_code == 200:
         return response.json()
@@ -91,11 +96,18 @@ def get_cloud_server(
     cpu_spec = impact_data["verbose"]["CPU-1"]
     ram_spec = impact_data["verbose"]["RAM-1"]
 
+    average_power_value = impact_data["verbose"]["avg_power"]["value"]
+    average_power_unit = impact_data["verbose"]["avg_power"]["unit"]
+    use_time_ratio = impact_data["verbose"]["use_time_ratio"]["value"]
+
+    assert average_power_unit == "W"
+    assert float(use_time_ratio) == 1
+
     return base_efootprint_class(
         f"{provider} {instance_type} instances",
         carbon_footprint_fabrication=SourceValue(impacts["gwp"]["embedded"]["value"] * u.kg, impact_source),
         # TODO: document and challenge power calculation
-        power=SourceValue(cpu_spec["units"]["value"] * cpu_spec["avg_power"]["value"] * u.W, impact_source),
+        power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,
         idle_power=idle_power,
         ram=SourceValue(ram_spec["units"]["value"] * u.GB, impact_source),
@@ -106,19 +118,59 @@ def get_cloud_server(
 
 
 def on_premise_server_from_config(
-        nb_of_cpus, nb_of_core_units, nb_of_ram, ram_quantity_per_ram_unit, average_power):
-    impact_url = "https://api.boavizta.org/v1/server"
-    params = {"archetype": "compute-medium", "criteria": "gwp"}
+        name: str, nb_of_cpu_units: int, nb_of_cores_per_cpu_unit: int, nb_of_ram_units: int,
+        ram_quantity_per_unit_in_gb: int, average_carbon_intensity, lifespan=None, idle_power=None,
+        power_usage_effectiveness=None, server_utilization_rate=None):
+    impact_url = "https://api.boavizta.org/v1/server/"
+    params = {"verbose": "true", "archetype": "compute_medium", "criteria": ["gwp"]}
     data = {"model": {"type": "rack"},
-            "configuration": {"cpu": {"units": nb_of_cpus, "core_units": nb_of_core_units},
-                              "ram": {"units": nb_of_ram, "capacity": ram_quantity_per_ram_unit}}}
+            "configuration": {"cpu": {"units": nb_of_cpu_units, "core_units": nb_of_cores_per_cpu_unit / 2},
+                              "ram": [{"units": nb_of_ram_units, "capacity": ram_quantity_per_unit_in_gb}]}}
 
     impact_source = Source(name="Boavizta API servers",
-                           link=f"{impact_url}?{'&'.join([key + '=' + params[key] for key in params.keys()])}")
-    impact_data = call_boaviztapi(url=impact_url, params=params)
+                           link=f"{impact_url}?{'&'.join([key + '=' + str(params[key]) for key in params.keys()])}")
+    impact_data = call_boaviztapi(url=impact_url, params=params, json=data, method="POST")
+
+    impacts = impact_data["impacts"]
+    cpu_spec = impact_data["verbose"]["CPU-1"]
+    ram_spec = impact_data["verbose"]["RAM-1"]
+
+    if lifespan is None:
+        lifespan = SourceValue(6 * u.year, Sources.HYPOTHESIS)
+    if idle_power is None:
+        idle_power = SourceValue(0 * u.W, Sources.HYPOTHESIS)
+    if power_usage_effectiveness is None:
+        power_usage_effectiveness = SourceValue(1.4 * u.dimensionless, Sources.HYPOTHESIS)
+    if server_utilization_rate is None:
+        server_utilization_rate = SourceValue(0.7 * u.dimensionless, Sources.HYPOTHESIS)
+
+    average_power_value = impact_data["verbose"]["avg_power"]["value"]
+    average_power_unit = impact_data["verbose"]["avg_power"]["unit"]
+    use_time_ratio = impact_data["verbose"]["use_time_ratio"]["value"]
+
+    assert average_power_unit == "W"
+    assert float(use_time_ratio) == 1
+
+    return OnPremise(
+        name,
+        carbon_footprint_fabrication=SourceValue(impacts["gwp"]["embedded"]["value"] * u.kg, impact_source),
+        # TODO: document and challenge power calculation
+        power=SourceValue(average_power_value * u.W, impact_source),
+        lifespan=lifespan,
+        idle_power=idle_power,
+        ram=SourceValue(ram_spec["units"]["value"] * u.GB, impact_source),
+        nb_of_cpus=SourceValue(cpu_spec["core_units"]["value"] * u.core, impact_source),
+        power_usage_effectiveness=power_usage_effectiveness,
+        average_carbon_intensity=average_carbon_intensity,
+        server_utilization_rate=server_utilization_rate)
 
 
 if __name__ == "__main__":
     print_archetypes_and_their_configs()
 
     aws_server = get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
+
+    on_prem_server = on_premise_server_from_config(
+        "My server", 2, 24, 6, 16, SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
+
+    print(on_prem_server.power.value)
