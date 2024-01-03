@@ -110,8 +110,8 @@ def get_cloud_server(
         power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,
         idle_power=idle_power,
-        ram=SourceValue(ram_spec["units"]["value"] * u.GB, impact_source),
-        nb_of_cpus=SourceValue(cpu_spec["core_units"]["value"] * u.core, impact_source),
+        ram=SourceValue(ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, impact_source),
+        nb_of_cpus=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
@@ -124,7 +124,7 @@ def on_premise_server_from_config(
     impact_url = "https://api.boavizta.org/v1/server/"
     params = {"verbose": "true", "archetype": "compute_medium", "criteria": ["gwp"]}
     data = {"model": {"type": "rack"},
-            "configuration": {"cpu": {"units": nb_of_cpu_units, "core_units": nb_of_cores_per_cpu_unit / 2},
+            "configuration": {"cpu": {"units": nb_of_cpu_units, "core_units": nb_of_cores_per_cpu_unit},
                               "ram": [{"units": nb_of_ram_units, "capacity": ram_quantity_per_unit_in_gb}]}}
 
     impact_source = Source(name="Boavizta API servers",
@@ -158,8 +158,8 @@ def on_premise_server_from_config(
         power=SourceValue(average_power_value * u.W, impact_source),
         lifespan=lifespan,
         idle_power=idle_power,
-        ram=SourceValue(ram_spec["units"]["value"] * u.GB, impact_source),
-        nb_of_cpus=SourceValue(cpu_spec["core_units"]["value"] * u.core, impact_source),
+        ram=SourceValue(ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, impact_source),
+        nb_of_cpus=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
