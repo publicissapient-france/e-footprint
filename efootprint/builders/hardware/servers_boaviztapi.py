@@ -163,14 +163,3 @@ def on_premise_server_from_config(
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
-
-
-if __name__ == "__main__":
-    print_archetypes_and_their_configs()
-
-    aws_server = get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
-
-    on_prem_server = on_premise_server_from_config(
-        "My server", 2, 24, 6, 16, SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS))
-
-    print(on_prem_server.power.value)

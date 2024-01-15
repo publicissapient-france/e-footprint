@@ -3,7 +3,7 @@ from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
-from efootprint.core.hardware.device_population import DevicePopulation, Devices
+from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -12,6 +12,7 @@ from efootprint.constants.units import u
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.builders.hardware.devices_defaults import default_laptop
 
 import os
 
@@ -57,7 +58,7 @@ user_journey = UserJourney("Mean Youtube user journey", uj_steps=[streaming_step
 
 device_population = DevicePopulation(
     "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user, Sources.USER_INPUT),
-    Countries.FRANCE, [Devices.LAPTOP])
+    Countries.FRANCE, [default_laptop()])
 
 network = Network(
         "WIFI network",

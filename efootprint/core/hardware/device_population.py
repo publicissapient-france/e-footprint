@@ -133,35 +133,3 @@ class DevicePopulation(ModelingObject):
         else:
             self.instances_fabrication_footprint = ExplainableQuantity(
                 0 * u.kg / u.year, f"No fabrication footprint for {self.name} because no associated usage pattern")
-
-
-class Devices:
-    SMARTPHONE = Hardware(
-        PhysicalElements.SMARTPHONE,
-        carbon_footprint_fabrication=SourceValue(30 * u.kg, Sources.BASE_ADEME_V19),
-        power=SourceValue(1 * u.W, Sources.HYPOTHESIS),
-        lifespan=SourceValue(3 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_time=SourceValue(3.6 * u.hour / u.day, Sources.STATE_OF_MOBILE_2022),
-    )
-    LAPTOP = Hardware(
-        PhysicalElements.LAPTOP,
-        carbon_footprint_fabrication=SourceValue(156 * u.kg, Sources.BASE_ADEME_V19),
-        power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-        lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_time=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
-    )
-
-    BOX = Hardware(
-        PhysicalElements.BOX,
-        carbon_footprint_fabrication=SourceValue(78 * u.kg, Sources.BASE_ADEME_V19),
-        power=SourceValue(10 * u.W, Sources.HYPOTHESIS),
-        lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_time=SourceValue(24 * u.hour / u.day, Sources.HYPOTHESIS),
-    )
-    SCREEN = Hardware(
-        PhysicalElements.SCREEN,
-        carbon_footprint_fabrication=SourceValue(222 * u.kg, Sources.BASE_ADEME_V19),
-        power=SourceValue(30 * u.W, Sources.HYPOTHESIS),
-        lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
-        fraction_of_usage_time=SourceValue(7 * u.hour / u.day, Sources.HYPOTHESIS),
-    )

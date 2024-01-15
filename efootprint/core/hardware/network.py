@@ -71,16 +71,3 @@ class Network(ModelingObject):
         else:
             self.energy_footprint = ExplainableQuantity(
                 0 * u.kg / u.year, f"No energy footprint for {self.name} because no associated usage pattern")
-
-
-class Networks:
-    WIFI_NETWORK = Network(
-        PhysicalElements.WIFI_NETWORK,
-        SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY),
-        # SourceValue(0.08 * u("kWh/GB"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
-    )
-    MOBILE_NETWORK = Network(
-        PhysicalElements.MOBILE_NETWORK,
-        SourceValue(0.12 * u("kWh/GB"), Sources.TRAFICOM_STUDY),
-        # SourceValue(0.06 * u("kWh/GB"), Sources.ONE_BYTE_MODEL_SHIFT_2018)
-    )

@@ -3,13 +3,14 @@ from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
-from efootprint.core.hardware.device_population import DevicePopulation, Devices
+from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
+from efootprint.builders.hardware.devices_defaults import default_laptop
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
@@ -82,7 +83,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.uj = UserJourney(
             "Daily video usage", uj_steps=[cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step])
         cls.device_population = DevicePopulation(
-            "French video watchers on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE, [Devices.LAPTOP])
+            "French video watchers on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE, [default_laptop()])
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         cls.usage_pattern = UsagePattern(

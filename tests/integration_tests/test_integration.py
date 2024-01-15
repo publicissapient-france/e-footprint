@@ -4,7 +4,7 @@ from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
-from efootprint.core.hardware.device_population import DevicePopulation, Devices
+from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -15,6 +15,7 @@ from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.builders.hardware.devices_defaults import default_laptop, default_screen
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 from copy import deepcopy
@@ -63,7 +64,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.device_population = DevicePopulation(
             "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE,
-            [Devices.LAPTOP])
+            [default_laptop()])
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         cls.usage_pattern = UsagePattern(
@@ -185,9 +186,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in device population")
-        self.device_population.devices = [Devices.LAPTOP, Devices.SCREEN]
+        self.device_population.devices = [default_laptop(), default_screen()]
         assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
-        self.device_population.devices = [Devices.LAPTOP]
+        self.device_population.devices = [default_laptop()]
         assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)
 
     def test_update_server(self):
@@ -282,7 +283,7 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_device_population(self):
         logger.warning("Changing device population")
         new_device_pop = DevicePopulation(
-            "New device pop with different specs", SourceValue(10 * u.user), Countries.FRANCE, [Devices.LAPTOP])
+            "New device pop with different specs", SourceValue(10 * u.user), Countries.FRANCE, [default_laptop()])
 
         self.usage_pattern.device_population = new_device_pop
 
