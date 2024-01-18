@@ -25,3 +25,10 @@ If you have trouble managing the python versions on your laptop you can check ou
 export PYTHONPATH="./:$PYTHONPATH"
 python -m pytest --cov=tests
 ```
+
+## Push package to PyPi (if you have push rights)
+
+```shell
+python setup.py sdist
+twine upload --repository pypi dist/*
+```

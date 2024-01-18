@@ -13,14 +13,8 @@ class TestUserJourneyStep(TestCase):
         self.user_journey_step = UserJourneyStep(
             "test uj step", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
-            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            ram_needed=SourceValue(400 * u.MB / u.uj), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
-
-    def test_update_ram_needed(self):
-        self.user_journey_step.update_ram_needed()
-        expected_ram_needed = SourceValue(400 * u.MB / u.user_journey)
-
-        self.assertEqual(expected_ram_needed.value, self.user_journey_step.ram_needed.value)
 
     def test_user_journey_step_with_null_service_doesnt_break(self):
         uj_step_without_service = UserJourneyStep(
@@ -58,17 +52,17 @@ class TestUserJourney(TestCase):
         self.step1 = UserJourneyStep(
             "test_uj_step1", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
-            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            ram_needed=SourceValue(400 * u.MB / u.uj), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
         self.step2 = UserJourneyStep(
             "test_uj_step2", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
-            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            ram_needed=SourceValue(400 * u.MB / u.uj), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
         self.step3 = UserJourneyStep(
             "test_uj_step3", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
             data_upload=SourceValue(100 * u.MB / u.uj),
-            server_ram_per_data_transferred=SourceValue(2 * u.dimensionless), cpu_needed=SourceValue(2 * u.core / u.uj),
+            ram_needed=SourceValue(400 * u.MB / u.uj), cpu_needed=SourceValue(2 * u.core / u.uj),
             user_time_spent=SourceValue(2 * u.min / u.uj))
         self.one_user_journey = SourceValue(1 * u.user_journey)
         self.user_journey = UserJourney("test user journey", uj_steps=[self.step1])

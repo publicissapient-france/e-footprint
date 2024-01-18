@@ -26,8 +26,8 @@ server = Autoscaling(
     nb_of_cpus=SourceValue(24 * u.core, Sources.HYPOTHESIS),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
-)
+    server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS))
+
 storage = Storage(
     "SSD storage",
     carbon_footprint_fabrication=SourceValue(160 * u.kg, Sources.STORAGE_EMBODIED_CARBON_STUDY),
@@ -37,40 +37,56 @@ storage = Storage(
     storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-    data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
-)
+    data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS))
+
 service = Service(
-    "Youtube", server, storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+    "Youtube",
+    server=server,
+    storage=storage,
+    base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
     base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
 streaming_step = UserJourneyStep(
-    "20 min streaming on Youtube", service, SourceValue(50 * u.kB / u.uj, Sources.USER_INPUT),
-    SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_INPUT),
+    "20 min streaming on Youtube",
+    service=service,
+    data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_INPUT),
+    data_download=SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_INPUT),
     user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_INPUT),
-    request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS))
+    request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
+    cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
+    ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS))
 upload_step = UserJourneyStep(
-    "0.4s of upload", service, SourceValue(300 * u.kB / u.uj, Sources.USER_INPUT),
-    SourceValue(0 * u.GB / u.uj, Sources.USER_INPUT),
+    "0.4s of upload",
+    service=service,
+    data_upload=SourceValue(300 * u.kB / u.uj, Sources.USER_INPUT),
+    data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_INPUT),
     user_time_spent=SourceValue(0.4 * u.s / u.uj, Sources.USER_INPUT),
-    request_duration=SourceValue(0.4 * u.s, Sources.HYPOTHESIS))
+    request_duration=SourceValue(0.4 * u.s, Sources.HYPOTHESIS),
+    cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
+    ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
+)
 
 user_journey = UserJourney("Mean Youtube user journey", uj_steps=[streaming_step, upload_step])
 
 device_population = DevicePopulation(
-    "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user, Sources.USER_INPUT),
-    Countries.FRANCE, [default_laptop()])
+    "French Youtube users on laptop",
+    nb_devices=SourceValue(4e7 * 0.3 * u.user, Sources.USER_INPUT),
+    country=Countries.FRANCE,
+    devices=[default_laptop()])
 
 network = Network(
         "WIFI network",
-        SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY)
-    )
+        bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
 usage_pattern = UsagePattern(
-    "Daily Youtube usage", user_journey, device_population,
-    network, SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_INPUT),
-    SourceObject([[7, 12], [17, 23]]))
+    "Daily Youtube usage",
+    user_journey=user_journey,
+    device_population=device_population,
+    network=network,
+    user_journey_freq_per_user=SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_INPUT),
+    time_intervals=SourceObject([[7, 12], [17, 23]]))
 
-system = System("system 1", [usage_pattern])
+system = System("system 1", usage_patterns=[usage_pattern])
 
 print(f"Server carbon footprint is {(server.energy_footprint + server.instances_fabrication_footprint).value}")
 print(f"Total system carbon footprint is {system.total_footprint().value}")

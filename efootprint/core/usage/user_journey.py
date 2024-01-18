@@ -12,7 +12,7 @@ from typing import List, Set, Type, Optional
 class UserJourneyStep(ModelingObject):
     def __init__(self, name: str, service: Optional[Service], data_upload: SourceValue, data_download: SourceValue,
                  user_time_spent: SourceValue, request_duration: SourceValue = None,
-                 cpu_needed: SourceValue = None, server_ram_per_data_transferred: SourceValue = None):
+                 cpu_needed: SourceValue = None, ram_needed: SourceValue = None):
         super().__init__(name)
         self.ram_needed = None
         self.service = service
@@ -33,7 +33,7 @@ class UserJourneyStep(ModelingObject):
 
         if self.service is None:
             if (self.data_download.magnitude > 0 or self.data_upload.magnitude > 0 or request_duration
-                    or server_ram_per_data_transferred or cpu_needed):
+                    or ram_needed or cpu_needed):
                 raise ValueError(
                     f"When creating a user journey without service there should be no data transfer and no request"
                     f" duration or resource need")
@@ -48,14 +48,13 @@ class UserJourneyStep(ModelingObject):
                 # TODO: define a setter method to make this check also when the attribute is updated
                 logger.warning("Variable 'request_duration' is greater than variable 'user_time_spent'")
 
-            if server_ram_per_data_transferred is None:
-                server_ram_per_data_transferred = SourceValue(2 * u.dimensionless)
-            if not server_ram_per_data_transferred.value.check("[]"):
+            if ram_needed is None:
+                ram_needed = SourceValue(100 * u.MB / u.uj)
+            if not ram_needed.value.check("[] / [user_journey]"):
                 raise ValueError(
-                    "Variable 'server_ram_per_data_transferred' does not have the appropriate '[]' dimensionality")
-            self.server_ram_per_data_transferred = server_ram_per_data_transferred
-            self.server_ram_per_data_transferred.set_name(
-                f"Ratio of RAM server used over quantity of data sent to user during {self.name}")
+                    "Variable 'ram_needed' does not have the appropriate '[] / [user_journey]' dimensionality")
+            self.ram_needed = ram_needed
+            self.ram_needed.set_name(f"RAM needed on server {self.service.server.name} to process {self.name}")
 
             if cpu_needed is None:
                 cpu_needed = SourceValue(1 * u.core / u.uj)
@@ -63,9 +62,7 @@ class UserJourneyStep(ModelingObject):
                 raise ValueError(
                     "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
             self.cpu_needed = cpu_needed
-            self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process request {self.name}")
-
-            self.calculated_attributes = ["ram_needed"]
+            self.cpu_needed.set_name(f"CPU needed on server {self.service.server.name} to process {self.name}")
 
     @property
     def user_journeys(self):
@@ -99,11 +96,6 @@ class UserJourneyStep(ModelingObject):
         if type(other) not in [int, float]:
             raise ValueError(f"Can only multiply UserJourneyStep with int or float, not {type(other)}")
         raise NotImplementedError
-
-    def update_ram_needed(self):
-        ram_needed = (self.server_ram_per_data_transferred * self.data_download)
-
-        self.ram_needed = ram_needed.define_as_intermediate_calculation(f"RAM needed for {self.name}")
 
 
 class UserJourney(ModelingObject):

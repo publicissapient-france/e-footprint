@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.5] - 2024-01-18
+
+### Added
+- plot_footprints_by_category_and_object method to the System object, to display the CO2 emission breakdown by object type (server, storage, network, end user devices), emission types (from electricity and from fabrication), and by objects within object types (for example, the share of each server within the servers).
+- Default object builders that return a new object each time.
+- Server builders based on the [Boavizta API](https://github.com/Boavizta/boaviztapi).
+
+### Changed
+- Suppress the notion of server_ram_per_data_transferred to simply directly specify the ram_needed for UserJourneyStep objects.
+- More explicity quickstart with all attributes explicitely named and set.
+
+### Fixed
+
+
 ## [1.1.4] - 2023-11-13
 
 ### Added
