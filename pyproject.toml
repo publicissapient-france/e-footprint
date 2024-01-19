@@ -49,3 +49,4 @@ requests = '2.31'
 [tool.poetry.group.dev.dependencies]
 pytest = '*'
 pytest-cov = '*'
+jupyter = "^1.0.0"
