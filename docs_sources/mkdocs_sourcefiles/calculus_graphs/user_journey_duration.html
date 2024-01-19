@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c71a74 {
+             #mynetwork_8b0830 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c71a74" class="card-body"></div>
+            <div id="mynetwork_8b0830" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c71a74');
+                  var container = document.getElementById('mynetwork_8b0830');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step user journey step\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step user journey step", "label": "Time spent on step\nuser journey step", "shape": "dot", "size": 15, "title": "Time spent on step user journey step = 20.0 min/uj", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Time spent on step user journey step", "to": "Duration of user journey"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20.0 min/uj", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

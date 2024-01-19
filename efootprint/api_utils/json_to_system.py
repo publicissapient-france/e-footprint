@@ -1,6 +1,5 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
-from efootprint.utils.tools import time_it
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.units import u
@@ -12,7 +11,9 @@ from efootprint.core.hardware.servers.serverless import Serverless
 from efootprint.core.hardware.servers.on_premise import OnPremise
 from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.usage_pattern import UsagePattern
-from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
+from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.job import Job
+from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.constants.countries import Country
@@ -45,7 +46,6 @@ def json_to_explainable_quantity(input_dict):
     return output
 
 
-@time_it
 def json_to_system(system_dict):
     class_obj_dict = {}
     flat_obj_dict = {}
@@ -85,10 +85,6 @@ def json_to_system(system_dict):
                     mod_obj.__dict__[attr_key] = output_val
             mod_obj.__dict__["dont_handle_input_updates"] = False
             mod_obj.__dict__["init_has_passed"] = True
-
-    for class_key in ["UserJourneyStep", "UserJourney"]:
-        for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
-            mod_obj.compute_calculated_attributes()
 
     for mod_obj_key, mod_obj in class_obj_dict["DevicePopulation"].items():
         mod_obj.user_journey_freq_per_up = ExplainableObjectDict()

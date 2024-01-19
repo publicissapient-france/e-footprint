@@ -8,6 +8,7 @@ from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.core.usage.user_journey import UserJourney
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
@@ -31,8 +32,16 @@ class System(ModelingObject):
         self.initial_total_fabrication_footprints = None
 
     @property
+    def user_journeys(self) -> List[UserJourney]:
+        output_set = set()
+        for usage_pattern in self.usage_patterns:
+            output_set.update({usage_pattern.user_journey})
+
+        return list(output_set)
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.usage_patterns
+        return self.user_journeys
 
     @property
     def systems(self) -> List:
@@ -45,44 +54,44 @@ class System(ModelingObject):
         self.initial_total_fabrication_footprints = self.total_fabrication_footprints
 
     @property
-    def servers(self) -> Set[Server]:
+    def servers(self) -> List[Server]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update(usage_pattern.user_journey.servers)
 
-        return output_set
+        return list(output_set)
 
     @property
-    def storages(self) -> Set[Storage]:
+    def storages(self) -> List[Storage]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update(usage_pattern.user_journey.storages)
 
-        return output_set
+        return list(output_set)
 
     @property
-    def services(self) -> Set[Service]:
+    def services(self) -> List[Service]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update(usage_pattern.user_journey.services)
 
-        return output_set
+        return list(output_set)
 
     @property
-    def device_populations(self) -> Set[DevicePopulation]:
+    def device_populations(self) -> List[DevicePopulation]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update({usage_pattern.device_population})
 
-        return output_set
+        return list(output_set)
 
     @property
-    def networks(self) -> Set[Network]:
+    def networks(self) -> List[Network]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update({usage_pattern.network})
 
-        return output_set
+        return list(output_set)
 
     def get_storage_by_name(self, storage_name) -> Storage:
         for storage in self.storages:

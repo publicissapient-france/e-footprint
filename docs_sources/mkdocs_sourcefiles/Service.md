@@ -20,7 +20,7 @@ base cpu consumption of service in core.
 
 ## Backwards links
 
-- [UserJourneyStep](UserJourneyStep.md)
+- [Job](Job.md)
 
 
 ## Calculated attributes
@@ -31,8 +31,8 @@ Representation of the evolution throughout a typical day of the service hour by 
 Depends directly on:  
   
 - [usage pattern UTC](DevicePopulation.md#utc_time_intervals_per_up)
-- [RAM needed on server server to process user journey step](UserJourneyStep.md#ram_needed)
-- [Request duration to service in user journey step](UserJourneyStep.md#request_duration)
+- [RAM needed on server server to process streaming](Job.md#ram_needed)
+- [Request duration to service in streaming](Job.md#request_duration)
 - [Duration of user journey](UserJourney.md#duration)
 - [Number of user journeys in parallel during usage pattern](DevicePopulation.md#nb_user_journeys_in_parallel_during_usage_per_up)  
 
@@ -48,8 +48,8 @@ Representation of the evolution throughout a typical day of the service hour by 
 Depends directly on:  
   
 - [usage pattern UTC](DevicePopulation.md#utc_time_intervals_per_up)
-- [CPU needed on server server to process user journey step](UserJourneyStep.md#cpu_needed)
-- [Request duration to service in user journey step](UserJourneyStep.md#request_duration)
+- [CPU needed on server server to process streaming](Job.md#cpu_needed)
+- [Request duration to service in streaming](Job.md#request_duration)
 - [Duration of user journey](UserJourney.md#duration)
 - [Number of user journeys in parallel during usage pattern](DevicePopulation.md#nb_user_journeys_in_parallel_during_usage_per_up)  
 
@@ -64,7 +64,7 @@ ExplainableQuantity in terabyte / year, representing the storage needed for serv
   
 Depends directly on:  
   
-- [Data upload of request user journey step](UserJourneyStep.md#data_upload)
+- [Data upload of request streaming](Job.md#data_upload)
 - [User journey frequency of usage pattern](DevicePopulation.md#user_journey_freq_per_up)  
 
 through the following calculations:  

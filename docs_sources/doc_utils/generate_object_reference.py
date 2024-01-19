@@ -76,8 +76,8 @@ def generate_object_reference(automatically_update_yaml=False):
 
     nav_items = []
     for mod_obj in (
-            system, usage_pattern, user_journey, device_population, country, device, network, streaming_step, service,
-            server, storage):
+            system, usage_pattern, user_journey, device_population, country, device, network, streaming_step,
+            streaming_step.jobs[0], service, server, storage):
         mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
             set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
 

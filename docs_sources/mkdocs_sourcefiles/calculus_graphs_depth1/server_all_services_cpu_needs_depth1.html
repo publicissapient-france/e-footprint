@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_c90a30 {
+             #mynetwork_7552ea {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_c90a30" class="card-body"></div>
+            <div id="mynetwork_7552ea" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_c90a30');
+                  var container = document.getElementById('mynetwork_7552ea');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on server", "label": "CPU needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "CPU needs of all services running on server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process user\njourney step * Number of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on server", "label": "CPU needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "CPU needs of all services running on server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour cpu need", "to": "CPU needs of all services running on server"}]);
 
                   nodeColors = {};

@@ -47,7 +47,7 @@
                 "20 min streaming on Youtube + its uuid",
                 "0.4s of upload + its uuid",
                 "Dailymotion step + its uuid",
-                "20 min streaming on Tiktok + its uuid"
+                "20 min streaming on TikTok + its uuid"
             ]
         }
     },
@@ -55,34 +55,6 @@
         "20 min streaming on Youtube + its uuid": {
             "name": "20 min streaming on Youtube",
             "id": "20 min streaming on Youtube + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Server 1 to process 20 min streaming on Youtube from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Youtube + its uuid",
-            "data_upload": {
-                "label": "Data upload of request 20 min streaming on Youtube from hypothesis",
-                "value": 50.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request 20 min streaming on Youtube from hypothesis",
-                "value": 0.8333333333333334,
-                "unit": "gigabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
                 "value": 20.0,
@@ -92,56 +64,13 @@
                     "link": null
                 }
             },
-            "request_duration": {
-                "label": "Request duration to Youtube in 20 min streaming on Youtube from hypothesis",
-                "value": 4,
-                "unit": "minute",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_needed": {
-                "label": "CPU needed on server Server 1 to process 20 min streaming on Youtube from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
+            "jobs": [
+                "streaming + its uuid"
+            ]
         },
         "0.4s of upload + its uuid": {
             "name": "0.4s of upload",
             "id": "0.4s of upload + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Server 1 to process 0.4s of upload from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Youtube + its uuid",
-            "data_upload": {
-                "label": "Data upload of request 0.4s of upload from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request 0.4s of upload from hypothesis",
-                "value": 0.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "user_time_spent": {
                 "label": "Time spent on step 0.4s of upload from hypothesis",
                 "value": 1.0,
@@ -151,99 +80,52 @@
                     "link": null
                 }
             },
-            "request_duration": {
-                "label": "Request duration to Youtube in 0.4s of upload from hypothesis",
-                "value": 0.1,
-                "unit": "second",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_needed": {
-                "label": "CPU needed on server Server 1 to process 0.4s of upload from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
+            "jobs": [
+                "upload + its uuid"
+            ]
         },
         "Dailymotion step + its uuid": {
             "name": "Dailymotion step",
             "id": "Dailymotion step + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Server 1 to process Dailymotion step from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Dailymotion + its uuid",
-            "data_upload": {
-                "label": "Data upload of request Dailymotion step from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request Dailymotion step from hypothesis",
-                "value": 3.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "user_time_spent": {
                 "label": "Time spent on step Dailymotion step from hypothesis",
-                "value": 60.0,
-                "unit": "second / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "request_duration": {
-                "label": "Request duration to Dailymotion in Dailymotion step from hypothesis",
-                "value": 1,
-                "unit": "second",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_needed": {
-                "label": "CPU needed on server Server 1 to process Dailymotion step from hypothesis",
                 "value": 1.0,
-                "unit": "core / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
-        },
-        "20 min streaming on Tiktok + its uuid": {
-            "name": "20 min streaming on Tiktok",
-            "id": "20 min streaming on Tiktok + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Server 2 to process 20 min streaming on Tiktok from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
+                "unit": "minute / user_journey",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
-            "service": "TikTok server + its uuid",
+            "jobs": [
+                "dailymotion + its uuid"
+            ]
+        },
+        "20 min streaming on TikTok + its uuid": {
+            "name": "20 min streaming on TikTok",
+            "id": "20 min streaming on TikTok + its uuid",
+            "user_time_spent": {
+                "label": "Time spent on step 20 min streaming on TikTok from hypothesis",
+                "value": 20.0,
+                "unit": "minute / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "jobs": [
+                "tiktok + its uuid",
+                "tiktok analytics + its uuid"
+            ]
+        }
+    },
+    "Job": {
+        "streaming + its uuid": {
+            "name": "streaming",
+            "id": "streaming + its uuid",
+            "job_type": "undefined",
+            "service": "Youtube + its uuid",
             "data_upload": {
-                "label": "Data upload of request 20 min streaming on Tiktok from hypothesis",
+                "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
                 "unit": "kilobyte / user_journey",
                 "source": {
@@ -252,7 +134,7 @@
                 }
             },
             "data_download": {
-                "label": "Data download of request 20 min streaming on Tiktok from hypothesis",
+                "label": "Data download of request streaming from hypothesis",
                 "value": 0.8333333333333334,
                 "unit": "gigabyte / user_journey",
                 "source": {
@@ -260,17 +142,8 @@
                     "link": null
                 }
             },
-            "user_time_spent": {
-                "label": "Time spent on step 20 min streaming on Tiktok from hypothesis",
-                "value": 20.0,
-                "unit": "minute / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "request_duration": {
-                "label": "Request duration to TikTok server in 20 min streaming on Tiktok from hypothesis",
+                "label": "Request duration to Youtube in streaming from hypothesis",
                 "value": 4,
                 "unit": "minute",
                 "source": {
@@ -278,15 +151,233 @@
                     "link": null
                 }
             },
+            "ram_needed": {
+                "label": "RAM needed on server Server 1 to process streaming from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "cpu_needed": {
-                "label": "CPU needed on server Server 2 to process 20 min streaming on Tiktok from hypothesis",
+                "label": "CPU needed on server Server 1 to process streaming from hypothesis",
                 "value": 1.0,
                 "unit": "core / user_journey",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "description": ""
+        },
+        "upload + its uuid": {
+            "name": "upload",
+            "id": "upload + its uuid",
+            "job_type": "undefined",
+            "service": "Youtube + its uuid",
+            "data_upload": {
+                "label": "Data upload of request upload from hypothesis",
+                "value": 300.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request upload from hypothesis",
+                "value": 0.0,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to Youtube in upload from hypothesis",
+                "value": 0.4,
+                "unit": "second",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Server 1 to process upload from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_needed": {
+                "label": "CPU needed on server Server 1 to process upload from hypothesis",
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "description": ""
+        },
+        "dailymotion + its uuid": {
+            "name": "dailymotion",
+            "id": "dailymotion + its uuid",
+            "job_type": "undefined",
+            "service": "Dailymotion + its uuid",
+            "data_upload": {
+                "label": "Data upload of request dailymotion from hypothesis",
+                "value": 300.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request dailymotion from hypothesis",
+                "value": 3.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to Dailymotion in dailymotion from hypothesis",
+                "value": 1,
+                "unit": "second",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Server 1 to process dailymotion from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_needed": {
+                "label": "CPU needed on server Server 1 to process dailymotion from hypothesis",
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "description": ""
+        },
+        "tiktok + its uuid": {
+            "name": "tiktok",
+            "id": "tiktok + its uuid",
+            "job_type": "undefined",
+            "service": "TikTok service + its uuid",
+            "data_upload": {
+                "label": "Data upload of request tiktok from hypothesis",
+                "value": 0.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request tiktok from hypothesis",
+                "value": 0.8333333333333334,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to TikTok service in tiktok from hypothesis",
+                "value": 4,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Server 2 to process tiktok from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_needed": {
+                "label": "CPU needed on server Server 2 to process tiktok from hypothesis",
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "description": ""
+        },
+        "tiktok analytics + its uuid": {
+            "name": "tiktok analytics",
+            "id": "tiktok analytics + its uuid",
+            "job_type": "undefined",
+            "service": "TikTok analytics + its uuid",
+            "data_upload": {
+                "label": "Data upload of request tiktok analytics from hypothesis",
+                "value": 50.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request tiktok analytics from hypothesis",
+                "value": 0.0,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to TikTok analytics in tiktok analytics from hypothesis",
+                "value": 4,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server TikTok Analytics server to process tiktok analytics from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_needed": {
+                "label": "CPU needed on server TikTok Analytics server to process tiktok analytics from hypothesis",
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "description": ""
         }
     },
     "Service": {
@@ -338,13 +429,13 @@
                 }
             }
         },
-        "TikTok server + its uuid": {
-            "name": "TikTok server",
-            "id": "TikTok server + its uuid",
+        "TikTok service + its uuid": {
+            "name": "TikTok service",
+            "id": "TikTok service + its uuid",
             "server": "Server 2 + its uuid",
             "storage": "Default SSD storage + its uuid",
             "base_ram_consumption": {
-                "label": "Base RAM consumption of TikTok server from hypothesis",
+                "label": "Base RAM consumption of TikTok service from hypothesis",
                 "value": 300,
                 "unit": "megabyte",
                 "source": {
@@ -353,7 +444,31 @@
                 }
             },
             "base_cpu_consumption": {
-                "label": "Base CPU consumption of TikTok server from hypothesis",
+                "label": "Base CPU consumption of TikTok service from hypothesis",
+                "value": 2,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        },
+        "TikTok analytics + its uuid": {
+            "name": "TikTok analytics",
+            "id": "TikTok analytics + its uuid",
+            "server": "TikTok Analytics server + its uuid",
+            "storage": "Default SSD storage + its uuid",
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of TikTok analytics from hypothesis",
+                "value": 300,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of TikTok analytics from hypothesis",
                 "value": 2,
                 "unit": "core",
                 "source": {
@@ -450,6 +565,100 @@
             },
             "power_usage_effectiveness": {
                 "label": "PUE of Server 1 from hypothesis",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
+        },
+        "TikTok Analytics server + its uuid": {
+            "name": "TikTok Analytics server",
+            "id": "TikTok Analytics server + its uuid",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
+                "value": 600,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of TikTok Analytics server from hypothesis",
+                "value": 300,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of TikTok Analytics server from hypothesis",
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "TikTok Analytics server fraction of usage time from hypothesis",
+                "value": 1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from hypothesis",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "TikTok Analytics server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of TikTok Analytics server from hypothesis",
+                "value": 50,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram": {
+                "label": "RAM of TikTok Analytics server from hypothesis",
+                "value": 128,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_cores": {
+                "label": "Nb cpus cores of TikTok Analytics server from hypothesis",
+                "value": 24,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of TikTok Analytics server from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
                 "source": {

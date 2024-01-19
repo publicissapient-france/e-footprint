@@ -1,7 +1,9 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
-from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
+from efootprint.core.usage.job import Job
+from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
@@ -54,13 +56,17 @@ class IntegrationTest(IntegrationTestBaseClass):
             "Youtube", cls.server, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
+        cls.streaming_job = Job("streaming", cls.service, data_upload=SourceValue(50 * u.kB / u.uj),
+                      data_download=SourceValue((2.5 / 3) * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
+                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.streaming_step = UserJourneyStep(
-            "20 min streaming on Youtube", cls.service, SourceValue(50 * u.kB / u.uj),
-            SourceValue((2.5 / 3) * u.GB / u.uj),
-            user_time_spent=SourceValue(20 * u.min / u.uj), request_duration=SourceValue(4 * u.min))
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[cls.streaming_job])
+
+        cls.upload_job = Job("upload", cls.service, data_upload=SourceValue(300 * u.kB / u.uj),
+                      data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(0.4 * u.s),
+                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.upload_step = UserJourneyStep(
-            "0.4s of upload", cls.service, SourceValue(300 * u.kB / u.uj), SourceValue(0 * u.kB / u.uj),
-            user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
+            "0.4s of upload", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[cls.upload_job])
 
         cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.device_population = DevicePopulation(
@@ -180,6 +186,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         test_variations_on_obj_inputs(self.network)
         test_variations_on_obj_inputs(
             self.usage_pattern, attrs_to_skip=["time_intervals"])
+        test_variations_on_obj_inputs(self.streaming_job)
 
     def test_time_intervals_change(self):
         logger.warning("Updating time intervals in usage pattern")
@@ -260,16 +267,37 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.storage])
         self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
+    def test_update_jobs(self):
+        logger.warning("Modifying streaming jobs")
+        new_job = Job("new job", self.service, data_upload=SourceValue(5 * u.kB / u.uj),
+                      data_download=SourceValue(5 * u.GB / u.uj), request_duration=SourceValue(4 * u.s),
+                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+
+        self.streaming_step.jobs += [new_job]
+
+        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.footprint_has_not_changed([self.device_population])
+        self.footprint_has_changed([self.storage, self.server, self.network])
+
+        logger.warning("Changing back to previous jobs")
+        self.streaming_step.jobs = [self.streaming_job]
+
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.footprint_has_not_changed([self.storage, self.server, self.network, self.device_population])
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+
     def test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
         new_step = UserJourneyStep(
-            "new_step", self.service, SourceValue(5 * u.kB / u.uj),
-            SourceValue(5 * u.GB / u.uj),
-            user_time_spent=SourceValue(2 * u.min / u.uj), request_duration=SourceValue(4 * u.s))
+            "new_step", user_time_spent=SourceValue(2 * u.min / u.uj),
+            jobs=[Job("new job", self.service, data_upload=SourceValue(5 * u.kB / u.uj),
+                      data_download=SourceValue(5 * u.GB / u.uj), request_duration=SourceValue(4 * u.s),
+                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))]
+        )
         self.uj.uj_steps = [new_step]
 
         self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
-        self.footprint_has_changed([self.storage, self.server, self.network, self.device_population])
+        self.footprint_has_changed([self.storage, self.server, self.network])
 
         logger.warning("Changing back to previous uj steps")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
@@ -339,28 +367,26 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.network])
         self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
-    def test_add_uj_step_without_service(self):
+    def test_add_uj_step_without_job(self):
         logger.warning("Add uj step without service")
 
-        step_without_service = UserJourneyStep(
-            "User checks her phone", None, SourceValue(0 * u.kB / u.uj),
-            SourceValue(0 * u.GB / u.uj),
-            user_time_spent=SourceValue(20 * u.min / u.uj))
+        step_without_job = UserJourneyStep(
+            "User checks her phone", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[])
 
-        self.uj.add_step(step_without_service)
+        self.uj.add_step(step_without_job)
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.footprint_has_changed([self.device_population])
         self.assertNotEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Setting user time spent of the new step to 0s")
-        step_without_service.user_time_spent = SourceValue(0 * u.min / u.uj)
+        step_without_job.user_time_spent = SourceValue(0 * u.min / u.uj)
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Deleting the new uj step")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
-        step_without_service.self_delete()
+        step_without_job.self_delete()
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
 

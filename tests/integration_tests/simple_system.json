@@ -53,34 +53,6 @@
         "20 min streaming on Youtube + its uuid": {
             "name": "20 min streaming on Youtube",
             "id": "20 min streaming on Youtube + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Default server to process 20 min streaming on Youtube from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Youtube + its uuid",
-            "data_upload": {
-                "label": "Data upload of request 20 min streaming on Youtube from hypothesis",
-                "value": 50.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request 20 min streaming on Youtube from hypothesis",
-                "value": 0.8333333333333334,
-                "unit": "gigabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
                 "value": 20.0,
@@ -90,56 +62,13 @@
                     "link": null
                 }
             },
-            "request_duration": {
-                "label": "Request duration to Youtube in 20 min streaming on Youtube from hypothesis",
-                "value": 4,
-                "unit": "minute",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "cpu_needed": {
-                "label": "CPU needed on server Default server to process 20 min streaming on Youtube from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
+            "jobs": [
+                "streaming + its uuid"
+            ]
         },
         "0.4s of upload + its uuid": {
             "name": "0.4s of upload",
             "id": "0.4s of upload + its uuid",
-            "ram_needed": {
-                "label": "RAM needed on server Default server to process 0.4s of upload from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "service": "Youtube + its uuid",
-            "data_upload": {
-                "label": "Data upload of request 0.4s of upload from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "data_download": {
-                "label": "Data download of request 0.4s of upload from hypothesis",
-                "value": 0.0,
-                "unit": "kilobyte / user_journey",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
             "user_time_spent": {
                 "label": "Time spent on step 0.4s of upload from hypothesis",
                 "value": 1.0,
@@ -149,24 +78,115 @@
                     "link": null
                 }
             },
+            "jobs": [
+                "upload + its uuid"
+            ]
+        }
+    },
+    "Job": {
+        "streaming + its uuid": {
+            "name": "streaming",
+            "id": "streaming + its uuid",
+            "job_type": "undefined",
+            "service": "Youtube + its uuid",
+            "data_upload": {
+                "label": "Data upload of request streaming from hypothesis",
+                "value": 50.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request streaming from hypothesis",
+                "value": 0.8333333333333334,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
             "request_duration": {
-                "label": "Request duration to Youtube in 0.4s of upload from hypothesis",
-                "value": 0.1,
-                "unit": "second",
+                "label": "Request duration to Youtube in streaming from hypothesis",
+                "value": 4,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Default server to process streaming from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
             "cpu_needed": {
-                "label": "CPU needed on server Default server to process 0.4s of upload from hypothesis",
+                "label": "CPU needed on server Default server to process streaming from hypothesis",
                 "value": 1.0,
                 "unit": "core / user_journey",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
-            }
+            },
+            "description": ""
+        },
+        "upload + its uuid": {
+            "name": "upload",
+            "id": "upload + its uuid",
+            "job_type": "undefined",
+            "service": "Youtube + its uuid",
+            "data_upload": {
+                "label": "Data upload of request upload from hypothesis",
+                "value": 300.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "data_download": {
+                "label": "Data download of request upload from hypothesis",
+                "value": 0.0,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "request_duration": {
+                "label": "Request duration to Youtube in upload from hypothesis",
+                "value": 0.4,
+                "unit": "second",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram_needed": {
+                "label": "RAM needed on server Default server to process upload from hypothesis",
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "cpu_needed": {
+                "label": "CPU needed on server Default server to process upload from hypothesis",
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "description": ""
         }
     },
     "Service": {

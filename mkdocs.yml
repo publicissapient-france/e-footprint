@@ -34,6 +34,8 @@ nav:
       - UsagePattern: UsagePattern.md
       - UserJourney: UserJourney.md
       - UserJourneyStep: UserJourneyStep.md
+      - Job: Job.md
   - Service: Service.md
   - System: System.md
   - Country: Country.md
+- Changelog: Changelog.md

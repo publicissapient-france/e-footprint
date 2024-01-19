@@ -1,6 +1,8 @@
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.hardware.hardware_base_classes import Hardware
-from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
+from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.user_journey_step import UserJourneyStep
+from efootprint.core.usage.job import Job
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
@@ -43,14 +45,20 @@ service = Service(
     base_cpu_consumption=SourceValue(2 * u.core, source=None))
 
 streaming_step = UserJourneyStep(
-    "user journey step",
-    service=service,
-    data_upload=SourceValue(50 * u.kB / u.uj, source=None),
-    data_download=SourceValue((2.5 / 3) * u.GB / u.uj, source=None),
+    "20 min streaming",
     user_time_spent=SourceValue(20 * u.min / u.uj, source=None),
-    request_duration=SourceValue(4 * u.min, source=None),
-    cpu_needed=SourceValue(1 * u.core / u.uj, source=None),
-    ram_needed=SourceValue(50 * u.MB / u.uj, source=None))
+    jobs=[
+        Job(
+            "streaming",
+            service=service,
+            data_upload=SourceValue(0.05 * u.MB / u.uj, source=None),
+            data_download=SourceValue(800 * u.MB / u.uj, source=None),
+            request_duration=SourceValue(4 * u.min, source=None),
+            cpu_needed=SourceValue(1 * u.core / u.uj, source=None),
+            ram_needed=SourceValue(50 * u.MB / u.uj, source=None)
+            )
+        ]
+    )
 
 user_journey = UserJourney("user journey", uj_steps=[streaming_step])
 
