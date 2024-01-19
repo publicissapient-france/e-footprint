@@ -3,6 +3,13 @@
 # verbose regular expressions by Black.  Use [ ] to denote a significant space
 # character.
 
+[tool.poetry]
+name = "efootprint"
+version = "1.1.5"
+description = "Digital service environmental footprint model"
+authors = ["Vincent Villet for Publicis Sapient"]
+readme = "README.md"
+
 [tool.black]
 line-length = 120
 target-version = ['py37', 'py38', 'py310']
@@ -28,3 +35,17 @@ exclude = '''
   | profiling
 )/
 '''
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pint = '0.22'
+matplotlib = '3.8.0'
+pytz = '2023.3.post1'
+pyvis = '0.3.2'
+plotly = '5.18'
+pandas = '2.1'
+requests = '2.31'
+
+[tool.poetry.group.dev.dependencies]
+pytest = '*'
+pytest-cov = '*'
