@@ -25,7 +25,7 @@ If you have trouble managing the python versions on your laptop you can check ou
 For installing poetry and command line auto-complete, see [this documentation](https://python-poetry.org/docs/). Then you can do:
 
 ```shell
-poetry install
+poetry install --with dev
 poetry run ipython
 Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0]
 Type 'copyright', 'credits' or 'license' for more information
