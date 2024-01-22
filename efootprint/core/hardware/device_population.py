@@ -2,9 +2,8 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.countries import Country
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.constants.physical_elements import PhysicalElements
 from efootprint.core.hardware.hardware_base_classes import Hardware
-from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.sources import SourceValue
 from efootprint.constants.units import u
 
 from typing import List

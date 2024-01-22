@@ -1,4 +1,3 @@
-from efootprint.constants.physical_elements import PhysicalElements
 from efootprint.constants.sources import SourceValue, Sources
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
@@ -12,7 +11,7 @@ class TestAutoscaling(TestCase):
     def setUp(self):
         self.country = MagicMock()
         self.server_base = Autoscaling(
-            PhysicalElements.AUTOSCALING,
+            "Autoscaling",
             carbon_footprint_fabrication=SourceValue(0 * u.kg, Sources.BASE_ADEME_V19),
             power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),

@@ -1,7 +1,6 @@
 from efootprint.constants.countries import Countries
 from efootprint.constants.sources import Sources, SourceValue
 from efootprint.core.hardware.network import Network
-from efootprint.constants.physical_elements import PhysicalElements
 from efootprint.constants.units import u
 
 from unittest import TestCase
@@ -10,7 +9,7 @@ from unittest.mock import MagicMock
 
 class TestNetwork(TestCase):
     def setUp(self):
-        self.network = Network(PhysicalElements.WIFI_NETWORK, SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
+        self.network = Network("Wifi network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         self.network.dont_handle_input_updates = True
 
         self.usage_pattern = MagicMock()

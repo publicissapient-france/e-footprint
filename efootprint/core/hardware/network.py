@@ -1,7 +1,6 @@
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-from efootprint.constants.physical_elements import PhysicalElements
-from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.sources import SourceValue
 from efootprint.constants.units import u
 
 from typing import List
