@@ -7,12 +7,15 @@ The current perimeter is the carbon footprint associated with the fabrication an
 # Getting started
 
 ## Documentation
+
 Here is the link to the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
 
 ## Didactic interface
+
 You can explore the model’s [didactic interface](https://publicis-sapient-e-footprint-model.streamlit.app/). This interface allows for a limited use of the model, with only one user journey on a single service when the code allows for an unlimited amount of objects. The goal is to let users discover the inputs and explore the calculation graphs (see below).
 
 ## Modeling examples
+
 Checkout our open source [e-footprint modeling use cases](https://github.com/publicissapient-france/e-footprint-modelings).
 
 ## Quickstart
@@ -31,10 +34,21 @@ You can then run the [quickstart](quickstart.py) script to familiarize yourself 
     <figcaption>Calculation graph: user inputs in gold, hypothesis in darkred, and intermediate calculations in pale blue. Hover over a node to read the formula.</figcaption>
 </figure>
 
+### Test E-footprint using a Jupyter notebook
+
+```sh
+# Start Jupyter server with poetry
+poetry run jupyter notebook quickstart.ipynb
+```
+
+Access the notebook at: [http://127.0.0.1:8888/notebooks/quickstart.ipynb](http://127.0.0.1:8888/notebooks/quickstart.ipynb)
+
 ## Dev setup
+
 Check out [INSTALL.md](./INSTALL.md).
 
 # Code logic
+
 The code has been architectured to separate modeling from optimization from API logic. The goal is to make contribution to the modeling logic as straightforward as possible.
 
 - Scripts that deal with modeling logic are located in [efootprint/core](./efootprint/core).
@@ -42,7 +56,9 @@ The code has been architectured to separate modeling from optimization from API 
 - The API doesn’t exist yet but will be also decoupled from the modeling and optimization logics.
 
 # Contributing
+
 Check out [CONTRIBUTING.md](./CONTRIBUTING.md)
 
 # License
+
 [GNU Affero General Public License v3.0](./LICENSE)
