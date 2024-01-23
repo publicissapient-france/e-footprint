@@ -2,10 +2,9 @@ from efootprint.constants.sources import Source, Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.constants.units import u
+from efootprint.core.hardware.servers.on_premise import OnPremise
 
 import requests
-
-from efootprint.core.hardware.servers.on_premise import OnPremise
 
 
 def call_boaviztapi(url, method="GET", **kwargs):
@@ -19,7 +18,7 @@ def call_boaviztapi(url, method="GET", **kwargs):
     if response.status_code == 200:
         return response.json()
     else:
-        raise ConnectionError(f"Request failed with status code {response.status_code}")
+        print(f"{method} request to {url} with params {kwargs} failed with status code {response.status_code}")
 
 
 def get_archetypes_and_their_configs_and_impacts():
@@ -29,9 +28,12 @@ def get_archetypes_and_their_configs_and_impacts():
             url="https://api.boavizta.org/v1/server/archetype_config", params={"archetype": archetype})
         impact = call_boaviztapi(
             url="https://api.boavizta.org/v1/server/", params={"archetype": archetype})
-        output_dict[archetype] = {}
-        output_dict[archetype]["config"] = configuration
-        output_dict[archetype]["impact"] = impact
+        if impact is None:
+            print(f"No impact for archetype {archetype}")
+        else:
+            output_dict[archetype] = {}
+            output_dict[archetype]["config"] = configuration
+            output_dict[archetype]["impact"] = impact
 
     return output_dict
 
@@ -42,35 +44,46 @@ def print_archetypes_and_their_configs():
     for archetype in archetypes_data.keys():
         config = archetypes_data[archetype]["config"]
         impact = archetypes_data[archetype]["impact"]
-        units_with_tab_car = 'units\t'
-        # Correction for https://github.com/Boavizta/boaviztapi/issues/257
-        nb_of_ssd_units = config['SSD'][units_with_tab_car]['default']
-        if "," in str(nb_of_ssd_units):
-            nb_of_ssd_units = int(nb_of_ssd_units.split(",")[0])
+        if "default" in config['CPU']['core_units'].keys():
+            nb_cpu_core_units = config['CPU']['core_units']['default']
+        else:
+            nb_cpu_core_units = impact["verbose"]['CPU-1']['core_units']['value']
+
+        nb_ssd_units = config['SSD']["units"]['default']
+        nb_hdd_units = config['HDD']["units"]['default']
+
+        if nb_hdd_units > 0 and nb_ssd_units > 0:
+            raise ValueError(
+                f"Archetype {archetype} has both SSD and HDD, please check and delete this exception raising if ok")
+        storage_type = "SSD"
+        if nb_hdd_units > 0:
+            storage_type = "HDD"
+        nb_storage_units = config[storage_type]["units"]['default']
+
         print(
             f"{archetype}: type {config['CASE']['case_type']['default']},\n"
-            f"    {config['CPU']['units']['default']} cpu units with {config['CPU']['core_units']['default']} core units,\n"
+            f"    {config['CPU']['units']['default']} cpu units with {nb_cpu_core_units} core units,\n"
             f"    {config['RAM']['units']['default']} RAM units with {config['RAM']['capacity']['default']} GB capacity,\n"
-            f"    {nb_of_ssd_units} SSD units with {config['SSD']['capacity']['default']} GB capacity,")
-        if len(config["HDD"]["units"].keys()) > 0:
-            print(f"    {config['HDD']['units']['default']} HDD units with {config['HDD']['capacity']['default']} GB capacity,")
+            f"    {nb_storage_units} {storage_type} units with {config[storage_type]['capacity']['default']} GB capacity,")
 
         total_gwp_embedded_value = impact["impacts"]["gwp"]["embedded"]["value"]
-        # Correction for https://github.com/Boavizta/boaviztapi/issues/256 by multiplying by nb of SSD units
-        ssd_gwp_embedded_value__raw = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["embedded"]["value"]
-        ssd_gwp_embedded_value__corrected = ssd_gwp_embedded_value__raw * nb_of_ssd_units
-
         total_gwp_embedded_unit = impact["impacts"]["gwp"]["unit"]
-        ssd_gwp_embedded_unit = impact["verbose"]["SSD-1"]["impacts"]["gwp"]["unit"]
 
-        assert total_gwp_embedded_unit == ssd_gwp_embedded_unit
+        if nb_storage_units > 0:
+            storage_gwp_embedded_value = impact["verbose"][f"{storage_type}-1"]["impacts"]["gwp"]["embedded"]["value"]
+            storage_gwp_embedded_unit = impact["verbose"][f"{storage_type}-1"]["impacts"]["gwp"]["unit"]
+
+            assert total_gwp_embedded_unit == storage_gwp_embedded_unit
+        else:
+            storage_gwp_embedded_value = 0
+            storage_gwp_embedded_unit = "kg"
 
         average_power_value = impact["verbose"]["avg_power"]["value"]
         average_power_unit = impact["verbose"]["avg_power"]["unit"]
 
         print(
-            f"    Impact fabrication compute: {total_gwp_embedded_value - ssd_gwp_embedded_value__raw} {total_gwp_embedded_unit},\n"
-            f"    Impact fabrication SSD: {ssd_gwp_embedded_value__corrected} {ssd_gwp_embedded_unit},\n"
+            f"    Impact fabrication compute: {total_gwp_embedded_value - storage_gwp_embedded_value} {total_gwp_embedded_unit},\n"
+            f"    Impact fabrication storage: {storage_gwp_embedded_value} {storage_gwp_embedded_unit},\n"
             f"    Average power: {round(average_power_value, 1)} {average_power_unit}\n")
 
 
@@ -123,7 +136,7 @@ def on_premise_server_from_config(
         ram_quantity_per_unit_in_gb: int, average_carbon_intensity, lifespan=None, idle_power=None,
         power_usage_effectiveness=None, server_utilization_rate=None):
     impact_url = "https://api.boavizta.org/v1/server/"
-    params = {"verbose": "true", "archetype": "compute_medium", "criteria": ["gwp"]}
+    params = {"verbose": "true", "archetype": "platform_compute_medium", "criteria": ["gwp"]}
     data = {"model": {"type": "rack"},
             "configuration": {"cpu": {"units": nb_of_cpu_units, "core_units": nb_of_cores_per_cpu_unit},
                               "ram": [{"units": nb_of_ram_units, "capacity": ram_quantity_per_unit_in_gb}]}}
@@ -164,3 +177,7 @@ def on_premise_server_from_config(
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
+
+
+if __name__ == "__main__":
+    print_archetypes_and_their_configs()

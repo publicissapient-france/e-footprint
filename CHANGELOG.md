@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.6] - 2024-01-29
+
+### Added
+
+### Changed
+- Put all the naming logic that was in SourceValue and SourceObject classes into ExplainableObject
+
+### Fixed
+- Boaviztapi server builders to accommodate for Boaviztapi update. 
+
 ## [1.1.5] - 2024-01-18
 
 ### Added
