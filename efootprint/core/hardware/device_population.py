@@ -3,7 +3,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.constants.countries import Country
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.hardware.hardware_base_classes import Hardware
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 from typing import List
@@ -20,7 +20,7 @@ class DevicePopulation(ModelingObject):
         self.nb_user_journeys_in_parallel_during_usage_per_up = ExplainableObjectDict()
         self.utc_time_intervals_per_up = ExplainableObjectDict()
         self.nb_devices = nb_devices
-        self.nb_devices.set_name(f"Nb devices in {self.name}")
+        self.nb_devices.set_label(f"Nb devices in {self.name}")
         self.country = country
 
         self.calculated_attributes = [
@@ -65,13 +65,13 @@ class DevicePopulation(ModelingObject):
     def update_utc_time_intervals_per_up(self):
         for usage_pattern in self.usage_patterns:
             utc_time_intervals = usage_pattern.hourly_usage.convert_to_utc(local_timezone=self.country.timezone)
-            self.utc_time_intervals_per_up[usage_pattern] = utc_time_intervals.define_as_intermediate_calculation(
+            self.utc_time_intervals_per_up[usage_pattern] = utc_time_intervals.set_label(
                 f"{usage_pattern.name} UTC")
 
     def update_user_journey_freq_per_up(self):
         for usage_pattern in self.usage_patterns:
             self.user_journey_freq_per_up[usage_pattern] = (
-                    self.nb_devices * usage_pattern.user_journey_freq_per_user).define_as_intermediate_calculation(
+                    self.nb_devices * usage_pattern.user_journey_freq_per_user).set_label(
                     f"User journey frequency of {usage_pattern.name}")
 
     def update_nb_user_journeys_in_parallel_during_usage_per_up(self):
@@ -92,7 +92,7 @@ class DevicePopulation(ModelingObject):
                 nb_user_journeys_in_parallel_during_usage = nb_uj_in_parallel__raw
 
             self.nb_user_journeys_in_parallel_during_usage_per_up[usage_pattern] = \
-                nb_user_journeys_in_parallel_during_usage.define_as_intermediate_calculation(
+                nb_user_journeys_in_parallel_during_usage.set_label(
                     f"Number of user journeys in parallel during {usage_pattern.name}")
 
     def update_power(self):
@@ -105,13 +105,13 @@ class DevicePopulation(ModelingObject):
                             * (device.power * usage_pattern.user_journey.duration)
                     ).to(u.kWh / u.year)
 
-            self.power = power.define_as_intermediate_calculation(f"Power of {self.name} devices")
+            self.power = power.set_label(f"Power of {self.name} devices")
         else:
             self.power = ExplainableQuantity(0 * u.W, f"No power for {self.name} because no associated usage pattern")
 
     def update_energy_footprint(self):
         energy_footprint = (self.power * self.country.average_carbon_intensity).to(u.kg / u.year)
-        self.energy_footprint = energy_footprint.define_as_intermediate_calculation(f"Energy footprint of {self.name}")
+        self.energy_footprint = energy_footprint.set_label(f"Energy footprint of {self.name}")
 
     def update_instances_fabrication_footprint(self):
         if len(self.usage_patterns) > 0:
@@ -121,13 +121,13 @@ class DevicePopulation(ModelingObject):
                     device_uj_fabrication_footprint = (
                             device.carbon_footprint_fabrication * usage_pattern.user_journey.duration
                             / (device.lifespan * device.fraction_of_usage_time)
-                    ).to(u.g / u.user_journey).define_as_intermediate_calculation(
+                    ).to(u.g / u.user_journey).set_label(
                         f"{device.name} fabrication footprint over {usage_pattern.user_journey.name}")
                     devices_fabrication_footprint += (
                             self.user_journey_freq_per_up[usage_pattern] * device_uj_fabrication_footprint
                     ).to(u.kg / u.year)
 
-            self.instances_fabrication_footprint = devices_fabrication_footprint.define_as_intermediate_calculation(
+            self.instances_fabrication_footprint = devices_fabrication_footprint.set_label(
                 f"Devices fabrication footprint of {self.name}")
         else:
             self.instances_fabrication_footprint = ExplainableQuantity(

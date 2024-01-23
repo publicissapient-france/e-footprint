@@ -1,4 +1,5 @@
-from efootprint.constants.sources import Sources, SourceObject
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.utils.graph_tools import set_string_max_width
 
 from pyvis.network import Network
@@ -49,9 +50,9 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
     pos = calculate_positions(root_node)
 
     def add_nodes_edges(node, parent_id=None):
-        if node.label and (issubclass(type(node), SourceObject) or node.has_parent):
-            if node.left_parent is None and node.right_parent is None and issubclass(type(node), SourceObject):
-                if node.source == Sources.USER_INPUT:
+        if node.label:
+            if node.left_parent is None and node.right_parent is None:
+                if node.source == Sources.USER_DATA:
                     color = "gold"
                 else:
                     color = "darkred"

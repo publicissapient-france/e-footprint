@@ -1,4 +1,5 @@
-from efootprint.constants.sources import SourceValue, Source, Sources
+from efootprint.constants.sources import Source, Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.constants.units import u
 

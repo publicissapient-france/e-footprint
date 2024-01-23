@@ -15,9 +15,9 @@ class TestExplainableQuantity(unittest.TestCase):
         self.a = ExplainableQuantity(1 * u.W, "1 Watt")
         self.b = ExplainableQuantity(2 * u.W, "2 Watt")
         self.c = self.a + self.b
-        self.c.define_as_intermediate_calculation("int calc")
+        self.c.set_label("int calc")
         self.d = self.c + self.b
-        self.d.define_as_intermediate_calculation("int calc 2")
+        self.d.set_label("int calc 2")
         self.e = ExplainableQuantity(3 * u.W, "e")
         for explainable_quantity in (self.a, self.b, self.e):
             explainable_quantity.modeling_obj_container = MagicMock(name="name", id="id")

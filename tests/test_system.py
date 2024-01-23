@@ -4,7 +4,7 @@ import unittest
 
 from efootprint.core.system import System
 from efootprint.constants.units import u
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 
 
 class TestSystem(TestCase):

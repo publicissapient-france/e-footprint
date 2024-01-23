@@ -98,7 +98,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 logger.debug(f"attribute {name} updated in {self.name}")
                 input_value.set_modeling_obj_container(self, name)
                 if self.init_has_passed and (
-                        input_value.left_parent is None and input_value.right_parent is None and old_value is not None):
+                        name not in self.calculated_attributes and old_value is not None):
                     assert(issubclass(type(old_value), ExplainableObject))
                     self.handle_model_input_update(old_value)
             if isinstance(input_value, ExplainableObjectDict):

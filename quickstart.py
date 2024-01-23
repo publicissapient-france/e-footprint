@@ -1,4 +1,4 @@
-from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
 from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
@@ -49,18 +49,18 @@ service = Service(
 streaming_step = UserJourneyStep(
     "20 min streaming on Youtube",
     service=service,
-    data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_INPUT),
-    data_download=SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_INPUT),
-    user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_INPUT),
+    data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_DATA),
+    data_download=SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_DATA),
+    user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_DATA),
     request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
     cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
     ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS))
 upload_step = UserJourneyStep(
     "0.4s of upload",
     service=service,
-    data_upload=SourceValue(300 * u.kB / u.uj, Sources.USER_INPUT),
-    data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_INPUT),
-    user_time_spent=SourceValue(0.4 * u.s / u.uj, Sources.USER_INPUT),
+    data_upload=SourceValue(300 * u.kB / u.uj, Sources.USER_DATA),
+    data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_DATA),
+    user_time_spent=SourceValue(0.4 * u.s / u.uj, Sources.USER_DATA),
     request_duration=SourceValue(0.4 * u.s, Sources.HYPOTHESIS),
     cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
     ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
@@ -70,7 +70,7 @@ user_journey = UserJourney("Mean Youtube user journey", uj_steps=[streaming_step
 
 device_population = DevicePopulation(
     "French Youtube users on laptop",
-    nb_devices=SourceValue(4e7 * 0.3 * u.user, Sources.USER_INPUT),
+    nb_devices=SourceValue(4e7 * 0.3 * u.user, Sources.USER_DATA),
     country=Countries.FRANCE,
     devices=[default_laptop()])
 
@@ -83,7 +83,7 @@ usage_pattern = UsagePattern(
     user_journey=user_journey,
     device_population=device_population,
     network=network,
-    user_journey_freq_per_user=SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_INPUT),
+    user_journey_freq_per_user=SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_DATA),
     time_intervals=SourceObject([[7, 12], [17, 23]]))
 
 system = System("system 1", usage_patterns=[usage_pattern])

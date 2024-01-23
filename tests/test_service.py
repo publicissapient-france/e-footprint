@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
-from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.service import Service
 

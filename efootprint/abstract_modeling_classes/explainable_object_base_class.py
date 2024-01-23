@@ -1,7 +1,8 @@
 from efootprint.logger import logger
 
-from typing import Type
+from typing import Type, Optional
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
 
 
 class ObjectLinkedToModelingObj(ABC):
@@ -14,15 +15,25 @@ class ObjectLinkedToModelingObj(ABC):
         pass
 
 
+@dataclass
+class Source:
+    name: str
+    link: Optional[str]
+
+
 class ExplainableObject(ObjectLinkedToModelingObj):
     def __init__(
             self, value: object, label: str = None, left_parent: Type["ExplainableObject"] = None,
-            right_parent: Type["ExplainableObject"] = None, operator: str = None):
+            right_parent: Type["ExplainableObject"] = None, operator: str = None, source: Source = None):
         super().__init__()
         self.value = value
-        if not label and left_parent is None and right_parent is None:
-            raise ValueError(f"ExplainableObject label shouldn’t be None if it doesn’t have any parent")
-        self.label = label
+        if not label and (left_parent is None and right_parent is None):
+            raise ValueError(f"ExplainableObject without parent should have a label")
+        if source is not None and (left_parent is not None or right_parent is not None):
+            raise ValueError(f"An ExplainableObject with a source shouldn’t have any parent")
+        self.source = source
+        self.label = None
+        self.set_label(label)
         self.left_parent = left_parent
         self.right_parent = right_parent
         self.operator = operator
@@ -37,11 +48,8 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     def __deepcopy__(self, memo):
         cls = self.__class__
-        new_instance = cls.__new__(cls, "dummy_value", "dummy_label")
-        new_instance.__init__(self.value, self.label)
-
-        if getattr(self, "source", None) is not None:
-            new_instance.source = self.source
+        new_instance = cls.__new__(cls)
+        new_instance.__init__(value=self.value, label=self.label, source=getattr(self, "source", None))
 
         return new_instance
 
@@ -95,8 +103,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         if direct_child.id not in self.direct_child_ids:
             self.direct_children_with_id.append(direct_child)
 
-    def define_as_intermediate_calculation(self, intermediate_calculation_label):
-        self.label = intermediate_calculation_label
+    def set_label(self, new_label):
+        if self.source is not None:
+            self.label = f"{new_label} from {self.source.name}"
+        else:
+            self.label = new_label
 
         return self
 

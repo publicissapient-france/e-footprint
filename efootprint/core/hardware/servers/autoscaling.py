@@ -1,5 +1,5 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
 
@@ -17,10 +17,10 @@ class Autoscaling(Server):
 
     def update_nb_of_instances(self):
         nb_of_servers_based_on_ram_alone = (
-                self.all_services_ram_needs / self.available_ram_per_instance).define_as_intermediate_calculation(
+                self.all_services_ram_needs / self.available_ram_per_instance).set_label(
             f"Raw nb of {self.name} instances based on RAM alone")
         nb_of_servers_based_on_cpu_alone = (
-                self.all_services_cpu_needs / self.available_cpu_per_instance).define_as_intermediate_calculation(
+                self.all_services_cpu_needs / self.available_cpu_per_instance).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
         nb_of_servers_raw = ExplainableHourlyUsage(
@@ -51,10 +51,10 @@ class Autoscaling(Server):
 
         nb_of_instances = hour_by_hour_nb_of_instances.mean()
 
-        self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Nb of {self.name} instances")
+        self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances")
 
     def update_instances_power(self):
         effective_active_power = self.power * self.power_usage_effectiveness
         server_power = (effective_active_power * self.nb_of_instances).to(u.kWh / u.year)
 
-        self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name} instances")
+        self.instances_power = server_power.set_label(f"Power of {self.name} instances")

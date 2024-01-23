@@ -1,4 +1,4 @@
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.constants.units import u
 
 import numbers
@@ -11,13 +11,13 @@ from pint import Quantity
 class ExplainableQuantity(ExplainableObject):
     def __init__(
             self, value: Quantity, label: str = None, left_child: Type["ExplainableQuantity"] = None,
-            right_child: Type["ExplainableQuantity"] = None, child_operator: str = None):
+            right_child: Type["ExplainableQuantity"] = None, child_operator: str = None, source: Source = None):
         if not isinstance(value, Quantity):
             raise ValueError(
                 f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
                 "it is indeed mandatory to define a unit"
             )
-        super().__init__(value, label, left_child, right_child, child_operator)
+        super().__init__(value, label, left_child, right_child, child_operator, source)
 
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)

@@ -1,6 +1,7 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
 from efootprint.constants.countries import Countries
-from efootprint.constants.sources import SourceValue, SourceObject, Sources
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.constants.units import u
 
@@ -16,13 +17,13 @@ class TestUsagePattern(unittest.TestCase):
         self.service2 = MagicMock()
 
         user_journey = MagicMock()
-        user_journey.duration = SourceValue(2.0 * u.min / u.user_journey, "duration")
-        user_journey.data_upload = SourceValue(2.0 * u.MB / u.user_journey, "data_upload")
-        user_journey.data_download = SourceValue(3.0 * u.MB / u.user_journey, "data_download")
+        user_journey.duration = SourceValue(2.0 * u.min / u.user_journey, label="duration")
+        user_journey.data_upload = SourceValue(2.0 * u.MB / u.user_journey, label="data_upload")
+        user_journey.data_download = SourceValue(3.0 * u.MB / u.user_journey, label="data_download")
 
         user_journey.services = [self.service1, self.service2]
         population = MagicMock()
-        population.nb_devices = SourceValue(10000 * u.user, name="population")
+        population.nb_devices = SourceValue(10000 * u.user, label="population")
         population.country = Countries.FRANCE
 
         network = MagicMock()
@@ -30,7 +31,7 @@ class TestUsagePattern(unittest.TestCase):
         self.usage_pattern = UsagePattern(
             "usage_pattern", user_journey, population, network,
             user_journey_freq_per_user=SourceValue(10 * u.user_journey / (u.user * u.year)),
-            time_intervals=SourceObject([[8, 16]], Sources.USER_INPUT)
+            time_intervals=SourceObject([[8, 16]], Sources.USER_DATA)
         )
 
     def test_check_time_intervals_validity(self):

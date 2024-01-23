@@ -153,7 +153,7 @@ class System:
                     self.fabrication_footprints()[key].values()) + sum(self.energy_footprints()[key].values())
                 for key in self.fabrication_footprints().keys()
             )
-        ).define_as_intermediate_calculation(f"{self.name} total carbon footprint")
+        ).set_label(f"{self.name} total carbon footprint")
 
     def plot_footprints_by_category_and_object(self, filename=None):
         fab_footprints = self.fabrication_footprints()

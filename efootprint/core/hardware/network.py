@@ -1,6 +1,6 @@
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 from typing import List
@@ -14,7 +14,7 @@ class Network(ModelingObject):
         self.energy_footprint = None
         self.usage_patterns = []
         self.bandwidth_energy_intensity = bandwidth_energy_intensity
-        self.bandwidth_energy_intensity.set_name(f"bandwith energy intensity of {self.name}")
+        self.bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
 
         self.calculated_attributes = ["usage_patterns", "data_download", "data_upload", "energy_footprint"]
 
@@ -31,7 +31,7 @@ class Network(ModelingObject):
             for usage_pattern in self.usage_patterns:
                 data_upload += usage_pattern.user_journey.data_upload * usage_pattern.user_journey_freq
 
-            self.data_upload = data_upload.to(u.TB / u.year).define_as_intermediate_calculation(
+            self.data_upload = data_upload.to(u.TB / u.year).set_label(
                 f"Data upload in {self.name}")
         else:
             self.data_download = ExplainableQuantity(
@@ -43,7 +43,7 @@ class Network(ModelingObject):
             for usage_pattern in self.usage_patterns:
                 data_download += usage_pattern.user_journey.data_download * usage_pattern.user_journey_freq
 
-            self.data_download = data_download.to(u.TB / u.year).define_as_intermediate_calculation(
+            self.data_download = data_download.to(u.TB / u.year).set_label(
                 f"Data download in {self.name}")
         else:
             self.data_download = ExplainableQuantity(
@@ -58,13 +58,13 @@ class Network(ModelingObject):
                             self.bandwidth_energy_intensity
                             * (user_journey.data_download + user_journey.data_upload)
                 ).to(u.Wh / u.user_journey)
-                uj_network_consumption.define_as_intermediate_calculation(
+                uj_network_consumption.set_label(
                     f"{self.name} consumption during {user_journey.name}")
                 power_footprint += (
                         usage_pattern.user_journey_freq * uj_network_consumption
                         * usage_pattern.device_population.country.average_carbon_intensity)
 
-            self.energy_footprint = power_footprint.to(u.kg / u.year).define_as_intermediate_calculation(
+            self.energy_footprint = power_footprint.to(u.kg / u.year).set_label(
                 f"Energy footprint of {self.name}")
 
         else:

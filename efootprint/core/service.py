@@ -2,7 +2,7 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.server_base_class import Server
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.logger import logger
 
@@ -30,9 +30,9 @@ class Service(ModelingObject):
         if not base_cpu_consumption.value.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
         self.base_ram_consumption = base_ram_consumption
-        self.base_ram_consumption.set_name(f"Base RAM consumption of {self.name}")
+        self.base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption
-        self.base_cpu_consumption.set_name(f"Base CPU consumption of {self.name}")
+        self.base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
 
         self.resources_unit_dict = {"ram": "GB", "cpu": "core"}
 
@@ -73,7 +73,7 @@ class Service(ModelingObject):
                 if len(uj_step_up) > 0:
                     storage_needs += uj_step.data_upload * sum(up.user_journey_freq for up in uj_step_up)
 
-            self.storage_needed = storage_needs.to(u.TB / u.year).define_as_intermediate_calculation(
+            self.storage_needed = storage_needs.to(u.TB / u.year).set_label(
                 f"Storage needed for {self.name}")
 
     def compute_hour_by_hour_resource_need(self, resource):
@@ -95,14 +95,14 @@ class Service(ModelingObject):
                     average_uj_resource_needed_for_up = (
                         getattr(uj_step, f"{resource}_needed") * uj_step.request_duration /
                         (usage_pattern.user_journey.duration * one_user_journey)).to(
-                        resource_unit / u.user_journey).define_as_intermediate_calculation(
+                        resource_unit / u.user_journey).set_label(
                         f"Average {resource} needed over {usage_pattern.name} to process {uj_step.name}")
 
                     hour_by_hour_resource_needs += (
                             (average_uj_resource_needed_for_up * usage_pattern.nb_user_journeys_in_parallel_during_usage)
                             * usage_pattern.utc_time_intervals)
 
-            return hour_by_hour_resource_needs.define_as_intermediate_calculation(
+            return hour_by_hour_resource_needs.set_label(
                 f"{self.name} hour by hour {resource} need")
 
     def update_hour_by_hour_ram_need(self):

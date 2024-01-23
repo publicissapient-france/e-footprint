@@ -3,9 +3,9 @@ from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.service import Service
 from efootprint.core.hardware.network import Network
-from efootprint.constants.sources import SourceValue, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
 
 from typing import List
 
@@ -37,10 +37,10 @@ class UsagePattern(ModelingObject):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
         self.user_journey_freq_per_user = user_journey_freq_per_user
-        self.user_journey_freq_per_user.set_name(f"Usage frequency in {self.name}")
+        self.user_journey_freq_per_user.set_label(f"Usage frequency in {self.name}")
         self.check_time_intervals_validity(time_intervals.value)
         self.time_intervals = time_intervals
-        self.time_intervals.set_name(f"{self.name} time intervals in local timezone")
+        self.time_intervals.set_label(f"{self.name} time intervals in local timezone")
 
         self.calculated_attributes = [
             "hourly_usage", "usage_time_fraction"]
@@ -66,7 +66,7 @@ class UsagePattern(ModelingObject):
 
     def update_usage_time_fraction(self):
         usage_time_fraction = self.hourly_usage.compute_usage_time_fraction()
-        self.usage_time_fraction = usage_time_fraction.define_as_intermediate_calculation(
+        self.usage_time_fraction = usage_time_fraction.set_label(
             f"Usage time fraction of {self.name}")
 
     @property

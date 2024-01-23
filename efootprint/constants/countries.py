@@ -1,5 +1,6 @@
 from efootprint.constants.units import u
-from efootprint.constants.sources import SourceValue, Source, SourceObject, Sources
+from efootprint.constants.sources import Source,Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 import pytz
@@ -17,10 +18,10 @@ class Country(ModelingObject):
                 "('[time]**2 / [length]**2') dimensionality"
             )
         self.average_carbon_intensity = average_carbon_intensity
-        self.average_carbon_intensity.set_name(f"Average carbon intensity of {self.name}")
+        self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name}")
         self.year = year
         self.timezone = timezone
-        self.timezone.set_name(f"{self.name} timezone")
+        self.timezone.set_label(f"{self.name} timezone")
 
     @property
     def device_populations(self):
@@ -32,7 +33,7 @@ class Country(ModelingObject):
 
 
 def tz(timezone: str):
-    return SourceObject(pytz.timezone(timezone), Sources.USER_INPUT)
+    return SourceObject(pytz.timezone(timezone), Sources.USER_DATA)
 
 
 class Countries:

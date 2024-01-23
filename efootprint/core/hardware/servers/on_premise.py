@@ -1,5 +1,5 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
 
@@ -16,16 +16,16 @@ class OnPremise(Server):
             average_carbon_intensity, server_utilization_rate)
 
     def update_nb_of_instances(self):
-        ram_needed_per_day = self.all_services_ram_needs.max().define_as_intermediate_calculation(
+        ram_needed_per_day = self.all_services_ram_needs.max().set_label(
             f"Max daily {self.name} RAM need")
-        cpu_needed_per_day = self.all_services_cpu_needs.max().define_as_intermediate_calculation(
+        cpu_needed_per_day = self.all_services_cpu_needs.max().set_label(
             f"Max daily {self.name} CPU need")
 
         nb_of_servers_based_on_ram_alone = (
-                ram_needed_per_day / self.available_ram_per_instance).define_as_intermediate_calculation(
+                ram_needed_per_day / self.available_ram_per_instance).set_label(
             f"Raw nb of {self.name} instances based on RAM alone")
         nb_of_servers_based_on_cpu_alone = (
-                cpu_needed_per_day / self.available_cpu_per_instance).define_as_intermediate_calculation(
+                cpu_needed_per_day / self.available_cpu_per_instance).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
         nb_of_servers_raw = nb_of_servers_based_on_ram_alone.compare_with_and_return_max(
@@ -38,7 +38,7 @@ class OnPremise(Server):
         else:
             nb_of_instances = nb_of_servers_raw
 
-        self.nb_of_instances = nb_of_instances.define_as_intermediate_calculation(f"Nb of {self.name} instances")
+        self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances")
 
     def update_instances_power(self):
         effective_active_power = self.power * self.power_usage_effectiveness
@@ -51,4 +51,4 @@ class OnPremise(Server):
                  + (effective_idle_power * fraction_of_time_not_in_use))
         ).to(u.kWh / u.year)
 
-        self.instances_power = server_power.define_as_intermediate_calculation(f"Power of {self.name} instances")
+        self.instances_power = server_power.set_label(f"Power of {self.name} instances")

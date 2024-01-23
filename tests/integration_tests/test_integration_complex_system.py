@@ -1,4 +1,5 @@
-from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
@@ -89,7 +90,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.usage_pattern = UsagePattern(
             "Video watching in France", cls.uj, cls.device_population,
             cls.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
-            SourceObject([[7, 23]], Sources.USER_INPUT))
+            SourceObject([[7, 23]], Sources.USER_DATA))
 
         cls.system = System("system 1", [cls.usage_pattern])
 

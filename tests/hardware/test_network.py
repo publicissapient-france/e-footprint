@@ -1,5 +1,6 @@
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.countries import Countries
-from efootprint.constants.sources import Sources, SourceValue
+from efootprint.constants.sources import Sources
 from efootprint.core.hardware.network import Network
 from efootprint.constants.units import u
 
@@ -13,9 +14,9 @@ class TestNetwork(TestCase):
         self.network.dont_handle_input_updates = True
 
         self.usage_pattern = MagicMock()
-        self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, name='data_upload')
+        self.usage_pattern.user_journey.data_upload = SourceValue(100 * u.MB / u.user_journey, label='data_upload')
         self.usage_pattern.user_journey.data_download = SourceValue(
-            200 * u.MB / u.user_journey, name='data_download')
+            200 * u.MB / u.user_journey, label='data_download')
         self.usage_pattern.user_journey_freq = SourceValue(250 * u.user_journey / u.year)
         self.network.usage_patterns = {self.usage_pattern}
         self.usage_pattern.device_population.country = Countries.FRANCE

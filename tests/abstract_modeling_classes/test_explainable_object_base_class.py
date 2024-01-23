@@ -122,9 +122,9 @@ class TestExplainableObjectBaseClass(TestCase):
         eo = ExplainableObject(value=7, left_parent=left_parent, right_parent=right_parent, label="Parent")
         self.assertEqual([left_parent, right_parent], eo.direct_ancestors_with_id)
 
-    def test_define_as_intermediate_calculation(self):
+    def test_set_label(self):
         eo = ExplainableObject(value=5, label="Label A")
-        eo.define_as_intermediate_calculation("Intermediate A")
+        eo.set_label("Intermediate A")
         self.assertEqual(eo.label, "Intermediate A")
 
     def test_has_child_property(self):

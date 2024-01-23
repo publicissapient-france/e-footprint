@@ -1,6 +1,7 @@
 from efootprint.builders.hardware.servers_boaviztapi import print_archetypes_and_their_configs, get_cloud_server, \
     on_premise_server_from_config
-from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 import unittest

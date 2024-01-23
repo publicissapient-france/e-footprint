@@ -1,5 +1,6 @@
 from efootprint.constants.units import u
-from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.hardware.device_population import DevicePopulation
 
 from unittest import TestCase
@@ -26,7 +27,7 @@ class TestDevicePopulation(TestCase):
         self.device_population.modeling_obj_containers = [self.usage_pattern]
         self.usage_pattern.user_journey = MagicMock()
         self.usage_pattern.user_journey_freq_per_user = SourceValue(10 * u.user_journey / (u.user * u.year))
-        self.usage_pattern.time_intervals = SourceObject([[8, 16]], Sources.USER_INPUT)
+        self.usage_pattern.time_intervals = SourceObject([[8, 16]], Sources.USER_DATA)
 
     def test_user_journey_freq(self):
         self.device_population.update_user_journey_freq_per_up()

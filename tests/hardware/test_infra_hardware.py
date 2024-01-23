@@ -1,6 +1,7 @@
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
-from efootprint.constants.sources import SourceValue, Sources
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from tests.utils import create_cpu_need, create_ram_need
 
@@ -24,8 +25,8 @@ class TestInfraHardware(TestCase):
                 self.instances_power = SourceValue(16 * u.W)
 
         self.test_infra_hardware = InfraHardwareTestClass(
-            "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_INPUT),
-            power=SourceValue(2 * u.W, Sources.USER_INPUT), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
+            "test_infra_hardware", carbon_footprint_fabrication=SourceValue(120 * u.kg, Sources.USER_DATA),
+            power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh))
 
         self.service1 = MagicMock()
@@ -99,7 +100,7 @@ class TestInfraHardware(TestCase):
     def test_fraction_of_time_in_use(self):
         self.test_infra_hardware_multiple_services.all_services_cpu_needs = create_cpu_need([[10, 15]])
         self.test_infra_hardware_multiple_services.all_services_ram_needs = create_ram_need([[0, 12]])
-        expected_value = SourceValue((15 / 24) * u.dimensionless, "fraction_of_time_in_use")
+        expected_value = SourceValue((15 / 24) * u.dimensionless, label="fraction_of_time_in_use")
         self.test_infra_hardware_multiple_services.update_fraction_of_time_in_use()
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.fraction_of_time_in_use.value)
 

@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.constants.sources import SourceValue, Sources, SourceObject
+from efootprint.constants.sources import Sources
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
@@ -32,10 +33,10 @@ class IntegrationTest(IntegrationTestBaseClass):
             power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
-            ram=SourceValue(128 * u.GB, Sources.USER_INPUT),
-            nb_of_cpus=SourceValue(24 * u.core, Sources.USER_INPUT),
-            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_INPUT),
-            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_INPUT),
+            ram=SourceValue(128 * u.GB, Sources.USER_DATA),
+            nb_of_cpus=SourceValue(24 * u.core, Sources.USER_DATA),
+            power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
+            average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
         )
         cls.storage = Storage(
@@ -70,7 +71,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.usage_pattern = UsagePattern(
             "Youtube usage in France", cls.uj, cls.device_population,
             cls.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
-            SourceObject([[7, 23]], Sources.USER_INPUT))
+            SourceObject([[7, 23]], Sources.USER_DATA))
 
         cls.system = System("system 1", [cls.usage_pattern])
 
@@ -172,7 +173,7 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_time_intervals_change(self):
         logger.warning("Updating time intervals in usage pattern")
         old_time_intervals = deepcopy(self.usage_pattern.time_intervals)
-        self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_INPUT)
+        self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_DATA)
         assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
         self.usage_pattern.time_intervals = old_time_intervals
         assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)

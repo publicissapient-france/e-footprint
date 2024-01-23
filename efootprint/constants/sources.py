@@ -1,20 +1,8 @@
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
-
-from dataclasses import dataclass
-from typing import Optional
-from pint import Quantity
-
-
-@dataclass
-class Source:
-    name: str
-    link: Optional[str]
+from efootprint.abstract_modeling_classes.explainable_object_base_class import Source
 
 
 class Sources:
-    USER_INPUT = Source("User input", None)
+    USER_DATA = Source("user data", None)
     ADEME_STUDY = Source(
         name="Étude ADEME",
         link="https://docs.google.com/spreadsheets/d/1s-B4WLXAxSE8ddoY9929SX2tPdCZ4OEl/edit#gid=155161832",
@@ -45,33 +33,3 @@ class Sources:
 
 
 SOURCE_VALUE_DEFAULT_NAME = "unnamed source"
-
-
-class SourceObject(ExplainableObject):
-    def __init__(self, value: object, source: Source = Sources.HYPOTHESIS, name: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, label=name)
-        self.source = source
-
-    def set_name(self, new_name: str):
-        if self.left_parent or self.right_parent:
-            raise ValueError("Source values shouldn’t have any child.")
-        elif self.label == SOURCE_VALUE_DEFAULT_NAME:
-            if self.source != Sources.USER_INPUT:
-                self.label = f"{new_name} from {self.source.name}"
-            else:
-                self.label = f"{new_name}"
-        else:
-            raise ValueError(f"Trying to set the new label {new_name} would overwrite {self.label}")
-
-
-class SourceValue(SourceObject, ExplainableQuantity):
-    def __init__(self, value: Quantity, source: Source = Sources.USER_INPUT, name: str = SOURCE_VALUE_DEFAULT_NAME):
-        super().__init__(value, source, name)
-
-
-if __name__ == "__main__":
-    test_source = SourceValue(
-        value=78 * u.kg,
-        source=Sources.ADEME_STUDY,
-    )
-    print(test_source)

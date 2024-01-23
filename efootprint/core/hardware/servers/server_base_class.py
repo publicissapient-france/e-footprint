@@ -1,5 +1,5 @@
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
-from efootprint.constants.sources import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 from abc import abstractmethod
@@ -16,16 +16,16 @@ class Server(InfraHardware):
         self.server_utilization_rate = None
         self.nb_of_instances = None
         self.idle_power = idle_power
-        self.idle_power.set_name(f"Idle power of {self.name}")
+        self.idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram
-        self.ram.set_name(f"RAM of {self.name}")
+        self.ram.set_label(f"RAM of {self.name}")
         # TODO: Add the concept of cpu core or replace nb_of_cpus by nb_of_cores ?
         self.nb_of_cpus = nb_of_cpus
-        self.nb_of_cpus.set_name(f"Nb cpus of {self.name}")
+        self.nb_of_cpus.set_label(f"Nb cpus of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness
-        self.power_usage_effectiveness.set_name(f"PUE of {self.name}")
+        self.power_usage_effectiveness.set_label(f"PUE of {self.name}")
         self.server_utilization_rate = server_utilization_rate
-        self.server_utilization_rate.set_name(f"{self.name} utilization rate")
+        self.server_utilization_rate.set_label(f"{self.name} utilization rate")
 
         self.calculated_attributes = ["available_ram_per_instance", "available_cpu_per_instance"
                                       ] + self.calculated_attributes_defined_in_infra_hardware_class
@@ -42,7 +42,7 @@ class Server(InfraHardware):
                     f"{(self.ram * self.server_utilization_rate).value} "
                     f" but is asked {services_resource_need.value}")
 
-        self.available_ram_per_instance = available_ram_per_instance.define_as_intermediate_calculation(
+        self.available_ram_per_instance = available_ram_per_instance.set_label(
             f"Available RAM per {self.name} instance")
 
     def update_available_cpu_per_instance(self):
@@ -57,7 +57,7 @@ class Server(InfraHardware):
                     f"{(self.nb_of_cpus * self.server_utilization_rate).value} "
                     f" but is asked {services_resource_need.value}")
 
-        self.available_cpu_per_instance = available_cpu_per_instance.define_as_intermediate_calculation(
+        self.available_cpu_per_instance = available_cpu_per_instance.set_label(
             f"Available CPU per {self.name} instance")
 
     @abstractmethod
