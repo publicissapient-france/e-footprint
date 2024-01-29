@@ -36,11 +36,9 @@ class UsagePattern(ModelingObject):
         if not user_journey_freq_per_user.value.check("[user_journey] / ([person] * [time])"):
             raise ValueError(f"User journey frequency defined in {self.name} should have "
                              f"[user_journey] / ([user] * [time]) dimensionality")
-        self.user_journey_freq_per_user = user_journey_freq_per_user
-        self.user_journey_freq_per_user.set_label(f"Usage frequency in {self.name}")
+        self.user_journey_freq_per_user = user_journey_freq_per_user.set_label(f"Usage frequency in {self.name}")
         self.check_time_intervals_validity(time_intervals.value)
-        self.time_intervals = time_intervals
-        self.time_intervals.set_label(f"{self.name} time intervals in local timezone")
+        self.time_intervals = time_intervals.set_label(f"{self.name} time intervals in local timezone")
 
         self.calculated_attributes = [
             "hourly_usage", "usage_time_fraction"]

@@ -18,14 +18,10 @@ class Storage(InfraHardware):
         self.nb_of_idle_instances = None
         self.nb_of_active_instances = None
         self.instances_power = None
-        self.idle_power = idle_power
-        self.idle_power.set_label(f"Idle power of {self.name}")
-        self.storage_capacity = storage_capacity
-        self.storage_capacity.set_label(f"Storage capacity of {self.name}")
-        self.power_usage_effectiveness = power_usage_effectiveness
-        self.power_usage_effectiveness.set_label(f"PUE of {self.name}")
-        self.data_replication_factor = data_replication_factor
-        self.data_replication_factor.set_label(f"Data replication factor of {self.name}")
+        self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
+        self.storage_capacity = storage_capacity.set_label(f"Storage capacity of {self.name}")
+        self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
+        self.data_replication_factor = data_replication_factor.set_label(f"Data replication factor of {self.name}")
         # TODO: implement data storage duration logic
         if storage_need_from_previous_year is not None:
             if not storage_need_from_previous_year.value.check("[]"):

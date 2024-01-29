@@ -12,8 +12,7 @@ class Network(ModelingObject):
         self.data_upload = None
         self.data_download = None
         self.energy_footprint = None
-        self.bandwidth_energy_intensity = bandwidth_energy_intensity
-        self.bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
+        self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
 
         self.calculated_attributes = ["data_download", "data_upload", "energy_footprint"]
 

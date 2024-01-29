@@ -19,8 +19,7 @@ class DevicePopulation(ModelingObject):
         self.user_journey_freq_per_up = ExplainableObjectDict()
         self.nb_user_journeys_in_parallel_during_usage_per_up = ExplainableObjectDict()
         self.utc_time_intervals_per_up = ExplainableObjectDict()
-        self.nb_devices = nb_devices
-        self.nb_devices.set_label(f"Nb devices in {self.name}")
+        self.nb_devices = nb_devices.set_label(f"Nb devices in {self.name}")
         self.country = country
         self.devices = devices
 

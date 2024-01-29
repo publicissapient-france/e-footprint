@@ -29,10 +29,8 @@ class Service(ModelingObject):
             base_cpu_consumption = SourceValue(1 * u.core)
         if not base_cpu_consumption.value.check("[cpu]"):
             raise ValueError("variable 'base_cpu_consumption' does not have core dimensionality")
-        self.base_ram_consumption = base_ram_consumption
-        self.base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
-        self.base_cpu_consumption = base_cpu_consumption
-        self.base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
+        self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
+        self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
 
         self.resources_unit_dict = {"ram": "GB", "cpu": "core"}
 

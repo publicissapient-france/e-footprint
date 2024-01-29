@@ -20,16 +20,13 @@ class UserJourneyStep(ModelingObject):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
         if not data_download.value.check("[]/[user_journey]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
-        self.data_upload = data_upload
-        self.data_upload.set_label(f"Data upload of request {self.name}")
-        self.data_download = data_download
-        self.data_download.set_label(f"Data download of request {self.name}")
+        self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
+        self.data_download = data_download.set_label(f"Data download of request {self.name}")
 
         if not user_time_spent.value.check("[time]/[user_journey]"):
             raise ValueError(
                 "Variable 'user_time_spent' does not have the appropriate '[time]/[user_journey]' dimensionality")
-        self.user_time_spent = user_time_spent
-        self.user_time_spent.set_label(f"Time spent on step {self.name}")
+        self.user_time_spent = user_time_spent.set_label(f"Time spent on step {self.name}")
 
         if self.service is None:
             if (self.data_download.magnitude > 0 or self.data_upload.magnitude > 0 or request_duration
@@ -42,8 +39,7 @@ class UserJourneyStep(ModelingObject):
                 request_duration = SourceValue(1 * u.s)
             if not request_duration.value.check("[time]"):
                 raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
-            self.request_duration = request_duration
-            self.request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
+            self.request_duration = request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
             if request_duration.value > user_time_spent.value * u.uj:
                 # TODO: define a setter method to make this check also when the attribute is updated
                 logger.warning("Variable 'request_duration' is greater than variable 'user_time_spent'")
@@ -53,16 +49,14 @@ class UserJourneyStep(ModelingObject):
             if not ram_needed.value.check("[] / [user_journey]"):
                 raise ValueError(
                     "Variable 'ram_needed' does not have the appropriate '[] / [user_journey]' dimensionality")
-            self.ram_needed = ram_needed
-            self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
+            self.ram_needed = ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
 
             if cpu_needed is None:
                 cpu_needed = SourceValue(1 * u.core / u.uj)
             if not cpu_needed.value.check("[cpu] / [user_journey]"):
                 raise ValueError(
                     "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
-            self.cpu_needed = cpu_needed
-            self.cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
+            self.cpu_needed = cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
 
     @property
     def user_journeys(self):

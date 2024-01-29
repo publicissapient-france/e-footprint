@@ -12,16 +12,12 @@ class Hardware(ModelingObject):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, fraction_of_usage_time: SourceValue):
         super().__init__(name)
-        self.carbon_footprint_fabrication = carbon_footprint_fabrication
-        self.carbon_footprint_fabrication.set_label(f"Carbon footprint fabrication of {self.name}")
-        self.power = power
-        self.power.set_label(f"Power of {self.name}")
-        self.lifespan = lifespan
-        self.lifespan.set_label(f"Lifespan of {self.name}")
+        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(f"Carbon footprint fabrication of {self.name}")
+        self.power = power.set_label(f"Power of {self.name}")
+        self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         if not fraction_of_usage_time.value.check("[]"):
             raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
-        self.fraction_of_usage_time = fraction_of_usage_time
-        self.fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
+        self.fraction_of_usage_time = fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
 
         self.calculated_attributes = []
 

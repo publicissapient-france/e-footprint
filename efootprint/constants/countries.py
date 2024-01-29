@@ -17,11 +17,9 @@ class Country(ModelingObject):
                 "Variable 'average_carbon_intensity' does not have mass over energy "
                 "('[time]**2 / [length]**2') dimensionality"
             )
-        self.average_carbon_intensity = average_carbon_intensity
-        self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name}")
+        self.average_carbon_intensity = average_carbon_intensity.set_label(f"Average carbon intensity of {self.name}")
         self.year = year
-        self.timezone = timezone
-        self.timezone.set_label(f"{self.name} timezone")
+        self.timezone = timezone.set_label(f"{self.name} timezone")
 
     @property
     def device_populations(self):
