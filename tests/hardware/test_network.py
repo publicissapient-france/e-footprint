@@ -18,7 +18,7 @@ class TestNetwork(TestCase):
         self.usage_pattern.user_journey.data_download = SourceValue(
             200 * u.MB / u.user_journey, label='data_download')
         self.usage_pattern.user_journey_freq = SourceValue(250 * u.user_journey / u.year)
-        self.network.usage_patterns = {self.usage_pattern}
+        self.network.modeling_obj_containers = {self.usage_pattern}
         self.usage_pattern.device_population.country = Countries.FRANCE
         self.network_consumption = (
                 self.network.bandwidth_energy_intensity * SourceValue(300 * u.MB / u.user_journey)

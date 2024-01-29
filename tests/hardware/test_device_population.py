@@ -60,7 +60,7 @@ class TestDevicePopulation(TestCase):
         test_device2 = MagicMock()
         test_device2.power = SourceValue(10 * u.W)
 
-        with patch.object(self.device_population, "_devices", new=[test_device1, test_device2]), \
+        with patch.object(self.device_population, "devices", new=[test_device1, test_device2]), \
              patch.object(self.device_population, "user_journey_freq_per_up",
                 {self.usage_pattern: SourceValue(365.25 * u.user_journey / u.year)}), \
              patch.object(self.usage_pattern.user_journey, "duration", SourceValue(1 * u.hour / u.user_journey)):

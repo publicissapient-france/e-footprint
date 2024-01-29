@@ -5,6 +5,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
+from copy import copy
 
 
 def get_subclass_attributes(obj, target_class):
@@ -83,26 +84,40 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
     def __setattr__(self, name, input_value):
         old_value = self.__dict__.get(name, None)
-        if self.dont_handle_input_updates:
-            super().__setattr__(name, input_value)
-        else:
+        super().__setattr__(name, input_value)
+        if getattr(self, "name", None) is not None:
+            logger.debug(f"attribute {name} updated in {self.name}")
+
+        if not self.dont_handle_input_updates:
             if issubclass(type(input_value), ModelingObject):
                 input_value.add_obj_to_modeling_obj_containers(self)
-                if not self.init_has_passed:
-                    super().__setattr__(name, input_value)
-                else:
-                    self.handle_object_link_update(name, input_value, old_value)
-            else:
-                super().__setattr__(name, input_value)
-            if issubclass(type(input_value), ExplainableObject):
-                logger.debug(f"attribute {name} updated in {self.name}")
+                if self.init_has_passed:
+                    self.handle_object_link_update(input_value, old_value)
+
+            elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers"]:
+                if len(input_value) > 0 and type(input_value[0]) == str and self.init_has_passed:
+                    raise ValueError(f"There shouldn’t be a str list update after init")
+                old_list_value_attr_name = f"{name}__previous_list_value_set"
+                if not (len(input_value) > 0 and type(input_value[0]) == str):
+                    for obj in input_value:
+                        obj.add_obj_to_modeling_obj_containers(self)
+                    # Necessary to handle syntax obj.list_attr += [new_attr_in_list] because lists are mutable objects
+                    # Otherwise if using old_value, it would already be equal to input_value
+                    old_list_value = getattr(self, old_list_value_attr_name, None)
+                    if self.init_has_passed and old_list_value is not None:
+                        self.handle_object_list_link_update(input_value, old_list_value)
+                    super().__setattr__(old_list_value_attr_name, copy(input_value))
+
+            elif issubclass(type(input_value), ExplainableObject):
                 input_value.set_modeling_obj_container(self, name)
-                if self.init_has_passed and (
-                        name not in self.calculated_attributes and old_value is not None):
-                    assert(issubclass(type(old_value), ExplainableObject))
+                is_a_user_attribute_update = self.init_has_passed and (
+                    name not in self.calculated_attributes and old_value is not None)
+                if is_a_user_attribute_update:
                     self.handle_model_input_update(old_value)
-            if isinstance(input_value, ExplainableObjectDict):
-                logger.debug(f"attribute {name} updated in {self.name}")
+
+            elif issubclass(type(input_value), ExplainableObjectDict):
+                if self.init_has_passed:
+                    assert name in self.calculated_attributes
                 input_value.set_modeling_obj_container(self, name)
 
     @staticmethod
@@ -148,22 +163,35 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         if child.id != recomputed_parent.id]
 
     def handle_object_link_update(
-            self, name: str, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):
+            self, input_value: Type["ModelingObject"], old_value: Type["ModelingObject"]):
         if old_value is None:
             raise ValueError(f"A link update is trying to replace an null object")
         if (self in old_value.modeling_objects_whose_attributes_depend_directly_on_me and
             old_value in self.modeling_objects_whose_attributes_depend_directly_on_me):
             raise AssertionError(
                 f"There is a circular recalculation dependency between {self.id} and {old_value.id}")
+
+        old_value.remove_obj_from_modeling_obj_containers(self)
+
         if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
-            old_value.remove_obj_from_modeling_obj_containers(self)
-            super().__setattr__(name, input_value)
             self.launch_attributes_computation_chain()
         else:
-            old_value.remove_obj_from_modeling_obj_containers(self)
-            super().__setattr__(name, input_value)
             input_value.launch_attributes_computation_chain()
             old_value.launch_attributes_computation_chain()
+
+    def handle_object_list_link_update(self, input_value: List[Type["ModelingObject"]],
+                                       old_value: List[Type["ModelingObject"]]):
+        removed_objs = [obj for obj in old_value if obj not in input_value]
+        added_objs = [obj for obj in input_value if obj not in old_value]
+
+        for obj in removed_objs:
+            obj.remove_obj_from_modeling_obj_containers(self)
+
+        for obj in removed_objs + added_objs:
+            if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
+                obj.launch_attributes_computation_chain()
+
+        self.launch_attributes_computation_chain()
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers:

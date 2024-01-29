@@ -173,8 +173,11 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_time_intervals_change(self):
         logger.warning("Updating time intervals in usage pattern")
         old_time_intervals = deepcopy(self.usage_pattern.time_intervals)
+        calculus_graph = build_calculus_graph(self.server.energy_footprint)
+        calculus_graph.show(os.path.join(".", "debug_calculus_graph.html"))
         self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_DATA)
         assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
+        logger.warning("Setting time intervals back to initial value in usage pattern")
         self.usage_pattern.time_intervals = old_time_intervals
         assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)
 

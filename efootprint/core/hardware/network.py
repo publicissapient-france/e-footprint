@@ -12,18 +12,18 @@ class Network(ModelingObject):
         self.data_upload = None
         self.data_download = None
         self.energy_footprint = None
-        self.usage_patterns = []
         self.bandwidth_energy_intensity = bandwidth_energy_intensity
         self.bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
 
-        self.calculated_attributes = ["usage_patterns", "data_download", "data_upload", "energy_footprint"]
+        self.calculated_attributes = ["data_download", "data_upload", "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
 
-    def update_usage_patterns(self):
-        self.usage_patterns = self.modeling_obj_containers
+    @property
+    def usage_patterns(self):
+        return self.modeling_obj_containers
 
     def update_data_upload(self):
         if len(self.usage_patterns) > 0:

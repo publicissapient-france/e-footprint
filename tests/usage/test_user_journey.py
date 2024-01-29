@@ -76,27 +76,6 @@ class TestUserJourney(TestCase):
             step.add_obj_to_modeling_obj_containers = MagicMock()
             step.launch_attributes_computation_chain = MagicMock()
 
-    def test_uj_steps_setter(self):
-        with patch.object(self.user_journey, "launch_attributes_computation_chain", new_callable=PropertyMock) \
-                as mock_computation_chain_launcher:
-            self.user_journey.uj_steps = [self.step2, self.step3]
-            self.assertEqual(self.user_journey.uj_steps, [self.step2, self.step3])
-
-            self.step1.remove_obj_from_modeling_obj_containers.assert_called_once_with(self.user_journey)
-            self.step1.add_obj_to_modeling_obj_containers.assert_not_called()
-            self.step3.remove_obj_from_modeling_obj_containers.assert_not_called()
-            self.step3.add_obj_to_modeling_obj_containers.assert_called_once_with(self.user_journey)
-            mock_computation_chain_launcher.assert_called()
-
-    def test_uj_steps_setter_triggers_computation_chain_for_removed_steps_without_uj(self):
-        self.step1.modeling_obj_containers = []
-        self.user_journey.uj_steps = [self.step2]
-        self.step1.launch_attributes_computation_chain.assert_called_once()
-
-    def test_add_step(self):
-        self.user_journey.add_step(self.step1)
-        self.assertEqual(self.user_journey.uj_steps, [self.step1, self.step1])
-
     def test_servers(self):
         self.assertEqual(self.user_journey.servers, {self.server})
 

@@ -105,29 +105,7 @@ class UserJourney(ModelingObject):
         self.data_download = None
         self.duration = None
         self.calculated_attributes = ["duration", "data_download", "data_upload"]
-
-        self._uj_steps = []
-        # Triggers computation of calculated attributes
         self.uj_steps = uj_steps
-
-    @property
-    def uj_steps(self):
-        return self._uj_steps
-
-    @uj_steps.setter
-    def uj_steps(self, new_uj_steps: List[UserJourneyStep]):
-        # Here the observer pattern is implemented manually because uj_steps is a list and hence not handled by
-        # ModelingObject’s __setattr__ logic
-        removed_steps = [step for step in self.uj_steps if step not in new_uj_steps]
-        for step in self._uj_steps:
-            step.remove_obj_from_modeling_obj_containers(self)
-        self._uj_steps = new_uj_steps
-        for step in self._uj_steps:
-            step.add_obj_to_modeling_obj_containers(self)
-        for step in removed_steps:
-            if len(step.user_journeys) == 0:
-                step.launch_attributes_computation_chain()
-        self.launch_attributes_computation_chain()
 
     @property
     def servers(self) -> Set[Server]:
@@ -163,6 +141,10 @@ class UserJourney(ModelingObject):
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:
         return self.usage_patterns
+
+    def after_init(self):
+        self.init_has_passed = True
+        self.compute_calculated_attributes()
 
     def add_step(self, step: UserJourneyStep) -> None:
         step.add_obj_to_modeling_obj_containers(self)

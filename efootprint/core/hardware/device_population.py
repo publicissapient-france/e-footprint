@@ -22,29 +22,11 @@ class DevicePopulation(ModelingObject):
         self.nb_devices = nb_devices
         self.nb_devices.set_label(f"Nb devices in {self.name}")
         self.country = country
+        self.devices = devices
 
         self.calculated_attributes = [
             "user_journey_freq_per_up", "nb_user_journeys_in_parallel_during_usage_per_up",
             "utc_time_intervals_per_up", "power", "energy_footprint", "instances_fabrication_footprint"]
-
-        self._devices = []
-        # Triggers computation of calculated attributes
-        self.devices = devices
-
-    @property
-    def devices(self):
-        return self._devices
-
-    @devices.setter
-    def devices(self, new_devices):
-        # Here the observer pattern is implemented manually because devices is a list and hence not handled by 
-        # ModelingObject’s __setattr__ logic
-        for device in self._devices:
-            device.remove_obj_from_modeling_obj_containers(self)
-        self._devices = new_devices
-        for device in self._devices:
-            device.add_obj_to_modeling_obj_containers(self)
-        self.compute_calculated_attributes()
 
     @property
     def usage_patterns(self):

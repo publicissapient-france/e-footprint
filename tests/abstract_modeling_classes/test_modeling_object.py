@@ -7,17 +7,23 @@ from unittest.mock import patch, MagicMock
 MODELING_OBJ_CLASS_PATH = "efootprint.abstract_modeling_classes.modeling_object"
 
 
+class ModelingObjectForTesting(ModelingObject):
+    def __init__(self, name, custom_input=None):
+        super().__init__(name)
+        if custom_input is not None:
+            self.custom_input = custom_input
+
+    def compute_calculated_attributes(self):
+        pass
+
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return []
+
+
 class TestModelingObject(unittest.TestCase):
 
     def setUp(self):
-        class TestModelingSubObject(ModelingObject):
-            def compute_calculated_attributes(self):
-                pass
-
-            def modeling_objects_whose_attributes_depend_directly_on_me(self):
-                return []
-
-        self.modeling_object = TestModelingSubObject("test_object")
+        self.modeling_object = ModelingObjectForTesting("test_object")
 
     def test_setattr_sets_modeling_obj_container(self):
         value = MagicMock(modeling_obj_container=None)
@@ -130,6 +136,32 @@ class TestModelingObject(unittest.TestCase):
 
         for dep in [dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
             dep.compute_calculated_attributes.assert_called_once()
+
+    def test_list_attribute_update_works_with_classical_syntax(self):
+        val1 = MagicMock()
+        val2 = MagicMock()
+        val3 = MagicMock()
+
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=[val1, val2])
+
+        with patch(f'{MODELING_OBJ_CLASS_PATH}.ModelingObject.handle_object_list_link_update') \
+                as mock_list_obj_update_func:
+            mod_obj.custom_input = [val1, val2, val3]
+            mock_list_obj_update_func.assert_called_once_with([val1, val2, val3], [val1, val2])
+
+    def test_list_attribute_update_works_with_list_condensed_addition_syntax(self):
+        val1 = MagicMock()
+        val2 = MagicMock()
+        val3 = MagicMock()
+
+        mod_obj = ModelingObjectForTesting("test mod obj", custom_input=[val1, val2])
+
+        with patch(f'{MODELING_OBJ_CLASS_PATH}.ModelingObject.handle_object_list_link_update') \
+                as mock_list_obj_update_func:
+            assert mod_obj.custom_input__previous_list_value_set == [val1, val2]
+            mod_obj.custom_input += [val3]
+            assert mod_obj.custom_input__previous_list_value_set == [val1, val2, val3]
+            mock_list_obj_update_func.assert_called_once_with([val1, val2, val3], [val1, val2])
 
 
 if __name__ == "__main__":
