@@ -18,7 +18,7 @@ class TestOnPremise(TestCase):
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            nb_of_cpus=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            cpu_cores=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless)

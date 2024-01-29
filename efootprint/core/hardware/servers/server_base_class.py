@@ -7,7 +7,7 @@ from abc import abstractmethod
 
 class Server(InfraHardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
+                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
@@ -17,8 +17,7 @@ class Server(InfraHardware):
         self.nb_of_instances = None
         self.idle_power = idle_power.set_label(f"Idle power of {self.name}")
         self.ram = ram.set_label(f"RAM of {self.name}")
-        # TODO: Add the concept of cpu core or replace nb_of_cpus by nb_of_cores ?
-        self.nb_of_cpus = nb_of_cpus.set_label(f"Nb cpus of {self.name}")
+        self.cpu_cores = cpu_cores.set_label(f"Nb cpus cores of {self.name}")
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
         self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
 
@@ -42,14 +41,14 @@ class Server(InfraHardware):
 
     def update_available_cpu_per_instance(self):
         services_base_cpu_consumptions = [service.base_cpu_consumption for service in self.services]
-        available_cpu_per_instance = self.nb_of_cpus * self.server_utilization_rate
+        available_cpu_per_instance = self.cpu_cores * self.server_utilization_rate
         for service_base_resource_consumption in services_base_cpu_consumptions:
             available_cpu_per_instance -= service_base_resource_consumption
             if available_cpu_per_instance.value < 0:
                 services_resource_need = sum(services_base_cpu_consumptions)
                 raise ValueError(
                     f"server has available capacity of "
-                    f"{(self.nb_of_cpus * self.server_utilization_rate).value} "
+                    f"{(self.cpu_cores * self.server_utilization_rate).value} "
                     f" but is asked {services_resource_need.value}")
 
         self.available_cpu_per_instance = available_cpu_per_instance.set_label(

@@ -11,11 +11,11 @@ class TestServerBaseClass(TestCase):
     def setUp(self):
         class TestServer(Server):
             def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                         lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
+                         lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                          power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                          server_utilization_rate: SourceValue):
                 super().__init__(
-                    name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, nb_of_cpus,
+                    name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores,
                     power_usage_effectiveness,
                     average_carbon_intensity, server_utilization_rate)
 
@@ -33,7 +33,7 @@ class TestServerBaseClass(TestCase):
             lifespan=SourceValue(0 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(0 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
-            nb_of_cpus=SourceValue(0 * u.core, Sources.HYPOTHESIS),
+            cpu_cores=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
@@ -44,7 +44,7 @@ class TestServerBaseClass(TestCase):
         service = MagicMock()
         service.base_cpu_consumption = SourceValue(2 * u.core)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "nb_of_cpus", SourceValue(24 * u.core)), \
+                patch.object(self.server_base, "cpu_cores", SourceValue(24 * u.core)), \
                 patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service}
             self.server_base.update_available_cpu_per_instance()
@@ -72,7 +72,7 @@ class TestServerBaseClass(TestCase):
         service2 = MagicMock()
         service2.base_cpu_consumption = SourceValue(1 * u.core)
         with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "nb_of_cpus", SourceValue(24 * u.core)), \
+                patch.object(self.server_base, "cpu_cores", SourceValue(24 * u.core)), \
                 patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             mock_service.return_value = {service1, service2}
             self.server_base.update_available_cpu_per_instance()

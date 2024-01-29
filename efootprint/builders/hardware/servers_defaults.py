@@ -13,7 +13,7 @@ def default_serverless(name="Default serverless", **kwargs):
         "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
         "idle_power": SourceValue(50 * u.W, Sources.HYPOTHESIS),
         "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-        "nb_of_cpus": SourceValue(24 * u.core, Sources.HYPOTHESIS),
+        "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
@@ -31,7 +31,7 @@ def default_autoscaling(name="Default autoscaling", **kwargs):
         "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
         "idle_power": SourceValue(50 * u.W, Sources.HYPOTHESIS),
         "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-        "nb_of_cpus": SourceValue(24 * u.core, Sources.HYPOTHESIS),
+        "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
@@ -49,7 +49,7 @@ def default_onpremise(name="Default on premise", **kwargs):
         "lifespan": SourceValue(6 * u.year, Sources.HYPOTHESIS),
         "idle_power": SourceValue(50 * u.W, Sources.HYPOTHESIS),
         "ram": SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-        "nb_of_cpus": SourceValue(24 * u.core, Sources.HYPOTHESIS),
+        "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
         "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)

@@ -125,7 +125,7 @@ def get_cloud_server(
         lifespan=lifespan,
         idle_power=idle_power,
         ram=SourceValue(ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, impact_source),
-        nb_of_cpus=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
+        cpu_cores=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)
@@ -173,7 +173,7 @@ def on_premise_server_from_config(
         lifespan=lifespan,
         idle_power=idle_power,
         ram=SourceValue(ram_spec["units"]["value"] * ram_spec["capacity"]["value"] * u.GB, impact_source),
-        nb_of_cpus=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
+        cpu_cores=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate)

@@ -8,11 +8,11 @@ import math
 
 class OnPremise(Server):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
-                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, nb_of_cpus: SourceValue,
+                 lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue):
         super().__init__(
-            name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, nb_of_cpus, power_usage_effectiveness,
+            name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores, power_usage_effectiveness,
             average_carbon_intensity, server_utilization_rate)
 
     def update_nb_of_instances(self):

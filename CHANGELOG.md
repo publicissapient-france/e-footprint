@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.7] - 2024-01-29
+
+### Added
+
+### Changed
+- Put ModelingObject list update logic in ModelingObject __setattr__ method
+- Name server CPU capacity cpu_cores instead of nb_of_cpus to make it clearer
+
+### Fixed
+- Set input attribute label at attribute setting time and not after. Avoids a bug when the input attribute of a ModelingObject is the result of a calculation and hence has no label.
+
 ## [1.1.6] - 2024-01-29
 
 ### Added

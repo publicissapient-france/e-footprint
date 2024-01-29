@@ -34,7 +34,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(128 * u.GB, Sources.USER_DATA),
-            nb_of_cpus=SourceValue(24 * u.core, Sources.USER_DATA),
+            cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
@@ -203,7 +203,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
             idle_power=SourceValue(50 * u.W, Sources.HYPOTHESIS),
             ram=SourceValue(128 * u.GB, Sources.HYPOTHESIS),
-            nb_of_cpus=SourceValue(24 * u.core, Sources.HYPOTHESIS),
+            cpu_cores=SourceValue(24 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
