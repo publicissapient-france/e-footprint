@@ -75,13 +75,6 @@ class UserJourneyStep(ModelingObject):
         else:
             return []
 
-    def self_delete(self):
-        logger.warning(f"Deleting {self.name} and removing backward link in its service")
-        if self.user_journeys:
-            raise PermissionError(f"You can’t delete {self.name} because it has a user_journey pointing to it")
-        self.service.modeling_obj_containers = [elt for elt in self.service.modeling_obj_containers if elt != self]
-        self.service.launch_attributes_computation_chain()
-
     def after_init(self):
         self.init_has_passed = True
         self.compute_calculated_attributes()

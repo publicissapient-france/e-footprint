@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.8] - 2024-02-02
+
+### Added
+- calculus_graph_to_file function in ExplainableObject to more easily create calculus graphs
+- object_relationship_graph_to_file function in ModelingObject to more easily create object relationship graphs
+- Generic self_delete method for ModelingObjects
+
+### Changed
+- System now inherits from ModelingObject
+
 ## [1.1.7] - 2024-01-29
 
 ### Added

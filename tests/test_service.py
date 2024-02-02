@@ -5,13 +5,15 @@ from efootprint.constants.units import u
 from efootprint.core.service import Service
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, patch, PropertyMock
 
 
 class TestService(unittest.TestCase):
     def setUp(self):
         self.server = MagicMock()
         self.storage = MagicMock()
+        self.server.name = "server"
+        self.storage.name = "storage"
         self.base_ram = SourceValue(4 * u.GB, Sources.HYPOTHESIS)
         self.base_cpu = SourceValue(2 * u.core, Sources.HYPOTHESIS)
         self.service = Service("Test Service", self.server, self.storage, self.base_ram, self.base_cpu)
@@ -113,18 +115,22 @@ class TestService(unittest.TestCase):
                 [round(elt, 2) for elt in self.service.hour_by_hour_cpu_need.value])
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj_steps(self):
-        self.service.modeling_obj_containers = ["uj_step"]
+        uj_step = MagicMock()
+        uj_step.name = "uj_step"
+        self.service.modeling_obj_containers = [uj_step]
         with self.assertRaises(PermissionError):
             self.service.self_delete()
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
-        self.server.modeling_obj_containers = [self.service]
-        self.storage.modeling_obj_containers = [self.service]
-        self.service.self_delete()
-        self.assertEqual([], self.server.modeling_obj_containers)
-        self.assertEqual([], self.storage.modeling_obj_containers)
-        self.server.compute_calculated_attributes.assert_called_once()
-        self.storage.compute_calculated_attributes.assert_called_once()
+        with patch.object(Service, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+            mock_mod_obj_attributes.return_value = [self.server, self.storage]
+            self.server.modeling_obj_containers = [self.service]
+            self.storage.modeling_obj_containers = [self.service]
+            self.service.self_delete()
+            self.assertEqual([], self.server.modeling_obj_containers)
+            self.assertEqual([], self.storage.modeling_obj_containers)
+            self.server.launch_attributes_computation_chain.assert_called_once()
+            self.storage.launch_attributes_computation_chain.assert_called_once()
 
 
 if __name__ == '__main__':

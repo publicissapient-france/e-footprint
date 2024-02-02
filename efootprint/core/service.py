@@ -49,16 +49,6 @@ class Service(ModelingObject):
     def usage_patterns(self):
         return list(set(sum([uj_step.usage_patterns for uj_step in self.uj_steps], start=[])))
 
-    def self_delete(self):
-        logger.warning(f"Deleting {self.name}, removing the backward links of its server and storage")
-        if self.uj_steps:
-            raise PermissionError(f"You can’t delete {self.name} because it has at least a uj step that points to it.")
-        for attr in [self.server, self.storage]:
-            attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
-            attr.compute_calculated_attributes()
-
-        del self
-
     def update_storage_needed(self):
         if len(self.usage_patterns) == 0:
             self.storage_needed = ExplainableQuantity(

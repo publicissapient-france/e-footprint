@@ -54,8 +54,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
         pass
 
-    # TODO: add abstractmethod self_delete
-
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
         for attr_name in self.calculated_attributes:
@@ -230,3 +228,17 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         if filename is None:
             filename = os.path.join(".", f"{self.name} calculus graph.html")
         object_relationships_graph.show(filename)
+
+    def self_delete(self):
+        logger.warning(
+            f"Deleting {self.name}, removing backward links pointing to it in "
+            f"{','.join([mod_obj.name for mod_obj in self.mod_obj_attributes])}")
+        if self.modeling_obj_containers:
+            raise PermissionError(
+                f"You can’t delete {self.name} because "
+                f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
+        for attr in self.mod_obj_attributes:
+            attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
+            attr.launch_attributes_computation_chain()
+
+        del self

@@ -153,6 +153,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         logger.warning("Removing the new usage pattern")
         self.system.usage_patterns = [self.usage_pattern]
+        new_up.self_delete()
+
         self.assertEqual(self.initial_footprint, self.system.total_footprint())
 
     def test_plot_footprints_by_category_and_object(self):

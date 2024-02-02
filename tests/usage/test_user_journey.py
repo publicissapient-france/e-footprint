@@ -10,6 +10,7 @@ from unittest.mock import MagicMock, patch, PropertyMock
 class TestUserJourneyStep(TestCase):
     def setUp(self):
         self.service = MagicMock()
+        self.service.name = "service"
 
         self.user_journey_step = UserJourneyStep(
             "test uj step", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
@@ -31,15 +32,19 @@ class TestUserJourneyStep(TestCase):
                 user_time_spent=SourceValue(2 * u.min / u.uj))
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj(self):
-        self.user_journey_step.modeling_obj_containers = ["uj"]
+        uj = MagicMock()
+        uj.name = "uj"
+        self.user_journey_step.modeling_obj_containers = [uj]
         with self.assertRaises(PermissionError):
             self.user_journey_step.self_delete()
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
-        self.service.modeling_obj_containers = [self.user_journey_step]
-        self.user_journey_step.self_delete()
-        self.assertEqual([], self.service.modeling_obj_containers)
-        self.service.launch_attributes_computation_chain.assert_called_once()
+        with patch.object(UserJourneyStep, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+            mock_mod_obj_attributes.return_value = [self.service]
+            self.service.modeling_obj_containers = [self.user_journey_step]
+            self.user_journey_step.self_delete()
+            self.assertEqual([], self.service.modeling_obj_containers)
+            self.service.launch_attributes_computation_chain.assert_called_once()
 
 
 class TestUserJourney(TestCase):
