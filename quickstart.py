@@ -93,8 +93,8 @@ print(f"Total system carbon footprint is {system.total_footprint().value}")
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 
-calculus_graph = build_calculus_graph(device_population.instances_fabrication_footprint)
-calculus_graph.show(os.path.join(current_dir, "device_population_fab_footprint_calculus_graph.html"))
+device_population.instances_fabrication_footprint.calculus_graph_to_file(
+    os.path.join(current_dir, "device_population_fab_footprint_calculus_graph.html"))
 
 object_relationships_graph = build_object_relationships_graph(
     usage_pattern, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)

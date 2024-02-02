@@ -1,8 +1,10 @@
 from efootprint.logger import logger
+from efootprint.utils.calculus_graph import build_calculus_graph
 
 from typing import Type, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
+import os
 
 
 class ObjectLinkedToModelingObj(ABC):
@@ -227,3 +229,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
     @staticmethod
     def pretty_print_calculation(calc_str):
         return calc_str.replace(" = ", "\n=\n")
+
+    def calculus_graph_to_file(
+            self, filename=None, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px"):
+        if colors_dict is None:
+            colors_dict = colors_dict = {"user data": "gold", "default": "darkred"}
+        calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height)
+
+        if filename is None:
+            filename = os.path.join(".", f"{self.name} calculus graph.html")
+        calculus_graph.show(filename)

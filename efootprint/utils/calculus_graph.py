@@ -1,5 +1,3 @@
-from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.utils.graph_tools import set_string_max_width
 
 from pyvis.network import Network
@@ -43,7 +41,11 @@ def calculate_positions(node):
     return pos
 
 
-def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1800px", height="900px"):
+def build_calculus_graph(root_node, colors_dict=None,
+                         x_multiplier=150, y_multiplier=150, width="1800px", height="900px"):
+    if colors_dict is None:
+        colors_dict = {"user data": "gold", "default": "darkred"}
+
     G = Network(notebook=True, directed=True, width=width, height=height)
     G.toggle_physics(False)
 
@@ -51,13 +53,14 @@ def build_calculus_graph(root_node, x_multiplier=150, y_multiplier=150, width="1
 
     def add_nodes_edges(node, parent_id=None):
         if node.label:
+            color = None
             if node.left_parent is None and node.right_parent is None:
-                if node.source == Sources.USER_DATA:
-                    color = "gold"
-                else:
-                    color = "darkred"
-            else:
-                color = None
+                if getattr(node, "source", None) is not None:
+                    source_name = node.source.name
+                    if source_name in colors_dict.keys():
+                        color = colors_dict[source_name]
+                    else:
+                        color = colors_dict["default"]
             G.add_node(
                 node.label, label=set_string_max_width(node.label, 20),
                 title=set_string_max_width(str(node.explain()), 80),
