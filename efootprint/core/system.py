@@ -1,3 +1,4 @@
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.device_population import DevicePopulation
@@ -14,25 +15,18 @@ import plotly
 import pandas as pd
 
 
-class System:
+class System(ModelingObject):
     def __init__(self, name: str, usage_patterns: List[UsagePattern]):
-        self.name = name
-        usage_pattern_names = [usage_pattern.name for usage_pattern in usage_patterns]
-        if len(usage_pattern_names) != len(set(usage_pattern_names)):
-            raise ValueError("You can’t have 2 usage patterns with the same name within a System")
-        self._usage_patterns = usage_patterns
-
-        self.launch_computations()
+        super().__init__(name)
+        self.usage_patterns = usage_patterns
 
     @property
-    def usage_patterns(self):
-        return self._usage_patterns
+    def modeling_objects_whose_attributes_depend_directly_on_me(self):
+        return self.usage_patterns
 
-    @usage_patterns.setter
-    def usage_patterns(self, new_usage_patterns):
-        self._usage_patterns = new_usage_patterns
-
-        self.launch_computations()
+    def after_init(self):
+        self.init_has_passed = True
+        self.launch_attributes_computation_chain()
 
     @property
     def servers(self) -> Set[Server]:
@@ -73,20 +67,6 @@ class System:
             output_set.update({usage_pattern.network})
 
         return output_set
-
-    def launch_computations(self):
-        for usage_pattern in self.usage_patterns:
-            usage_pattern.compute_calculated_attributes()
-        for device_population in self.device_populations:
-            device_population.compute_calculated_attributes()
-        for service in self.services:
-            service.compute_calculated_attributes()
-        for network in self.networks:
-            network.compute_calculated_attributes()
-        for server in self.servers:
-            server.compute_calculated_attributes()
-        for storage in self.storages:
-            storage.compute_calculated_attributes()
 
     def get_storage_by_name(self, storage_name) -> Storage:
         for storage in self.storages:

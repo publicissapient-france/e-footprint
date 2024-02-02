@@ -141,6 +141,20 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server1, self.storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint())
 
+    def test_add_new_usage_pattern(self):
+        new_up = UsagePattern(
+            "New usage pattern video watching in France", self.uj, self.device_population,
+            self.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
+            SourceObject([[7, 23]], Sources.USER_DATA))
+
+        logger.warning("Adding new usage pattern")
+        self.system.usage_patterns += [new_up]
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
+
+        logger.warning("Removing the new usage pattern")
+        self.system.usage_patterns = [self.usage_pattern]
+        self.assertEqual(self.initial_footprint, self.system.total_footprint())
+
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
 

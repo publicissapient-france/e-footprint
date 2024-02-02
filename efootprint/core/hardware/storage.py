@@ -1,4 +1,3 @@
-from efootprint.constants.countries import Countries
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.constants.sources import Sources
