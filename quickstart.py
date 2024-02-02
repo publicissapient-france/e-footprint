@@ -96,6 +96,6 @@ current_dir = os.path.abspath(os.path.dirname(__file__))
 device_population.instances_fabrication_footprint.calculus_graph_to_file(
     os.path.join(current_dir, "device_population_fab_footprint_calculus_graph.html"))
 
-object_relationships_graph = build_object_relationships_graph(
-    usage_pattern, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
-object_relationships_graph.show(os.path.join(current_dir, "object_relationships_graph.html"))
+usage_pattern.object_relationship_graph_to_file(
+    os.path.join(current_dir, "object_relationships_graph.html"),
+    classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)

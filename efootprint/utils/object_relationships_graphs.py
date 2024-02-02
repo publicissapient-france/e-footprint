@@ -1,6 +1,4 @@
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, set_string_max_width
-from efootprint.utils.tools import convert_to_list
 
 from pyvis.network import Network
 
@@ -45,20 +43,17 @@ def build_object_relationships_graph(
             id(node), label=set_string_max_width(f"{node.name}", 20),
             color=COLOR_MAP.get(node_type, "gray"))
 
-    for attr_name, attr_value in vars(node).items():
-        values = convert_to_list(attr_value)
-        for value in values:
-            if isinstance(value, ModelingObject):
-                value_type = type(value).__name__
-                if value_type not in classes_to_ignore:
-                    input_graph.add_node(
-                        id(value), label=set_string_max_width(f"{value.name}", 20),
-                        color=COLOR_MAP.get(value_type, "gray"))
-                    if node_type not in classes_to_ignore:
-                        input_graph.add_edge(id(node), id(value), title=attr_name)
+    for mod_obj in node.mod_obj_attributes:
+        mod_obj_type = type(mod_obj).__name__
+        if mod_obj_type not in classes_to_ignore:
+            input_graph.add_node(
+                id(mod_obj), label=set_string_max_width(f"{mod_obj.name}", 20),
+                color=COLOR_MAP.get(mod_obj_type, "gray"))
+            if node_type not in classes_to_ignore:
+                input_graph.add_edge(id(node), id(mod_obj))
 
-                if value not in visited:
-                    visited.add(node)
-                    build_object_relationships_graph(value, input_graph, visited, classes_to_ignore, width, height)
+        if mod_obj not in visited:
+            visited.add(node)
+            build_object_relationships_graph(mod_obj, input_graph, visited, classes_to_ignore, width, height)
 
     return input_graph

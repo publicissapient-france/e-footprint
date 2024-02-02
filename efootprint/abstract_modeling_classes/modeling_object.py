@@ -1,11 +1,16 @@
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.utils.graph_tools import WIDTH, HEIGHT
+from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
+    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.utils.tools import convert_to_list
 
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
 from copy import copy
+import os
 
 
 def get_subclass_attributes(obj, target_class):
@@ -205,3 +210,23 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def remove_obj_from_modeling_obj_containers(self, obj_to_remove):
         self.modeling_obj_containers = [
             mod_obj for mod_obj in self.modeling_obj_containers if mod_obj != obj_to_remove]
+
+    @property
+    def mod_obj_attributes(self):
+        output_list = []
+        for attr_name, attr_value in vars(self).items():
+            values = convert_to_list(attr_value)
+            for value in values:
+                if isinstance(value, ModelingObject):
+                    output_list.append(value)
+
+        return output_list
+
+    def object_relationship_graph_to_file(
+            self, filename=None, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width=WIDTH, height=HEIGHT):
+        object_relationships_graph = build_object_relationships_graph(
+            self, classes_to_ignore=classes_to_ignore, width=width, height=height)
+
+        if filename is None:
+            filename = os.path.join(".", f"{self.name} calculus graph.html")
+        object_relationships_graph.show(filename)
