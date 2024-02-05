@@ -47,12 +47,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.name = name
         self.id = f"{self.name} {str(uuid.uuid4())[:6]}"
         self.modeling_obj_containers = []
-        self.calculated_attributes = []
 
     @property
     @abstractmethod
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["ModelingObject"]]:
         pass
+
+    @property
+    def calculated_attributes(self) -> List[str]:
+        return []
 
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")

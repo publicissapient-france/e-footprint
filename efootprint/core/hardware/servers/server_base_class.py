@@ -21,7 +21,9 @@ class Server(InfraHardware):
         self.power_usage_effectiveness = power_usage_effectiveness.set_label(f"PUE of {self.name}")
         self.server_utilization_rate = server_utilization_rate.set_label(f"{self.name} utilization rate")
 
-        self.calculated_attributes = ["available_ram_per_instance", "available_cpu_per_instance"
+    @property
+    def calculated_attributes(self):
+        return ["available_ram_per_instance", "available_cpu_per_instance"
                                       ] + self.calculated_attributes_defined_in_infra_hardware_class
 
     def update_available_ram_per_instance(self):

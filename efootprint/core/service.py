@@ -34,8 +34,9 @@ class Service(ModelingObject):
 
         self.resources_unit_dict = {"ram": "GB", "cpu": "core"}
 
-        self.calculated_attributes = [
-            "hour_by_hour_ram_need", "hour_by_hour_cpu_need", "storage_needed"]
+    @property
+    def calculated_attributes(self):
+        return ["hour_by_hour_ram_need", "hour_by_hour_cpu_need", "storage_needed"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:

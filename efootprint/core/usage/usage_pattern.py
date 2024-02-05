@@ -40,8 +40,9 @@ class UsagePattern(ModelingObject):
         self.check_time_intervals_validity(time_intervals.value)
         self.time_intervals = time_intervals.set_label(f"{self.name} time intervals in local timezone")
 
-        self.calculated_attributes = [
-            "hourly_usage", "usage_time_fraction"]
+    @property
+    def calculated_attributes(self):
+        return ["hourly_usage", "usage_time_fraction"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:

@@ -14,7 +14,9 @@ class Network(ModelingObject):
         self.energy_footprint = None
         self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
 
-        self.calculated_attributes = ["data_download", "data_upload", "energy_footprint"]
+    @property
+    def calculated_attributes(self):
+        return ["data_download", "data_upload", "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

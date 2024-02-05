@@ -19,8 +19,6 @@ class Hardware(ModelingObject):
             raise ValueError("Variable 'fraction_of_usage_per_day' shouldn’t have any dimensionality")
         self.fraction_of_usage_time = fraction_of_usage_time.set_label(f"{self.name} fraction of usage time")
 
-        self.calculated_attributes = []
-
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
         return self.modeling_obj_containers
@@ -47,10 +45,11 @@ class InfraHardware(Hardware):
         if self.average_carbon_intensity.label == SOURCE_VALUE_DEFAULT_NAME:
             self.average_carbon_intensity.set_label(f"Average carbon intensity of {self.name} electricity")
 
-        self.calculated_attributes_defined_in_infra_hardware_class = [
+    @property
+    def calculated_attributes_defined_in_infra_hardware_class(self):
+        return [
             "all_services_cpu_needs", "all_services_ram_needs", "fraction_of_time_in_use",
-            "nb_of_instances", "instances_fabrication_footprint", "instances_power", "energy_footprint"
-        ]
+            "nb_of_instances", "instances_fabrication_footprint", "instances_power", "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

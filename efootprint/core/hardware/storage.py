@@ -34,7 +34,9 @@ class Storage(InfraHardware):
         else:
             self.storage_need_from_previous_year = 0
 
-        self.calculated_attributes = [
+    @property
+    def calculated_attributes(self):
+        return [
             "all_services_storage_needs", "active_storage_required", "long_term_storage_required",
             "nb_of_idle_instances", "nb_of_active_instances"
         ] + self.calculated_attributes_defined_in_infra_hardware_class

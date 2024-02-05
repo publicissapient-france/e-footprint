@@ -91,8 +91,11 @@ class UserJourney(ModelingObject):
         self.data_upload = None
         self.data_download = None
         self.duration = None
-        self.calculated_attributes = ["duration", "data_download", "data_upload"]
         self.uj_steps = uj_steps
+
+    @property
+    def calculated_attributes(self):
+        return ["duration", "data_download", "data_upload"]
 
     @property
     def servers(self) -> Set[Server]:

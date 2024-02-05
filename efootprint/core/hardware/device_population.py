@@ -23,7 +23,9 @@ class DevicePopulation(ModelingObject):
         self.country = country
         self.devices = devices
 
-        self.calculated_attributes = [
+    @property
+    def calculated_attributes(self):
+        return [
             "user_journey_freq_per_up", "nb_user_journeys_in_parallel_during_usage_per_up",
             "utc_time_intervals_per_up", "power", "energy_footprint", "instances_fabrication_footprint"]
 
