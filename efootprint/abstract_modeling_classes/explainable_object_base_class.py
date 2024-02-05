@@ -237,5 +237,5 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height)
 
         if filename is None:
-            filename = os.path.join(".", f"{self.name} calculus graph.html")
+            filename = os.path.join(".", f"{self.label} calculus graph.html")
         calculus_graph.show(filename)
