@@ -10,6 +10,7 @@ class JobTypes:
     DATA_READ = "data_read"
     DATA_WRITE = "data_write"
     DATA_LIST = "data_list"
+    DATA_SIMPLE_ANALYTIC = "data_simple_analytic"
     DATA_STREAM = "data_stream" #video, musique, data 
     TRANSACTION = "transaction"
     TRANSACTION_STRONG = "transaction_strong"
