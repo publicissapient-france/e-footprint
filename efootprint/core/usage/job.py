@@ -6,7 +6,22 @@ from efootprint.constants.sources import SourceValue
 from typing import List, Set, Type, Optional
 
 class JobTypes:
-    DATABASE_READ = "database_read"
+    AUTH = "auth"
+    DATA_READ = "data_read"
+    DATA_WRITE = "data_write"
+    DATA_LIST = "data_list"
+    DATA_STREAM = "data_stream" #video, musique, data 
+    TRANSACTION = "transaction"
+    TRANSACTION_STRONG = "transaction_strong"
+    NOTIFICATION = "notification"
+    ANALYTIC_DATA_LOADING = "analytic_data_loading"
+    ANALYTIC_READING_PREPARED = "analytic_reading_prepared"
+    ANALYTIC_READING_ON_THE_FLY = "analytic_reading_on_the_fly"
+    ML_RECOMMENDATION ="ml_reco" #kvm
+    ML_LLM ="ml_llm"
+    ML_DEEPLEARNING ="ml_dl"
+    ML_REGRESSION = "ml_regression" #linear regression, polynomial regression, svm
+    ML_CLASSIFIER = "ml_classifier" #bayes, random forest
     UNDEFINED = "undefined"
 
 
