@@ -32,7 +32,9 @@ class Service(ModelingObject):
         self.base_ram_consumption = base_ram_consumption.set_label(f"Base RAM consumption of {self.name}")
         self.base_cpu_consumption = base_cpu_consumption.set_label(f"Base CPU consumption of {self.name}")
 
-        self.resources_unit_dict = {"ram": "GB", "cpu": "core"}
+    @property
+    def resources_unit_dict(self):
+        return {"ram": "GB", "cpu": "core"}
 
     @property
     def calculated_attributes(self):

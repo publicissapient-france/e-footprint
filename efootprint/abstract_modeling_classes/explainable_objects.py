@@ -116,8 +116,8 @@ class ExplainableQuantity(ExplainableObject):
 class ExplainableHourlyUsage(ExplainableObject):
     def __init__(
             self, value: List[Quantity], label: str = None, left_child: ExplainableObject = None,
-            right_child: ExplainableObject = None, child_operator: str = None):
-        super().__init__(value, label, left_child, right_child, child_operator)
+            right_child: ExplainableObject = None, child_operator: str = None, source: Source = None):
+        super().__init__(value, label, left_child, right_child, child_operator, source)
 
     def convert_to_utc(self, local_timezone):
         utc_tz = pytz.timezone('UTC')
