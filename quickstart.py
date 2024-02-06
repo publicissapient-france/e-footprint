@@ -89,7 +89,7 @@ usage_pattern = UsagePattern(
 system = System("system 1", usage_patterns=[usage_pattern])
 
 print(f"Server carbon footprint is {(server.energy_footprint + server.instances_fabrication_footprint).value}")
-print(f"Total system carbon footprint is {system.total_footprint().value}")
+print(f"Total system carbon footprint is {system.total_footprint.value}")
 
 current_dir = os.path.abspath(os.path.dirname(__file__))
 

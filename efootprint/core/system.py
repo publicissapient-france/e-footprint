@@ -83,6 +83,7 @@ class System(ModelingObject):
             if usage_pattern.name == usage_pattern_name:
                 return usage_pattern
 
+    @property
     def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
         fab_footprints = {
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
@@ -94,6 +95,7 @@ class System(ModelingObject):
 
         return fab_footprints
 
+    @property
     def energy_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
         energy_footprints = {
             "Servers": {server.name: server.energy_footprint for server in self.servers},
@@ -105,6 +107,7 @@ class System(ModelingObject):
 
         return energy_footprints
 
+    @property
     def total_fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
@@ -116,6 +119,7 @@ class System(ModelingObject):
 
         return fab_footprints
 
+    @property
     def total_energy_footprints(self) -> Dict[str, ExplainableQuantity]:
         energy_footprints = {
             "Servers": sum(server.energy_footprint for server in self.servers),
@@ -126,18 +130,19 @@ class System(ModelingObject):
 
         return energy_footprints
 
-    def total_footprint(self) -> ExplainableQuantity:
+    @property
+    def total_footprint(self):
         return (
             sum(
                 sum(
-                    self.fabrication_footprints()[key].values()) + sum(self.energy_footprints()[key].values())
-                for key in self.fabrication_footprints().keys()
+                    self.fabrication_footprints[key].values()) + sum(self.energy_footprints[key].values())
+                for key in self.fabrication_footprints.keys()
             )
         ).set_label(f"{self.name} total carbon footprint")
 
     def plot_footprints_by_category_and_object(self, filename=None):
-        fab_footprints = self.fabrication_footprints()
-        energy_footprints = self.energy_footprints()
+        fab_footprints = self.fabrication_footprints
+        energy_footprints = self.energy_footprints
         categories = list(fab_footprints.keys())
 
         rows_as_dicts = []

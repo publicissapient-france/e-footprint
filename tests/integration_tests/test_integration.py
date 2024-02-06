@@ -75,7 +75,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.system = System("system 1", [cls.usage_pattern])
 
-        cls.initial_footprint = cls.system.total_footprint()
+        cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
             cls.storage: cls.storage.instances_fabrication_footprint,
             cls.server: cls.server.instances_fabrication_footprint,
@@ -89,7 +89,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         }
 
     def test_calculation_graph(self):
-        graph = build_calculus_graph(self.system.total_footprint())
+        graph = build_calculus_graph(self.system.total_footprint)
         graph.show(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"))
 
     def test_object_relationship_graph(self):
@@ -147,12 +147,12 @@ class IntegrationTest(IntegrationTestBaseClass):
                     logger.info(f"{expl_attr_new_value.label} changing from {round(old_value, 1)} to"
                                 f" {round(expl_attr_new_value.value, 1)}")
                     input_object.__setattr__(expl_attr_name, expl_attr_new_value)
-                    new_footprint = self.system.total_footprint()
+                    new_footprint = self.system.total_footprint
                     logger.info(f"system footprint went from {round(self.initial_footprint.value, 1)} "
                                 f"to {round(new_footprint.value, 1)}")
                     assert round(self.initial_footprint.magnitude, 2) != round(new_footprint.magnitude, 2)
                     input_object.__setattr__(expl_attr_name, expl_attr)
-                    assert round(self.system.total_footprint().magnitude, 2) == \
+                    assert round(self.system.total_footprint.magnitude, 2) == \
                            round(self.initial_footprint.magnitude, 2)
 
         test_variations_on_obj_inputs(self.streaming_step)
@@ -176,24 +176,24 @@ class IntegrationTest(IntegrationTestBaseClass):
         calculus_graph = build_calculus_graph(self.server.energy_footprint)
         calculus_graph.show(os.path.join(".", "debug_calculus_graph.html"))
         self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_DATA)
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
         logger.warning("Setting time intervals back to initial value in usage pattern")
         self.usage_pattern.time_intervals = old_time_intervals
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
 
     def test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
         self.uj.uj_steps = [self.streaming_step]
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in device population")
         self.device_population.devices = [default_laptop(), default_screen()]
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
         self.device_population.devices = [default_laptop()]
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint().magnitude, 2)
+        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
 
     def test_update_server(self):
         new_server = Autoscaling(
@@ -215,14 +215,14 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, self.server.energy_footprint.magnitude)
         self.footprint_has_changed([self.server])
-        self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)
+        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Changing back to initial service server")
         self.service.server = self.server
         self.assertEqual(0, new_server.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_server.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.server])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_storage(self):
         new_storage = Storage(
@@ -242,14 +242,14 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertEqual(0, self.storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, self.storage.energy_footprint.magnitude)
         self.footprint_has_changed([self.storage])
-        self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)
+        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Changing back to initial service storage")
         self.service.storage = self.storage
         self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.storage])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
@@ -259,30 +259,30 @@ class IntegrationTest(IntegrationTestBaseClass):
             user_time_spent=SourceValue(2 * u.min / u.uj), request_duration=SourceValue(4 * u.s))
         self.uj.uj_steps = [new_step]
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_changed([self.storage, self.server, self.network, self.device_population])
 
         logger.warning("Changing back to previous uj steps")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.device_population])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_user_journey(self):
         logger.warning("Changing user journey")
         new_uj = UserJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
         self.usage_pattern.user_journey = new_uj
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_changed([self.storage, self.server, self.network, self.device_population])
 
         logger.warning("Changing back to previous uj")
         self.usage_pattern.user_journey = self.uj
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.device_population])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_device_population(self):
         logger.warning("Changing device population")
@@ -291,13 +291,13 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.usage_pattern.device_population = new_device_pop
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_changed([self.storage, self.server, self.network, self.device_population])
 
         logger.warning("Changing back to initial device population")
         self.usage_pattern.device_population = self.device_population
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.device_population])
 
     def test_update_country_in_device_pop(self):
@@ -305,13 +305,13 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.device_population.country = Countries.MALAYSIA
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_changed([self.network, self.device_population])
 
         logger.warning("Changing back to initial device population country")
         self.device_population.country = Countries.FRANCE
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_not_changed([self.network, self.device_population])
 
     def test_update_network(self):
@@ -322,13 +322,13 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.assertEqual(0, self.network.energy_footprint.magnitude)
         self.footprint_has_changed([self.network])
-        self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)
+        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Changing back to initial network")
         self.usage_pattern.network = self.network
         self.assertEqual(0, new_network.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.network])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint().value)
+        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_add_uj_step_without_service(self):
         logger.warning("Add uj step without service")
@@ -342,9 +342,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.footprint_has_changed([self.device_population])
-        self.assertNotEqual(self.system.total_footprint().value, self.initial_footprint.value)
+        self.assertNotEqual(self.system.total_footprint.value, self.initial_footprint.value)
 
         logger.warning("Setting user time spent of the new step to 0s")
         step_without_service.user_time_spent = SourceValue(0 * u.min / u.uj)
         self.footprint_has_not_changed([self.server, self.storage])
-        self.assertEqual(self.system.total_footprint().value, self.initial_footprint.value)
+        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)

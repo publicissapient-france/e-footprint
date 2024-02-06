@@ -94,7 +94,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.system = System("system 1", [cls.usage_pattern])
 
-        cls.initial_footprint = cls.system.total_footprint()
+        cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
             cls.storage: cls.storage.instances_fabrication_footprint,
             cls.server1: cls.server1.instances_fabrication_footprint,
@@ -112,13 +112,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
         self.footprint_has_changed([self.server1, self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         logger.warning("Putting service2 uj step back")
         self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
 
         self.footprint_has_not_changed([self.server1, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def test_add_new_service(self):
         logger.warning("Adding service")
@@ -131,7 +131,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.uj.uj_steps += [new_uj]
 
         self.footprint_has_changed([self.server1, self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         logger.warning("Removing new service")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
@@ -139,7 +139,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         new_service.self_delete()
 
         self.footprint_has_not_changed([self.server1, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def test_add_new_usage_pattern(self):
         new_up = UsagePattern(
@@ -149,13 +149,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         logger.warning("Adding new usage pattern")
         self.system.usage_patterns += [new_up]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         logger.warning("Removing the new usage pattern")
         self.system.usage_patterns = [self.usage_pattern]
         new_up.self_delete()
 
-        self.assertEqual(self.initial_footprint, self.system.total_footprint())
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()

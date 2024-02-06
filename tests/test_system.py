@@ -53,10 +53,10 @@ class TestSystem(TestCase):
             "Devices": SourceValue(100 * u.kg / u.year),
             "Network": SourceValue(0 * u.kg / u.year)
         }
-        self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints())
+        self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
 
     def test_total_energy_footprints(self):
-        energy_footprints = self.system.total_energy_footprints()
+        energy_footprints = self.system.total_energy_footprints
         expected_dict = {
             "Servers": SourceValue(100 * u.kg / u.year),
             "Storage": SourceValue(100 * u.kg / u.year),
