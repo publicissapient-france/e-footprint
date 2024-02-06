@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.1.9] - 2024-02-12
+
+### Added
+- system_to_json and json_to_system functions in api_utils package in order to be able to save a system as json file and then load it and run computations. Saving of intermediate calculations will be implemented in another release.
+
+### Changed
+- calculated_attributes are now a property method instead of an attribute, to facilitate system to json and json to system flow.
+- calculated attributes of System class are now properties for a more coherent syntax.
+- Countries class is now made of country generator objects to avoid unwanted link between systems that would share a common country.
+
+### Changed
+- System now inherits from ModelingObject
+
 ## [1.1.8] - 2024-02-02
 
 ### Added

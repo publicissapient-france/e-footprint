@@ -24,7 +24,7 @@ class TestUsagePattern(unittest.TestCase):
         user_journey.services = [self.service1, self.service2]
         population = MagicMock()
         population.nb_devices = SourceValue(10000 * u.user, label="population")
-        population.country = Countries.FRANCE
+        population.country = Countries.FRANCE()
 
         network = MagicMock()
 

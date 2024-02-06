@@ -84,7 +84,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.uj = UserJourney(
             "Daily video usage", uj_steps=[cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step])
         cls.device_population = DevicePopulation(
-            "French video watchers on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE, [default_laptop()])
+            "French video watchers on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE(), [default_laptop()])
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         cls.usage_pattern = UsagePattern(
@@ -106,6 +106,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cls.network: cls.network.energy_footprint,
             cls.device_population: cls.device_population.energy_footprint,
         }
+
+        cls.ref_json_filename = "complex_system.json"
 
     def test_remove_service2_uj_step(self):
         logger.warning("Removing service2 uj step")
@@ -156,6 +158,12 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         new_up.self_delete()
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def test_system_to_json(self):
+        self.run_system_to_json_test(self.system)
+
+    def test_json_to_system(self):
+        self.run_json_to_system_test(self.system)
 
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()

@@ -71,7 +71,7 @@ user_journey = UserJourney("Mean Youtube user journey", uj_steps=[streaming_step
 device_population = DevicePopulation(
     "French Youtube users on laptop",
     nb_devices=SourceValue(4e7 * 0.3 * u.user, Sources.USER_DATA),
-    country=Countries.FRANCE,
+    country=Countries.FRANCE(),
     devices=[default_laptop()])
 
 network = Network(

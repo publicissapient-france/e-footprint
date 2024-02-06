@@ -64,7 +64,7 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.device_population = DevicePopulation(
-            "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE,
+            "French Youtube users on laptop", SourceValue(4e7 * 0.3 * u.user), Countries.FRANCE(),
             [default_laptop()])
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -87,6 +87,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             cls.network: cls.network.energy_footprint,
             cls.device_population: cls.device_population.energy_footprint,
         }
+
+        cls.ref_json_filename = "simple_system.json"
 
     def test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
@@ -287,7 +289,7 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_device_population(self):
         logger.warning("Changing device population")
         new_device_pop = DevicePopulation(
-            "New device pop with different specs", SourceValue(10 * u.user), Countries.FRANCE, [default_laptop()])
+            "New device pop with different specs", SourceValue(10 * u.user), Countries.FRANCE(), [default_laptop()])
 
         self.usage_pattern.device_population = new_device_pop
 
@@ -303,13 +305,13 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_country_in_device_pop(self):
         logger.warning("Changing device population country")
 
-        self.device_population.country = Countries.MALAYSIA
+        self.device_population.country = Countries.MALAYSIA()
 
         self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_changed([self.network, self.device_population])
 
         logger.warning("Changing back to initial device population country")
-        self.device_population.country = Countries.FRANCE
+        self.device_population.country = Countries.FRANCE()
 
         self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
         self.footprint_has_not_changed([self.network, self.device_population])
@@ -348,3 +350,15 @@ class IntegrationTest(IntegrationTestBaseClass):
         step_without_service.user_time_spent = SourceValue(0 * u.min / u.uj)
         self.footprint_has_not_changed([self.server, self.storage])
         self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+
+        logger.warning("Deleting the new uj step")
+        self.uj.uj_steps = self.uj.uj_steps[:-1]
+        step_without_service.self_delete()
+        self.footprint_has_not_changed([self.server, self.storage])
+        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+
+    def test_system_to_json(self):
+        self.run_system_to_json_test(self.system)
+
+    def test_json_to_system(self):
+        self.run_json_to_system_test(self.system)

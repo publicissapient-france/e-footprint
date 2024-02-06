@@ -1,0 +1,483 @@
+{
+    "System": {
+        "system 1 + its uuid": {
+            "name": "system 1",
+            "id": "system 1 + its uuid",
+            "usage_patterns": [
+                "Youtube usage in France + its uuid"
+            ]
+        }
+    },
+    "UsagePattern": {
+        "Youtube usage in France + its uuid": {
+            "name": "Youtube usage in France",
+            "id": "Youtube usage in France + its uuid",
+            "user_journey": "Daily Youtube usage + its uuid",
+            "device_population": "French Youtube users on laptop + its uuid",
+            "network": "Default network + its uuid",
+            "user_journey_freq_per_user": {
+                "value": 365.0,
+                "unit": "user_journey / user / year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Usage frequency in Youtube usage in France from hypothesis"
+            },
+            "time_intervals": {
+                "value": [
+                    [
+                        7,
+                        23
+                    ]
+                ],
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "Youtube usage in France time intervals in local timezone from user data"
+            }
+        }
+    },
+    "UserJourney": {
+        "Daily Youtube usage + its uuid": {
+            "name": "Daily Youtube usage",
+            "id": "Daily Youtube usage + its uuid",
+            "uj_steps": [
+                "20 min streaming on Youtube + its uuid",
+                "0.4s of upload + its uuid"
+            ]
+        }
+    },
+    "UserJourneyStep": {
+        "20 min streaming on Youtube + its uuid": {
+            "name": "20 min streaming on Youtube",
+            "id": "20 min streaming on Youtube + its uuid",
+            "ram_needed": {
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "RAM needed on server Default server to process 20 min streaming on Youtube from hypothesis"
+            },
+            "service": "Youtube + its uuid",
+            "data_upload": {
+                "value": 50.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Data upload of request 20 min streaming on Youtube from hypothesis"
+            },
+            "data_download": {
+                "value": 0.8333333333333334,
+                "unit": "gigabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Data download of request 20 min streaming on Youtube from hypothesis"
+            },
+            "user_time_spent": {
+                "value": 20.0,
+                "unit": "minute / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Time spent on step 20 min streaming on Youtube from hypothesis"
+            },
+            "request_duration": {
+                "value": 4,
+                "unit": "minute",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Request duration to Youtube in 20 min streaming on Youtube from hypothesis"
+            },
+            "cpu_needed": {
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "CPU needed on server Default server to process 20 min streaming on Youtube from hypothesis"
+            }
+        },
+        "0.4s of upload + its uuid": {
+            "name": "0.4s of upload",
+            "id": "0.4s of upload + its uuid",
+            "ram_needed": {
+                "value": 100.0,
+                "unit": "megabyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "RAM needed on server Default server to process 0.4s of upload from hypothesis"
+            },
+            "service": "Youtube + its uuid",
+            "data_upload": {
+                "value": 300.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Data upload of request 0.4s of upload from hypothesis"
+            },
+            "data_download": {
+                "value": 0.0,
+                "unit": "kilobyte / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Data download of request 0.4s of upload from hypothesis"
+            },
+            "user_time_spent": {
+                "value": 1.0,
+                "unit": "second / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Time spent on step 0.4s of upload from hypothesis"
+            },
+            "request_duration": {
+                "value": 0.1,
+                "unit": "second",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Request duration to Youtube in 0.4s of upload from hypothesis"
+            },
+            "cpu_needed": {
+                "value": 1.0,
+                "unit": "core / user_journey",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "CPU needed on server Default server to process 0.4s of upload from hypothesis"
+            }
+        }
+    },
+    "Service": {
+        "Youtube + its uuid": {
+            "name": "Youtube",
+            "id": "Youtube + its uuid",
+            "server": "Default server + its uuid",
+            "storage": "Default SSD storage + its uuid",
+            "base_ram_consumption": {
+                "value": 300,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Base RAM consumption of Youtube from hypothesis"
+            },
+            "base_cpu_consumption": {
+                "value": 2,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Base CPU consumption of Youtube from hypothesis"
+            }
+        }
+    },
+    "Autoscaling": {
+        "Default server + its uuid": {
+            "name": "Default server",
+            "id": "Default server + its uuid",
+            "carbon_footprint_fabrication": {
+                "value": 600,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                },
+                "label": "Carbon footprint fabrication of Default server from Base ADEME_V19"
+            },
+            "power": {
+                "value": 300,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Power of Default server from hypothesis"
+            },
+            "lifespan": {
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Lifespan of Default server from hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Default server fraction of usage time from hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "unnamed source from user data"
+            },
+            "server_utilization_rate": {
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Default server utilization rate from hypothesis"
+            },
+            "idle_power": {
+                "value": 50,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Idle power of Default server from hypothesis"
+            },
+            "ram": {
+                "value": 128,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "RAM of Default server from user data"
+            },
+            "cpu_cores": {
+                "value": 24,
+                "unit": "core",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "Nb cpus cores of Default server from user data"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "PUE of Default server from user data"
+            }
+        }
+    },
+    "Storage": {
+        "Default SSD storage + its uuid": {
+            "name": "Default SSD storage",
+            "id": "Default SSD storage + its uuid",
+            "carbon_footprint_fabrication": {
+                "value": 160,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                },
+                "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon"
+            },
+            "power": {
+                "value": 1.3,
+                "unit": "watt",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                },
+                "label": "Power of Default SSD storage from Dirty secret of SSDs: embodied carbon"
+            },
+            "lifespan": {
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Lifespan of Default SSD storage from hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Default SSD storage fraction of usage time from hypothesis"
+            },
+            "average_carbon_intensity": {
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "unnamed source from hypothesis"
+            },
+            "idle_power": {
+                "value": 0.1,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Idle power of Default SSD storage from hypothesis"
+            },
+            "storage_capacity": {
+                "value": 1,
+                "unit": "terabyte",
+                "source": {
+                    "name": "Dirty secret of SSDs: embodied carbon",
+                    "link": "https://arxiv.org/pdf/2207.10793.pdf"
+                },
+                "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon"
+            },
+            "power_usage_effectiveness": {
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "PUE of Default SSD storage from hypothesis"
+            },
+            "data_replication_factor": {
+                "value": 3,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Data replication factor of Default SSD storage from hypothesis"
+            },
+            "storage_need_from_previous_year": 0
+        }
+    },
+    "DevicePopulation": {
+        "French Youtube users on laptop + its uuid": {
+            "name": "French Youtube users on laptop",
+            "id": "French Youtube users on laptop + its uuid",
+            "nb_devices": {
+                "value": 12000000.0,
+                "unit": "user",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Nb devices in French Youtube users on laptop from hypothesis"
+            },
+            "country": "France + its uuid",
+            "devices": [
+                "Default laptop + its uuid"
+            ]
+        }
+    },
+    "Country": {
+        "France + its uuid": {
+            "name": "France",
+            "id": "France + its uuid",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                },
+                "label": "Average carbon intensity of France from Our world in data"
+            },
+            "year": 2022,
+            "timezone": {
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                },
+                "label": "France timezone from user data"
+            }
+        }
+    },
+    "Hardware": {
+        "Default laptop + its uuid": {
+            "name": "Default laptop",
+            "id": "Default laptop + its uuid",
+            "carbon_footprint_fabrication": {
+                "value": 156,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                },
+                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19"
+            },
+            "power": {
+                "value": 50,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Power of Default laptop from hypothesis"
+            },
+            "lifespan": {
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                },
+                "label": "Lifespan of Default laptop from hypothesis"
+            },
+            "fraction_of_usage_time": {
+                "value": 7.0,
+                "unit": "hour / day",
+                "source": {
+                    "name": "DATA.AI - STATE OF MOBILE",
+                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+                },
+                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE"
+            }
+        }
+    },
+    "Network": {
+        "Default network + its uuid": {
+            "name": "Default network",
+            "id": "Default network + its uuid",
+            "bandwidth_energy_intensity": {
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                },
+                "label": "bandwith energy intensity of Default network from Traficom study"
+            }
+        }
+    }
+}
