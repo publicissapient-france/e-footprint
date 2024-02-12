@@ -1,12 +1,10 @@
-from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
-from efootprint.logger import logger
 from efootprint.core.usage.job import Job
-from typing import List, Set, Type, Optional
+from typing import List, Set, Type
 
 
 class UserJourneyStep(ModelingObject):
@@ -28,25 +26,9 @@ class UserJourneyStep(ModelingObject):
     def usage_patterns(self):
         return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
 
-    #todo : to be updated
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
-        if len(self.user_journeys) > 0:
-            return self.user_journeys
-        elif self.service is not None:
-            return [self.service]
-        else:
-            return []
-
-    def after_init(self):
-        self.init_has_passed = True
-        self.compute_calculated_attributes()
-    
-    #todo : to be updated
-    def __mul__(self, other):
-        if type(other) not in [int, float]:
-            raise ValueError(f"Can only multiply UserJourneyStep with int or float, not {type(other)}")
-        raise NotImplementedError
+        return self.user_journeys
 
 
 class UserJourney(ModelingObject):
@@ -95,7 +77,6 @@ class UserJourney(ModelingObject):
     def usage_patterns(self):
         return self.modeling_obj_containers
 
-    #todo : to be updated
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:
         return self.usage_patterns
