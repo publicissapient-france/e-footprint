@@ -4,6 +4,7 @@ from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job
+
 from typing import List, Set, Type
 
 
@@ -19,15 +20,15 @@ class UserJourneyStep(ModelingObject):
         self.jobs = jobs
 
     @property
-    def user_journeys(self):
+    def user_journeys(self) -> List[Type["UserJourney"]]:
         return self.modeling_obj_containers
 
     @property
-    def usage_patterns(self):
+    def usage_patterns(self) -> List[Type["UsagePattern"]]:
         return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
 
     @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
         return self.user_journeys
 
 
@@ -58,8 +59,7 @@ class UserJourney(ModelingObject):
         storages = set()
         for uj_step in self.uj_steps:
             for job in uj_step.jobs:
-                if job.service is not None: #todo : not necessary condition, service is mandatory in job
-                    storages = storages | {job.service.storage}
+                storages = storages | {job.service.storage}
 
         return storages
 

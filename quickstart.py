@@ -7,11 +7,10 @@ from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
+from efootprint.core.usage.job import Job
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.utils.calculus_graph import build_calculus_graph
-from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
-    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.utils.object_relationships_graphs import USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop
 
 import os
@@ -48,23 +47,30 @@ service = Service(
 
 streaming_step = UserJourneyStep(
     "20 min streaming on Youtube",
-    service=service,
-    data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_DATA),
-    data_download=SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_DATA),
     user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_DATA),
-    request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
-    cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
-    ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS))
+    jobs=[Job("Streaming",
+              service=service,
+              data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_DATA),
+              data_download=SourceValue((2.5 / 3) * u.GB / u.uj, Sources.USER_DATA),
+              request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
+              cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
+              ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
+              )
+          ]
+    )
 upload_step = UserJourneyStep(
     "0.4s of upload",
-    service=service,
-    data_upload=SourceValue(300 * u.kB / u.uj, Sources.USER_DATA),
-    data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_DATA),
     user_time_spent=SourceValue(0.4 * u.s / u.uj, Sources.USER_DATA),
-    request_duration=SourceValue(0.4 * u.s, Sources.HYPOTHESIS),
-    cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
-    ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
-)
+    jobs=[Job("Video upload",
+              service=service,
+              data_upload=SourceValue(300 * u.kB / u.uj, Sources.USER_DATA),
+              data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_DATA),
+              request_duration=SourceValue(0.4 * u.s, Sources.HYPOTHESIS),
+              cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
+              ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
+              )
+          ]
+    )
 
 user_journey = UserJourney("Mean Youtube user journey", uj_steps=[streaming_step, upload_step])
 

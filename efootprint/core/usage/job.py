@@ -2,6 +2,8 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.service import Service
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 
+from typing import List, Type
+
 
 class JobTypes:
     AUTH = "auth"
@@ -25,16 +27,9 @@ class JobTypes:
 
 
 class Job(ModelingObject):
-    def __init__(self, 
-                 name: str, 
-                 service: Service, 
-                 data_upload: SourceValue, 
-                 data_download: SourceValue,
-                 request_duration: SourceValue,
-                 cpu_needed: SourceValue, 
-                 ram_needed: SourceValue, 
-                 job_type: JobTypes = JobTypes.UNDEFINED,
-                 description: str = ""):
+    def __init__(self, name: str, service: Service, data_upload: SourceValue, data_download: SourceValue,
+                 request_duration: SourceValue, cpu_needed: SourceValue, ram_needed: SourceValue,
+                 job_type: JobTypes = JobTypes.UNDEFINED, description: str = ""):
         super().__init__(name)
         self.description = description
         self.job_type = job_type
@@ -67,3 +62,17 @@ class Job(ModelingObject):
         self.cpu_needed = cpu_needed
         self.cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
 
+    @property
+    def user_journey_steps(self):
+        return self.modeling_obj_containers
+
+    @property
+    def usage_patterns(self) -> List[Type["UsagePattern"]]:
+        return list(set(sum([uj.usage_patterns for uj in self.user_journey_steps], start=[])))
+
+    @property
+    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
+        if len(self.user_journey_steps) > 0:
+            return self.user_journey_steps
+        else:
+            return [self.service]
