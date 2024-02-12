@@ -63,16 +63,20 @@ class Job(ModelingObject):
         self.cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
 
     @property
-    def user_journey_steps(self):
+    def user_journey_steps(self) -> List[Type["UserJourneyStep"]]:
         return self.modeling_obj_containers
 
     @property
+    def user_journeys(self) -> List[Type["UserJourney"]]:
+        return list(set(sum([uj_step.user_journeys for uj_step in self.user_journey_steps], start=[])))
+
+    @property
     def usage_patterns(self) -> List[Type["UsagePattern"]]:
-        return list(set(sum([uj.usage_patterns for uj in self.user_journey_steps], start=[])))
+        return list(set(sum([uj_step.usage_patterns for uj_step in self.user_journey_steps], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        if len(self.user_journey_steps) > 0:
-            return self.user_journey_steps
+        if len(self.user_journeys) > 0:
+            return self.user_journeys
         else:
             return [self.service]

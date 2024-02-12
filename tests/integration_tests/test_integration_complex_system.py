@@ -1,5 +1,6 @@
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
@@ -13,6 +14,7 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.builders.hardware.devices_defaults import default_laptop
+from efootprint.builders.hardware.servers_defaults import default_autoscaling
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
@@ -42,10 +44,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
         )
-        cls.service1 = Service(
+        cls.youtube = Service(
             "Youtube", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
-        cls.service2 = Service(
+        cls.dailymotion = Service(
             "Dailymotion", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
@@ -61,26 +63,48 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
         )
+        cls.server3 = default_autoscaling("TikTok Analytics server")
 
-        cls.service3 = Service(
-            "TikTok server", cls.server2, cls.storage,
+        cls.tiktok = Service(
+            "TikTok service", cls.server2, cls.storage,
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
+        cls.tiktok_analytics = Service(
+            "TikTok analytics", cls.server3, cls.storage,
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
+        cls.streaming_job = Job("streaming", cls.youtube, data_upload=SourceValue(50 * u.kB / u.uj),
+                                data_download=SourceValue((2.5 / 3) * u.GB / u.uj),
+                                request_duration=SourceValue(4 * u.min),
+                                ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.streaming_step = UserJourneyStep(
-            "20 min streaming on Youtube", cls.service1, SourceValue(50 * u.kB / u.uj),
-            SourceValue((2.5 / 3) * u.GB / u.uj),
-            user_time_spent=SourceValue(20 * u.min / u.uj), request_duration=SourceValue(4 * u.min))
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[cls.streaming_job])
+
+        cls.upload_job = Job("upload", cls.youtube, data_upload=SourceValue(300 * u.kB / u.uj),
+                             data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(0.4 * u.s),
+                             ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.upload_step = UserJourneyStep(
-            "0.4s of upload", cls.service1, SourceValue(300 * u.kB / u.uj), SourceValue(0 * u.kB / u.uj),
-            user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
+            "0.4s of upload", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[cls.upload_job])
+
+        cls.dailymotion_job = Job(
+            "dailymotion", cls.dailymotion, data_upload=SourceValue(300 * u.kB / u.uj),
+            data_download=SourceValue(3 * u.MB / u.uj), request_duration=SourceValue(1 * u.s),
+            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.dailymotion_step = UserJourneyStep(
-            "Dailymotion step", cls.service2, SourceValue(300 * u.kB / u.uj), SourceValue(3 * u.MB / u.uj),
-            user_time_spent=SourceValue(60 * u.s / u.uj), request_duration=SourceValue(1 * u.s))
+            "Dailymotion step", user_time_spent=SourceValue(1 * u.min / u.uj), jobs=[cls.dailymotion_job])
+
+        cls.tiktok_job = Job(
+            "tiktok", cls.tiktok, data_upload=SourceValue(0 * u.kB / u.uj),
+            data_download=SourceValue((2.5 / 3) * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+        cls.tiktok_analytics_job = Job(
+            "tiktok analytics", cls.tiktok_analytics, data_upload=SourceValue(50 * u.kB / u.uj),
+            data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
         cls.tiktok_step = UserJourneyStep(
-            "20 min streaming on Tiktok", cls.service3, SourceValue(50 * u.kB / u.uj),
-            SourceValue((2.5 / 3) * u.GB / u.uj),
-            user_time_spent=SourceValue(20 * u.min / u.uj), request_duration=SourceValue(4 * u.min))
+            "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min / u.uj),
+            jobs=[cls.tiktok_job, cls.tiktok_analytics_job])
 
         cls.uj = UserJourney(
             "Daily video usage", uj_steps=[cls.streaming_step, cls.upload_step, cls.dailymotion_step, cls.tiktok_step])
@@ -99,28 +123,73 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.initial_fab_footprints = {
             cls.storage: cls.storage.instances_fabrication_footprint,
             cls.server1: cls.server1.instances_fabrication_footprint,
+            cls.server2: cls.server2.instances_fabrication_footprint,
+            cls.server3: cls.server3.instances_fabrication_footprint,
             cls.device_population: cls.device_population.instances_fabrication_footprint,
         }
         cls.initial_energy_footprints = {
             cls.storage: cls.storage.energy_footprint,
             cls.server1: cls.server1.energy_footprint,
+            cls.server2: cls.server2.energy_footprint,
+            cls.server3: cls.server3.energy_footprint,
             cls.network: cls.network.energy_footprint,
             cls.device_population: cls.device_population.energy_footprint,
         }
 
         cls.ref_json_filename = "complex_system.json"
 
-    def test_remove_service2_uj_step(self):
-        logger.warning("Removing service2 uj step")
+    def test_remove_dailymotion_and_tiktok_uj_step(self):
+        logger.warning("Removing Dailymotion and TikTok uj step")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
+
+        self.footprint_has_changed([self.server1, self.server2, self.storage])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+
+        logger.warning("Putting Dailymotion and TikTok uj step back")
+        self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
+
+        self.footprint_has_not_changed([self.server1, self.server2, self.storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def test_remove_dailymotion_single_job(self):
+        logger.warning("Removing Dailymotion job")
+        self.dailymotion_step.jobs = []
 
         self.footprint_has_changed([self.server1, self.storage])
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
-        logger.warning("Putting service2 uj step back")
-        self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
+        logger.warning("Putting Dailymotion job back")
+        self.dailymotion_step.jobs = [self.dailymotion_job]
 
         self.footprint_has_not_changed([self.server1, self.storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def test_remove_one_tiktok_job(self):
+        logger.warning("Removing one TikTok job")
+        self.tiktok_step.jobs = [self.tiktok_job]
+
+        self.footprint_has_changed([self.server3, self.storage])
+        self.footprint_has_not_changed([self.server2])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+
+        logger.warning("Putting TikTok job back")
+        self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
+
+        self.footprint_has_not_changed([self.server3, self.server2, self.storage])
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+
+    def test_remove_all_tiktok_jobs(self):
+        logger.warning("Removing all TikTok jobs")
+        self.tiktok_step.jobs = []
+
+        self.footprint_has_changed([self.server2, self.server3, self.storage])
+        self.footprint_has_not_changed([self.server1])
+        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+
+        logger.warning("Putting TikTok jobs back")
+        self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
+
+        self.footprint_has_not_changed([self.server3, self.server2, self.storage])
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
 
     def test_add_new_service(self):
@@ -129,8 +198,12 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "new service", self.server1, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(1 * u.core, Sources.HYPOTHESIS))
         new_uj = UserJourneyStep(
-            "new uj step", new_service, SourceValue(300 * u.kB / u.uj), SourceValue(300 * u.kB / u.uj),
-            user_time_spent=SourceValue(1 * u.s / u.uj), request_duration=SourceValue(0.1 * u.s))
+            "new uj step", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[
+                Job(
+                    "dailymotion", new_service, data_upload=SourceValue(300 * u.kB / u.uj),
+                    data_download=SourceValue(3 * u.MB / u.uj), request_duration=SourceValue(1 * u.s),
+                    ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+            ])
         self.uj.uj_steps += [new_uj]
 
         self.footprint_has_changed([self.server1, self.storage])
@@ -138,7 +211,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         logger.warning("Removing new service")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
+        job = new_uj.jobs[0]
         new_uj.self_delete()
+        job.self_delete()
         new_service.self_delete()
 
         self.footprint_has_not_changed([self.server1, self.storage])

@@ -76,7 +76,7 @@ class UserJourney(ModelingObject):
     def update_data_download(self):
         all_data_download = 0
         for job in self.jobs:
-                all_data_download += job.data_download
+            all_data_download += job.data_download
 
         self.data_download = all_data_download.set_label(f"Data download of {self.name}")
 

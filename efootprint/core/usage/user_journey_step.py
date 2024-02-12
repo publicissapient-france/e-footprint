@@ -25,5 +25,12 @@ class UserJourneyStep(ModelingObject):
         return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
 
     @property
+    def services(self) -> List[Type["Service"]]:
+        return [job.service for job in self.jobs]
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
-        return self.user_journeys
+        if len(self.user_journeys) > 0:
+            return self.user_journeys
+        else:
+            return self.services
