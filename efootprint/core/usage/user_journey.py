@@ -1,35 +1,10 @@
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.usage.job import Job
+from efootprint.core.usage.user_journey_step import UserJourneyStep
 
 from typing import List, Set, Type
-
-
-class UserJourneyStep(ModelingObject):
-    def __init__(self, name: str, user_time_spent: SourceValue, jobs: List[Job]):
-        super().__init__(name)
-
-        if not user_time_spent.value.check("[time]/[user_journey]"):
-            raise ValueError(
-                "Variable 'user_time_spent' does not have the appropriate '[time]/[user_journey]' dimensionality")
-        self.user_time_spent = user_time_spent
-        self.user_time_spent.set_label(f"Time spent on step {self.name}")
-        self.jobs = jobs
-
-    @property
-    def user_journeys(self) -> List[Type["UserJourney"]]:
-        return self.modeling_obj_containers
-
-    @property
-    def usage_patterns(self) -> List[Type["UsagePattern"]]:
-        return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
-
-    @property
-    def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
-        return self.user_journeys
 
 
 class UserJourney(ModelingObject):

@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-from efootprint.core.usage.user_journey import UserJourneyStep, UserJourney
+from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.constants.units import u
 
 import unittest

@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
-from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
+from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
