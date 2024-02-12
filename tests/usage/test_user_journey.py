@@ -43,10 +43,10 @@ class TestUserJourney(TestCase):
             step.launch_attributes_computation_chain = MagicMock()
 
     def test_servers(self):
-        self.assertEqual(self.user_journey.servers, {self.server})
+        self.assertEqual(self.user_journey.servers, [self.server])
 
     def test_storages(self):
-        self.assertEqual(self.user_journey.storages, {self.storage})
+        self.assertEqual(self.user_journey.storages, [self.storage])
 
     def test_services(self):
         self.assertEqual(self.user_journey.services, [self.service])

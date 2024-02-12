@@ -21,20 +21,20 @@ class UserJourney(ModelingObject):
         return ["duration", "data_download", "data_upload"]
 
     @property
-    def servers(self) -> Set[Server]:
+    def servers(self) -> List[Server]:
         servers = set()
         for job in self.jobs:
             servers = servers | {job.service.server}
 
-        return servers
+        return list(servers)
 
     @property
-    def storages(self) -> Set[Storage]:
+    def storages(self) -> List[Storage]:
         storages = set()
         for job in self.jobs:
             storages = storages | {job.service.storage}
 
-        return storages
+        return list(storages)
 
     @property
     def services(self) -> List[Service]:
@@ -59,10 +59,6 @@ class UserJourney(ModelingObject):
             output_list += uj_step.jobs
 
         return output_list
-
-    def after_init(self):
-        self.init_has_passed = True
-        self.compute_calculated_attributes()
 
     def add_step(self, step: UserJourneyStep) -> None:
         step.add_obj_to_modeling_obj_containers(self)

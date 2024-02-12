@@ -35,16 +35,16 @@ class TestSystem(TestCase):
         )
 
     def test_servers(self):
-        self.assertEqual({self.server}, self.system.servers)
+        self.assertEqual([self.server], self.system.servers)
 
     def test_storages(self):
-        self.assertEqual({self.storage}, self.system.storages)
+        self.assertEqual([self.storage], self.system.storages)
 
     def test_device_populations(self):
-        self.assertEqual({self.device_population}, self.system.device_populations)
+        self.assertEqual([self.device_population], self.system.device_populations)
 
     def test_networks(self):
-        self.assertEqual({self.network}, self.system.networks)
+        self.assertEqual([self.network], self.system.networks)
 
     def test_total_fabrication_footprints(self):
         expected_dict = {

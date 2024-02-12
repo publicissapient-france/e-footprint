@@ -85,9 +85,6 @@ def json_to_system(system_dict):
             mod_obj.__dict__["dont_handle_input_updates"] = False
             mod_obj.__dict__["init_has_passed"] = True
 
-    for mod_obj_key, mod_obj in class_obj_dict["UserJourney"].items():
-        mod_obj.compute_calculated_attributes()
-
     for mod_obj_key, mod_obj in class_obj_dict["DevicePopulation"].items():
         mod_obj.user_journey_freq_per_up = ExplainableObjectDict()
         mod_obj.nb_user_journeys_in_parallel_during_usage_per_up = ExplainableObjectDict()
