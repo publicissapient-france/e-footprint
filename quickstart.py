@@ -9,9 +9,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
-from efootprint.utils.calculus_graph import build_calculus_graph
-from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
-    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.utils.object_relationships_graphs import USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop
 
 import os
