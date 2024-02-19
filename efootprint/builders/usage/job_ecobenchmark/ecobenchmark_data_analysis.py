@@ -22,15 +22,15 @@ ecobenchmark_raw_file = os.path.join(ROOT_PATH, "ecobenchmark_results__raw.csv")
 download_file_from_url(ecobenchmark_results_link, ecobenchmark_raw_file)
 df = pd.read_csv(ecobenchmark_raw_file)
 
-nb_of_application_server_cpu_cores_hypothesis = 24
-nb_of_database_server_cpu_cores_hypothesis = 8
+nb_of_application_server_cpu_cores_hypothesis = 24 #TODO: to update with OVH server specs
+nb_of_database_server_cpu_cores_hypothesis = 8 #TODO: to update with OVH server specs
 
-df["avg_ram_in_MB"] = (df["application_ram_avg"] + df["database_ram_avg"]) / 1e6
+df["avg_ram_in_MB"] = (df["application_ram_avg"] + df["database_ram_avg"]) / 1e6 #Unit MB (not MiB)
 df["avg_cpu_cores"] = (df["application_cpu_avg"] * nb_of_database_server_cpu_cores_hypothesis
                        + df["database_cpu_avg"] * nb_of_database_server_cpu_cores_hypothesis)
 
-ecobenchmark_duration_in_s = 10 * 60
-average_request_duration_in_s_hypothesis = 1
+ecobenchmark_duration_in_s = 10 * 60 #TODO: To check with Jérémie Drouet
+average_request_duration_in_s_hypothesis = 1 #TODO: Get a better number from next eco-benchmark analysis
 
 df["nb_requests_in_parallel"] = df["http_reqs"] * average_request_duration_in_s_hypothesis / ecobenchmark_duration_in_s
 
@@ -41,4 +41,6 @@ output_df = df[
 output_df["avg_ram_per_request_in_MB"] = output_df["avg_ram_in_MB"] / output_df["nb_requests_in_parallel"]
 output_df["avg_cpu_core_per_request"] = output_df["avg_cpu_cores"] / output_df["nb_requests_in_parallel"]
 
-output_df.to_csv(os.path.join(ROOT_PATH, "ecobenchmark_data_for_job_defaults.csv"), index=False)
+ECOBENCHMARK_DATA = os.path.join(ROOT_PATH, "ecobenchmark_data_for_job_defaults.csv")
+output_df.to_csv(ECOBENCHMARK_DATA, index=False)
+
