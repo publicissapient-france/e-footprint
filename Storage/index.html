@@ -1009,51 +1009,63 @@
 <h3 id="all_services_storage_needs">all_services_storage_needs</h3>
 <p>ExplainableQuantity in terabyte / year, representing the storage need of storage.  </p>
 <p>Depends directly on ['<a href="../Service/#storage_needed">Storage needed for service</a>'] through the following formula:</p>
-<p>Storage need of storage=Storage needed for service</p>
+<p>Storage need of storage=Storage needed for service  </p>
+<p>See Storage need of storage calculation graph at <a href='/calculus_graphs/all_services_storage_needs.html' target='_blank'>this link</a></p>
 <h3 id="active_storage_required">active_storage_required</h3>
 <p>ExplainableQuantity in gigabyte, representing the active storage required for storage.  </p>
 <p>Depends directly on ['<a href="./#all_services_storage_needs">Storage need of storage</a>'] through the following formula:</p>
-<p>Active storage required for storage=Storage need of storage * Time interval during which active storage is considered from hypothesis</p>
+<p>Active storage required for storage=Storage need of storage * Time interval during which active storage is considered from hypothesis  </p>
+<p>See Active storage required for storage calculation graph at <a href='/calculus_graphs/active_storage_required.html' target='_blank'>this link</a></p>
 <h3 id="long_term_storage_required">long_term_storage_required</h3>
 <p>ExplainableQuantity in terabyte, representing the long term storage required for storage.  </p>
 <p>Depends directly on ['<a href="./#all_services_storage_needs">Storage need of storage</a>', '<a href="./#data_replication_factor">Data replication factor of storage</a>', '<a href="./#active_storage_required">Active storage required for storage</a>'] through the following formula:</p>
-<p>Long term storage required for storage=Storage need of storage * Data replication factor of storage * one year - Active storage required for storage</p>
+<p>Long term storage required for storage=Storage need of storage * Data replication factor of storage * one year - Active storage required for storage  </p>
+<p>See Long term storage required for storage calculation graph at <a href='/calculus_graphs/long_term_storage_required.html' target='_blank'>this link</a></p>
 <h3 id="nb_of_idle_instances">nb_of_idle_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of idle storage units for storage.  </p>
 <p>Depends directly on ['<a href="./#long_term_storage_required">Long term storage required for storage</a>', '<a href="./#storage_capacity">Storage capacity of storage</a>'] through the following formula:</p>
-<p>Number of idle storage units for storage=Long term storage required for storage / Storage capacity of storage</p>
+<p>Number of idle storage units for storage=Long term storage required for storage / Storage capacity of storage  </p>
+<p>See Number of idle storage units for storage calculation graph at <a href='/calculus_graphs/nb_of_idle_instances.html' target='_blank'>this link</a></p>
 <h3 id="nb_of_active_instances">nb_of_active_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of active instances for storage.  </p>
 <p>Depends directly on ['<a href="./#active_storage_required">Active storage required for storage</a>', '<a href="./#storage_capacity">Storage capacity of storage</a>'] through the following formula:</p>
-<p>Number of active instances for storage=Active storage required for storage / Storage capacity of storage</p>
+<p>Number of active instances for storage=Active storage required for storage / Storage capacity of storage  </p>
+<p>See Number of active instances for storage calculation graph at <a href='/calculus_graphs/nb_of_active_instances.html' target='_blank'>this link</a></p>
 <h3 id="all_services_cpu_needs">all_services_cpu_needs</h3>
 <p>Representation of the evolution throughout a typical day of the cpu needs of all services running on storage by 24 values in core.  </p>
 <p>Depends directly on ['<a href="../Service/#hour_by_hour_cpu_need">service hour by hour cpu need</a>'] through the following formula:</p>
-<p>CPU needs of all services running on storage=service hour by hour cpu need</p>
+<p>CPU needs of all services running on storage=service hour by hour cpu need  </p>
+<p>See CPU needs of all services running on storage calculation graph at <a href='/calculus_graphs/all_services_cpu_needs.html' target='_blank'>this link</a></p>
 <h3 id="all_services_ram_needs">all_services_ram_needs</h3>
 <p>Representation of the evolution throughout a typical day of the ram needs of all services running on storage by 24 values in gigabyte.  </p>
 <p>Depends directly on ['<a href="../Service/#hour_by_hour_ram_need">service hour by hour ram need</a>'] through the following formula:</p>
-<p>RAM needs of all services running on storage=service hour by hour ram need</p>
+<p>RAM needs of all services running on storage=service hour by hour ram need  </p>
+<p>See RAM needs of all services running on storage calculation graph at <a href='/calculus_graphs/all_services_ram_needs.html' target='_blank'>this link</a></p>
 <h3 id="fraction_of_time_in_use">fraction_of_time_in_use</h3>
 <p>ExplainableQuantity in dimensionless, representing the fraction of time in use of storage.  </p>
 <p>Depends directly on ['<a href="./#all_services_cpu_needs">CPU needs of all services running on storage</a>', '<a href="./#all_services_ram_needs">RAM needs of all services running on storage</a>'] through the following formula:</p>
-<p>Fraction of time in use of storage=usage time fraction computation of (retrieving usage hours of (CPU needs of all services running on storage) + retrieving usage hours of (RAM needs of all services running on storage))</p>
+<p>Fraction of time in use of storage=usage time fraction computation of (retrieving usage hours of (CPU needs of all services running on storage) + retrieving usage hours of (RAM needs of all services running on storage))  </p>
+<p>See Fraction of time in use of storage calculation graph at <a href='/calculus_graphs/fraction_of_time_in_use.html' target='_blank'>this link</a></p>
 <h3 id="nb_of_instances">nb_of_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of total instances for storage.  </p>
 <p>Depends directly on ['<a href="./#nb_of_active_instances">Number of active instances for storage</a>', '<a href="./#nb_of_idle_instances">Number of idle storage units for storage</a>'] through the following formula:</p>
-<p>Number of total instances for storage=Number of active instances for storage + Number of idle storage units for storage</p>
+<p>Number of total instances for storage=Number of active instances for storage + Number of idle storage units for storage  </p>
+<p>See Number of total instances for storage calculation graph at <a href='/calculus_graphs/nb_of_instances.html' target='_blank'>this link</a></p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the instances of storage fabrication footprint.  </p>
 <p>Depends directly on ['<a href="./#carbon_footprint_fabrication">Carbon footprint fabrication of storage</a>', '<a href="./#nb_of_instances">Number of total instances for storage</a>', '<a href="./#lifespan">Lifespan of storage</a>'] through the following formula:</p>
-<p>Instances of storage fabrication footprint=Carbon footprint fabrication of storage * Number of total instances for storage / Lifespan of storage</p>
+<p>Instances of storage fabrication footprint=Carbon footprint fabrication of storage * Number of total instances for storage / Lifespan of storage  </p>
+<p>See Instances of storage fabrication footprint calculation graph at <a href='/calculus_graphs/instances_fabrication_footprint.html' target='_blank'>this link</a></p>
 <h3 id="instances_power">instances_power</h3>
 <p>ExplainableQuantity in kilowatt_hour / year, representing the storage power for storage.  </p>
 <p>Depends directly on ['<a href="./#nb_of_active_instances">Number of active instances for storage</a>', '<a href="./#power">Power of storage</a>', '<a href="./#power_usage_effectiveness">PUE of storage</a>', '<a href="./#fraction_of_time_in_use">Fraction of time in use of storage</a>', '<a href="./#nb_of_idle_instances">Number of idle storage units for storage</a>', '<a href="./#idle_power">Idle power of storage</a>'] through the following formula:</p>
-<p>Storage power for storage=Active instances power * Fraction of time in use of storage + Idle instances power</p>
+<p>Storage power for storage=Active instances power * Fraction of time in use of storage + Idle instances power  </p>
+<p>See Storage power for storage calculation graph at <a href='/calculus_graphs/instances_power.html' target='_blank'>this link</a></p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the energy footprint of storage.  </p>
 <p>Depends directly on ['<a href="./#instances_power">Storage power for storage</a>', '<a href="./#average_carbon_intensity">unnamed source from hypothesis</a>'] through the following formula:</p>
-<p>Energy footprint of storage=Storage power for storage * unnamed source from hypothesis</p>
+<p>Energy footprint of storage=Storage power for storage * unnamed source from hypothesis  </p>
+<p>See Energy footprint of storage calculation graph at <a href='/calculus_graphs/energy_footprint.html' target='_blank'>this link</a></p>
 
 
 
