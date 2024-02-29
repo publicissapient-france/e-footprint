@@ -10,10 +10,16 @@ class OnPremise(Server):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
-                 server_utilization_rate: SourceValue):
+                 server_utilization_rate: SourceValue, fixed_nb_of_instances: SourceValue = None):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores, power_usage_effectiveness,
             average_carbon_intensity, server_utilization_rate)
+        self.fixed_nb_of_instances = None
+        if fixed_nb_of_instances:
+            if not fixed_nb_of_instances.value.check("[]"):
+                raise ValueError("Variable 'fixed_nb_of_instances' shouldn’t have any dimensionality")
+            self.fixed_nb_of_instances = fixed_nb_of_instances.set_label(
+                f"User defined number of {self.name} instances").to(u.dimensionless)
 
     def update_nb_of_instances(self):
         ram_needed_per_day = self.all_services_ram_needs.max().set_label(
@@ -38,7 +44,15 @@ class OnPremise(Server):
         else:
             nb_of_instances = nb_of_servers_raw
 
-        self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances")
+        if self.fixed_nb_of_instances:
+            if nb_of_instances > self.fixed_nb_of_instances:
+                raise ValueError(
+                    f"The number of {self.name} instances computed from its resources need is superior to the number of "
+                    f"instances specified by the user ({nb_of_instances.value} > {self.fixed_nb_of_instances})")
+            else:
+                self.nb_of_instances = self.fixed_nb_of_instances
+        else:
+            self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances").to(u.dimensionless)
 
     def update_instances_power(self):
         effective_active_power = self.power * self.power_usage_effectiveness
