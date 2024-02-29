@@ -5,8 +5,15 @@ A toolkit for exhaustively modeling the environmental impact of digital services
 The current perimeter is the carbon footprint associated with the fabrication and usage of servers, storage, network (usage only) and end user devices necessary for the existence of a digital service. Other environmental impacts (water, rare earth metals, etc.) will be added soon through an integration with the [Boavizta API](https://github.com/Boavizta/boaviztapi), and the lifecycle phases of device transportation and end of life are currently considered negligible.
 
 # Getting started
+
+## Documentation
+Here is the link to the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
+
 ## Didactic interface
 You can explore the model’s didactic interface at [this link](https://publicis-sapient-e-footprint-model.streamlit.app/). This interface allows for a limited use of the model (only one user journey on a single service when the code allows for an unlimited amount of objects) but is useful to discover the inputs and explore the calculation graphs (see below).
+
+## Modeling examples
+Checkout our open source [e-footprint modeling use cases](https://github.com/publicissapient-france/e-footprint-modelings).
 
 ## Quickstart
 

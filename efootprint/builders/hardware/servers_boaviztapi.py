@@ -134,7 +134,7 @@ def get_cloud_server(
 def on_premise_server_from_config(
         name: str, nb_of_cpu_units: int, nb_of_cores_per_cpu_unit: int, nb_of_ram_units: int,
         ram_quantity_per_unit_in_gb: int, average_carbon_intensity, lifespan=None, idle_power=None,
-        power_usage_effectiveness=None, server_utilization_rate=None):
+        power_usage_effectiveness=None, server_utilization_rate=None, fixed_nb_of_instances=None):
     impact_url = "https://api.boavizta.org/v1/server/"
     params = {"verbose": "true", "archetype": "platform_compute_medium", "criteria": ["gwp"]}
     data = {"model": {"type": "rack"},
@@ -176,7 +176,8 @@ def on_premise_server_from_config(
         cpu_cores=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
-        server_utilization_rate=server_utilization_rate)
+        server_utilization_rate=server_utilization_rate,
+        fixed_nb_of_instances=fixed_nb_of_instances)
 
 
 if __name__ == "__main__":
