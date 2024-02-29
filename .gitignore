@@ -11,3 +11,5 @@ lib
 dist
 *.egg-info
 *.json
+docs
+!docs_sources/*

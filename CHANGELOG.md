@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.0] - 2024-02-29
+
+### Added
+- Possibility to specify the fixed number of on premise instances through the fixed_nb_of_instances attribute
+- Doc generation logic with mkdocs. Here is the link to the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint).
+
+### Changed
+
+### Fixed
+- File paths in graphs generating functions
+
 ## [1.1.9] - 2024-02-12
 
 ### Added
@@ -13,8 +24,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - calculated_attributes are now a property method instead of an attribute, to facilitate system to json and json to system flow.
 - calculated attributes of System class are now properties for a more coherent syntax.
 - Countries class is now made of country generator objects to avoid unwanted link between systems that would share a common country.
-
-### Changed
 - System now inherits from ModelingObject
 
 ## [1.1.8] - 2024-02-02
