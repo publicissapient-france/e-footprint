@@ -5,14 +5,15 @@
 
 [tool.poetry]
 name = "efootprint"
-version = "1.1.5"
+version = "1.2.1"
 description = "Digital service environmental footprint model"
 authors = ["Vincent Villet for Publicis Sapient"]
 readme = "README.md"
+include = ["efootprint/constants/custom_units.txt"]
 
 [tool.black]
 line-length = 120
-target-version = ['py37', 'py38', 'py310']
+target-version = ['py39', 'py310', 'py311', 'py312']
 include = '\.pyi?$'
 exclude = '''
 /(
@@ -38,15 +39,18 @@ exclude = '''
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pint = '0.22'
-matplotlib = '3.8.0'
-pytz = '2023.3.post1'
+pint = '0.23'
+matplotlib = '3.8'
+pytz = '2024.1'
 pyvis = '0.3.2'
-plotly = '5.18'
-pandas = '2.1'
+plotly = '5.19'
+pandas = '2.2'
 requests = '2.31'
 
 [tool.poetry.group.dev.dependencies]
 pytest = '*'
 pytest-cov = '*'
 jupyter = "^1.0.0"
+mkdocs-material = "*"
+pymdown-extensions = "*"
+jinja2 = "*"

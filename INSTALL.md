@@ -30,7 +30,7 @@ poetry run ipython
 Python 3.10.6 (main, Mar 10 2023, 10:55:28) [GCC 11.3.0]
 Type 'copyright', 'credits' or 'license' for more information
 IPython 8.18.1 -- An enhanced Interactive Python. Type '?' for help.
-In [1]: import quickstart
+In [1]: import efootprint
 ...
 ```
 
@@ -38,18 +38,22 @@ Every `poetry run` command will use python virtual env.
 
 If you want to be "inside" the virtual env you can type `poetry shell`.
 
-To package/distribute you can make: 
+## Distributing to pypi
+If you have a pypi API token with push right to the efootprint package: 
 
 ```shell
 poetry config pypi-token.pypi ${YOUR_API_TOKEN}
 poetry publish --build
 ```
 
-You can generate `requirements.txt` and `requirements-dev.txt` from `pyproject.toml` and poetry with:
+for testing on test-pypi:
 
 ```shell
-poetry export -f requirements.txt --without-hashes -o requirements.txt 
-poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 
+poetry config repositories.test-pypi https://test.pypi.org/legacy/
+poetry config pypi-token.test-pypi ${YOUR_API_TOKEN}
+poetry publish --build -r test-pypi
+# then inside your virtualenv
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ efootprint
 ```
 
 ## Launch tests
@@ -59,9 +63,13 @@ export PYTHONPATH="./:$PYTHONPATH"
 python -m pytest --cov=tests
 ```
 
-## Push package to PyPi (if you have push rights)
+## Generating requirements files
+
+You can generate `requirements.txt` and `requirements-dev.txt` from `pyproject.toml` and poetry with:
 
 ```shell
-python setup.py sdist
-twine upload --repository pypi dist/*
+poetry export -f requirements.txt --without-hashes -o requirements.txt 
+poetry export -f requirements.txt --without-hashes --dev -o requirements-dev.txt 
 ```
+
+
