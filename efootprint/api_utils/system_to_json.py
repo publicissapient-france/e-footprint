@@ -1,4 +1,3 @@
-from efootprint.utils.tools import time_it
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -77,7 +76,6 @@ def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes
     return output_dict
 
 
-@time_it
 def system_to_json(input_system, save_calculated_attributes, output_filepath=None):
     output_dict = {}
     recursively_write_json_dict(output_dict, input_system, save_calculated_attributes)

@@ -60,10 +60,11 @@ class IntegrationTestBaseClass(TestCase):
                       + list(input_system.device_populations) + list(input_system.networks)
         user_journeys = [up.user_journey for up in input_system.usage_patterns]
         uj_steps = sum([uj.uj_steps for uj in user_journeys], start=[])
+        jobs = sum([uj_step.jobs for uj_step in uj_steps], start=[])
         devices = sum([dp.devices for dp in input_system.device_populations], start=[])
         countries = [dp.country for dp in input_system.device_populations]
 
-        return output_list + user_journeys + uj_steps + devices + countries
+        return output_list + user_journeys + uj_steps + jobs + devices + countries
 
     def run_system_to_json_test(self, input_system):
         mod_obj_list = self.retrieve_all_mod_obj_from_system(input_system)
