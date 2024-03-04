@@ -231,7 +231,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             self, classes_to_ignore=classes_to_ignore, width=width, height=height)
 
         if filename is None:
-            filename = os.path.join(".", f"{self.name} calculus graph.html")
+            filename = os.path.join(".", f"{self.name} object relationship graph.html")
         return object_relationships_graph.show(filename, notebook=notebook)
 
     def self_delete(self):
