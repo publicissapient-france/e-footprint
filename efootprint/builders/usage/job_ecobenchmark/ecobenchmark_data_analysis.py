@@ -4,7 +4,7 @@ import requests
 
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 
-ecobenchmark_results_link = "https://raw.githubusercontent.com/Boavizta/ecobenchmark-applicationweb-backend/628f86a7e5816a49670b0837fa7507cf2e620531/results/results/20220628-193500.csv"
+ECOBENCHMARK_RESULTS_LINK = "https://raw.githubusercontent.com/Boavizta/ecobenchmark-applicationweb-backend/628f86a7e5816a49670b0837fa7507cf2e620531/results/results/20220628-193500.csv"
 
 
 def download_file_from_url(url, file_path, overwrite=False):
@@ -19,7 +19,7 @@ def download_file_from_url(url, file_path, overwrite=False):
 
 
 ecobenchmark_raw_file = os.path.join(ROOT_PATH, "ecobenchmark_results__raw.csv")
-download_file_from_url(ecobenchmark_results_link, ecobenchmark_raw_file)
+download_file_from_url(ECOBENCHMARK_RESULTS_LINK, ecobenchmark_raw_file)
 df = pd.read_csv(ecobenchmark_raw_file)
 
 nb_of_application_server_cpu_cores_hypothesis = 24 #TODO: to update with OVH server specs
