@@ -3,7 +3,6 @@ from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 
-from pint import Quantity
 import json
 
 
@@ -27,36 +26,11 @@ def mod_obj_to_json(mod_obj: ModelingObject, save_calculated_attributes=False):
                 elif issubclass(type(value[0]), ModelingObject) and "__previous_list_value_set" not in key:
                     output_dict[key] = [elt.id for elt in value]
         elif issubclass(type(value), ExplainableObject):
-            output_dict[key] = explainable_object_to_json(value, save_calculated_attributes)
+            output_dict[key] = value.to_json(save_calculated_attributes)
         elif issubclass(type(value), ExplainableObjectDict):
             output_dict[key] = mod_obj_to_json(value, save_calculated_attributes)
         elif issubclass(type(value), ModelingObject):
             output_dict[key] = value.id
-
-    return output_dict
-
-
-def explainable_object_to_json(explainable_object, save_calculated_attributes=False):
-    output_dict = {}
-    if issubclass(type(explainable_object.value), Quantity):
-        output_dict = {
-            "value": explainable_object.value.magnitude, "unit": str(explainable_object.value.units)}
-    elif type(explainable_object.value) == list:
-        if len(explainable_object.value) > 0 and type(explainable_object.value[0]) == list:
-            output_dict = {"value": explainable_object.value}
-        else:
-            output_dict = {"values": [elt.magnitude for elt in explainable_object.value],
-                           "unit": explainable_object.value[0].units}
-    elif getattr(explainable_object.value, "zone", None) is not None:
-        output_dict = {"zone": explainable_object.value.zone}
-    if explainable_object.source is not None:
-        output_dict["source"] = {"name": explainable_object.source.name, "link": explainable_object.source.link}
-    output_dict["label"] = explainable_object.label
-
-    if save_calculated_attributes:
-        output_dict["id"] = explainable_object.id
-        output_dict["direct_ancestors_with_id"] = [elt.id for elt in explainable_object.direct_ancestors_with_id]
-        output_dict["direct_children_with_id"] = [elt.id for elt in explainable_object.direct_children_with_id]
 
     return output_dict
 

@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Type, List
 import pytz
 from pint import Quantity
+import json
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -111,6 +112,26 @@ class ExplainableQuantity(ExplainableObject):
     def __round__(self, round_level):
         self.value = round(self.value, round_level)
         return self
+
+    def to_json(self, with_calculated_attributes_data=False):
+        output_dict = {
+            "label": self.label, "value": self.value.magnitude, "unit": str(self.value.units)}
+
+        if self.source is not None:
+            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
+
+        if with_calculated_attributes_data:
+            output_dict["id"] = self.id
+            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
+            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+
+        return output_dict
+
+    def __repr__(self):
+        return json.dumps(self.to_json())
+
+    def __str__(self):
+        return f"{round(self.value, 2)}"
 
 
 class ExplainableHourlyUsage(ExplainableObject):
@@ -234,3 +255,23 @@ class ExplainableHourlyUsage(ExplainableObject):
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
+
+    def to_json(self, with_calculated_attributes_data=False):
+        output_dict = {
+            "label": self.label, "values": [elt.magnitude for elt in self.value], "unit": str(self.value[0].units)}
+
+        if self.source is not None:
+            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
+
+        if with_calculated_attributes_data:
+            output_dict["id"] = self.id
+            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
+            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+
+        return output_dict
+
+    def __repr__(self):
+        return json.dumps(self.to_json())
+
+    def __str__(self):
+        return "[" + ", ".join([str(round(hourly_value, 2)) for hourly_value in self.value]) + "]"

@@ -59,6 +59,9 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_subtract_0(self):
         self.assertEqual(self.a, self.a - 0)
 
+    def test_to_json(self):
+        self.assertDictEqual({"label": "1 Watt", "value": 1, "unit": "watt"}, self.a.to_json())
+
 
 class TestExplainableHourlyUsage(unittest.TestCase):
 
@@ -129,6 +132,9 @@ class TestExplainableHourlyUsage(unittest.TestCase):
 
     def test_eq_returns_false_when_not_equal(self):
         self.assertFalse(self.hourly_usage1 == self.hourly_usage2)
+
+    def test_to_json(self):
+        self.assertDictEqual({"label": "Usage 1", "values": [1] * 24, "unit": "watt"}, self.hourly_usage1.to_json())
 
 
 if __name__ == "__main__":

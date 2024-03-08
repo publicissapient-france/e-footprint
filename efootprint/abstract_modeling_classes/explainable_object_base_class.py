@@ -5,6 +5,7 @@ from typing import Type, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import os
+import json
 
 
 class ObjectLinkedToModelingObj(ABC):
@@ -241,3 +242,27 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             filename = os.path.join(".", f"{self.label} calculus graph.html")
 
         return calculus_graph.show(filename, notebook=notebook)
+
+    def to_json(self, with_calculated_attributes_data=False):
+        output_dict = {"label": self.label}
+
+        if type(self.value) == list:  # Case of time_intervals in UsagePattern class
+            output_dict["value"] = self.value
+        elif getattr(self.value, "zone", None) is not None:  # Case of timezone in Country class
+            output_dict["zone"] = self.value.zone
+
+        if self.source is not None:
+            output_dict["source"] = {"name": self.source.name, "link": self.source.link}
+
+        if with_calculated_attributes_data:
+            output_dict["id"] = self.id
+            output_dict["direct_ancestors_with_id"] = [elt.id for elt in self.direct_ancestors_with_id]
+            output_dict["direct_children_with_id"] = [elt.id for elt in self.direct_children_with_id]
+
+        return output_dict
+
+    def __repr__(self):
+        return json.dumps(self.to_json())
+
+    def __str__(self):
+        return self.value

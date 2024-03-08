@@ -1,8 +1,10 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.source_objects import Source
 
 from unittest import TestCase
 from unittest.mock import MagicMock
+import pytz
 
 
 class TestExplainableObjectBaseClass(TestCase):
@@ -203,3 +205,18 @@ Label L + Label R
 
         with self.assertRaises(ValueError):
             self.a.set_modeling_obj_container(new_parent_mod_obj, "test_attr_name")
+
+    def test_to_json_for_time_intervals(self):
+        time_int = ExplainableObject([[9, 12], [19, 22]], "TI", source=Source("source name", "source link"))
+
+        self.assertDictEqual(
+            {"label": "TI from source name", "value": [[9, 12], [19, 22]],
+             "source": {"name": "source name", "link": "source link"}}, time_int.to_json())
+
+    def test_to_json_for_timezone(self):
+        timezone_expl = ExplainableObject(
+            pytz.timezone("Europe/Paris"), "timezone", source=Source("source name", "source link"))
+
+        self.assertEqual(
+            {"label": "timezone from source name", "zone": "Europe/Paris",
+             "source": {"name": "source name", "link": "source link"}}, timezone_expl.to_json())
