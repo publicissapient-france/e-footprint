@@ -1,6 +1,6 @@
 # Welcome to the e-footprint documentation !
 
-The documentation is a work in progress but you can already explore e-footprint’s objects and their relationships in the object pages that you can navigate on the left tab !
+If you are new to e-footprint, start by checking out the [tutorial](tutorial_reformated.md)
 
 Here is the structure of an e-footprint object page:
 

@@ -1,8 +1,17 @@
-theme: material
+theme:
+  name: material
+  features:
+    - content.code.copy
 site_name: e-footprint documentation
 
 markdown_extensions:
-- pymdownx.snippets
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
 
 docs_dir: docs_sources/mkdocs_sourcefiles
 
@@ -10,6 +19,7 @@ site_dir: docs
 
 nav:
 - Introduction: index.md
+- Tutorial: tutorial_reformated.md
 - System: System.md
 - UsagePattern: UsagePattern.md
 - UserJourney: UserJourney.md
