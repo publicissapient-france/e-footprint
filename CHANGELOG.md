@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.2.2] - 2024-03-28
+
+### Added
+- notebook parameter in object and calculus graph generation functions + set cdn_resources=in_line in pyvis Network objects to silence jupyter warning
+
+### Changed
+- quickstart as jupyter notebook
+
 ## [1.2.1] - 2024-02-29
 
 ### Added

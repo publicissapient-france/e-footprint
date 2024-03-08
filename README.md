@@ -22,11 +22,11 @@ Checkout our open source [e-footprint modeling use cases](https://github.com/pub
 
     pip install efootprint
 
-You can then run the [quickstart](quickstart.py) script to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
+You can then run the [quickstart jupyter notebook](quickstart.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 
 <figure>
     <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
-    <figcaption>Object relationships graph: usage pattern in wheat, user journey in gold, user journey steps in khaki, hardware in darkred, and service in blue</figcaption>
+    <figcaption>Object relationships graph: usage pattern in purple, user journey and user journey steps in gold, hardware in red, and service in blue</figcaption>
 </figure>
 
 <figure>
@@ -34,14 +34,14 @@ You can then run the [quickstart](quickstart.py) script to familiarize yourself 
     <figcaption>Calculation graph: user inputs in gold, hypothesis in darkred, and intermediate calculations in pale blue. Hover over a node to read the formula.</figcaption>
 </figure>
 
-### Test E-footprint using a Jupyter notebook
+### To launch jupyter:
 
 ```sh
+# Todo once to setup jupyter kernel
+poetry run ipython kernel install --user --name=efootprint-kernel
 # Start Jupyter server with poetry
 poetry run jupyter notebook quickstart.ipynb
 ```
-
-Access the notebook at: [http://127.0.0.1:8888/notebooks/quickstart.ipynb](http://127.0.0.1:8888/notebooks/quickstart.ipynb)
 
 ## Dev setup
 
