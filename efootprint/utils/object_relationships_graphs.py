@@ -30,7 +30,7 @@ def build_object_relationships_graph(
     if classes_to_ignore is None:
         classes_to_ignore = ["System"]
     if input_graph is None:
-        input_graph = Network(notebook=True, width=f"{width}px", height=f"{height}px")
+        input_graph = Network(notebook=True, width=f"{width}px", height=f"{height}px", cdn_resources="in_line")
     if visited is None:
         visited = set()
 

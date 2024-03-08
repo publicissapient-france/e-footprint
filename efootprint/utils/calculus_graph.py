@@ -46,7 +46,7 @@ def build_calculus_graph(root_node, colors_dict=None,
     if colors_dict is None:
         colors_dict = {"user data": "gold", "default": "darkred"}
 
-    G = Network(notebook=True, directed=True, width=width, height=height)
+    G = Network(notebook=True, directed=True, width=width, height=height, cdn_resources="in_line")
     G.toggle_physics(False)
 
     pos = calculate_positions(root_node)

@@ -224,13 +224,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return output_list
 
     def object_relationship_graph_to_file(
-            self, filename=None, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width=WIDTH, height=HEIGHT):
+            self, filename=None, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width=WIDTH, height=HEIGHT,
+            notebook=False):
         object_relationships_graph = build_object_relationships_graph(
             self, classes_to_ignore=classes_to_ignore, width=width, height=height)
 
         if filename is None:
             filename = os.path.join(".", f"{self.name} calculus graph.html")
-        object_relationships_graph.show(filename)
+        return object_relationships_graph.show(filename, notebook=notebook)
 
     def self_delete(self):
         logger.warning(

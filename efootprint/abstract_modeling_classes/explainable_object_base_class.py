@@ -231,11 +231,13 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return calc_str.replace(" = ", "\n=\n")
 
     def calculus_graph_to_file(
-            self, filename=None, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px"):
+            self, filename=None, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px",
+            notebook=False):
         if colors_dict is None:
             colors_dict = colors_dict = {"user data": "gold", "default": "darkred"}
         calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height)
 
         if filename is None:
             filename = os.path.join(".", f"{self.label} calculus graph.html")
-        calculus_graph.show(filename)
+
+        return calculus_graph.show(filename, notebook=notebook)
