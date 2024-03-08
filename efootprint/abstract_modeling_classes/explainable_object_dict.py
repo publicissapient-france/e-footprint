@@ -2,6 +2,7 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ObjectLinkedToModelingObj, ExplainableObject)
 
 from typing import Type
+import json
 
 
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
@@ -28,3 +29,22 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         super().__setitem__(key, value)
         value.set_modeling_obj_container(
             new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
+
+    def to_json(self, with_calculated_attributes_data=False):
+        output_dict = {}
+
+        for key, value in self.items():
+            output_dict[key.id] = value.to_json(with_calculated_attributes_data)
+
+        return output_dict
+
+    def __repr__(self):
+        return json.dumps(self.to_json())
+
+    def __str__(self):
+        values_dict = {}
+
+        for key, value in self.items():
+            values_dict[key.id] = str(value)
+
+        return json.dumps(values_dict)

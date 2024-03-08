@@ -362,3 +362,14 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_json_to_system(self):
         self.run_json_to_system_test(self.system)
+
+    def test_modeling_object_prints(self):
+        print(self.usage_pattern)
+        print(self.device_population)
+        print(self.server)
+        print(self.storage)
+        print(self.upload_step)
+        print(self.uj)
+        print(self.network)
+        print(self.service)
+        print(self.system)

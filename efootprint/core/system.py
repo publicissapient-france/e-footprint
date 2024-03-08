@@ -188,4 +188,4 @@ class System(ModelingObject):
         if filename is None:
             filename = f"{self.name} footprints.html"
 
-        plotly.offline.plot(fig, filename=filename, auto_open=False)
+        return plotly.offline.plot(fig, filename=filename, auto_open=False)

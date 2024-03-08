@@ -274,4 +274,5 @@ class ExplainableHourlyUsage(ExplainableObject):
         return json.dumps(self.to_json())
 
     def __str__(self):
-        return "[" + ", ".join([str(round(hourly_value, 2)) for hourly_value in self.value]) + "]"
+        return ("[" + ", ".join([str(round(hourly_value, 2)) for hourly_value in self.value]) + "]").replace(
+            "dimensionless", "")

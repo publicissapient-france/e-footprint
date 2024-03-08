@@ -265,4 +265,4 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return json.dumps(self.to_json())
 
     def __str__(self):
-        return self.value
+        return str(self.value)

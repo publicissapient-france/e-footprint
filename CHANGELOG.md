@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ### Added
 - notebook parameter in object and calculus graph generation functions + set cdn_resources=in_line in pyvis Network objects to silence jupyter warning
+- to_json, __repr__ and __str__ methods in ExplainableObject subclasses and ModelingObject.
 
 ### Changed
 - quickstart as jupyter notebook

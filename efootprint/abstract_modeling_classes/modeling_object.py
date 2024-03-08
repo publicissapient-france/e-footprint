@@ -11,6 +11,7 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Type
 from copy import copy
 import os
+import json
 
 
 def get_subclass_attributes(obj, target_class):
@@ -246,3 +247,75 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             attr.launch_attributes_computation_chain()
 
         del self
+
+    def to_json(self, save_calculated_attributes=False):
+        output_dict = {}
+
+        for key, value in self.__dict__.items():
+            if (
+                    key in self.calculated_attributes and not save_calculated_attributes) or "calculated_attributes" in key \
+                    or key == "modeling_obj_containers":
+                continue
+            if type(value) == str:
+                output_dict[key] = value
+            elif type(value) == int:
+                output_dict[key] = value
+            elif type(value) == list:
+                if len(value) == 0:
+                    output_dict[key] = value
+                else:
+                    if type(value[0]) == str:
+                        output_dict[key] = value
+                    elif issubclass(type(value[0]), ModelingObject) and "__previous_list_value_set" not in key:
+                        output_dict[key] = [elt.id for elt in value]
+            elif issubclass(type(value), ExplainableObject):
+                output_dict[key] = value.to_json(save_calculated_attributes)
+            elif issubclass(type(value), ExplainableObjectDict):
+                output_dict[key] = value.to_json(save_calculated_attributes)
+            elif issubclass(type(value), ModelingObject):
+                output_dict[key] = value.id
+
+        return output_dict
+
+    def __repr__(self):
+        return json.dumps(self.to_json(save_calculated_attributes=True), indent=4)
+
+    def __str__(self):
+        output_str = ""
+
+        def key_value_to_str(input_key, input_value):
+            key_value_str = ""
+
+            if type(value) == str:
+                key_value_str = f"{input_key}: {input_value}\n"
+            elif type(value) == int:
+                key_value_str = f"{input_key}: {input_value}\n"
+            elif type(value) == list:
+                if len(value) == 0:
+                    key_value_str = f"{input_key}: {input_value}\n"
+                else:
+                    if type(value[0]) == str:
+                        key_value_str = f"{input_key}: {input_value}"
+                    elif issubclass(type(value[0]), ModelingObject) and "__previous_list_value_set" not in key:
+                        str_value = "[" + ", ".join([elt.id for elt in value]) + "]"
+                        key_value_str = f"{input_key}: {str_value}\n"
+            elif issubclass(type(value), ExplainableObject):
+                key_value_str = f"{input_key}: {input_value}\n"
+            elif issubclass(type(value), ExplainableObjectDict):
+                key_value_str = f"{input_key}: {input_value}\n"
+            elif issubclass(type(value), ModelingObject):
+                key_value_str = f"{input_key}: {input_value.id}\n"
+
+            return key_value_str
+
+        for key, value in self.__dict__.items():
+            if key == "modeling_obj_containers" or key in self.calculated_attributes:
+                continue
+            output_str += key_value_to_str(key, value)
+
+        if len(self.calculated_attributes) > 0:
+            output_str += "calculated_attributes:\n"
+            for key in self.calculated_attributes:
+                output_str += "  " + key_value_to_str(key, getattr(self, key))
+
+        return output_str
