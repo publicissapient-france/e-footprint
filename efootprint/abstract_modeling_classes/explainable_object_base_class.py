@@ -1,11 +1,13 @@
 from efootprint.logger import logger
 from efootprint.utils.calculus_graph import build_calculus_graph
+from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
 
 from typing import Type, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import os
 import json
+from IPython.display import HTML
 
 
 class ObjectLinkedToModelingObj(ABC):
@@ -235,13 +237,18 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self, filename=None, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px",
             notebook=False):
         if colors_dict is None:
-            colors_dict = colors_dict = {"user data": "gold", "default": "darkred"}
-        calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height)
+            colors_dict = {"user data": "gold", "default": "darkred"}
+        calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height, notebook)
 
         if filename is None:
             filename = os.path.join(".", f"{self.label} calculus graph.html")
 
-        return calculus_graph.show(filename, notebook=notebook)
+        calculus_graph.show(filename, notebook=notebook)
+
+        add_unique_id_to_mynetwork(filename)
+
+        if notebook:
+            return HTML(filename)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {"label": self.label}

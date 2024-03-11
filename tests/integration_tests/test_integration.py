@@ -92,13 +92,14 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)
-        graph.show(os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"))
+        graph.show(
+            os.path.join(os.path.abspath(os.path.dirname(__file__)), "full_calculation_graph.html"), notebook=False)
 
     def test_object_relationship_graph(self):
         object_relationships_graph = build_object_relationships_graph(
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
         object_relationships_graph.show(
-            os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"))
+            os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
 
     def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
@@ -175,8 +176,6 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_time_intervals_change(self):
         logger.warning("Updating time intervals in usage pattern")
         old_time_intervals = deepcopy(self.usage_pattern.time_intervals)
-        calculus_graph = build_calculus_graph(self.server.energy_footprint)
-        calculus_graph.show(os.path.join(".", "debug_calculus_graph.html"))
         self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_DATA)
         assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
         logger.warning("Setting time intervals back to initial value in usage pattern")

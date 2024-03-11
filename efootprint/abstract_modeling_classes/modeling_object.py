@@ -1,7 +1,7 @@
 from efootprint.logger import logger
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.utils.graph_tools import WIDTH, HEIGHT
+from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.utils.tools import convert_to_list
@@ -12,6 +12,7 @@ from typing import List, Type
 from copy import copy
 import os
 import json
+from IPython.display import HTML
 
 
 def get_subclass_attributes(obj, target_class):
@@ -228,11 +229,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             self, filename=None, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width=WIDTH, height=HEIGHT,
             notebook=False):
         object_relationships_graph = build_object_relationships_graph(
-            self, classes_to_ignore=classes_to_ignore, width=width, height=height)
+            self, classes_to_ignore=classes_to_ignore, width=width, height=height, notebook=notebook)
 
         if filename is None:
             filename = os.path.join(".", f"{self.name} object relationship graph.html")
-        return object_relationships_graph.show(filename, notebook=notebook)
+        object_relationships_graph.show(filename, notebook=notebook)
+
+        add_unique_id_to_mynetwork(filename)
+
+        if notebook:
+            return HTML(filename)
 
     def self_delete(self):
         logger.warning(

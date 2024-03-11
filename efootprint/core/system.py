@@ -13,6 +13,7 @@ from typing import Dict, List, Set
 import plotly.express as px
 import plotly
 import pandas as pd
+from IPython.display import HTML
 
 
 class System(ModelingObject):
@@ -188,4 +189,6 @@ class System(ModelingObject):
         if filename is None:
             filename = f"{self.name} footprints.html"
 
-        return plotly.offline.plot(fig, filename=filename, auto_open=False)
+        plotly.offline.plot(fig, filename=filename, auto_open=False)
+
+        return HTML(filename)

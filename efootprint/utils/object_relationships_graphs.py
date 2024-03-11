@@ -26,11 +26,14 @@ SERVICES_AND_INFRA_VIEW_CLASSES_TO_IGNORE = [
 
 
 def build_object_relationships_graph(
-        node, input_graph=None, visited=None, classes_to_ignore=None, width=WIDTH, height=HEIGHT):
+        node, input_graph=None, visited=None, classes_to_ignore=None, width=WIDTH, height=HEIGHT, notebook=False):
+    cdn_resources = "local"
+    if notebook:
+        cdn_resources = "in_line"
     if classes_to_ignore is None:
         classes_to_ignore = ["System"]
     if input_graph is None:
-        input_graph = Network(notebook=True, width=f"{width}px", height=f"{height}px", cdn_resources="in_line")
+        input_graph = Network(notebook=notebook, width=width, height=height, cdn_resources=cdn_resources)
     if visited is None:
         visited = set()
 

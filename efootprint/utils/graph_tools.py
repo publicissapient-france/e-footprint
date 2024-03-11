@@ -1,5 +1,7 @@
-WIDTH = 1200
-HEIGHT = 900
+import uuid
+
+WIDTH = "1200px"
+HEIGHT = "900px"
 
 
 def set_string_max_width(s, max_width):
@@ -24,3 +26,15 @@ def set_string_max_width(s, max_width):
             formatted_lines.append(' '.join(current_line))
 
     return '\n'.join(formatted_lines)
+
+
+def add_unique_id_to_mynetwork(filename):
+    with open(filename, "r") as file:
+        html_content = file.read()
+
+    # Replace "mynetwork" in js scripts with "mynetwork+uuid" so that several graphs displayed on the same
+    # page don’t collide with one another
+    html_content = html_content.replace("mynetwork", f"mynetwork_{str(uuid.uuid4())[:6]}")
+
+    with open(filename, "w") as file:
+        file.write(html_content)
