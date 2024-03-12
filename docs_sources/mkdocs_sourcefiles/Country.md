@@ -9,7 +9,7 @@ A human readable description of the object.
 description to be done
 
 ### average_carbon_intensity
-SourceValue with Quantity in gram / kilowatt_hour, representing the average carbon intensity of devices country.
+average carbon intensity of devices country in gram / kilowatt_hour.
 
 ### year
 description to be done

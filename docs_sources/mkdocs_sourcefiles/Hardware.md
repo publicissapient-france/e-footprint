@@ -6,16 +6,16 @@
 A human readable description of the object.
 
 ### carbon_footprint_fabrication
-SourceValue with Quantity in kilogram, representing the carbon footprint fabrication of device on which the user journey is made.
+carbon footprint fabrication of device on which the user journey is made in kilogram.
 
 ### power
-SourceValue with Quantity in watt, representing the power of device on which the user journey is made.
+power of device on which the user journey is made in watt.
 
 ### lifespan
-SourceValue with Quantity in year, representing the lifespan of device on which the user journey is made.
+lifespan of device on which the user journey is made in year.
 
 ### fraction_of_usage_time
-SourceValue with Quantity in hour / day, representing the device on which the user journey is made fraction of usage time.
+device on which the user journey is made fraction of usage time in hour / day.
 
 
 ## Backwards links

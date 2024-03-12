@@ -24,7 +24,7 @@ def obj_to_md(input_obj, attr_name):
         obj_class = return_class_str(input_obj)
         return f"### {attr_name}\nAn instance of [{obj_class}]({obj_class}.md)."
     elif issubclass(type(input_obj), ExplainableQuantity):
-        return f"### {attr_name}\nSourceValue with Quantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
+        return f"### {attr_name}\n{input_obj.label.lower()} in {input_obj.value.units}."
     elif type(input_obj) == list:
         if issubclass(type(input_obj[0]), ModelingObject):
             obj_class = return_class_str(input_obj[0])
@@ -46,17 +46,26 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
         return_str += f"""  \nRepresentation of the evolution throughout a typical day of the {input_obj.label.lower()} by 24 values in {input_obj.value[0].units}."""
 
     formula_expl = "=".join(input_obj.explain().split("\n=\n")[:2])
-    return_str += f"  \n  \nDepends directly on {[f'[{elt.label}]({return_class_str(elt.modeling_obj_container)}.md#{elt.attr_name_in_mod_obj_container})' for elt in input_obj.direct_ancestors_with_id]} through the following formula:\n\n{formula_expl}"
+    ancestor_md_link_list = [f'[{elt.label}]({return_class_str(elt.modeling_obj_container)}.md#{elt.attr_name_in_mod_obj_container})' for elt in input_obj.direct_ancestors_with_id]
+    ancestor_md_links_list_formatted = "  \n- " + "\n- ".join(ancestor_md_link_list)
+    return_str += f"  \n  \nDepends directly on:  \n{ancestor_md_links_list_formatted}  \n\nthrough the following calculations:  \n"
 
     if issubclass(type(calc_attr), ExplainableObject):
         containing_obj_str = input_obj.modeling_obj_container.name.replace(" ", "_")
         calculus_graph_path = os.path.join(
             ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr}.html")
         input_obj.calculus_graph_to_file(calculus_graph_path)
+        calculus_graph_path_depth1 = os.path.join(
+            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr}_depth1.html")
+        input_obj.calculus_graph_to_file(calculus_graph_path_depth1, width="760px", height="300px", max_depth=1)
+
+        md_calculus_graph_link_depth1 = calculus_graph_path_depth1.replace(
+            os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "docs_sources/mkdocs_sourcefiles")
+        return_str += f'\n--8<-- "{md_calculus_graph_link_depth1}"\n'
 
         # The relative path starts with .. instead of . because it seems like mkdocs considers md files as html within a folder
         md_calculus_graph_link = calculus_graph_path.replace(os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "..")
-        return_str += f"  \n  \nSee {input_obj.label} calculation graph at <a href='{md_calculus_graph_link}' target='_blank'>this link</a>"
+        return_str += f"  \nYou can also visit the <a href='{md_calculus_graph_link}' target='_blank'>link to {input_obj.label}’s full calculation graph</a>."
 
     return return_str
 
@@ -100,10 +109,10 @@ with open(mkdocs_yml_filepath, "r") as fp:
     data = yaml.load(fp)
 for filename in nav_items:
     write_filename = True
-    for elt in data["nav"]:
+    for elt in data["nav"][2]["e-footprint objects reference"]:
         if filename.replace(".md", "") in elt.keys():
             write_filename = False
     if write_filename:
-        data["nav"].append({filename.replace(".md", ""): filename})
+        data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
 with open(mkdocs_yml_filepath, "w") as fp:
     yaml.dump(data, fp)

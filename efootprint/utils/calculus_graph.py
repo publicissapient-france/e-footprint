@@ -41,8 +41,9 @@ def calculate_positions(node):
     return pos
 
 
-def build_calculus_graph(root_node, colors_dict=None,
-                         x_multiplier=150, y_multiplier=150, width="1800px", height="900px", notebook=False):
+def build_calculus_graph(
+        root_node, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px",
+        notebook=False, max_depth=100):
     if colors_dict is None:
         colors_dict = {"user data": "gold", "default": "darkred"}
     cdn_resources = "local"
@@ -54,8 +55,10 @@ def build_calculus_graph(root_node, colors_dict=None,
 
     pos = calculate_positions(root_node)
 
-    def add_nodes_edges(node, parent_id=None):
+    def add_nodes_edges(node, current_depth, parent_id=None):
         if node.label:
+            if node.modeling_obj_container:
+                current_depth += 1
             color = None
             if node.left_parent is None and node.right_parent is None:
                 if getattr(node, "source", None) is not None:
@@ -74,11 +77,11 @@ def build_calculus_graph(root_node, colors_dict=None,
         else:
             current_id = parent_id
 
-        if node.left_parent:
-            add_nodes_edges(node.left_parent, current_id)
-        if node.right_parent:
-            add_nodes_edges(node.right_parent, current_id)
+        if node.left_parent and current_depth <= max_depth:
+            add_nodes_edges(node.left_parent, current_depth, current_id)
+        if node.right_parent and current_depth <= max_depth:
+            add_nodes_edges(node.right_parent, current_depth, current_id)
 
-    add_nodes_edges(root_node)
+    add_nodes_edges(root_node, 0)
 
     return G

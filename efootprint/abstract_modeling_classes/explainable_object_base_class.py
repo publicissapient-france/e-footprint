@@ -235,10 +235,11 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
     def calculus_graph_to_file(
             self, filename=None, colors_dict=None, x_multiplier=150, y_multiplier=150, width="1800px", height="900px",
-            notebook=False):
+            notebook=False, max_depth=100):
         if colors_dict is None:
             colors_dict = {"user data": "gold", "default": "darkred"}
-        calculus_graph = build_calculus_graph(self, colors_dict, x_multiplier, y_multiplier, width, height, notebook)
+        calculus_graph = build_calculus_graph(
+            self, colors_dict, x_multiplier, y_multiplier, width, height, notebook, max_depth=max_depth)
 
         if filename is None:
             filename = os.path.join(".", f"{self.label} calculus graph.html")
