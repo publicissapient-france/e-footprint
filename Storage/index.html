@@ -1080,21 +1080,21 @@
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
 <h3 id="carbon_footprint_fabrication">carbon_footprint_fabrication</h3>
-<p>SourceValue with Quantity in kilogram, representing the carbon footprint fabrication of storage.</p>
+<p>carbon footprint fabrication of storage in kilogram.</p>
 <h3 id="power">power</h3>
-<p>SourceValue with Quantity in watt, representing the power of storage.</p>
+<p>power of storage in watt.</p>
 <h3 id="lifespan">lifespan</h3>
-<p>SourceValue with Quantity in year, representing the lifespan of storage.</p>
+<p>lifespan of storage in year.</p>
 <h3 id="idle_power">idle_power</h3>
-<p>SourceValue with Quantity in watt, representing the idle power of storage.</p>
+<p>idle power of storage in watt.</p>
 <h3 id="storage_capacity">storage_capacity</h3>
-<p>SourceValue with Quantity in terabyte, representing the storage capacity of storage.</p>
+<p>storage capacity of storage in terabyte.</p>
 <h3 id="power_usage_effectiveness">power_usage_effectiveness</h3>
-<p>SourceValue with Quantity in dimensionless, representing the pue of storage.</p>
+<p>pue of storage in dimensionless.</p>
 <h3 id="average_carbon_intensity">average_carbon_intensity</h3>
-<p>SourceValue with Quantity in gram / kilowatt_hour, representing the average carbon intensity of storage electricity.</p>
+<p>average carbon intensity of storage electricity in gram / kilowatt_hour.</p>
 <h3 id="data_replication_factor">data_replication_factor</h3>
-<p>SourceValue with Quantity in dimensionless, representing the data replication factor of storage.</p>
+<p>data replication factor of storage in dimensionless.</p>
 <h3 id="storage_need_from_previous_year">storage_need_from_previous_year</h3>
 <p>description to be done</p>
 <h2 id="backwards-links">Backwards links</h2>
@@ -1104,64 +1104,1986 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="all_services_storage_needs">all_services_storage_needs</h3>
 <p>ExplainableQuantity in terabyte / year, representing the storage need of storage.  </p>
-<p>Depends directly on ['<a href="../Service/#storage_needed">Storage needed for service</a>'] through the following formula:</p>
-<p>Storage need of storage=Storage needed for service  </p>
-<p>See Storage need of storage calculation graph at <a href='../calculus_graphs/storage_all_services_storage_needs.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../Service/#storage_needed">Storage needed for service</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b3d91f {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b3d91f" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b3d91f');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": 0.0, "y": 600}, {"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request user journey step * (User journey frequency of usage\npattern)\n=\n50.0 kB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Storage needed for service", "to": "Storage need of storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_all_services_storage_needs.html' target='_blank'>link to Storage need of storage’s full calculation graph</a>.</p>
 <h3 id="active_storage_required">active_storage_required</h3>
 <p>ExplainableQuantity in gigabyte, representing the active storage required for storage.  </p>
-<p>Depends directly on ['<a href="./#all_services_storage_needs">Storage need of storage</a>'] through the following formula:</p>
-<p>Active storage required for storage=Storage need of storage * Time interval during which active storage is considered from hypothesis  </p>
-<p>See Active storage required for storage calculation graph at <a href='../calculus_graphs/storage_active_storage_required.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#all_services_storage_needs">Storage need of storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_8733f0 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_8733f0" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_8733f0');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -75.0, "y": 600}, {"color": "darkred", "id": "Time interval during which active storage is considered from hypothesis", "label": "Time interval during\nwhich active storage\nis considered from\nhypothesis", "shape": "dot", "size": 15, "title": "Time interval during which active storage is considered from hypothesis = 1 h", "x": 75.0, "y": 600}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Storage need of storage", "to": "Active storage required for storage"}, {"arrows": "to", "from": "Time interval during which active storage is considered from hypothesis", "to": "Active storage required for storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_active_storage_required.html' target='_blank'>link to Active storage required for storage’s full calculation graph</a>.</p>
 <h3 id="long_term_storage_required">long_term_storage_required</h3>
 <p>ExplainableQuantity in terabyte, representing the long term storage required for storage.  </p>
-<p>Depends directly on ['<a href="./#all_services_storage_needs">Storage need of storage</a>', '<a href="./#data_replication_factor">Data replication factor of storage</a>', '<a href="./#active_storage_required">Active storage required for storage</a>'] through the following formula:</p>
-<p>Long term storage required for storage=Storage need of storage * Data replication factor of storage * one year - Active storage required for storage  </p>
-<p>See Long term storage required for storage calculation graph at <a href='../calculus_graphs/storage_long_term_storage_required.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#all_services_storage_needs">Storage need of storage</a></li>
+<li><a href="./#data_replication_factor">Data replication factor of storage</a></li>
+<li><a href="./#active_storage_required">Active storage required for storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_3e39d9 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_3e39d9" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_3e39d9');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -112.5, "y": 600}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3", "x": -150.0, "y": 750}, {"color": null, "id": "one year", "label": "one year", "shape": "dot", "size": 15, "title": "one year = 1 yr", "x": 0.0, "y": 750}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 150.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Storage need of storage", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "one year", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "Active storage required for storage", "to": "Long term storage required for storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_long_term_storage_required.html' target='_blank'>link to Long term storage required for storage’s full calculation graph</a>.</p>
 <h3 id="nb_of_idle_instances">nb_of_idle_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of idle storage units for storage.  </p>
-<p>Depends directly on ['<a href="./#long_term_storage_required">Long term storage required for storage</a>', '<a href="./#storage_capacity">Storage capacity of storage</a>'] through the following formula:</p>
-<p>Number of idle storage units for storage=Long term storage required for storage / Storage capacity of storage  </p>
-<p>See Number of idle storage units for storage calculation graph at <a href='../calculus_graphs/storage_nb_of_idle_instances.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#long_term_storage_required">Long term storage required for storage</a></li>
+<li><a href="./#storage_capacity">Storage capacity of storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_760854 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_760854" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_760854');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": -112.5, "y": 900}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 112.5, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Long term storage required for storage", "to": "Number of idle storage units for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of idle storage units for storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_nb_of_idle_instances.html' target='_blank'>link to Number of idle storage units for storage’s full calculation graph</a>.</p>
 <h3 id="nb_of_active_instances">nb_of_active_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of active instances for storage.  </p>
-<p>Depends directly on ['<a href="./#active_storage_required">Active storage required for storage</a>', '<a href="./#storage_capacity">Storage capacity of storage</a>'] through the following formula:</p>
-<p>Number of active instances for storage=Active storage required for storage / Storage capacity of storage  </p>
-<p>See Number of active instances for storage calculation graph at <a href='../calculus_graphs/storage_nb_of_active_instances.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#active_storage_required">Active storage required for storage</a></li>
+<li><a href="./#storage_capacity">Storage capacity of storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_f52315 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_f52315" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_f52315');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": 0.0, "y": 900}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": -75.0, "y": 750}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 75.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Active storage required for storage", "to": "Number of active instances for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of active instances for storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_nb_of_active_instances.html' target='_blank'>link to Number of active instances for storage’s full calculation graph</a>.</p>
 <h3 id="all_services_cpu_needs">all_services_cpu_needs</h3>
 <p>Representation of the evolution throughout a typical day of the cpu needs of all services running on storage by 24 values in core.  </p>
-<p>Depends directly on ['<a href="../Service/#hour_by_hour_cpu_need">service hour by hour cpu need</a>'] through the following formula:</p>
-<p>CPU needs of all services running on storage=service hour by hour cpu need  </p>
-<p>See CPU needs of all services running on storage calculation graph at <a href='../calculus_graphs/storage_all_services_cpu_needs.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../Service/#hour_by_hour_cpu_need">service hour by hour cpu need</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_557dd6 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_557dd6" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_557dd6');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process user\njourney step * Number of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour cpu need", "to": "CPU needs of all services running on storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on storage’s full calculation graph</a>.</p>
 <h3 id="all_services_ram_needs">all_services_ram_needs</h3>
 <p>Representation of the evolution throughout a typical day of the ram needs of all services running on storage by 24 values in gigabyte.  </p>
-<p>Depends directly on ['<a href="../Service/#hour_by_hour_ram_need">service hour by hour ram need</a>'] through the following formula:</p>
-<p>RAM needs of all services running on storage=service hour by hour ram need  </p>
-<p>See RAM needs of all services running on storage calculation graph at <a href='../calculus_graphs/storage_all_services_ram_needs.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../Service/#hour_by_hour_ram_need">service hour by hour ram need</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_295df4 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_295df4" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_295df4');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process user\njourney step * Number of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0] * 0.0\nGB/uj * 363388.0 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour ram need", "to": "RAM needs of all services running on storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on storage’s full calculation graph</a>.</p>
 <h3 id="fraction_of_time_in_use">fraction_of_time_in_use</h3>
 <p>ExplainableQuantity in dimensionless, representing the fraction of time in use of storage.  </p>
-<p>Depends directly on ['<a href="./#all_services_cpu_needs">CPU needs of all services running on storage</a>', '<a href="./#all_services_ram_needs">RAM needs of all services running on storage</a>'] through the following formula:</p>
-<p>Fraction of time in use of storage=usage time fraction computation of (retrieving usage hours of (CPU needs of all services running on storage) + retrieving usage hours of (RAM needs of all services running on storage))  </p>
-<p>See Fraction of time in use of storage calculation graph at <a href='../calculus_graphs/storage_fraction_of_time_in_use.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#all_services_cpu_needs">CPU needs of all services running on storage</a></li>
+<li><a href="./#all_services_ram_needs">RAM needs of all services running on storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_2db76d {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_2db76d" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_2db76d');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB,\n0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": -337.5, "y": 900}, {"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 337.5, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "CPU needs of all services running on storage", "to": "Fraction of time in use of storage"}, {"arrows": "to", "from": "RAM needs of all services running on storage", "to": "Fraction of time in use of storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_fraction_of_time_in_use.html' target='_blank'>link to Fraction of time in use of storage’s full calculation graph</a>.</p>
 <h3 id="nb_of_instances">nb_of_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the number of total instances for storage.  </p>
-<p>Depends directly on ['<a href="./#nb_of_active_instances">Number of active instances for storage</a>', '<a href="./#nb_of_idle_instances">Number of idle storage units for storage</a>'] through the following formula:</p>
-<p>Number of total instances for storage=Number of active instances for storage + Number of idle storage units for storage  </p>
-<p>See Number of total instances for storage calculation graph at <a href='../calculus_graphs/storage_nb_of_instances.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#nb_of_active_instances">Number of active instances for storage</a></li>
+<li><a href="./#nb_of_idle_instances">Number of idle storage units for storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_6328ea {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_6328ea" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_6328ea');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1200}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 1050}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Number of active instances for storage", "to": "Number of total instances for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Number of total instances for storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_nb_of_instances.html' target='_blank'>link to Number of total instances for storage’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the instances of storage fabrication footprint.  </p>
-<p>Depends directly on ['<a href="./#carbon_footprint_fabrication">Carbon footprint fabrication of storage</a>', '<a href="./#nb_of_instances">Number of total instances for storage</a>', '<a href="./#lifespan">Lifespan of storage</a>'] through the following formula:</p>
-<p>Instances of storage fabrication footprint=Carbon footprint fabrication of storage * Number of total instances for storage / Lifespan of storage  </p>
-<p>See Instances of storage fabrication footprint calculation graph at <a href='../calculus_graphs/storage_instances_fabrication_footprint.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#carbon_footprint_fabrication">Carbon footprint fabrication of storage</a></li>
+<li><a href="./#nb_of_instances">Number of total instances for storage</a></li>
+<li><a href="./#lifespan">Lifespan of storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_593cb3 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_593cb3" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_593cb3');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances of storage fabrication footprint", "label": "Instances of storage\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of storage fabrication footprint\n=\nCarbon footprint fabrication of storage * Number of total instances for storage\n/ Lifespan of storage\n=\n160 kg * 657.0 / 6 yr\n=\n17520.0 kg/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Carbon footprint fabrication of storage", "label": "Carbon footprint\nfabrication of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of storage = 160 kg", "x": -150.0, "y": 1200}, {"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1200}, {"color": null, "id": "Lifespan of storage", "label": "Lifespan of storage", "shape": "dot", "size": 15, "title": "Lifespan of storage = 6 yr", "x": 150.0, "y": 1200}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of storage", "to": "Instances of storage fabrication footprint"}, {"arrows": "to", "from": "Number of total instances for storage", "to": "Instances of storage fabrication footprint"}, {"arrows": "to", "from": "Lifespan of storage", "to": "Instances of storage fabrication footprint"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_instances_fabrication_footprint.html' target='_blank'>link to Instances of storage fabrication footprint’s full calculation graph</a>.</p>
 <h3 id="instances_power">instances_power</h3>
 <p>ExplainableQuantity in kilowatt_hour / year, representing the storage power for storage.  </p>
-<p>Depends directly on ['<a href="./#nb_of_active_instances">Number of active instances for storage</a>', '<a href="./#power">Power of storage</a>', '<a href="./#power_usage_effectiveness">PUE of storage</a>', '<a href="./#fraction_of_time_in_use">Fraction of time in use of storage</a>', '<a href="./#nb_of_idle_instances">Number of idle storage units for storage</a>', '<a href="./#idle_power">Idle power of storage</a>'] through the following formula:</p>
-<p>Storage power for storage=Active instances power * Fraction of time in use of storage + Idle instances power  </p>
-<p>See Storage power for storage calculation graph at <a href='../calculus_graphs/storage_instances_power.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#nb_of_active_instances">Number of active instances for storage</a></li>
+<li><a href="./#power">Power of storage</a></li>
+<li><a href="./#power_usage_effectiveness">PUE of storage</a></li>
+<li><a href="./#fraction_of_time_in_use">Fraction of time in use of storage</a></li>
+<li><a href="./#nb_of_idle_instances">Number of idle storage units for storage</a></li>
+<li><a href="./#idle_power">Idle power of storage</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_eaa9a0 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_eaa9a0" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_eaa9a0');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Active instances power", "label": "Active instances\npower", "shape": "dot", "size": 15, "title": "Active instances power\n=\nNumber of active instances for storage * Power of storage * PUE of storage\n=\n0.0 * 1.3 W * 1.2\n=\n0.0 W", "x": -500.0, "y": 1200}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -642.8571428571429, "y": 1050}, {"color": null, "id": "Power of storage", "label": "Power of storage", "shape": "dot", "size": 15, "title": "Power of storage = 1.3 W", "x": -428.57142857142856, "y": 1050}, {"color": null, "id": "PUE of storage", "label": "PUE of storage", "shape": "dot", "size": 15, "title": "PUE of storage = 1.2", "x": -214.28571428571428, "y": 1050}, {"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB,\n0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1200}, {"color": null, "id": "Idle instances power", "label": "Idle instances power", "shape": "dot", "size": 15, "title": "Idle instances power\n=\nNumber of idle storage units for storage * Idle power of storage * PUE of\nstorage\n=\n657.0 * 0 W * 1.2\n=\n0.0 W", "x": 500.0, "y": 1200}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 428.57142857142856, "y": 1050}, {"color": null, "id": "Idle power of storage", "label": "Idle power of\nstorage", "shape": "dot", "size": 15, "title": "Idle power of storage = 0 W", "x": 642.8571428571429, "y": 1050}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Active instances power", "to": "Storage power for storage"}, {"arrows": "to", "from": "Number of active instances for storage", "to": "Active instances power"}, {"arrows": "to", "from": "Power of storage", "to": "Active instances power"}, {"arrows": "to", "from": "PUE of storage", "to": "Active instances power"}, {"arrows": "to", "from": "Fraction of time in use of storage", "to": "Storage power for storage"}, {"arrows": "to", "from": "Idle instances power", "to": "Storage power for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Idle instances power"}, {"arrows": "to", "from": "Idle power of storage", "to": "Idle instances power"}, {"arrows": "to", "from": "PUE of storage", "to": "Idle instances power"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_instances_power.html' target='_blank'>link to Storage power for storage’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the energy footprint of storage.  </p>
-<p>Depends directly on ['<a href="./#instances_power">Storage power for storage</a>', '<a href="./#average_carbon_intensity">Average carbon intensity of storage electricity</a>'] through the following formula:</p>
-<p>Energy footprint of storage=Storage power for storage * Average carbon intensity of storage electricity  </p>
-<p>See Energy footprint of storage calculation graph at <a href='../calculus_graphs/storage_energy_footprint.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#instances_power">Storage power for storage</a></li>
+<li><a href="./#average_carbon_intensity">Average carbon intensity of storage electricity</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_199758 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_199758" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_199758');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of storage", "label": "Energy footprint of\nstorage", "shape": "dot", "size": 15, "title": "Energy footprint of storage\n=\nStorage power for storage * Average carbon intensity of storage electricity\n=\n0.2 kWh/yr * 100.0 g/kWh\n=\n0.0 kg/yr", "x": 0.0, "y": 1500}, {"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": -375.0, "y": 1350}, {"color": null, "id": "Average carbon intensity of storage electricity", "label": "Average carbon\nintensity of storage\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of storage electricity = 100.0 g/kWh", "x": 375.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Storage power for storage", "to": "Energy footprint of storage"}, {"arrows": "to", "from": "Average carbon intensity of storage electricity", "to": "Energy footprint of storage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/storage_energy_footprint.html' target='_blank'>link to Energy footprint of storage’s full calculation graph</a>.</p>
 
 
 

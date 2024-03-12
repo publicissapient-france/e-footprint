@@ -1026,23 +1026,23 @@
 <h3 id="name">name</h3>
 <p>A human readable description of the object.</p>
 <h3 id="carbon_footprint_fabrication">carbon_footprint_fabrication</h3>
-<p>SourceValue with Quantity in kilogram, representing the carbon footprint fabrication of server.</p>
+<p>carbon footprint fabrication of server in kilogram.</p>
 <h3 id="power">power</h3>
-<p>SourceValue with Quantity in watt, representing the power of server.</p>
+<p>power of server in watt.</p>
 <h3 id="lifespan">lifespan</h3>
-<p>SourceValue with Quantity in year, representing the lifespan of server.</p>
+<p>lifespan of server in year.</p>
 <h3 id="idle_power">idle_power</h3>
-<p>SourceValue with Quantity in watt, representing the idle power of server.</p>
+<p>idle power of server in watt.</p>
 <h3 id="ram">ram</h3>
-<p>SourceValue with Quantity in gigabyte, representing the ram of server.</p>
+<p>ram of server in gigabyte.</p>
 <h3 id="cpu_cores">cpu_cores</h3>
-<p>SourceValue with Quantity in core, representing the nb cpus cores of server.</p>
+<p>nb cpus cores of server in core.</p>
 <h3 id="power_usage_effectiveness">power_usage_effectiveness</h3>
-<p>SourceValue with Quantity in dimensionless, representing the pue of server.</p>
+<p>pue of server in dimensionless.</p>
 <h3 id="average_carbon_intensity">average_carbon_intensity</h3>
-<p>SourceValue with Quantity in gram / kilowatt_hour, representing the average carbon intensity of server electricity.</p>
+<p>average carbon intensity of server electricity in gram / kilowatt_hour.</p>
 <h3 id="server_utilization_rate">server_utilization_rate</h3>
-<p>SourceValue with Quantity in dimensionless, representing the server utilization rate.</p>
+<p>server utilization rate in dimensionless.</p>
 <h2 id="backwards-links">Backwards links</h2>
 <ul>
 <li><a href="../Service/">Service</a></li>
@@ -1050,49 +1050,1493 @@
 <h2 id="calculated-attributes">Calculated attributes</h2>
 <h3 id="available_ram_per_instance">available_ram_per_instance</h3>
 <p>ExplainableQuantity in gigabyte, representing the available ram per server instance.  </p>
-<p>Depends directly on ['<a href="./#ram">RAM of server</a>', '<a href="./#server_utilization_rate">server utilization rate</a>', '<a href="../Service/#base_ram_consumption">Base RAM consumption of service</a>'] through the following formula:</p>
-<p>Available RAM per server instance=RAM of server * server utilization rate - Base RAM consumption of service  </p>
-<p>See Available RAM per server instance calculation graph at <a href='../calculus_graphs/server_available_ram_per_instance.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#ram">RAM of server</a></li>
+<li><a href="./#server_utilization_rate">server utilization rate</a></li>
+<li><a href="../Service/#base_ram_consumption">Base RAM consumption of service</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_fa9985 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_fa9985" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_fa9985');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per server instance", "label": "Available RAM per\nserver instance", "shape": "dot", "size": 15, "title": "Available RAM per server instance\n=\nRAM of server * server utilization rate - Base RAM consumption of service\n=\n128 GB * 0.9 - 300 MB\n=\n114.9 GB", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of server", "label": "RAM of server", "shape": "dot", "size": 15, "title": "RAM of server = 128 GB", "x": -150.0, "y": 150}, {"color": null, "id": "server utilization rate", "label": "server utilization\nrate", "shape": "dot", "size": 15, "title": "server utilization rate = 0.9", "x": 0.0, "y": 150}, {"color": null, "id": "Base RAM consumption of service", "label": "Base RAM consumption\nof service", "shape": "dot", "size": 15, "title": "Base RAM consumption of service = 300 MB", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of server", "to": "Available RAM per server instance"}, {"arrows": "to", "from": "server utilization rate", "to": "Available RAM per server instance"}, {"arrows": "to", "from": "Base RAM consumption of service", "to": "Available RAM per server instance"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_available_ram_per_instance.html' target='_blank'>link to Available RAM per server instance’s full calculation graph</a>.</p>
 <h3 id="available_cpu_per_instance">available_cpu_per_instance</h3>
 <p>ExplainableQuantity in core, representing the available cpu per server instance.  </p>
-<p>Depends directly on ['<a href="./#cpu_cores">Nb cpus cores of server</a>', '<a href="./#server_utilization_rate">server utilization rate</a>', '<a href="../Service/#base_cpu_consumption">Base CPU consumption of service</a>'] through the following formula:</p>
-<p>Available CPU per server instance=Nb cpus cores of server * server utilization rate - Base CPU consumption of service  </p>
-<p>See Available CPU per server instance calculation graph at <a href='../calculus_graphs/server_available_cpu_per_instance.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#cpu_cores">Nb cpus cores of server</a></li>
+<li><a href="./#server_utilization_rate">server utilization rate</a></li>
+<li><a href="../Service/#base_cpu_consumption">Base CPU consumption of service</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_225740 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_225740" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_225740');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Available CPU per server instance", "label": "Available CPU per\nserver instance", "shape": "dot", "size": 15, "title": "Available CPU per server instance\n=\nNb cpus cores of server * server utilization rate - Base CPU consumption of\nservice\n=\n24 core * 0.9 - 2 core\n=\n19.6 core", "x": 0.0, "y": 300}, {"color": null, "id": "Nb cpus cores of server", "label": "Nb cpus cores of\nserver", "shape": "dot", "size": 15, "title": "Nb cpus cores of server = 24 core", "x": -150.0, "y": 150}, {"color": null, "id": "server utilization rate", "label": "server utilization\nrate", "shape": "dot", "size": 15, "title": "server utilization rate = 0.9", "x": 0.0, "y": 150}, {"color": null, "id": "Base CPU consumption of service", "label": "Base CPU consumption\nof service", "shape": "dot", "size": 15, "title": "Base CPU consumption of service = 2 core", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Nb cpus cores of server", "to": "Available CPU per server instance"}, {"arrows": "to", "from": "server utilization rate", "to": "Available CPU per server instance"}, {"arrows": "to", "from": "Base CPU consumption of service", "to": "Available CPU per server instance"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_available_cpu_per_instance.html' target='_blank'>link to Available CPU per server instance’s full calculation graph</a>.</p>
 <h3 id="all_services_cpu_needs">all_services_cpu_needs</h3>
 <p>Representation of the evolution throughout a typical day of the cpu needs of all services running on server by 24 values in core.  </p>
-<p>Depends directly on ['<a href="../Service/#hour_by_hour_cpu_need">service hour by hour cpu need</a>'] through the following formula:</p>
-<p>CPU needs of all services running on server=service hour by hour cpu need  </p>
-<p>See CPU needs of all services running on server calculation graph at <a href='../calculus_graphs/server_all_services_cpu_needs.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../Service/#hour_by_hour_cpu_need">service hour by hour cpu need</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_9d5d6b {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_9d5d6b" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_9d5d6b');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on server", "label": "CPU needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "CPU needs of all services running on server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process user\njourney step * Number of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour cpu need", "to": "CPU needs of all services running on server"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on server’s full calculation graph</a>.</p>
 <h3 id="all_services_ram_needs">all_services_ram_needs</h3>
 <p>Representation of the evolution throughout a typical day of the ram needs of all services running on server by 24 values in gigabyte.  </p>
-<p>Depends directly on ['<a href="../Service/#hour_by_hour_ram_need">service hour by hour ram need</a>'] through the following formula:</p>
-<p>RAM needs of all services running on server=service hour by hour ram need  </p>
-<p>See RAM needs of all services running on server calculation graph at <a href='../calculus_graphs/server_all_services_ram_needs.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="../Service/#hour_by_hour_ram_need">service hour by hour ram need</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_b5614b {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_b5614b" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_b5614b');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on server", "label": "RAM needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "RAM needs of all services running on server\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process user\njourney step * Number of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0] * 0.0\nGB/uj * 363388.0 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour ram need", "to": "RAM needs of all services running on server"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on server’s full calculation graph</a>.</p>
 <h3 id="fraction_of_time_in_use">fraction_of_time_in_use</h3>
 <p>ExplainableQuantity in dimensionless, representing the fraction of time in use of server.  </p>
-<p>Depends directly on ['<a href="./#all_services_cpu_needs">CPU needs of all services running on server</a>', '<a href="./#all_services_ram_needs">RAM needs of all services running on server</a>'] through the following formula:</p>
-<p>Fraction of time in use of server=usage time fraction computation of (retrieving usage hours of (CPU needs of all services running on server) + retrieving usage hours of (RAM needs of all services running on server))  </p>
-<p>See Fraction of time in use of server calculation graph at <a href='../calculus_graphs/server_fraction_of_time_in_use.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#all_services_cpu_needs">CPU needs of all services running on server</a></li>
+<li><a href="./#all_services_ram_needs">RAM needs of all services running on server</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_9e27e7 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_9e27e7" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_9e27e7');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Fraction of time in use of server", "label": "Fraction of time in\nuse of server", "shape": "dot", "size": 15, "title": "Fraction of time in use of server\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on server) + retrieving usage hours of (RAM needs of all\nservices running on server))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB,\n0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needs of all services running on server", "label": "CPU needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "CPU needs of all services running on server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": -337.5, "y": 900}, {"color": null, "id": "RAM needs of all services running on server", "label": "RAM needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "RAM needs of all services running on server\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": 337.5, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "CPU needs of all services running on server", "to": "Fraction of time in use of server"}, {"arrows": "to", "from": "RAM needs of all services running on server", "to": "Fraction of time in use of server"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_fraction_of_time_in_use.html' target='_blank'>link to Fraction of time in use of server’s full calculation graph</a>.</p>
 <h3 id="nb_of_instances">nb_of_instances</h3>
 <p>ExplainableQuantity in dimensionless, representing the nb of server instances.  </p>
-<p>Depends directly on ['<a href="./#all_services_ram_needs">RAM needs of all services running on server</a>', '<a href="./#available_ram_per_instance">Available RAM per server instance</a>', '<a href="./#all_services_cpu_needs">CPU needs of all services running on server</a>', '<a href="./#available_cpu_per_instance">Available CPU per server instance</a>'] through the following formula:</p>
-<p>Nb of server instances=mean of (Hour by hour nb of instances)  </p>
-<p>See Nb of server instances calculation graph at <a href='../calculus_graphs/server_nb_of_instances.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#all_services_ram_needs">RAM needs of all services running on server</a></li>
+<li><a href="./#available_ram_per_instance">Available RAM per server instance</a></li>
+<li><a href="./#all_services_cpu_needs">CPU needs of all services running on server</a></li>
+<li><a href="./#available_cpu_per_instance">Available CPU per server instance</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_7a72fe {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_7a72fe" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_7a72fe');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0,\n0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0])\n=\n1700.0", "x": 0.0, "y": 1500}, {"color": null, "id": "Hour by hour nb of instances", "label": "Hour by hour nb of\ninstances", "shape": "dot", "size": 15, "title": "Hour by hour nb of instances\n=\nRounding up of instances nb of (Raw nb of instances)\n=\nRounding up of instances nb of ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3708.0, 3708.0,\n3708.0, 3708.0, 3708.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0,\n3708.0, 3708.0, 0.0, 0.0])\n=\n[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0, 0.0,\n0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0, 0.0]", "x": 0.0, "y": 1350}, {"color": null, "id": "Raw nb of instances", "label": "Raw nb of instances", "shape": "dot", "size": 15, "title": "Raw nb of instances\n=\nRaw nb of server instances based on RAM alone max compared with Raw nb of server\ninstances based on CPU alone\n=\n[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 31.6, 31.6, 31.6, 31.6, 31.6, 0.0, 0.0, 0.0, 0.0,\n0.0, 31.6, 31.6, 31.6, 31.6, 31.6, 31.6, 0.0, 0.0] max compared with [0.0, 0.0,\n0.0, 0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0, 0.0, 0.0,\n0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0]\n=\n[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0,\n0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0]", "x": 0.0, "y": 1200}, {"color": null, "id": "Raw nb of server instances based on RAM alone", "label": "Raw nb of server\ninstances based on\nRAM alone", "shape": "dot", "size": 15, "title": "Raw nb of server instances based on RAM alone\n=\nRAM needs of all services running on server / Available RAM per server instance\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB] / 114.9\nGB\n=\n[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 31.6, 31.6, 31.6, 31.6, 31.6, 0.0, 0.0, 0.0, 0.0,\n0.0, 31.6, 31.6, 31.6, 31.6, 31.6, 31.6, 0.0, 0.0]", "x": -337.5, "y": 1050}, {"color": null, "id": "RAM needs of all services running on server", "label": "RAM needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "RAM needs of all services running on server\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB]", "x": -506.25, "y": 900}, {"color": null, "id": "Available RAM per server instance", "label": "Available RAM per\nserver instance", "shape": "dot", "size": 15, "title": "Available RAM per server instance\n=\nRAM of server * server utilization rate - Base RAM consumption of service\n=\n128 GB * 0.9 - 300 MB\n=\n114.9 GB", "x": -168.75, "y": 900}, {"color": null, "id": "Raw nb of server instances based on CPU alone", "label": "Raw nb of server\ninstances based on\nCPU alone", "shape": "dot", "size": 15, "title": "Raw nb of server instances based on CPU alone\n=\nCPU needs of all services running on server / Available CPU per server instance\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core] / 19.6 core\n=\n[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0,\n0.0, 0.0, 0.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 3708.0, 0.0, 0.0]", "x": 337.5, "y": 1050}, {"color": null, "id": "CPU needs of all services running on server", "label": "CPU needs of all\nservices running on\nserver", "shape": "dot", "size": 15, "title": "CPU needs of all services running on server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core]", "x": 168.75, "y": 900}, {"color": null, "id": "Available CPU per server instance", "label": "Available CPU per\nserver instance", "shape": "dot", "size": 15, "title": "Available CPU per server instance\n=\nNb cpus cores of server * server utilization rate - Base CPU consumption of\nservice\n=\n24 core * 0.9 - 2 core\n=\n19.6 core", "x": 506.25, "y": 900}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hour by hour nb of instances", "to": "Nb of server instances"}, {"arrows": "to", "from": "Raw nb of instances", "to": "Hour by hour nb of instances"}, {"arrows": "to", "from": "Raw nb of server instances based on RAM alone", "to": "Raw nb of instances"}, {"arrows": "to", "from": "RAM needs of all services running on server", "to": "Raw nb of server instances based on RAM alone"}, {"arrows": "to", "from": "Available RAM per server instance", "to": "Raw nb of server instances based on RAM alone"}, {"arrows": "to", "from": "Raw nb of server instances based on CPU alone", "to": "Raw nb of instances"}, {"arrows": "to", "from": "CPU needs of all services running on server", "to": "Raw nb of server instances based on CPU alone"}, {"arrows": "to", "from": "Available CPU per server instance", "to": "Raw nb of server instances based on CPU alone"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_nb_of_instances.html' target='_blank'>link to Nb of server instances’s full calculation graph</a>.</p>
 <h3 id="instances_fabrication_footprint">instances_fabrication_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the instances of server fabrication footprint.  </p>
-<p>Depends directly on ['<a href="./#carbon_footprint_fabrication">Carbon footprint fabrication of server</a>', '<a href="./#nb_of_instances">Nb of server instances</a>', '<a href="./#lifespan">Lifespan of server</a>'] through the following formula:</p>
-<p>Instances of server fabrication footprint=Carbon footprint fabrication of server * Nb of server instances / Lifespan of server  </p>
-<p>See Instances of server fabrication footprint calculation graph at <a href='../calculus_graphs/server_instances_fabrication_footprint.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#carbon_footprint_fabrication">Carbon footprint fabrication of server</a></li>
+<li><a href="./#nb_of_instances">Nb of server instances</a></li>
+<li><a href="./#lifespan">Lifespan of server</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_0de616 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_0de616" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_0de616');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances of server fabrication footprint", "label": "Instances of server\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of server fabrication footprint\n=\nCarbon footprint fabrication of server * Nb of server instances / Lifespan of\nserver\n=\n600 kg * 1700.0 / 6 yr\n=\n169995.8 kg/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Carbon footprint fabrication of server", "label": "Carbon footprint\nfabrication of\nserver", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of server = 600 kg", "x": -450.0, "y": 1500}, {"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0,\n0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0])\n=\n1700.0", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan of server", "label": "Lifespan of server", "shape": "dot", "size": 15, "title": "Lifespan of server = 6 yr", "x": 450.0, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of server", "to": "Instances of server fabrication footprint"}, {"arrows": "to", "from": "Nb of server instances", "to": "Instances of server fabrication footprint"}, {"arrows": "to", "from": "Lifespan of server", "to": "Instances of server fabrication footprint"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_instances_fabrication_footprint.html' target='_blank'>link to Instances of server fabrication footprint’s full calculation graph</a>.</p>
 <h3 id="instances_power">instances_power</h3>
 <p>ExplainableQuantity in kilowatt_hour / year, representing the power of server instances.  </p>
-<p>Depends directly on ['<a href="./#power">Power of server</a>', '<a href="./#power_usage_effectiveness">PUE of server</a>', '<a href="./#nb_of_instances">Nb of server instances</a>'] through the following formula:</p>
-<p>Power of server instances=Power of server * PUE of server * Nb of server instances  </p>
-<p>See Power of server instances calculation graph at <a href='../calculus_graphs/server_instances_power.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#power">Power of server</a></li>
+<li><a href="./#power_usage_effectiveness">PUE of server</a></li>
+<li><a href="./#nb_of_instances">Nb of server instances</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_598d4a {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_598d4a" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_598d4a');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Power of server", "label": "Power of server", "shape": "dot", "size": 15, "title": "Power of server = 300 W", "x": -450.0, "y": 1500}, {"color": null, "id": "PUE of server", "label": "PUE of server", "shape": "dot", "size": 15, "title": "PUE of server = 1.2", "x": 0.0, "y": 1500}, {"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0,\n0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0])\n=\n1700.0", "x": 450.0, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of server", "to": "Power of server instances"}, {"arrows": "to", "from": "PUE of server", "to": "Power of server instances"}, {"arrows": "to", "from": "Nb of server instances", "to": "Power of server instances"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_instances_power.html' target='_blank'>link to Power of server instances’s full calculation graph</a>.</p>
 <h3 id="energy_footprint">energy_footprint</h3>
 <p>ExplainableQuantity in kilogram / year, representing the energy footprint of server.  </p>
-<p>Depends directly on ['<a href="./#instances_power">Power of server instances</a>', '<a href="./#average_carbon_intensity">Average carbon intensity of server electricity</a>'] through the following formula:</p>
-<p>Energy footprint of server=Power of server instances * Average carbon intensity of server electricity  </p>
-<p>See Energy footprint of server calculation graph at <a href='../calculus_graphs/server_energy_footprint.html' target='_blank'>this link</a></p>
+<p>Depends directly on:  </p>
+<ul>
+<li><a href="./#instances_power">Power of server instances</a></li>
+<li><a href="./#average_carbon_intensity">Average carbon intensity of server electricity</a>  </li>
+</ul>
+<p>through the following calculations:  </p>
+<html>
+    <head>
+        <meta charset="utf-8">
+
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_4565a5 {
+                 width: 760px;
+                 height: 300px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+
+
+
+
+
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+
+
+            <div id="mynetwork_4565a5" class="card-body"></div>
+        </div>
+
+
+
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+
+
+
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_4565a5');
+
+
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of server", "label": "Energy footprint of\nserver", "shape": "dot", "size": 15, "title": "Energy footprint of server\n=\nPower of server instances * Average carbon intensity of server electricity\n=\n5364660.5 kWh/yr * 100.0 g/kWh\n=\n536466.1 kg/yr", "x": 0.0, "y": 1800}, {"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": -337.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100.0 g/kWh", "x": 337.5, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of server instances", "to": "Energy footprint of server"}, {"arrows": "to", "from": "Average carbon intensity of server electricity", "to": "Energy footprint of server"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+
+
+
+
+
+                  network = new vis.Network(container, data, options);
+
+
+
+
+
+
+
+
+
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>
+
+<p>You can also visit the <a href='../calculus_graphs/server_energy_footprint.html' target='_blank'>link to Energy footprint of server’s full calculation graph</a>.</p>
 
 
 
