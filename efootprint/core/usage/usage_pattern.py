@@ -52,6 +52,10 @@ class UsagePattern(ModelingObject):
     def services(self) -> List[Service]:
         return self.user_journey.services
 
+    @property
+    def systems(self) -> List:
+        return self.modeling_obj_containers
+
     def update_hourly_usage(self):
         hourly_usage = [0 * u.dimensionless] * 24
         for time_interval in self.time_intervals.value:

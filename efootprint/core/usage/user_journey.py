@@ -67,6 +67,10 @@ class UserJourneyStep(ModelingObject):
         return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
 
     @property
+    def systems(self) -> List:
+        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         if len(self.user_journeys) > 0:
             return self.user_journeys
@@ -127,6 +131,10 @@ class UserJourney(ModelingObject):
     @property
     def usage_patterns(self):
         return self.modeling_obj_containers
+
+    @property
+    def systems(self) -> List:
+        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:

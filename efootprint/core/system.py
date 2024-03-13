@@ -1,3 +1,5 @@
+from matplotlib import pyplot as plt
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
@@ -7,6 +9,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
 from typing import Dict, List, Set
@@ -20,10 +23,17 @@ class System(ModelingObject):
     def __init__(self, name: str, usage_patterns: List[UsagePattern]):
         super().__init__(name)
         self.usage_patterns = usage_patterns
+        self.previous_change = None
+        self.previous_total_energy_footprints = None
+        self.previous_total_fabrication_footprints = None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return self.usage_patterns
+
+    @property
+    def systems(self) -> List:
+        return []
 
     def after_init(self):
         self.init_has_passed = True
@@ -89,9 +99,9 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
+            "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")},
             "Devices": {device_population.name: device_population.instances_fabrication_footprint
                         for device_population in self.device_populations},
-            "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")}
         }
 
         return fab_footprints
@@ -101,9 +111,9 @@ class System(ModelingObject):
         energy_footprints = {
             "Servers": {server.name: server.energy_footprint for server in self.servers},
             "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
+            "Network": {network.name: network.energy_footprint for network in self.networks},
             "Devices": {device_population.name: device_population.energy_footprint
                         for device_population in self.device_populations},
-            "Network": {network.name: network.energy_footprint for network in self.networks},
         }
 
         return energy_footprints
@@ -113,9 +123,9 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
+            "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks"),
             "Devices": sum(device_population.instances_fabrication_footprint
-                           for device_population in self.device_populations),
-            "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")
+                           for device_population in self.device_populations)
         }
 
         return fab_footprints
@@ -125,8 +135,8 @@ class System(ModelingObject):
         energy_footprints = {
             "Servers": sum(server.energy_footprint for server in self.servers),
             "Storage": sum(storage.energy_footprint for storage in self.storages),
-            "Devices": sum(device_population.energy_footprint for device_population in self.device_populations),
-            "Network": sum(network.energy_footprint for network in self.networks)
+            "Network": sum(network.energy_footprint for network in self.networks),
+            "Devices": sum(device_population.energy_footprint for device_population in self.device_populations)
         }
 
         return energy_footprints
@@ -192,3 +202,18 @@ class System(ModelingObject):
         plotly.offline.plot(fig, filename=filename, auto_open=False)
 
         return HTML(filename)
+
+    def plot_emission_diffs(self, figsize=(10, 6), filename=None):
+        emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
+        emissions_dict__new = [self.total_energy_footprints, self.total_fabrication_footprints]
+
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+
+        EmissionPlotter(
+            ax, emissions_dict__old, emissions_dict__new, title=self.name, rounding_value=1,
+            timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
+
+        if filename is not None:
+            plt.savefig(filename)
+
+        plt.show()

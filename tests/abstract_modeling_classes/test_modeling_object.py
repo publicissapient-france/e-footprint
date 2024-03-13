@@ -19,6 +19,10 @@ class ModelingObjectForTesting(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
         return []
 
+    @property
+    def systems(self):
+        return []
+
 
 class TestModelingObject(unittest.TestCase):
 

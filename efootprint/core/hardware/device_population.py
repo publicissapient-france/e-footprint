@@ -42,6 +42,10 @@ class DevicePopulation(ModelingObject):
         return list(set([up.network for up in self.usage_patterns]))
 
     @property
+    def systems(self) -> List:
+        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
+
+    @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return self.services + self.networks
 

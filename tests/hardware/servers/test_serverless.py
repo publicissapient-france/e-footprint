@@ -25,6 +25,7 @@ class TestServerless(TestCase):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             server_utilization_rate=SourceValue(0 * u.dimensionless)
         )
+
         self.server_base.dont_handle_input_updates = True
 
     def test_nb_of_instances_serverless(self):

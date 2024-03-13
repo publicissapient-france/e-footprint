@@ -20,6 +20,7 @@ class TestStorage(TestCase):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
         )
+
         self.storage_base.dont_handle_input_updates = True
 
     def test_update_all_services_storage_needs_single_service(self):

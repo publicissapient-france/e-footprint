@@ -26,6 +26,10 @@ class Network(ModelingObject):
     def usage_patterns(self):
         return self.modeling_obj_containers
 
+    @property
+    def systems(self) -> List:
+        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
+
     def update_data_upload(self):
         if len(self.usage_patterns) > 0:
             data_upload = 0

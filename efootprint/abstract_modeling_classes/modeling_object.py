@@ -44,7 +44,7 @@ class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
 
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
-        self.__dict__["dont_handle_input_updates"] = False
+        self.dont_handle_input_updates = False
         self.init_has_passed = False
         self.name = name
         self.id = f"{self.name} {str(uuid.uuid4())[:6]}"
@@ -58,6 +58,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     @property
     def calculated_attributes(self) -> List[str]:
         return []
+
+    @property
+    @abstractmethod
+    def systems(self) -> List:
+        pass
 
     def compute_calculated_attributes(self):
         logger.info(f"Computing calculated attributes for {type(self).__name__} {self.name}")
@@ -90,16 +95,23 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return self.id == other.id
         return False
 
+    def register_footprint_values_in_systems_before_change(self, change: str):
+        logger.warning(change)
+        for system in self.systems:
+            system.previous_total_energy_footprints = system.total_energy_footprints
+            system.previous_total_fabrication_footprints = system.total_fabrication_footprints
+            system.previous_change = change
+
     def __setattr__(self, name, input_value):
         old_value = self.__dict__.get(name, None)
-        super().__setattr__(name, input_value)
-        if getattr(self, "name", None) is not None:
-            logger.debug(f"attribute {name} updated in {self.name}")
 
-        if not self.dont_handle_input_updates:
+        if name not in ["dont_handle_input_updates", "init_has_passed"] and not self.dont_handle_input_updates:
             if issubclass(type(input_value), ModelingObject):
                 input_value.add_obj_to_modeling_obj_containers(self)
                 if self.init_has_passed:
+                    self.register_footprint_values_in_systems_before_change(
+                        f"{self.name}’s {name} changed from {old_value.name} to {input_value.name}")
+                    super().__setattr__(name, input_value)
                     self.handle_object_link_update(input_value, old_value)
 
             elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers"]:
@@ -113,6 +125,11 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     # Otherwise if using old_value, it would already be equal to input_value
                     old_list_value = getattr(self, old_list_value_attr_name, None)
                     if self.init_has_passed and old_list_value is not None:
+                        oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
+                        newlist_ids = [mod_obj.name for mod_obj in input_value]
+                        self.register_footprint_values_in_systems_before_change(
+                            f"{self.name}’s {name} changed from {oldlist_ids} to {newlist_ids}")
+                        super().__setattr__(name, input_value)
                         self.handle_object_list_link_update(input_value, old_list_value)
                     super().__setattr__(old_list_value_attr_name, copy(input_value))
 
@@ -121,12 +138,20 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 is_a_user_attribute_update = self.init_has_passed and (
                     name not in self.calculated_attributes and old_value is not None)
                 if is_a_user_attribute_update:
+                    self.register_footprint_values_in_systems_before_change(
+                        f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
+                    super().__setattr__(name, input_value)
                     self.handle_model_input_update(old_value)
 
             elif issubclass(type(input_value), ExplainableObjectDict):
                 if self.init_has_passed:
                     assert name in self.calculated_attributes
                 input_value.set_modeling_obj_container(self, name)
+
+        super().__setattr__(name, input_value)
+
+        if getattr(self, "name", None) is not None:
+            logger.debug(f"attribute {name} updated in {self.name}")
 
     @staticmethod
     def retrieve_update_function_from_attribute_name(mod_obj, attr_name):
@@ -259,8 +284,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         for key, value in self.__dict__.items():
             if (
-                    key in self.calculated_attributes and not save_calculated_attributes) or "calculated_attributes" in key \
-                    or key == "modeling_obj_containers":
+                    (key in self.calculated_attributes and not save_calculated_attributes)
+                    or key == "calculated_attributes"
+                    or key.startswith("previous")
+                    or key == "modeling_obj_containers"):
                 continue
             if type(value) == str:
                 output_dict[key] = value
@@ -315,7 +342,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             return key_value_str
 
         for key, value in self.__dict__.items():
-            if key == "modeling_obj_containers" or key in self.calculated_attributes:
+            if key == "modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous"):
                 continue
             output_str += key_value_to_str(key, value)
 

@@ -87,6 +87,8 @@ class IntegrationTest(IntegrationTestBaseClass):
             cls.network: cls.network.energy_footprint,
             cls.device_population: cls.device_population.energy_footprint,
         }
+        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprints
+        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprints
 
         cls.ref_json_filename = "simple_system.json"
 
@@ -119,6 +121,12 @@ class IntegrationTest(IntegrationTestBaseClass):
                                 f"{round(initial_energy_footprint, 2)} to {round(obj.energy_footprint.value, 2)}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
+
+        for prev_fp, initial_fp in zip(
+                (self.system.previous_total_energy_footprints, self.system.previous_total_fabrication_footprints),
+                (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
+            for key in ["Servers", "Storage", "Devices", "Network"]:
+                self.assertEqual(initial_fp[key], prev_fp[key])
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:

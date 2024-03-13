@@ -23,6 +23,10 @@ class Hardware(ModelingObject):
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
         return self.modeling_obj_containers
 
+    @property
+    def systems(self) -> List:
+        return list(set(sum([mod_obj.systems for mod_obj in self.modeling_obj_containers], start=[])))
+
 
 class InfraHardware(Hardware):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue, lifespan: SourceValue,
@@ -66,6 +70,10 @@ class InfraHardware(Hardware):
     @property
     def services(self):
         return self.modeling_obj_containers
+
+    @property
+    def systems(self) -> List:
+        return list(set(sum([service.systems for service in self.services], start=[])))
 
     def update_all_services_ram_needs(self):
         if len(self.services) > 0:

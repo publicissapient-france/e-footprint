@@ -4,6 +4,7 @@ from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sou
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 import pytz
+from typing import List
 
 
 class Country(ModelingObject):
@@ -24,6 +25,10 @@ class Country(ModelingObject):
     @property
     def device_populations(self):
         return self.modeling_obj_containers
+
+    @property
+    def systems(self) -> List:
+        return list(set(sum([device_pop.systems for device_pop in self.device_populations], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):

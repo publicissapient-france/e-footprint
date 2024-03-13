@@ -52,6 +52,10 @@ class Service(ModelingObject):
     def usage_patterns(self):
         return list(set(sum([uj_step.usage_patterns for uj_step in self.uj_steps], start=[])))
 
+    @property
+    def systems(self) -> List:
+        return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
+
     def update_storage_needed(self):
         if len(self.usage_patterns) == 0:
             self.storage_needed = ExplainableQuantity(
