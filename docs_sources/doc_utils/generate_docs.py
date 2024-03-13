@@ -102,17 +102,20 @@ for mod_obj in (
         file.write(rendered_file)
     nav_items.append(filename)
 
-yaml = ruamel.yaml.YAML()
-# yaml.preserve_quotes = True
-mkdocs_yml_filepath = os.path.join(ROOT, "..", "..", "mkdocs.yml")
-with open(mkdocs_yml_filepath, "r") as fp:
-    data = yaml.load(fp)
-for filename in nav_items:
-    write_filename = True
-    for elt in data["nav"][2]["e-footprint objects reference"]:
-        if filename.replace(".md", "") in elt.keys():
-            write_filename = False
-    if write_filename:
-        data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
-with open(mkdocs_yml_filepath, "w") as fp:
-    yaml.dump(data, fp)
+automatically_update_yaml = False
+
+if automatically_update_yaml:
+    yaml = ruamel.yaml.YAML()
+    # yaml.preserve_quotes = True
+    mkdocs_yml_filepath = os.path.join(ROOT, "..", "..", "mkdocs.yml")
+    with open(mkdocs_yml_filepath, "r") as fp:
+        data = yaml.load(fp)
+    for filename in nav_items:
+        write_filename = True
+        for elt in data["nav"][2]["e-footprint objects reference"]:
+            if filename.replace(".md", "") in elt.keys():
+                write_filename = False
+        if write_filename:
+            data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
+    with open(mkdocs_yml_filepath, "w") as fp:
+        yaml.dump(data, fp)
