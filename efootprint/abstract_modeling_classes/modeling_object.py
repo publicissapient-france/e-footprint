@@ -96,11 +96,12 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         return False
 
     def register_footprint_values_in_systems_before_change(self, change: str):
-        logger.warning(change)
+        logger.debug(change)
         for system in self.systems:
             system.previous_total_energy_footprints = system.total_energy_footprints
             system.previous_total_fabrication_footprints = system.total_fabrication_footprints
             system.previous_change = change
+            system.all_changes.append(change)
 
     def __setattr__(self, name, input_value):
         old_value = self.__dict__.get(name, None)
@@ -127,6 +128,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                     if self.init_has_passed and old_list_value is not None:
                         oldlist_ids = [mod_obj.name for mod_obj in old_list_value]
                         newlist_ids = [mod_obj.name for mod_obj in input_value]
+                        # Reset list to old value before registering footprints
+                        super().__setattr__(name, old_list_value)
                         self.register_footprint_values_in_systems_before_change(
                             f"{self.name}’s {name} changed from {oldlist_ids} to {newlist_ids}")
                         super().__setattr__(name, input_value)
@@ -285,21 +288,22 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key == "calculated_attributes"
+                    or key in ["calculated_attributes", "all_changes"]
                     or key.startswith("previous")
+                    or key.startswith("initial")
                     or key == "modeling_obj_containers"):
                 continue
             if type(value) == str:
                 output_dict[key] = value
             elif type(value) == int:
                 output_dict[key] = value
-            elif type(value) == list:
+            elif type(value) == list and "__previous_list_value_set" not in key:
                 if len(value) == 0:
                     output_dict[key] = value
                 else:
                     if type(value[0]) == str:
                         output_dict[key] = value
-                    elif issubclass(type(value[0]), ModelingObject) and "__previous_list_value_set" not in key:
+                    elif issubclass(type(value[0]), ModelingObject):
                         output_dict[key] = [elt.id for elt in value]
             elif issubclass(type(value), ExplainableObject):
                 output_dict[key] = value.to_json(save_calculated_attributes)

@@ -1,3 +1,5 @@
+import os.path
+
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.user_journey import UserJourney, UserJourneyStep
@@ -169,4 +171,16 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.system.plot_footprints_by_category_and_object()
 
     def test_plot_emission_diffs(self):
-        raise NotImplementedError
+        file = "system_emission_diffs.png"
+
+        self.system.previous_change = None
+
+        with self.assertRaises(ValueError):
+            self.system.plot_emission_diffs(filepath=file)
+
+        self.streaming_step.data_upload = SourceValue(500 * u.kB / u.uj)
+        self.system.plot_emission_diffs(filepath=file)
+        self.streaming_step.data_upload = SourceValue(
+            50 * u.kB / u.uj, label="Data upload of request 20 min streaming on Youtube")
+
+        self.assertTrue(os.path.isfile(file))

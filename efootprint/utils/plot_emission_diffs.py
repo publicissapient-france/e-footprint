@@ -70,7 +70,7 @@ class EmissionPlotter:
     def set_axes_labels(self):
         self.ax.set_xlabel("Physical Elements")
         self.ax.set_ylabel(f"kg CO2 emissions / {self.timespan.value}")
-        self.ax.set_title(self.title, fontsize=24, fontweight="bold", y=1.12)
+        self.ax.set_title(self.title, fontsize=18, fontweight="bold", y=1.12)
 
         self.ax.set_xticks(self.index + self.bar_width / 2)
         self.ax.set_xticklabels(self.elements, rotation=45, ha="right")
@@ -107,15 +107,19 @@ class EmissionPlotter:
             rounded_total__old = int(rounded_total__old)
 
         if rounded_total__old != rounded_total__new:
+            plus_sign = ""
+            if rounded_total__new - rounded_total__old > 0:
+                plus_sign = "+"
             subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {unit}s of CO2 emissions in" \
                             f" {self.timespan.value} " \
-                            f"({int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
+                            f"({plus_sign}{int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
         else:
             subtitle_text = f"{rounded_total__new} {unit}s of CO2 emissions in {self.timespan.value}"
+        subtitle_text.replace("in 1 year", "per year")
 
         self.ax.text(
             0.5, 1.1, subtitle_text,
-            transform=self.ax.transAxes, fontsize=22, va="top", ha="center")
+            transform=self.ax.transAxes, fontsize=16, va="top", ha="center")
 
     def plot_emission_diffs(self):
         for i, (input_dict_old, input_dict_new) in enumerate(

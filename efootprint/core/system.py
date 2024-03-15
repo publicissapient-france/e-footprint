@@ -26,6 +26,9 @@ class System(ModelingObject):
         self.previous_change = None
         self.previous_total_energy_footprints = None
         self.previous_total_fabrication_footprints = None
+        self.all_changes = []
+        self.initial_total_energy_footprints = None
+        self.initial_total_fabrication_footprints = None
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
@@ -38,6 +41,8 @@ class System(ModelingObject):
     def after_init(self):
         self.init_has_passed = True
         self.launch_attributes_computation_chain()
+        self.initial_total_energy_footprints = self.total_energy_footprints
+        self.initial_total_fabrication_footprints = self.total_fabrication_footprints
 
     @property
     def servers(self) -> Set[Server]:
@@ -203,8 +208,20 @@ class System(ModelingObject):
 
         return HTML(filename)
 
-    def plot_emission_diffs(self, figsize=(10, 6), filename=None):
-        emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
+    def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
+        if self.previous_change is None:
+            raise ValueError(
+                f"There has been no change to the system yet so no diff to plot.\n"
+                f"Use System.plot_footprints_by_category_and_object() to visualize footprints")
+
+        if from_start and len(self.all_changes) > 1:
+            changes_list = "\n- ".join([change.replace('changed', 'changing') for change in self.all_changes])
+            print(f"Plotting the impact of:\n\n- {changes_list}")
+            emissions_dict__old = [self.initial_total_energy_footprints, self.initial_total_fabrication_footprints]
+        else:
+            print(f"Plotting the impact of {self.previous_change.replace('changed', 'changing')}")
+            emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
+
         emissions_dict__new = [self.total_energy_footprints, self.total_fabrication_footprints]
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
@@ -213,7 +230,8 @@ class System(ModelingObject):
             ax, emissions_dict__old, emissions_dict__new, title=self.name, rounding_value=1,
             timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
 
-        if filename is not None:
-            plt.savefig(filename)
+        if filepath is not None:
+            plt.savefig(filepath, bbox_inches='tight')
 
-        plt.show()
+        if plt_show:
+            plt.show()
