@@ -19,7 +19,7 @@ site_dir: docs
 
 nav:
 - Introduction: index.md
-- Tutorial: tutorial_reformated.md
+- Tutorial: tutorial.md
 - Explanation: explanation.md
 - e-footprint objects reference:
   - How to read the object reference: object_reference.md

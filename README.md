@@ -18,11 +18,11 @@ You can explore the model’s [didactic interface](https://publicis-sapient-e-fo
 
 Checkout our open source [e-footprint modeling use cases](https://github.com/publicissapient-france/e-footprint-modelings).
 
-## Quickstart
+## Tutorial
 
     pip install efootprint
 
-You can then run the [quickstart jupyter notebook](quickstart.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
+You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize yourself with the object logic and generate an object relationship graph and a calculation graph as HTML files in the current folder.
 
 <figure>
     <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
@@ -40,7 +40,7 @@ You can then run the [quickstart jupyter notebook](quickstart.ipynb) to familiar
 # Todo once to setup jupyter kernel
 poetry run ipython kernel install --user --name=efootprint-kernel
 # Start Jupyter server with poetry
-poetry run jupyter notebook quickstart.ipynb
+poetry run jupyter notebook tutorial.ipynb
 ```
 
 ## Dev setup

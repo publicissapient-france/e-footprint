@@ -4,7 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
-## [1.2.2] - 2024-03-28
+## [1.3.0] - 2024-03-15
+
+### Added
+- plot_emission_diffs method to System for easy analysis of System changes.
+- Tutorial to documentation.
+- System changes analysis in tutorial.
+
+## [1.2.2] - 2024-03-08
 
 ### Added
 - notebook parameter in object and calculus graph generation functions + set cdn_resources=in_line in pyvis Network objects to silence jupyter warning

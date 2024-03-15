@@ -31,9 +31,9 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_4e093e {
-                 width: 760px;
-                 height: 600px;
+             #mynetwork_ecbceb {
+                 width: 800px;
+                 height: 300px;
                  background-color: #ffffff;
                  border: 1px solid lightgray;
                  position: relative;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_4e093e" class="card-body"></div>
+            <div id="mynetwork_ecbceb" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_4e093e');
+                  var container = document.getElementById('mynetwork_ecbceb');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": "blueviolet", "id": 4775243184, "label": "Daily video\nstreaming\nconsumption", "shape": "dot"}, {"color": "gold", "id": 4775240832, "label": "Mean video\nconsumption user\njourney", "shape": "dot"}, {"color": "gold", "id": 4775235312, "label": "20 min streaming", "shape": "dot"}, {"color": "deepskyblue", "id": 4775235648, "label": "Streaming platform", "shape": "dot"}, {"color": "gold", "id": 4775237040, "label": "0.4s of upload", "shape": "dot"}, {"color": "red", "id": 4774803552, "label": "Autoscaling server", "shape": "dot"}, {"color": "red", "id": 4775233728, "label": "SSD storage", "shape": "dot"}, {"color": "red", "id": 4775243136, "label": "French households\u2019\nlaptops", "shape": "dot"}]);
-                  edges = new vis.DataSet([{"from": 4775243184, "to": 4775240832}, {"from": 4775240832, "to": 4775235312}, {"from": 4775235312, "to": 4775235648}, {"from": 4775235648, "to": 4775237040}, {"from": 4775237040, "to": 4775240832}, {"from": 4775235648, "to": 4774803552}, {"from": 4775235648, "to": 4775233728}, {"from": 4775243184, "to": 4775243136}]);
+                  nodes = new vis.DataSet([{"color": "blueviolet", "id": 4842994336, "label": "Daily video\nstreaming\nconsumption", "shape": "dot"}, {"color": "gold", "id": 4875191264, "label": "Mean video\nconsumption user\njourney", "shape": "dot"}, {"color": "gold", "id": 4874860688, "label": "20 min streaming", "shape": "dot"}, {"color": "deepskyblue", "id": 4874859728, "label": "Streaming platform", "shape": "dot"}, {"color": "gold", "id": 4513933904, "label": "1 min video capture\nthen upload", "shape": "dot"}, {"color": "red", "id": 4600888544, "label": "Autoscaling server", "shape": "dot"}, {"color": "red", "id": 4874857952, "label": "SSD storage", "shape": "dot"}, {"color": "red", "id": 4875192416, "label": "French households\u2019\nlaptops", "shape": "dot"}]);
+                  edges = new vis.DataSet([{"from": 4842994336, "to": 4875191264}, {"from": 4875191264, "to": 4874860688}, {"from": 4874860688, "to": 4874859728}, {"from": 4874859728, "to": 4513933904}, {"from": 4513933904, "to": 4875191264}, {"from": 4874859728, "to": 4600888544}, {"from": 4874859728, "to": 4874857952}, {"from": 4842994336, "to": 4875192416}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -14,6 +14,6 @@ def run_notebook(notebook_path):
     exec(python_code)
 
 
-class TestQuickstart(unittest.TestCase):
-    def test_quickstart(self):
-        run_notebook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "quickstart.ipynb"))
+class TestTutorial(unittest.TestCase):
+    def test_tutorial(self):
+        run_notebook(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "tutorial.ipynb"))

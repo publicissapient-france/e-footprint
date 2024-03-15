@@ -50,13 +50,13 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     ancestor_md_links_list_formatted = "  \n- " + "\n- ".join(ancestor_md_link_list)
     return_str += f"  \n  \nDepends directly on:  \n{ancestor_md_links_list_formatted}  \n\nthrough the following calculations:  \n"
 
-    if issubclass(type(calc_attr), ExplainableObject):
+    if issubclass(type(input_obj), ExplainableObject):
         containing_obj_str = input_obj.modeling_obj_container.name.replace(" ", "_")
         calculus_graph_path = os.path.join(
-            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr}.html")
+            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr_name}.html")
         input_obj.calculus_graph_to_file(calculus_graph_path)
         calculus_graph_path_depth1 = os.path.join(
-            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr}_depth1.html")
+            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr_name}_depth1.html")
         input_obj.calculus_graph_to_file(calculus_graph_path_depth1, width="760px", height="300px", max_depth=1)
 
         md_calculus_graph_link_depth1 = calculus_graph_path_depth1.replace(
@@ -70,52 +70,51 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return return_str
 
 
-country = device_population.country
-device = device_population.devices[0]
+def generate_object_reference(automatically_update_yaml=False):
+    country = device_population.country
+    device = device_population.devices[0]
 
-nav_items = []
-for mod_obj in (
-        system, usage_pattern, user_journey, device_population, country, device, network, streaming_step, service,
-        server, storage):
-    mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
-        set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
+    nav_items = []
+    for mod_obj in (
+            system, usage_pattern, user_journey, device_population, country, device, network, streaming_step, service,
+            server, storage):
+        mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
+            set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
 
-    init_sig_params = signature(mod_obj.__init__).parameters
-    mod_obj_dict["params"] = []
-    mod_obj_dict["calculated_attrs"] = []
+        init_sig_params = signature(mod_obj.__init__).parameters
+        mod_obj_dict["params"] = []
+        mod_obj_dict["calculated_attrs"] = []
 
-    for key, elt in init_sig_params.items():
-        if key != "self":
-            # "type": str(elt).replace(f"{key}: ", "")
-            mod_obj_dict["params"].append(obj_to_md(getattr(mod_obj, key), key))
+        for key, elt in init_sig_params.items():
+            if key != "self":
+                # "type": str(elt).replace(f"{key}: ", "")
+                mod_obj_dict["params"].append(obj_to_md(getattr(mod_obj, key), key))
 
-    for attr in mod_obj.calculated_attributes:
-        calc_attr = getattr(mod_obj, attr)
-        mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
+        for attr in mod_obj.calculated_attributes:
+            calc_attr = getattr(mod_obj, attr)
+            mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
 
-    with open(os.path.join(ROOT, 'obj_template.md'), 'r') as file:
-        template = Template(file.read(), trim_blocks=False)
-    rendered_file = template.render(obj_dict=mod_obj_dict)
+        with open(os.path.join(ROOT, 'obj_template.md'), 'r') as file:
+            template = Template(file.read(), trim_blocks=False)
+        rendered_file = template.render(obj_dict=mod_obj_dict)
 
-    filename = f"{mod_obj_dict['class']}.md"
-    with open(os.path.join(ROOT, "..", "mkdocs_sourcefiles", f"{mod_obj_dict['class']}.md"), "w") as file:
-        file.write(rendered_file)
-    nav_items.append(filename)
+        filename = f"{mod_obj_dict['class']}.md"
+        with open(os.path.join(ROOT, "..", "mkdocs_sourcefiles", f"{mod_obj_dict['class']}.md"), "w") as file:
+            file.write(rendered_file)
+        nav_items.append(filename)
 
-automatically_update_yaml = False
-
-if automatically_update_yaml:
-    yaml = ruamel.yaml.YAML()
-    # yaml.preserve_quotes = True
-    mkdocs_yml_filepath = os.path.join(ROOT, "..", "..", "mkdocs.yml")
-    with open(mkdocs_yml_filepath, "r") as fp:
-        data = yaml.load(fp)
-    for filename in nav_items:
-        write_filename = True
-        for elt in data["nav"][2]["e-footprint objects reference"]:
-            if filename.replace(".md", "") in elt.keys():
-                write_filename = False
-        if write_filename:
-            data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
-    with open(mkdocs_yml_filepath, "w") as fp:
-        yaml.dump(data, fp)
+    if automatically_update_yaml:
+        yaml = ruamel.yaml.YAML()
+        # yaml.preserve_quotes = True
+        mkdocs_yml_filepath = os.path.join(ROOT, "..", "..", "mkdocs.yml")
+        with open(mkdocs_yml_filepath, "r") as fp:
+            data = yaml.load(fp)
+        for filename in nav_items:
+            write_filename = True
+            for elt in data["nav"][2]["e-footprint objects reference"]:
+                if filename.replace(".md", "") in elt.keys():
+                    write_filename = False
+            if write_filename:
+                data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
+        with open(mkdocs_yml_filepath, "w") as fp:
+            yaml.dump(data, fp)
