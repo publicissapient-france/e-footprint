@@ -97,6 +97,7 @@ class IntegrationTestBaseClass(TestCase):
                     return obj
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+        repr(class_obj_dict)
 
         initial_mod_objs = self.retrieve_all_mod_obj_from_system(input_system)
         for obj_id, obj in flat_obj_dict.items():

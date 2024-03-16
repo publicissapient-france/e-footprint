@@ -109,7 +109,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             self.direct_children_with_id.append(direct_child)
 
     def set_label(self, new_label):
-        if self.source is not None:
+        if self.source is not None and f"from {self.source.name}" not in new_label:
             self.label = f"{new_label} from {self.source.name}"
         else:
             self.label = new_label

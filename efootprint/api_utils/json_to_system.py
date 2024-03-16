@@ -61,6 +61,7 @@ def json_to_system(system_dict):
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
                     new_obj.__dict__[attr_key] = json_to_explainable_quantity(attr_value)
+                    new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
                 else:
                     new_obj.__dict__[attr_key] = attr_value
 

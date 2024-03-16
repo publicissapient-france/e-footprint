@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.1] - 2024-03-16
+
+### Fixed
+- set modeling obj container of ExplainableObjects created through json_to_system function so that accessing their id property doesn’t trigger a ValueError because of a null modeling_obj_container.
+- Fixed ExplainableObject’s set_label method so that it doesn’t duplicate "from source.name" when reconstructing the object with the json_to_system function.
+
 ## [1.3.0] - 2024-03-15
 
 ### Added
