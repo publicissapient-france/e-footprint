@@ -37,7 +37,7 @@ An e-footprint object has a name and attributes describing its technical and env
 
 ```python
 server = Autoscaling(
-    "Autoscaling server",
+    "server",
     carbon_footprint_fabrication=SourceValue(600 * u.kg, Sources.BASE_ADEME_V19),
     power=SourceValue(300 * u.W, Sources.HYPOTHESIS),
     lifespan=SourceValue(6 * u.year, Sources.HYPOTHESIS),
@@ -56,8 +56,8 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    name: Autoscaling server
-    id: Autoscaling server 809335
+    Autoscaling server ae731b
+     
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
     lifespan: 6 year
@@ -68,6 +68,7 @@ print(server)
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
+     
     calculated_attributes:
       available_ram_per_instance: None
       available_cpu_per_instance: None
@@ -118,7 +119,7 @@ This is the modeling of the average daily usage of the streaming platform in Fra
 streaming_step = UserJourneyStep(
     "20 min streaming",
     service=service,
-    data_upload=SourceValue(50 * u.kB / u.uj, Sources.USER_DATA),
+    data_upload=SourceValue(0.05 * u.MB / u.uj, Sources.USER_DATA),
     data_download=SourceValue(800 * u.MB / u.uj, Sources.USER_DATA),
     user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_DATA),
     request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
@@ -136,8 +137,8 @@ upload_step = UserJourneyStep(
 )
 ```
 
-    2024-03-15 16:08:08,339 - INFO - Computing calculated attributes for UserJourneyStep 20 min streaming
-    2024-03-15 16:08:08,343 - INFO - Computing calculated attributes for UserJourneyStep 1 min video capture then upload
+    2024-03-20 21:36:42,310 - INFO - Computing calculated attributes for UserJourneyStep 20 min streaming
+    2024-03-20 21:36:42,314 - INFO - Computing calculated attributes for UserJourneyStep 1 min video capture then upload
 
 
 The user journey is then simply a list of user journey steps:
@@ -147,7 +148,7 @@ The user journey is then simply a list of user journey steps:
 user_journey = UserJourney("Mean video consumption user journey", uj_steps=[streaming_step, upload_step])
 ```
 
-    2024-03-15 16:08:08,351 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-03-20 21:36:42,327 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
 
 
 ## Define the device population and how often it runs the user journey
@@ -175,13 +176,13 @@ usage_pattern = UsagePattern(
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-03-15 16:08:08,367 - INFO - Computing calculated attributes for System System
-    2024-03-15 16:08:08,368 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-03-15 16:08:08,369 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-03-15 16:08:08,373 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-03-15 16:08:08,379 - INFO - Computing calculated attributes for Network WIFI network
-    2024-03-15 16:08:08,382 - INFO - Computing calculated attributes for Autoscaling Autoscaling server
-    2024-03-15 16:08:08,390 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-03-20 21:36:42,349 - INFO - Computing calculated attributes for System System
+    2024-03-20 21:36:42,350 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-03-20 21:36:42,353 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-03-20 21:36:42,358 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-03-20 21:36:42,367 - INFO - Computing calculated attributes for Network WIFI network
+    2024-03-20 21:36:42,371 - INFO - Computing calculated attributes for Autoscaling server
+    2024-03-20 21:36:42,382 - INFO - Computing calculated attributes for Storage SSD storage
 
 
 ## Results
@@ -195,8 +196,8 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    name: Autoscaling server
-    id: Autoscaling server 809335
+    Autoscaling server ae731b
+     
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
     lifespan: 6 year
@@ -207,6 +208,7 @@ print(server)
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
+     
     calculated_attributes:
       available_ram_per_instance: 114.9 gigabyte
       available_cpu_per_instance: 19.6 core
@@ -230,6 +232,8 @@ system.plot_footprints_by_category_and_object("System footprints.html")
 
 
 ### Object relationships graph
+
+Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.
 
 
 ```python
@@ -272,7 +276,7 @@ system.plot_emission_diffs("bandwith reduction.png")
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_29_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_30_1.png)
     
 
 
@@ -309,7 +313,7 @@ llm_chat_step = UserJourneyStep(
     cpu_needed=SourceValue(16 * u.core / u.uj, Sources.HYPOTHESIS))
 ```
 
-    2024-03-15 16:08:10,916 - INFO - Computing calculated attributes for UserJourneyStep Chat with LLM to select video
+    2024-03-20 21:36:48,796 - INFO - Computing calculated attributes for UserJourneyStep Chat with LLM to select video
 
 
 
@@ -319,15 +323,15 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-03-15 16:08:10,925 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-03-15 16:08:10,927 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-03-15 16:08:10,928 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-03-15 16:08:10,931 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-03-15 16:08:10,937 - INFO - Computing calculated attributes for Service LLM inference
-    2024-03-15 16:08:10,940 - INFO - Computing calculated attributes for Network WIFI network
-    2024-03-15 16:08:10,942 - INFO - Computing calculated attributes for Autoscaling Autoscaling server
-    2024-03-15 16:08:10,950 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-03-15 16:08:10,957 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
+    2024-03-20 21:36:48,807 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-03-20 21:36:48,810 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-03-20 21:36:48,812 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-03-20 21:36:48,816 - INFO - Computing calculated attributes for Service LLM inference
+    2024-03-20 21:36:48,821 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-03-20 21:36:48,828 - INFO - Computing calculated attributes for Network WIFI network
+    2024-03-20 21:36:48,830 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
+    2024-03-20 21:36:48,839 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-03-20 21:36:48,847 - INFO - Computing calculated attributes for Autoscaling server
 
 
 
@@ -340,7 +344,7 @@ system.plot_emission_diffs("LLM chat addition.png")
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_34_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_35_1.png)
     
 
 
@@ -357,7 +361,7 @@ system.plot_emission_diffs("lower LLM inference carbon intensity.png")
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_36_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_37_1.png)
     
 
 
@@ -377,7 +381,7 @@ system.plot_emission_diffs("All system diffs.png", from_start=True)
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_38_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_39_1.png)
     
 
 

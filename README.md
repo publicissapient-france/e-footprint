@@ -26,7 +26,7 @@ You can then run the [jupyter notebook tutorial](tutorial.ipynb) to familiarize 
 
 <figure>
     <img src="images/obj_relationships_graph_example.png" width="550" alt="object relationships graph">
-    <figcaption>Object relationships graph: usage pattern in purple, user journey and user journey steps in gold, hardware in red, and service in blue</figcaption>
+    <figcaption>Object relationships graph: usage pattern in purple, user journey and user journey steps in gold, hardware in red, and service in blue. Hover over a node to get the numerical values of its environmental and technical attributes. For simplifying the graph the Network and Hardware nodes are not shown.</figcaption>
 </figure>
 
 <figure>

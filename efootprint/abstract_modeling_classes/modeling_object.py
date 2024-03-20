@@ -314,6 +314,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         return output_dict
 
+    @property
+    def class_as_simple_str(self):
+        return str(self.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
+
     def __repr__(self):
         return json.dumps(self.to_json(save_calculated_attributes=True), indent=4)
 
@@ -323,35 +327,36 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         def key_value_to_str(input_key, input_value):
             key_value_str = ""
 
-            if type(value) == str:
+            if type(input_value) in (str, int) or input_value is None:
                 key_value_str = f"{input_key}: {input_value}\n"
-            elif type(value) == int:
-                key_value_str = f"{input_key}: {input_value}\n"
-            elif type(value) == list:
-                if len(value) == 0:
+            elif type(input_value) == list:
+                if len(input_value) == 0:
                     key_value_str = f"{input_key}: {input_value}\n"
                 else:
-                    if type(value[0]) == str:
+                    if type(input_value[0]) == str:
                         key_value_str = f"{input_key}: {input_value}"
-                    elif issubclass(type(value[0]), ModelingObject) and "__previous_list_value_set" not in key:
-                        str_value = "[" + ", ".join([elt.id for elt in value]) + "]"
+                    elif issubclass(type(input_value[0]), ModelingObject) and "__previous_list_value_set" not in key:
+                        str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
-            elif issubclass(type(value), ExplainableObject):
+            elif issubclass(type(input_value), ExplainableObject):
                 key_value_str = f"{input_key}: {input_value}\n"
-            elif issubclass(type(value), ExplainableObjectDict):
+            elif issubclass(type(input_value), ExplainableObjectDict):
                 key_value_str = f"{input_key}: {input_value}\n"
-            elif issubclass(type(value), ModelingObject):
+            elif issubclass(type(input_value), ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"
 
             return key_value_str
 
-        for key, value in self.__dict__.items():
-            if key == "modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous"):
+        output_str += f"{self.class_as_simple_str} {self.id}\n \n"
+
+        for key, attr_value in self.__dict__.items():
+            if key == "modeling_obj_containers" or key in self.calculated_attributes or key.startswith("previous")\
+                    or key in ["name", "id"]:
                 continue
-            output_str += key_value_to_str(key, value)
+            output_str += key_value_to_str(key, attr_value)
 
         if len(self.calculated_attributes) > 0:
-            output_str += "calculated_attributes:\n"
+            output_str += " \ncalculated_attributes:\n"
             for key in self.calculated_attributes:
                 output_str += "  " + key_value_to_str(key, getattr(self, key))
 

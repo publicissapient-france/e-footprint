@@ -17,7 +17,7 @@ COLOR_MAP = {
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
-    "System", "TimeIntervals", "Network", "Hardware", "Country"]
+    "System", "Network", "Hardware", "Country"]
 SERVICES_VIEW_CLASSES_TO_IGNORE = [
     "System", "UsagePattern", "TimeIntervals", "Network", "Server", "Storage", "Hardware", "DevicePopulation"]
 SERVICES_AND_INFRA_VIEW_CLASSES_TO_IGNORE = [
@@ -44,6 +44,7 @@ def build_object_relationships_graph(
     if node_type not in classes_to_ignore:
         input_graph.add_node(
             id(node), label=set_string_max_width(f"{node.name}", 20),
+            title=set_string_max_width(str(node), 80),
             color=COLOR_MAP.get(node_type, "gray"))
 
     for mod_obj in node.mod_obj_attributes:
@@ -51,6 +52,7 @@ def build_object_relationships_graph(
         if mod_obj_type not in classes_to_ignore:
             input_graph.add_node(
                 id(mod_obj), label=set_string_max_width(f"{mod_obj.name}", 20),
+                title=set_string_max_width(str(mod_obj), 80),
                 color=COLOR_MAP.get(mod_obj_type, "gray"))
             if node_type not in classes_to_ignore:
                 input_graph.add_edge(id(node), id(mod_obj))

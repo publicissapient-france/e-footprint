@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.3.2] - 2024-03-20
+
+### Added
+- Characterics of objects are now displayed when hovering over a node in an object relationship graph (to create such a graph use the object_relationship_graph_to_file method of the ModelingObject class).
+
 ## [1.3.1] - 2024-03-16
 
 ### Fixed

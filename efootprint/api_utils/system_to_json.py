@@ -5,7 +5,7 @@ import json
 
 
 def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes=True):
-    mod_obj_class = str(mod_obj.__class__).replace("<class '", "").replace("'>", "").split(".")[-1]
+    mod_obj_class = mod_obj.class_as_simple_str
     if mod_obj_class not in output_dict.keys():
         output_dict[mod_obj_class] = {}
     if mod_obj.id not in output_dict[mod_obj_class].keys():
