@@ -2,7 +2,9 @@
 
 If you are new to e-footprint, start by checking out the [tutorial](tutorial.md)
 
-The all e-footprint objects, parameters and calculated attributes are listed in the [e-footprint object reference](object_reference.md) 
+All e-footprint objects, parameters and calculated attributes are listed in the [e-footprint object reference](object_reference.md). 
+
+Moreover, e-footprint has higher level functions to facilitate the construction of objects from fewer parameters. You can check them out in the [e-footprint builders reference](builders.md). 
 
 The source code is available in the [e-footprint github repository](https://github.com/publicissapient-france/e-footprint).
 
