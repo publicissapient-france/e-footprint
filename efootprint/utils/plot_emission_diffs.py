@@ -115,7 +115,7 @@ class EmissionPlotter:
                             f"({plus_sign}{int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
         else:
             subtitle_text = f"{rounded_total__new} {unit}s of CO2 emissions in {self.timespan.value}"
-        subtitle_text.replace("in 1 year", "per year")
+        subtitle_text = subtitle_text.replace("in 1 year", "per year")
 
         self.ax.text(
             0.5, 1.1, subtitle_text,
