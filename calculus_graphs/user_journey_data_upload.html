@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6cbdc8 {
+             #mynetwork_8fbec4 {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6cbdc8" class="card-body"></div>
+            <div id="mynetwork_8fbec4" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6cbdc8');
+                  var container = document.getElementById('mynetwork_8fbec4');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Data upload of user journey", "label": "Data upload of user\njourney", "shape": "dot", "size": 15, "title": "Data upload of user journey\n=\nData upload of request user journey step\n=\n50.0 kB/uj\n=\n50.0 kB/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Data upload of request user journey step", "label": "Data upload of\nrequest user journey\nstep", "shape": "dot", "size": 15, "title": "Data upload of request user journey step = 50.0 kB/uj", "x": 0.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Data upload of request user journey step", "to": "Data upload of user journey"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Data upload of user journey", "label": "Data upload of user\njourney", "shape": "dot", "size": 15, "title": "Data upload of user journey\n=\nData upload of request streaming\n=\n0.1 MB/uj\n=\n0.1 MB/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.1 MB/uj", "x": 0.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Data upload of request streaming", "to": "Data upload of user journey"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
