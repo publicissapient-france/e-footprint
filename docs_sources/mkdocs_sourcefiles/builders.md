@@ -16,7 +16,7 @@ from efootprint.builders.hardware.devices_defaults import default_smartphone, de
 print(default_smartphone())
 ```
 
-    Hardware Default smartphone b2af51
+    Hardware Default smartphone 34ec51
      
     carbon_footprint_fabrication: 30 kilogram
     power: 1 watt
@@ -30,7 +30,7 @@ print(default_smartphone())
 print(default_laptop())
 ```
 
-    Hardware Default laptop 06b503
+    Hardware Default laptop 3dce43
      
     carbon_footprint_fabrication: 156 kilogram
     power: 50 watt
@@ -44,7 +44,7 @@ print(default_laptop())
 print(default_box())
 ```
 
-    Hardware Default box b94553
+    Hardware Default box ada3d5
      
     carbon_footprint_fabrication: 78 kilogram
     power: 10 watt
@@ -58,7 +58,7 @@ print(default_box())
 print(default_screen())
 ```
 
-    Hardware Default screen 9c6360
+    Hardware Default screen 374e21
      
     carbon_footprint_fabrication: 222 kilogram
     power: 30 watt
@@ -79,7 +79,7 @@ from efootprint.builders.hardware.network_defaults import default_mobile_network
 print(default_mobile_network())
 ```
 
-    Network Default mobile network 296c18
+    Network Default mobile network 3f5ca5
      
     bandwidth_energy_intensity: 0.12 kilowatt_hour / gigabyte
      
@@ -95,7 +95,7 @@ print(default_mobile_network())
 print(default_wifi_network())
 ```
 
-    Network Default wifi network 16c3ad
+    Network Default wifi network fbd0fd
      
     bandwidth_energy_intensity: 0.05 kilowatt_hour / gigabyte
      
@@ -120,7 +120,7 @@ from efootprint.builders.hardware.servers_defaults import default_autoscaling, d
 print(default_autoscaling())
 ```
 
-    Autoscaling Default autoscaling 6239da
+    Autoscaling Default autoscaling d2a554
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -151,7 +151,7 @@ print(default_autoscaling())
 print(default_serverless())
 ```
 
-    Serverless Default serverless 63da59
+    Serverless Default serverless 7acfe6
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -182,7 +182,7 @@ print(default_serverless())
 print(default_onpremise())
 ```
 
-    OnPremise Default on premise 155e74
+    OnPremise Default on premise ad016a
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -221,7 +221,7 @@ from efootprint.builders.hardware.storage_defaults import default_hdd, default_s
 print(default_hdd())
 ```
 
-    Storage Default HDD storage 7f3a8f
+    Storage Default HDD storage 57458f
      
     carbon_footprint_fabrication: 20 kilogram
     power: 4.2 watt
@@ -255,7 +255,7 @@ print(default_hdd())
 print(default_ssd())
 ```
 
-    Storage Default SSD storage 04255c
+    Storage Default SSD storage dc7c76
      
     carbon_footprint_fabrication: 160 kilogram
     power: 1.3 watt
@@ -296,7 +296,7 @@ from efootprint.constants.units import u
 print(default_ssd("My custom default SSD with higher carbon intensity", average_carbon_intensity=SourceValue(300 * u.g / u.kWh)))
 ```
 
-    Storage My custom default SSD with higher carbon intensity faa180
+    Storage My custom default SSD with higher carbon intensity c58c06
      
     carbon_footprint_fabrication: 160 kilogram
     power: 1.3 watt
@@ -343,7 +343,7 @@ from efootprint.builders.hardware.servers_boaviztapi import get_cloud_server
 print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
 ```
 
-    Autoscaling aws m5.xlarge instances 519ed9
+    Autoscaling aws m5.xlarge instances c527ec
      
     carbon_footprint_fabrication: 48.0 kilogram
     power: 25.94 watt
@@ -378,7 +378,7 @@ print(get_cloud_server(
     "aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh), base_efootprint_class=Serverless, lifespan=SourceValue(7 * u.year)))
 ```
 
-    Serverless aws m5.xlarge instances f59d69
+    Serverless aws m5.xlarge instances cede54
      
     carbon_footprint_fabrication: 48.0 kilogram
     power: 25.94 watt
@@ -418,7 +418,7 @@ print(on_premise_server_from_config(
     ram_quantity_per_unit_in_gb=16, average_carbon_intensity=SourceValue(100 * u.g / u.kWh)))
 ```
 
-    OnPremise My server 9b224e
+    OnPremise My server 63ec5f
      
     carbon_footprint_fabrication: 670.0 kilogram
     power: 520.99 watt
@@ -443,6 +443,49 @@ print(on_premise_server_from_config(
       instances_power: None
       energy_footprint: None
     
+
+
+## Job builder from Boavizta’s ecobenchmark data
+
+
+```python
+from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder import ecobenchmark_job
+from efootprint.core.service import Service
+
+server = default_autoscaling()
+storage = default_ssd()
+service = Service("test service", server, storage, base_ram_consumption=SourceValue(1 * u.MB))
+job = ecobenchmark_job(
+    "test job", service, data_upload=SourceValue(1 * u.MB / u.uj), data_download=SourceValue(1 * u.MB / u.uj),
+    technology='php-symfony')
+
+print(job)
+```
+
+    2024-04-06 19:04:45,884 - INFO - File /ecobenchmark_results__raw.csv already exists, we do not overwrite it
+
+
+    Job test job d125d8
+     
+    job_type: undefined
+    service: test service 2448a7
+    data_upload: 1.0 megabyte / user_journey
+    data_download: 1.0 megabyte / user_journey
+    request_duration: 1 second
+    ram_needed: 6.15 megabyte / user_journey
+    cpu_needed: 0.08 core / user_journey
+    description: 
+    
+
+
+
+```python
+# List of available technologies
+from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder import get_ecobenchmark_technologies
+print(get_ecobenchmark_technologies())
+```
+
+    ['go-pgx', 'jvm-kotlin-spring', 'node-express-sequelize', 'php-symfony', 'rust-actix-sqlx']
 
 
 

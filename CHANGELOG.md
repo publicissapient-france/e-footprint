@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.0] - 2024-04-06
+
+### Added
+- Job object for the encapsulation of request information, to introduce the possibility to have multiple request to services for a single user journey step.
+- Job builders from [Boavizta’s ecobenchmark](https://github.com/Boavizta/ecobenchmark-applicationweb-backend) data
+
 ## [1.3.2] - 2024-03-20
 
 ### Added

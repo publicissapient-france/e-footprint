@@ -14,6 +14,7 @@ COLOR_MAP = {
     "UserJourney": "dodgerblue",
     "UserJourneyStep": "deepskyblue",
     "TimeIntervals": "gold",
+    "Job": "palegoldenrod"
 }
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [

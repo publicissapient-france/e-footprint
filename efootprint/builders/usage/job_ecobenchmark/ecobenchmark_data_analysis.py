@@ -1,5 +1,6 @@
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
 from efootprint.constants.units import u
+from efootprint.logger import logger
 
 import pandas as pd
 import os
@@ -12,9 +13,9 @@ ECOBENCHMARK_RESULTS_LINK = "https://raw.githubusercontent.com/Boavizta/ecobench
 
 def download_file_from_url(url, file_path, overwrite=False):
     if not overwrite and os.path.exists(file_path):
-        print(f"File {file_path.replace(ROOT_PATH, '')} already exists, we do not overwrite it")
+        logger.info(f"File {file_path.replace(ROOT_PATH, '')} already exists, we do not overwrite it")
         return
-    print(f"Download file at url {url} to {file_path.replace(ROOT_PATH, '')}")
+    logger.info(f"Download file at url {url} to {file_path.replace(ROOT_PATH, '')}")
     r = requests.get(url, stream=True)
     with open(file_path, "wb") as f:
         for chunk in r.iter_content(10 ** 5):
@@ -34,7 +35,11 @@ df["avg_cpu_cores"] = (df["application_cpu_avg"] * nb_of_database_server_cpu_cor
 
 ecobenchmark_duration_in_s = 10 * 60  # TODO: To check with Jérémie Drouet
 average_request_duration_in_s_hypothesis = 1  # TODO: Get a better number from next eco-benchmark analysis
-DEFAULT_REQUEST_DURATION = SourceValue(average_request_duration_in_s_hypothesis * u.s, Sources.HYPOTHESIS)
+
+
+def default_request_duration():
+    return SourceValue(average_request_duration_in_s_hypothesis * u.s, Sources.HYPOTHESIS)
+
 
 df["nb_requests_in_parallel"] = df["http_reqs"] * average_request_duration_in_s_hypothesis / ecobenchmark_duration_in_s
 

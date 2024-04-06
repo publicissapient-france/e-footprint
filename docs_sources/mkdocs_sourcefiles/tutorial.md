@@ -58,7 +58,7 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    Autoscaling server f98aa9
+    Autoscaling server 25df83
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -182,14 +182,14 @@ usage_pattern = UsagePattern(
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-04-06 18:18:50,590 - INFO - Computing calculated attributes for System System
-    2024-04-06 18:18:50,591 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-04-06 18:18:50,592 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-04-06 18:18:50,594 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-04-06 18:18:50,597 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-04-06 18:18:50,603 - INFO - Computing calculated attributes for Network WIFI network
-    2024-04-06 18:18:50,606 - INFO - Computing calculated attributes for Autoscaling server
-    2024-04-06 18:18:50,614 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-04-06 19:09:13,298 - INFO - Computing calculated attributes for System System
+    2024-04-06 19:09:13,299 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-04-06 19:09:13,301 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-04-06 19:09:13,302 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-04-06 19:09:13,305 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-04-06 19:09:13,311 - INFO - Computing calculated attributes for Network WIFI network
+    2024-04-06 19:09:13,314 - INFO - Computing calculated attributes for Autoscaling server
+    2024-04-06 19:09:13,322 - INFO - Computing calculated attributes for Storage SSD storage
 
 
 ## Results
@@ -203,7 +203,7 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    Autoscaling server f98aa9
+    Autoscaling server 25df83
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -245,7 +245,7 @@ Hover over a node to get the numerical values of its environmental and technical
 
 ```python
 usage_pattern.object_relationship_graph_to_file("object_relationships_graph.html",
-    classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width="800px", height="300px", notebook=True)
+    classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE, width="800px", height="600px", notebook=True)
 ```
 
 --8<-- "docs_sources/mkdocs_sourcefiles/object_relationships_graph.html"
@@ -327,15 +327,15 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-04-06 18:18:53,368 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-04-06 18:18:53,371 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-04-06 18:18:53,373 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-04-06 18:18:53,376 - INFO - Computing calculated attributes for Service LLM inference
-    2024-04-06 18:18:53,379 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-04-06 18:18:53,385 - INFO - Computing calculated attributes for Network WIFI network
-    2024-04-06 18:18:53,387 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
-    2024-04-06 18:18:53,395 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-04-06 18:18:53,403 - INFO - Computing calculated attributes for Autoscaling server
+    2024-04-06 19:09:15,935 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-04-06 19:09:15,937 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-04-06 19:09:15,939 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-04-06 19:09:15,942 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-04-06 19:09:15,948 - INFO - Computing calculated attributes for Service LLM inference
+    2024-04-06 19:09:15,952 - INFO - Computing calculated attributes for Network WIFI network
+    2024-04-06 19:09:15,955 - INFO - Computing calculated attributes for Autoscaling server
+    2024-04-06 19:09:15,963 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-04-06 19:09:15,971 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
 
 
 
