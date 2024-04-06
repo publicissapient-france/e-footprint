@@ -8,11 +8,11 @@ COLOR_MAP = {
     "Serverless": "red",
     "Hardware": "red",
     "Storage": "red",
-    "Service": "deepskyblue",
-    "UsagePattern": "blueviolet",
+    "Service": "gold",
+    "UsagePattern": "mediumblue",
     "DevicePopulation": "red",
-    "UserJourney": "gold",
-    "UserJourneyStep": "gold",
+    "UserJourney": "dodgerblue",
+    "UserJourneyStep": "deepskyblue",
     "TimeIntervals": "gold",
 }
 
