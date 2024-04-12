@@ -15,6 +15,9 @@ import json
 from IPython.display import HTML
 
 
+PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
+
+
 def get_subclass_attributes(obj, target_class):
     return {attr_name: attr_value for attr_name, attr_value in obj.__dict__.items()
             if issubclass(type(attr_value), target_class)}
@@ -118,7 +121,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             elif issubclass(type(input_value), List) and name not in ["modeling_obj_containers"]:
                 if len(input_value) > 0 and type(input_value[0]) == str and self.init_has_passed:
                     raise ValueError(f"There shouldn’t be a str list update after init")
-                old_list_value_attr_name = f"{name}__previous_list_value_set"
+                old_list_value_attr_name = f"{name}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"
                 if not (len(input_value) > 0 and type(input_value[0]) == str):
                     for obj in input_value:
                         obj.add_obj_to_modeling_obj_containers(self)
@@ -297,7 +300,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 output_dict[key] = value
             elif type(value) == int:
                 output_dict[key] = value
-            elif type(value) == list and "__previous_list_value_set" not in key:
+            elif type(value) == list and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
                 if len(value) == 0:
                     output_dict[key] = value
                 else:
@@ -335,7 +338,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                 else:
                     if type(input_value[0]) == str:
                         key_value_str = f"{input_key}: {input_value}"
-                    elif issubclass(type(input_value[0]), ModelingObject) and "__previous_list_value_set" not in key:
+                    elif issubclass(type(input_value[0]), ModelingObject) and PREVIOUS_LIST_VALUE_SET_SUFFIX not in key:
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
             elif issubclass(type(input_value), ExplainableObject):

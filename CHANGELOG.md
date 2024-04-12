@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.1] - 2024-04-12
+
+### Fixed
+- Setup of previous attribute value for lists at e-footprint object initiation when using the json_to_system function, so that recomputation works fine when list attributes are updated.
+
 ## [2.0.0] - 2024-04-06
 
 ### Added

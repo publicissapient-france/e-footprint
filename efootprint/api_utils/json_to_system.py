@@ -1,4 +1,5 @@
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
@@ -20,6 +21,7 @@ from efootprint.constants.countries import Country
 
 import pytz
 import json
+from copy import copy
 
 
 def json_to_explainable_quantity(input_dict):
@@ -72,7 +74,7 @@ def json_to_system(system_dict):
 
     for class_key in class_obj_dict.keys():
         for mod_obj_key, mod_obj in class_obj_dict[class_key].items():
-            for attr_key, attr_value in mod_obj.__dict__.items():
+            for attr_key, attr_value in list(mod_obj.__dict__.items()):
                 if type(attr_value) == str and attr_key != "id" and attr_value in flat_obj_dict.keys():
                     mod_obj.__dict__[attr_key] = flat_obj_dict[attr_value]
                     flat_obj_dict[attr_value].add_obj_to_modeling_obj_containers(mod_obj)
@@ -83,6 +85,7 @@ def json_to_system(system_dict):
                             output_val.append(flat_obj_dict[elt])
                             flat_obj_dict[elt].add_obj_to_modeling_obj_containers(mod_obj)
                     mod_obj.__dict__[attr_key] = output_val
+                    mod_obj.__dict__[f"{attr_key}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"] = copy(output_val)
             mod_obj.__dict__["dont_handle_input_updates"] = False
             mod_obj.__dict__["init_has_passed"] = True
 

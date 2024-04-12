@@ -4,19 +4,49 @@
             "name": "system 1",
             "id": "system 1 + its uuid",
             "usage_patterns": [
-                "Video watching in France + its uuid"
+                "Video watching in France in the morning + its uuid",
+                "Video watching in France in the evening + its uuid"
             ]
         }
     },
     "UsagePattern": {
-        "Video watching in France + its uuid": {
-            "name": "Video watching in France",
-            "id": "Video watching in France + its uuid",
+        "Video watching in France in the morning + its uuid": {
+            "name": "Video watching in France in the morning",
+            "id": "Video watching in France in the morning + its uuid",
             "user_journey": "Daily video usage + its uuid",
             "device_population": "French video watchers on laptop + its uuid",
             "network": "Default network + its uuid",
             "user_journey_freq_per_user": {
-                "label": "Usage frequency in Video watching in France from hypothesis",
+                "label": "Usage frequency in Video watching in France in the morning from hypothesis",
+                "value": 100.0,
+                "unit": "user_journey / user / year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "time_intervals": {
+                "label": "Video watching in France in the morning time intervals in local timezone from user data",
+                "value": [
+                    [
+                        7,
+                        10
+                    ]
+                ],
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
+        },
+        "Video watching in France in the evening + its uuid": {
+            "name": "Video watching in France in the evening",
+            "id": "Video watching in France in the evening + its uuid",
+            "user_journey": "Daily video usage + its uuid",
+            "device_population": "French video watchers on laptop + its uuid",
+            "network": "Default network + its uuid",
+            "user_journey_freq_per_user": {
+                "label": "Usage frequency in Video watching in France in the evening from hypothesis",
                 "value": 365.0,
                 "unit": "user_journey / user / year",
                 "source": {
@@ -25,10 +55,10 @@
                 }
             },
             "time_intervals": {
-                "label": "Video watching in France time intervals in local timezone from user data",
+                "label": "Video watching in France in the evening time intervals in local timezone from user data",
                 "value": [
                     [
-                        7,
+                        18,
                         23
                     ]
                 ],
@@ -49,6 +79,107 @@
                 "Dailymotion step + its uuid",
                 "20 min streaming on TikTok + its uuid"
             ]
+        }
+    },
+    "DevicePopulation": {
+        "French video watchers on laptop + its uuid": {
+            "name": "French video watchers on laptop",
+            "id": "French video watchers on laptop + its uuid",
+            "nb_devices": {
+                "label": "Nb devices in French video watchers on laptop from hypothesis",
+                "value": 12000000.0,
+                "unit": "user",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "country": "France + its uuid",
+            "devices": [
+                "Default laptop + its uuid"
+            ]
+        }
+    },
+    "Country": {
+        "France + its uuid": {
+            "name": "France",
+            "id": "France + its uuid",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "year": 2022,
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
+        }
+    },
+    "Hardware": {
+        "Default laptop + its uuid": {
+            "name": "Default laptop",
+            "id": "Default laptop + its uuid",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
+                "value": 156,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of Default laptop from hypothesis",
+                "value": 50,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of Default laptop from hypothesis",
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
+                "value": 7.0,
+                "unit": "hour / day",
+                "source": {
+                    "name": "DATA.AI - STATE OF MOBILE",
+                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
+                }
+            }
+        }
+    },
+    "Network": {
+        "Default network + its uuid": {
+            "name": "Default network",
+            "id": "Default network + its uuid",
+            "bandwidth_energy_intensity": {
+                "label": "bandwith energy intensity of Default network from Traficom study",
+                "value": 0.05,
+                "unit": "kilowatt_hour / gigabyte",
+                "source": {
+                    "name": "Traficom study",
+                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
         }
     },
     "UserJourneyStep": {
@@ -848,107 +979,6 @@
                 }
             },
             "storage_need_from_previous_year": 0
-        }
-    },
-    "DevicePopulation": {
-        "French video watchers on laptop + its uuid": {
-            "name": "French video watchers on laptop",
-            "id": "French video watchers on laptop + its uuid",
-            "nb_devices": {
-                "label": "Nb devices in French video watchers on laptop from hypothesis",
-                "value": 12000000.0,
-                "unit": "user",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "country": "France + its uuid",
-            "devices": [
-                "Default laptop + its uuid"
-            ]
-        }
-    },
-    "Country": {
-        "France + its uuid": {
-            "name": "France",
-            "id": "France + its uuid",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "label": "Average carbon intensity of France from Our world in data",
-                "value": 85.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
-                }
-            },
-            "year": 2022,
-            "timezone": {
-                "label": "France timezone from user data",
-                "zone": "Europe/Paris",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
-        }
-    },
-    "Hardware": {
-        "Default laptop + its uuid": {
-            "name": "Default laptop",
-            "id": "Default laptop + its uuid",
-            "carbon_footprint_fabrication": {
-                "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
-                "value": 156,
-                "unit": "kilogram",
-                "source": {
-                    "name": "Base ADEME_V19",
-                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-                }
-            },
-            "power": {
-                "label": "Power of Default laptop from hypothesis",
-                "value": 50,
-                "unit": "watt",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "lifespan": {
-                "label": "Lifespan of Default laptop from hypothesis",
-                "value": 6,
-                "unit": "year",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "fraction_of_usage_time": {
-                "label": "Default laptop fraction of usage time from DATA.AI - STATE OF MOBILE",
-                "value": 7.0,
-                "unit": "hour / day",
-                "source": {
-                    "name": "DATA.AI - STATE OF MOBILE",
-                    "link": "https://www.data.ai/en/GB/state-of-mobile-2022"
-                }
-            }
-        }
-    },
-    "Network": {
-        "Default network + its uuid": {
-            "name": "Default network",
-            "id": "Default network + its uuid",
-            "bandwidth_energy_intensity": {
-                "label": "bandwith energy intensity of Default network from Traficom study",
-                "value": 0.05,
-                "unit": "kilowatt_hour / gigabyte",
-                "source": {
-                    "name": "Traficom study",
-                    "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
-                }
-            }
         }
     }
 }

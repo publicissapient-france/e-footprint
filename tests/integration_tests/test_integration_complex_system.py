@@ -1,5 +1,7 @@
+import json
 import os.path
 
+from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.job import Job
@@ -17,7 +19,7 @@ from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.builders.hardware.devices_defaults import default_laptop
 from efootprint.builders.hardware.servers_defaults import default_autoscaling
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass, INTEGRATION_TEST_DIR
 
 
 class IntegrationTestComplexSystem(IntegrationTestBaseClass):
@@ -115,11 +117,16 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         cls.usage_pattern = UsagePattern(
-            "Video watching in France", cls.uj, cls.device_population,
-            cls.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
-            SourceObject([[7, 23]], Sources.USER_DATA))
+            "Video watching in France in the morning", cls.uj, cls.device_population,
+            cls.network, SourceValue(100 * u.user_journey / (u.user * u.year)),
+            SourceObject([[7, 10]], Sources.USER_DATA))
 
-        cls.system = System("system 1", [cls.usage_pattern])
+        cls.usage_pattern_2 = UsagePattern(
+            "Video watching in France in the evening", cls.uj, cls.device_population,
+            cls.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
+            SourceObject([[18, 23]], Sources.USER_DATA))
+
+        cls.system = System("system 1", [cls.usage_pattern, cls.usage_pattern_2])
 
         cls.initial_footprint = cls.system.total_footprint
         cls.initial_fab_footprints = {
@@ -232,7 +239,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
 
         logger.warning("Removing the new usage pattern")
-        self.system.usage_patterns = [self.usage_pattern]
+        self.system.usage_patterns = [self.usage_pattern, self.usage_pattern_2]
         new_up.self_delete()
 
         self.assertEqual(self.initial_footprint, self.system.total_footprint)
@@ -242,6 +249,33 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
     def test_json_to_system(self):
         self.run_json_to_system_test(self.system)
+
+    def test_add_usage_pattern_after_json_to_system(self):
+        with open(os.path.join(INTEGRATION_TEST_DIR, self.ref_json_filename), "rb") as file:
+            full_dict = json.load(file)
+
+        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
+
+        for obj in class_obj_dict["System"].values():
+            system = obj
+
+        current_up = system.usage_patterns[0]
+        new_up = UsagePattern(
+            "New usage pattern video watching in France", current_up.user_journey, current_up.device_population,
+            current_up.network, SourceValue(365 * u.user_journey / (u.user * u.year)),
+            SourceObject([[7, 23]], Sources.USER_DATA))
+
+        logger.warning("Adding new usage pattern")
+        self.assertEqual(self.initial_footprint, system.total_footprint)
+        system.usage_patterns += [new_up]
+        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertNotEqual(self.initial_footprint, system.total_footprint)
+
+        logger.warning("Removing the new usage pattern")
+        system.usage_patterns = [current_up]
+        new_up.self_delete()
+
+        self.assertEqual(self.initial_footprint, system.total_footprint)
 
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
