@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.2] - 2024-04-15
+
+### Fixed
+- Loading of system from json when there is a service that is not linked to a usage pattern (case when a service is installed on a server but doesn’t receive requests).
+
 ## [2.0.1] - 2024-04-12
 
 ### Fixed
