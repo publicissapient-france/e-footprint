@@ -95,21 +95,14 @@ def json_to_system(system_dict):
         mod_obj.nb_user_journeys_in_parallel_during_usage_per_up = ExplainableObjectDict()
         mod_obj.utc_time_intervals_per_up = ExplainableObjectDict()
 
-    for mod_obj in class_obj_dict["Service"].values():
-        mod_obj.storage_needed = ExplainableQuantity(
-            0 * u.TB / u.year, f"No storage need for {mod_obj.name} because no associated uj step with usage pattern.")
-        mod_obj.hour_by_hour_cpu_need = ExplainableHourlyUsage(
-            [0 * u.core] * 24,
-            f"No CPU need for {mod_obj.name} because no associated uj step with usage pattern")
-        mod_obj.hour_by_hour_ram_need = ExplainableHourlyUsage(
-            [0 * u.GB] * 24,
-            f"No RAM need for {mod_obj.name} because no associated uj step with usage pattern")
-
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":
             for mod_obj in class_obj_dict[obj_type].values():
                 if len(mod_obj.systems) == 0:
-                    logger.warning(f"Object {mod_obj.name} is not linked to any existing system")
+                    logger.warning(
+                        f"{mod_obj.class_as_simple_str} {mod_obj.name} is not linked to any existing system so needs "
+                        f"to compute its own calculated attributes")
+                    mod_obj.compute_calculated_attributes()
 
     for system in class_obj_dict["System"].values():
         system.launch_attributes_computation_chain()

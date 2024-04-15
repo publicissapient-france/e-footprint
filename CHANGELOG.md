@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.3] - 2024-04-15
+
+### Fixed
+- In function json_to_system make sure that all objects unlinked to a system compute their calculated attributes, and not only Services.
+
 ## [2.0.2] - 2024-04-15
 
 ### Fixed
