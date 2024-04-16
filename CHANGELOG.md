@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.5] - 2024-04-16
+
+### Fixed
+- In function json_to_system make sure that System ids don’t change at system loading time.
+
 ## [2.0.4] - 2024-04-16
 
 ### Fixed

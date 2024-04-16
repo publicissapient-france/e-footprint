@@ -50,3 +50,9 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
 
         list(class_obj_dict["Job"].values())[0].data_download = SourceValue(100 * u.GB / u.uj, label="new value")
+
+    def test_system_id_doesnt_change(self):
+        class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
+
+        self.assertEqual(
+            list(class_obj_dict["System"].values())[0].id, list(self.base_system_dict["System"].values())[0]["id"])
