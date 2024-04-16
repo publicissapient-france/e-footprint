@@ -1,8 +1,10 @@
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.constants.units import u
+from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
+
 import json
 import os.path
-
-from efootprint.api_utils.json_to_system import json_to_system
-from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 from copy import deepcopy
 
 
@@ -43,3 +45,8 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         new_uj = flat_obj_dict["New UJ + its uuid"]
 
         assert new_uj.duration.magnitude > 0
+
+    def test_update_value_after_system_creation(self):
+        class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
+
+        list(class_obj_dict["Job"].values())[0].data_download = SourceValue(100 * u.GB / u.uj, label="new value")

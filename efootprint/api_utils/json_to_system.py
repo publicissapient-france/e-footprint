@@ -105,7 +105,8 @@ def json_to_system(system_dict):
                     mod_obj.compute_calculated_attributes()
 
     for system in class_obj_dict["System"].values():
-        system.launch_attributes_computation_chain()
+        system.__init__(system.name, usage_patterns=system.usage_patterns)
+        system.after_init()
 
     return class_obj_dict, flat_obj_dict
 

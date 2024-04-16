@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.0.4] - 2024-04-16
+
+### Fixed
+- In function json_to_system make recompute Systems by using their __init__ and after_init methods to make sure that all their internal variables are initialized.
+
 ## [2.0.3] - 2024-04-15
 
 ### Fixed
