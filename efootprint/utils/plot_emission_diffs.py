@@ -24,6 +24,12 @@ class EmissionPlotter:
         self.total_emissions_in_kg__new = self.calculate_total_emissions(formatted_input_dicts__new)
         self.total_emissions_in_kg__old = self.calculate_total_emissions(formatted_input_dicts__old)
         self.colors = ["#6372f2", "#de5f46"]
+        if self.total_emissions_in_kg__new < 501:
+            self.unit = "kg"
+            self.dividing_number = 1
+        else:
+            self.unit = "ton"
+            self.dividing_number = 1000
 
     def calculate_total_emissions(self, formatted_input_dicts):
         total_emissions_in_kg = 0
@@ -32,7 +38,8 @@ class EmissionPlotter:
         return total_emissions_in_kg
 
     def get_values(self, input_dict):
-        return [(input_dict.get(element, 0 * u.kg / u.year) * self.timespan).to(u.kg).magnitude for element in self.elements]
+        return [(input_dict.get(element, 0 * u(self.unit) / u.year) * self.timespan).to(u(self.unit)).magnitude
+                for element in self.elements]
 
     def plot_common_values(self, common_values, i, color):
         return self.ax.bar(self.index + i * self.bar_width, common_values, self.bar_width, color=color, alpha=1.0)
@@ -44,7 +51,7 @@ class EmissionPlotter:
     def plot_positive_diff(self, positive_diffs, common_values, i, color):
         return self.ax.bar(
             self.index + i * self.bar_width, positive_diffs, self.bar_width, bottom=common_values, color=color,
-            alpha=0.9)
+            alpha=0.7)
 
     def add_annotations_and_text(self, rects_common, diffs, values_old, values_new):
         arrowprops = dict(facecolor='black', shrink=0.05, width=2, headwidth=8)
@@ -72,37 +79,30 @@ class EmissionPlotter:
                         rect.get_x() + rect.get_width() / 2 + 0.06, (value_old + value_new) / 2, f"+{diff:.0f}%",
                         ha="center", va="center")
 
-            proportion = (value_new / self.total_emissions_in_kg__new) * 100
+            proportion = (value_new / (self.total_emissions_in_kg__new / self.dividing_number)) * 100
             self.ax.text(rect.get_x() + rect.get_width() / 2, value_new, f"{proportion:.0f}%", ha="center", va="bottom")
 
     def set_axes_labels(self):
-        self.ax.set_xlabel("Physical Elements")
-        self.ax.set_ylabel(f"kg CO2 emissions / {self.timespan.value}")
-        self.ax.set_title(self.title, fontsize=18, fontweight="bold", y=1.12)
+        self.ax.set_xlabel("Category")
+        self.ax.set_ylabel(f"{self.unit}s CO2 emissions / {self.timespan.value}".replace("1 ", ""))
 
         self.ax.set_xticks(self.index + self.bar_width / 2)
-        self.ax.set_xticklabels(self.elements, rotation=45, ha="right")
+        self.ax.set_xticklabels(self.elements, rotation=0, ha="center")
 
         ax2 = self.ax.twinx()
         max_value = max(
             [max(input_dict.values()) * self.timespan
-             for input_dict in self.formatted_input_dicts__new + self.formatted_input_dicts__old]).to(u.kg).magnitude
+             for input_dict in self.formatted_input_dicts__new + self.formatted_input_dicts__old]
+        ).to(u(self.unit)).magnitude
 
         max_value_margin = 1.1
-        ax2.set_ylim(0, 100 * max_value_margin * (max_value / self.total_emissions_in_kg__new))
+        ax2.set_ylim(0, 100 * max_value_margin * (max_value / (self.total_emissions_in_kg__new / self.dividing_number)))
         ax2.set_ylabel("Proportions (%)")
 
         self.ax.set_ylim(0, max_value_margin * max_value)
 
     def set_titles(self):
-        self.ax.set_title(self.title, fontsize=24, fontweight="bold", y=1.1)
-        if self.total_emissions_in_kg__new < 501:
-            unit = "kg"
-            dividing_number = 1
-        else:
-            unit = "ton"
-            dividing_number = 1000
-        rounded_total__new = round(self.total_emissions_in_kg__new / dividing_number, self.rounding_value)
+        rounded_total__new = round(self.total_emissions_in_kg__new / self.dividing_number, self.rounding_value)
         if self.rounding_value == 0:
             rounded_total__new = int(rounded_total__new)
 
@@ -110,7 +110,7 @@ class EmissionPlotter:
         for input_dict in self.formatted_input_dicts__old:
             total_emissions_in_kg__old += (sum(input_dict.values()) * self.timespan).to(u.kg).magnitude
 
-        rounded_total__old = round(total_emissions_in_kg__old / dividing_number, self.rounding_value)
+        rounded_total__old = round(total_emissions_in_kg__old / self.dividing_number, self.rounding_value)
         if self.rounding_value == 0:
             rounded_total__old = int(rounded_total__old)
 
@@ -118,11 +118,11 @@ class EmissionPlotter:
             plus_sign = ""
             if rounded_total__new - rounded_total__old > 0:
                 plus_sign = "+"
-            subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {unit}s of CO2 emissions in" \
+            subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {self.unit}s of CO2 emissions in" \
                             f" {self.timespan.value} " \
                             f"({plus_sign}{int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
         else:
-            subtitle_text = f"{rounded_total__new} {unit}s of CO2 emissions in {self.timespan.value}"
+            subtitle_text = f"{rounded_total__new} {self.unit}s of CO2 emissions in {self.timespan.value}"
         subtitle_text = subtitle_text.replace("in 1 year", "per year")
 
         self.ax.text(

@@ -4,6 +4,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.0] - 2024-05-15
+
+### Added
+- Possibility to export raw html in plot_footprints_by_category_and_object System method.
+- Possibility to resize plot_footprints_by_category_and_object output’s graph.
+
+### Changed
+- Improve emission diffs graph and harmonize its colors and legend with the plot_footprints_by_category_and_object graph.
+
+## [2.0.5] - 2024-04-16
+
+### Fixed
+- In function json_to_system make sure that System ids don’t change at system loading time.
+
+## [2.0.4] - 2024-04-16
+
+### Fixed
+- In function json_to_system make recompute Systems by using their __init__ and after_init methods to make sure that all their internal variables are initialized.
+
+## [2.0.3] - 2024-04-15
+
+### Fixed
+- In function json_to_system make sure that all objects unlinked to a system compute their calculated attributes, and not only Services.
+
+## [2.0.2] - 2024-04-15
+
+### Fixed
+- Loading of system from json when there is a service that is not linked to a usage pattern (case when a service is installed on a server but doesn’t receive requests).
+
+## [2.0.1] - 2024-04-12
+
+### Fixed
+- Setup of previous attribute value for lists at e-footprint object initiation when using the json_to_system function, so that recomputation works fine when list attributes are updated.
+
 ## [2.0.0] - 2024-04-06
 
 ### Added

@@ -172,7 +172,7 @@ class System(ModelingObject):
 
         rows_as_dicts = []
 
-        value_colname = "Carbon footprints in tons CO2eq / year"
+        value_colname = "tons CO2 emissions / year"
         for category in categories:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
@@ -194,6 +194,10 @@ class System(ModelingObject):
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
             title=f"Total CO2 emissions from {self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000))} / year")
+
+        fig.update_layout(
+            legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": "left", "x": 0.02, "title": ""},
+            title={"x": 0.5, "y": 0.9, "xanchor": 'center', "yanchor": 'top'})
 
         total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
 
@@ -240,7 +244,7 @@ class System(ModelingObject):
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
         EmissionPlotter(
-            ax, emissions_dict__old, emissions_dict__new, title=self.name, rounding_value=1,
+            ax, emissions_dict__old, emissions_dict__new, title=self.name, rounding_value=0,
             timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
 
         if filepath is not None:
