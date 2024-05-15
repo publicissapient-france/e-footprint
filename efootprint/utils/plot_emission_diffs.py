@@ -23,7 +23,7 @@ class EmissionPlotter:
         self.bar_width = 0.4
         self.total_emissions_in_kg__new = self.calculate_total_emissions(formatted_input_dicts__new)
         self.total_emissions_in_kg__old = self.calculate_total_emissions(formatted_input_dicts__old)
-        self.colors = ["#1f77b4", "#ff7f0e"]
+        self.colors = ["#6372f2", "#de5f46"]
 
     def calculate_total_emissions(self, formatted_input_dicts):
         total_emissions_in_kg = 0
@@ -49,20 +49,28 @@ class EmissionPlotter:
     def add_annotations_and_text(self, rects_common, diffs, values_old, values_new):
         arrowprops = dict(facecolor='black', shrink=0.05, width=2, headwidth=8)
 
+        figure_height = self.ax.get_ylim()[1]
         for rect, diff, value_old, value_new in zip(rects_common, diffs, values_old, values_new):
             if value_old != value_new:
-                if diff < -0.5:
-                    self.ax.annotate("", xy=(rect.get_x() + rect.get_width() / 2 - 0.06, min(value_old, value_new)),
-                                xytext=(rect.get_x() + rect.get_width() / 2 - 0.06, max(value_old, value_new)),
-                                arrowprops=arrowprops)
-                    self.ax.text(rect.get_x() + rect.get_width() / 2 + 0.06, (value_old + value_new) / 2, f"{diff:.0f}%",
-                            ha="center", va="center")
-                elif diff > 0.5:
-                    self.ax.annotate("", xy=(rect.get_x() + rect.get_width() / 2 - 0.06, max(value_old, value_new)),
-                                xytext=(rect.get_x() + rect.get_width() / 2 - 0.06, min(value_old, value_new)),
-                                arrowprops=arrowprops)
-                    self.ax.text(rect.get_x() + rect.get_width() / 2 + 0.06, (value_old + value_new) / 2, f"+{diff:.0f}%",
-                            ha="center", va="center")
+                if diff < -1:
+                    if abs(value_old - value_new) > figure_height / 10:
+                        self.ax.annotate(
+                            "", xy=(rect.get_x() + rect.get_width() / 2 - 0.06,
+                                    min(value_old, value_new) + figure_height / 20),
+                            xytext=(rect.get_x() + rect.get_width() / 2 - 0.06, max(value_old, value_new)),
+                            arrowprops=arrowprops)
+                    self.ax.text(
+                        rect.get_x() + rect.get_width() / 2 + 0.06, (value_old + value_new) / 2, f"{diff:.0f}%",
+                        ha="center", va="center")
+                elif diff > 1:
+                    if abs(value_old - value_new) > figure_height / 10:
+                        self.ax.annotate(
+                            "", xy=(rect.get_x() + rect.get_width() / 2 - 0.06, max(value_old, value_new)),
+                            xytext=(rect.get_x() + rect.get_width() / 2 - 0.06, min(value_old, value_new)),
+                            arrowprops=arrowprops)
+                    self.ax.text(
+                        rect.get_x() + rect.get_width() / 2 + 0.06, (value_old + value_new) / 2, f"+{diff:.0f}%",
+                        ha="center", va="center")
 
             proportion = (value_new / self.total_emissions_in_kg__new) * 100
             self.ax.text(rect.get_x() + rect.get_width() / 2, value_new, f"{proportion:.0f}%", ha="center", va="bottom")
