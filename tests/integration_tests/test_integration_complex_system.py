@@ -280,6 +280,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()
 
+    def test_plot_footprints_by_category_and_object_return_only_html(self):
+        html = self.system.plot_footprints_by_category_and_object(width=400, height=100, return_only_html=True)
+        self.assertTrue(len(html) > 1000)
+
     def test_plot_emission_diffs(self):
         file = "system_emission_diffs.png"
 

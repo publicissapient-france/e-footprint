@@ -165,7 +165,7 @@ class System(ModelingObject):
             )
         ).set_label(f"{self.name} total carbon footprint")
 
-    def plot_footprints_by_category_and_object(self, filename=None):
+    def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
         fab_footprints = self.fabrication_footprints
         energy_footprints = self.energy_footprints
         categories = list(fab_footprints.keys())
@@ -190,9 +190,9 @@ class System(ModelingObject):
         total_co2 = df[value_colname].sum()
 
         fig = px.bar(
-            df, x="Category", y=value_colname, color='Type', barmode='group', height=400,
+            df, x="Category", y=value_colname, color='Type', barmode='group', height=height, width=width,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
-            template="plotly_white", width=800,
+            template="plotly_white",
             title=f"Total CO2 emissions from {self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000))} / year")
 
         total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
@@ -210,12 +210,16 @@ class System(ModelingObject):
                 xshift=30 * x_shift_direction
             )
 
-        if filename is None:
-            filename = f"{self.name} footprints.html"
+        if return_only_html:
+            return fig.to_html(full_html=False, include_plotlyjs=False)
 
-        plotly.offline.plot(fig, filename=filename, auto_open=False)
+        else:
+            if filename is None:
+                filename = f"{self.name} footprints.html"
 
-        return HTML(filename)
+            plotly.offline.plot(fig, filename=filename, auto_open=False)
+
+            return HTML(filename)
 
     def plot_emission_diffs(self, filepath=None, figsize=(10, 5), from_start=False, plt_show=False):
         if self.previous_change is None:
