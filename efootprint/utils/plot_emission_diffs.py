@@ -8,13 +8,12 @@ from typing import List, Dict
 
 class EmissionPlotter:
     def __init__(self, ax, formatted_input_dicts__old: List[Dict[str, ExplainableQuantity]],
-                 formatted_input_dicts__new: List[Dict[str, ExplainableQuantity]], title: str, rounding_value: int,
+                 formatted_input_dicts__new: List[Dict[str, ExplainableQuantity]], rounding_value: int,
                  timespan: ExplainableQuantity,
                  legend_labels: List[str] = ("Electricity consumption", "Fabrication")):
         self.ax = ax
         self.formatted_input_dicts__old = formatted_input_dicts__old
         self.formatted_input_dicts__new = formatted_input_dicts__new
-        self.title = title
         self.rounding_value = rounding_value
         self.timespan = timespan
         self.legend_labels = legend_labels

@@ -244,7 +244,7 @@ class System(ModelingObject):
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
         EmissionPlotter(
-            ax, emissions_dict__old, emissions_dict__new, title=self.name, rounding_value=0,
+            ax, emissions_dict__old, emissions_dict__new, rounding_value=0,
             timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
 
         if filepath is not None:
