@@ -27,7 +27,7 @@ class EmissionPlotter:
             self.unit = "kg"
             self.dividing_number = 1
         else:
-            self.unit = "ton"
+            self.unit = "tonne"
             self.dividing_number = 1000
 
     def calculate_total_emissions(self, formatted_input_dicts):
@@ -105,11 +105,7 @@ class EmissionPlotter:
         if self.rounding_value == 0:
             rounded_total__new = int(rounded_total__new)
 
-        total_emissions_in_kg__old = 0
-        for input_dict in self.formatted_input_dicts__old:
-            total_emissions_in_kg__old += (sum(input_dict.values()) * self.timespan).to(u.kg).magnitude
-
-        rounded_total__old = round(total_emissions_in_kg__old / self.dividing_number, self.rounding_value)
+        rounded_total__old = round(self.total_emissions_in_kg__old / self.dividing_number, self.rounding_value)
         if self.rounding_value == 0:
             rounded_total__old = int(rounded_total__old)
 

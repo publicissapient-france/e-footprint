@@ -172,7 +172,7 @@ class System(ModelingObject):
 
         rows_as_dicts = []
 
-        value_colname = "tons CO2 emissions / year"
+        value_colname = "tonnes CO2 emissions / year"
         for category in categories:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
@@ -193,7 +193,8 @@ class System(ModelingObject):
             df, x="Category", y=value_colname, color='Type', barmode='group', height=height, width=width,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
-            title=f"Total CO2 emissions from {self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000))} / year")
+            title=f"Total CO2 emissions from "
+                  f"{self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))} / year")
 
         fig.update_layout(
             legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": "left", "x": 0.02, "title": ""},

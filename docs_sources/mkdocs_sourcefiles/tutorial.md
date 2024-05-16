@@ -59,7 +59,7 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    Autoscaling server 80654c
+    Autoscaling server c12b67
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -183,14 +183,14 @@ usage_pattern = UsagePattern(
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-05-15 15:27:00,677 - INFO - Computing calculated attributes for System System
-    2024-05-15 15:27:00,678 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-05-15 15:27:00,680 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-05-15 15:27:00,681 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-05-15 15:27:00,684 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-05-15 15:27:00,691 - INFO - Computing calculated attributes for Network WIFI network
-    2024-05-15 15:27:00,693 - INFO - Computing calculated attributes for Autoscaling server
-    2024-05-15 15:27:00,701 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-05-16 15:41:53,657 - INFO - Computing calculated attributes for System System
+    2024-05-16 15:41:53,658 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-05-16 15:41:53,659 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-05-16 15:41:53,660 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-05-16 15:41:53,662 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-05-16 15:41:53,667 - INFO - Computing calculated attributes for Network WIFI network
+    2024-05-16 15:41:53,669 - INFO - Computing calculated attributes for Autoscaling server
+    2024-05-16 15:41:53,676 - INFO - Computing calculated attributes for Storage SSD storage
 
 
 ## Results
@@ -204,7 +204,7 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    Autoscaling server 80654c
+    Autoscaling server c12b67
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -328,15 +328,15 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-05-15 15:27:03,090 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-05-15 15:27:03,091 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-05-15 15:27:03,093 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-05-15 15:27:03,095 - INFO - Computing calculated attributes for Service LLM inference
-    2024-05-15 15:27:03,097 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-05-15 15:27:03,102 - INFO - Computing calculated attributes for Network WIFI network
-    2024-05-15 15:27:03,104 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
-    2024-05-15 15:27:03,109 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-05-15 15:27:03,114 - INFO - Computing calculated attributes for Autoscaling server
+    2024-05-16 15:41:55,553 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-05-16 15:41:55,555 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-05-16 15:41:55,556 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
+    2024-05-16 15:41:55,559 - INFO - Computing calculated attributes for Service LLM inference
+    2024-05-16 15:41:55,562 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-05-16 15:41:55,568 - INFO - Computing calculated attributes for Network WIFI network
+    2024-05-16 15:41:55,570 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
+    2024-05-16 15:41:55,578 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-05-16 15:41:55,584 - INFO - Computing calculated attributes for Autoscaling server
 
 
 

@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.2] 2024-05-16
+
+### Fixed
+- "ton" unit to "tonne" because in Pint a ton is equal to 2000 pounds and not 1000 kg.
+
 ## [2.1.1] 2024-05-16
 
 ### Fixed

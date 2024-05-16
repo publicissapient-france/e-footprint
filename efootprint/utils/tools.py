@@ -46,7 +46,7 @@ def format_co2_amount(co2_amount_in_kg: int, rounding_value=1):
         unit = "kg"
         dividing_number = 1
     else:
-        unit = "ton"
+        unit = "tonne"
         dividing_number = 1000
     rounded_total__new = round(co2_amount_in_kg / dividing_number, rounding_value)
     if rounding_value == 0:
