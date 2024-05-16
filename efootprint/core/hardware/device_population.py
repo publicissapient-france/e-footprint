@@ -64,19 +64,11 @@ class DevicePopulation(ModelingObject):
     def update_nb_user_journeys_in_parallel_during_usage_per_up(self):
         one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
         for usage_pattern in self.usage_patterns:
-            nb_uj_in_parallel__raw = (
+            nb_user_journeys_in_parallel_during_usage = (
                 (one_user_journey *
                  (usage_pattern.user_journey_freq * usage_pattern.user_journey.duration
                   / usage_pattern.usage_time_fraction)
                  ).to(u.user_journey))
-            if nb_uj_in_parallel__raw.magnitude != int(nb_uj_in_parallel__raw.magnitude):
-                nb_user_journeys_in_parallel_during_usage = (
-                        nb_uj_in_parallel__raw +
-                        ExplainableQuantity(
-                            (math.ceil(nb_uj_in_parallel__raw.magnitude) - nb_uj_in_parallel__raw.magnitude)
-                            * u.user_journey, "Rounding up of user journeys in parallel to next integer"))
-            else:
-                nb_user_journeys_in_parallel_during_usage = nb_uj_in_parallel__raw
 
             self.nb_user_journeys_in_parallel_during_usage_per_up[usage_pattern] = \
                 nb_user_journeys_in_parallel_during_usage.set_label(

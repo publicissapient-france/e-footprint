@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.3] 2024-05-16
+
+### Changed
+- Don’t round up the number of users in parallel as it creates very wrong results when there are few users in parallel.
+
 ## [2.1.2] 2024-05-16
 
 ### Fixed

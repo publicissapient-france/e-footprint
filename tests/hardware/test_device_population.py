@@ -43,17 +43,6 @@ class TestDevicePopulation(TestCase):
                 4 * u.user_journey,
                 self.device_population.nb_user_journeys_in_parallel_during_usage_per_up[self.usage_pattern].value)
 
-    def test_update_nb_user_journeys_in_parallel_during_usage_round_up(self):
-        with patch.object(self.usage_pattern, "user_journey_freq", SourceValue(2 * u.user_journey / u.year)), \
-                patch.object(self.usage_pattern.user_journey, "duration",
-                             SourceValue(1 * u.year / u.user_journey)), \
-                patch.object(self.usage_pattern, "usage_time_fraction",
-                             SourceValue((14 / 24) * u.dimensionless)):
-            self.device_population.update_nb_user_journeys_in_parallel_during_usage_per_up()
-            self.assertEqual(
-                4 * u.user_journey,
-                self.device_population.nb_user_journeys_in_parallel_during_usage_per_up[self.usage_pattern].value)
-
     def test_power(self):
         test_device1 = MagicMock()
         test_device1.power = SourceValue(5 * u.W)
