@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.4] 2024-05-17
+
+### Fixed
+- System footprints by category and object graph legend aligns to the right if server impact is bigger than devices impact
+
 ## [2.1.3] 2024-05-16
 
 ### Changed

@@ -196,8 +196,17 @@ class System(ModelingObject):
             title=f"Total CO2 emissions from "
                   f"{self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))} / year")
 
+        if (max(sum(energy_footprints["Servers"].values()), sum(fab_footprints["Servers"].values())) >
+                max(sum(energy_footprints["Devices"].values()), sum(fab_footprints["Devices"].values()))):
+            legend_alignment = "right"
+            legend_x = 0.98
+        else:
+            legend_alignment = "left"
+            legend_x = 0.02
+
         fig.update_layout(
-            legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": "left", "x": 0.02, "title": ""},
+            legend={"orientation": "v", "yanchor": "top", "y": 1.02, "xanchor": legend_alignment, "x": legend_x,
+                    "title": ""},
             title={"x": 0.5, "y": 0.9, "xanchor": 'center', "yanchor": 'top'})
 
         total_co2_per_category_and_type = df.groupby(["Category", "Type"])[value_colname].sum()
