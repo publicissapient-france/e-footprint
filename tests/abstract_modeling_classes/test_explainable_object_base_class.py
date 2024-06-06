@@ -100,9 +100,9 @@ class TestExplainableObjectBaseClass(TestCase):
         child2 = ExplainableObject(2, "child2")
         child2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
         grandchild1 = ExplainableObject(3, "grandchild1")
-        grandchild1.modeling_obj_container = MagicMock(id="child1_mod_obj_container")
+        grandchild1.modeling_obj_container = MagicMock(id="grandchild1_mod_obj_container")
         grandchild2 = ExplainableObject(4, "grandchild2")
-        grandchild2.modeling_obj_container = MagicMock(id="child2_mod_obj_container")
+        grandchild2.modeling_obj_container = MagicMock(id="grandchild2_mod_obj_container")
 
         root.direct_children_with_id.append(child1)
         root.direct_children_with_id.append(child2)

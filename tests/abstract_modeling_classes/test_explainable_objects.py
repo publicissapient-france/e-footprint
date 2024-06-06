@@ -19,8 +19,8 @@ class TestExplainableQuantity(unittest.TestCase):
         self.d = self.c + self.b
         self.d.set_label("int calc 2")
         self.e = ExplainableQuantity(3 * u.W, "e")
-        for explainable_quantity in (self.a, self.b, self.e):
-            explainable_quantity.modeling_obj_container = MagicMock(name="name", id="id")
+        for index, explainable_quantity in enumerate([self.a, self.b, self.e]):
+            explainable_quantity.modeling_obj_container = MagicMock(name="name", id=f"id{index}")
         self.f = self.a + self.b + self.e
 
     def test_compute_calculation(self):

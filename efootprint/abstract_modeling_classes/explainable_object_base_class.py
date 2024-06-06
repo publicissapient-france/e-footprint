@@ -64,8 +64,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
             raise ValueError(
                 f"{self.label} doesn’t have a modeling_obj_container, hence it makes no sense "
                 f"to look for its ancestors")
-        return f"{self.attr_name_in_mod_obj_container} in {self.modeling_obj_container.name}" \
-               f" ({self.modeling_obj_container.id})"
+        return f"{self.attr_name_in_mod_obj_container}-in-{self.modeling_obj_container.id}"
 
     @property
     def has_parent(self):

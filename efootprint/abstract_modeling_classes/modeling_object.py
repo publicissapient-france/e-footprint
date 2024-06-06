@@ -13,6 +13,7 @@ from copy import copy
 import os
 import json
 from IPython.display import HTML
+import re
 
 
 PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
@@ -45,12 +46,27 @@ class ABCAfterInitMeta(ABCMeta, AfterInitMeta):
     pass
 
 
+def css_escape(input_string):
+    """
+    Escape a string to be used as a CSS identifier.
+    """
+    def escape_char(c):
+        if re.match(r'[a-zA-Z0-9_-]', c):
+            return c
+        elif c == ' ':
+            return '-'
+        else:
+            return f'\\{ord(c):x}'
+
+    return ''.join(escape_char(c) for c in input_string)
+
+
 class ModelingObject(metaclass=ABCAfterInitMeta):
     def __init__(self, name):
         self.dont_handle_input_updates = False
         self.init_has_passed = False
         self.name = name
-        self.id = f"{self.name} {str(uuid.uuid4())[:6]}"
+        self.id = f"{css_escape(self.name)}-{str(uuid.uuid4())[:6]}"
         self.modeling_obj_containers = []
 
     @property
