@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.6] 2024-06-13
+
+### Fixed
+- Force ModelingObject and ExplainableObject ids to start with a letter and not contain backslashes.
+
 ## [2.1.5] 2024-06-06
 
 ### Fixed

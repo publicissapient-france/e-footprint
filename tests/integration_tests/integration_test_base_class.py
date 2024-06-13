@@ -58,11 +58,11 @@ class IntegrationTestBaseClass(TestCase):
         output_list = [input_system] + list(input_system.servers) + list(input_system.storages) \
                       + list(input_system.services) + input_system.usage_patterns \
                       + list(input_system.device_populations) + list(input_system.networks)
-        user_journeys = [up.user_journey for up in input_system.usage_patterns]
-        uj_steps = sum([uj.uj_steps for uj in user_journeys], start=[])
-        jobs = sum([uj_step.jobs for uj_step in uj_steps], start=[])
-        devices = sum([dp.devices for dp in input_system.device_populations], start=[])
-        countries = [dp.country for dp in input_system.device_populations]
+        user_journeys = list(set([up.user_journey for up in input_system.usage_patterns]))
+        uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
+        jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
+        devices = list(set(sum([dp.devices for dp in input_system.device_populations], start=[])))
+        countries = list(set([dp.country for dp in input_system.device_populations]))
 
         return output_list + user_journeys + uj_steps + jobs + devices + countries
 
@@ -72,7 +72,7 @@ class IntegrationTestBaseClass(TestCase):
         old_ids = {}
         for mod_obj in mod_obj_list:
             old_ids[mod_obj.name] = mod_obj.id
-            mod_obj.id = f"{mod_obj.name} + its uuid"
+            mod_obj.id = "uuid" + mod_obj.id[9:]
 
         tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, "tmp_system_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)

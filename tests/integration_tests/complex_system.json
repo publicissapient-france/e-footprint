@@ -1,21 +1,21 @@
 {
     "System": {
-        "system 1 + its uuid": {
+        "uuid-system-1": {
             "name": "system 1",
-            "id": "system 1 + its uuid",
+            "id": "uuid-system-1",
             "usage_patterns": [
-                "Video watching in France in the morning + its uuid",
-                "Video watching in France in the evening + its uuid"
+                "uuid-Video-watching-in-France-in-the-morning",
+                "uuid-Video-watching-in-France-in-the-evening"
             ]
         }
     },
     "UsagePattern": {
-        "Video watching in France in the morning + its uuid": {
+        "uuid-Video-watching-in-France-in-the-morning": {
             "name": "Video watching in France in the morning",
-            "id": "Video watching in France in the morning + its uuid",
-            "user_journey": "Daily video usage + its uuid",
-            "device_population": "French video watchers on laptop + its uuid",
-            "network": "Default network + its uuid",
+            "id": "uuid-Video-watching-in-France-in-the-morning",
+            "user_journey": "uuid-Daily-video-usage",
+            "device_population": "uuid-French-video-watchers-on-laptop",
+            "network": "uuid-Default-network",
             "user_journey_freq_per_user": {
                 "label": "Usage frequency in Video watching in France in the morning from hypothesis",
                 "value": 100.0,
@@ -39,12 +39,12 @@
                 }
             }
         },
-        "Video watching in France in the evening + its uuid": {
+        "uuid-Video-watching-in-France-in-the-evening": {
             "name": "Video watching in France in the evening",
-            "id": "Video watching in France in the evening + its uuid",
-            "user_journey": "Daily video usage + its uuid",
-            "device_population": "French video watchers on laptop + its uuid",
-            "network": "Default network + its uuid",
+            "id": "uuid-Video-watching-in-France-in-the-evening",
+            "user_journey": "uuid-Daily-video-usage",
+            "device_population": "uuid-French-video-watchers-on-laptop",
+            "network": "uuid-Default-network",
             "user_journey_freq_per_user": {
                 "label": "Usage frequency in Video watching in France in the evening from hypothesis",
                 "value": 365.0,
@@ -70,21 +70,21 @@
         }
     },
     "UserJourney": {
-        "Daily video usage + its uuid": {
+        "uuid-Daily-video-usage": {
             "name": "Daily video usage",
-            "id": "Daily video usage + its uuid",
+            "id": "uuid-Daily-video-usage",
             "uj_steps": [
-                "20 min streaming on Youtube + its uuid",
-                "0.4s of upload + its uuid",
-                "Dailymotion step + its uuid",
-                "20 min streaming on TikTok + its uuid"
+                "uuid-20-min-streaming-on-Youtube",
+                "uuid-02e4s-of-upload",
+                "uuid-Dailymotion-step",
+                "uuid-20-min-streaming-on-TikTok"
             ]
         }
     },
     "DevicePopulation": {
-        "French video watchers on laptop + its uuid": {
+        "uuid-French-video-watchers-on-laptop": {
             "name": "French video watchers on laptop",
-            "id": "French video watchers on laptop + its uuid",
+            "id": "uuid-French-video-watchers-on-laptop",
             "nb_devices": {
                 "label": "Nb devices in French video watchers on laptop from hypothesis",
                 "value": 12000000.0,
@@ -94,16 +94,16 @@
                     "link": null
                 }
             },
-            "country": "France + its uuid",
+            "country": "uuid-France",
             "devices": [
-                "Default laptop + its uuid"
+                "uuid-Default-laptop"
             ]
         }
     },
     "Country": {
-        "France + its uuid": {
+        "uuid-France": {
             "name": "France",
-            "id": "France + its uuid",
+            "id": "uuid-France",
             "short_name": "FRA",
             "average_carbon_intensity": {
                 "label": "Average carbon intensity of France from Our world in data",
@@ -126,9 +126,9 @@
         }
     },
     "Hardware": {
-        "Default laptop + its uuid": {
+        "uuid-Default-laptop": {
             "name": "Default laptop",
-            "id": "Default laptop + its uuid",
+            "id": "uuid-Default-laptop",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
                 "value": 156,
@@ -168,9 +168,9 @@
         }
     },
     "Network": {
-        "Default network + its uuid": {
+        "uuid-Default-network": {
             "name": "Default network",
-            "id": "Default network + its uuid",
+            "id": "uuid-Default-network",
             "bandwidth_energy_intensity": {
                 "label": "bandwith energy intensity of Default network from Traficom study",
                 "value": 0.05,
@@ -183,9 +183,9 @@
         }
     },
     "UserJourneyStep": {
-        "20 min streaming on Youtube + its uuid": {
+        "uuid-20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
-            "id": "20 min streaming on Youtube + its uuid",
+            "id": "uuid-20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
                 "value": 20.0,
@@ -196,12 +196,12 @@
                 }
             },
             "jobs": [
-                "streaming + its uuid"
+                "uuid-streaming"
             ]
         },
-        "0.4s of upload + its uuid": {
+        "uuid-02e4s-of-upload": {
             "name": "0.4s of upload",
-            "id": "0.4s of upload + its uuid",
+            "id": "uuid-02e4s-of-upload",
             "user_time_spent": {
                 "label": "Time spent on step 0.4s of upload from hypothesis",
                 "value": 1.0,
@@ -212,12 +212,12 @@
                 }
             },
             "jobs": [
-                "upload + its uuid"
+                "uuid-upload"
             ]
         },
-        "Dailymotion step + its uuid": {
+        "uuid-Dailymotion-step": {
             "name": "Dailymotion step",
-            "id": "Dailymotion step + its uuid",
+            "id": "uuid-Dailymotion-step",
             "user_time_spent": {
                 "label": "Time spent on step Dailymotion step from hypothesis",
                 "value": 1.0,
@@ -228,12 +228,12 @@
                 }
             },
             "jobs": [
-                "dailymotion + its uuid"
+                "uuid-dailymotion"
             ]
         },
-        "20 min streaming on TikTok + its uuid": {
+        "uuid-20-min-streaming-on-TikTok": {
             "name": "20 min streaming on TikTok",
-            "id": "20 min streaming on TikTok + its uuid",
+            "id": "uuid-20-min-streaming-on-TikTok",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on TikTok from hypothesis",
                 "value": 20.0,
@@ -244,17 +244,17 @@
                 }
             },
             "jobs": [
-                "tiktok + its uuid",
-                "tiktok analytics + its uuid"
+                "uuid-tiktok",
+                "uuid-tiktok-analytics"
             ]
         }
     },
     "Job": {
-        "streaming + its uuid": {
+        "uuid-streaming": {
             "name": "streaming",
-            "id": "streaming + its uuid",
+            "id": "uuid-streaming",
             "job_type": "undefined",
-            "service": "Youtube + its uuid",
+            "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -302,11 +302,11 @@
             },
             "description": ""
         },
-        "upload + its uuid": {
+        "uuid-upload": {
             "name": "upload",
-            "id": "upload + its uuid",
+            "id": "uuid-upload",
             "job_type": "undefined",
-            "service": "Youtube + its uuid",
+            "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -354,11 +354,11 @@
             },
             "description": ""
         },
-        "dailymotion + its uuid": {
+        "uuid-dailymotion": {
             "name": "dailymotion",
-            "id": "dailymotion + its uuid",
+            "id": "uuid-dailymotion",
             "job_type": "undefined",
-            "service": "Dailymotion + its uuid",
+            "service": "uuid-Dailymotion",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
                 "value": 300.0,
@@ -406,11 +406,11 @@
             },
             "description": ""
         },
-        "tiktok + its uuid": {
+        "uuid-tiktok": {
             "name": "tiktok",
-            "id": "tiktok + its uuid",
+            "id": "uuid-tiktok",
             "job_type": "undefined",
-            "service": "TikTok service + its uuid",
+            "service": "uuid-TikTok-service",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
                 "value": 0.0,
@@ -458,11 +458,11 @@
             },
             "description": ""
         },
-        "tiktok analytics + its uuid": {
+        "uuid-tiktok-analytics": {
             "name": "tiktok analytics",
-            "id": "tiktok analytics + its uuid",
+            "id": "uuid-tiktok-analytics",
             "job_type": "undefined",
-            "service": "TikTok analytics + its uuid",
+            "service": "uuid-TikTok-analytics",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
                 "value": 50.0,
@@ -512,11 +512,11 @@
         }
     },
     "Service": {
-        "Youtube + its uuid": {
+        "uuid-Youtube": {
             "name": "Youtube",
-            "id": "Youtube + its uuid",
-            "server": "Server 1 + its uuid",
-            "storage": "Default SSD storage + its uuid",
+            "id": "uuid-Youtube",
+            "server": "uuid-Server-1",
+            "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Youtube from hypothesis",
                 "value": 300,
@@ -536,11 +536,11 @@
                 }
             }
         },
-        "Dailymotion + its uuid": {
+        "uuid-Dailymotion": {
             "name": "Dailymotion",
-            "id": "Dailymotion + its uuid",
-            "server": "Server 1 + its uuid",
-            "storage": "Default SSD storage + its uuid",
+            "id": "uuid-Dailymotion",
+            "server": "uuid-Server-1",
+            "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Dailymotion from hypothesis",
                 "value": 300,
@@ -560,11 +560,11 @@
                 }
             }
         },
-        "TikTok service + its uuid": {
+        "uuid-TikTok-service": {
             "name": "TikTok service",
-            "id": "TikTok service + its uuid",
-            "server": "Server 2 + its uuid",
-            "storage": "Default SSD storage + its uuid",
+            "id": "uuid-TikTok-service",
+            "server": "uuid-Server-2",
+            "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of TikTok service from hypothesis",
                 "value": 300,
@@ -584,11 +584,11 @@
                 }
             }
         },
-        "TikTok analytics + its uuid": {
+        "uuid-TikTok-analytics": {
             "name": "TikTok analytics",
-            "id": "TikTok analytics + its uuid",
-            "server": "TikTok Analytics server + its uuid",
-            "storage": "Default SSD storage + its uuid",
+            "id": "uuid-TikTok-analytics",
+            "server": "uuid-TikTok-Analytics-server",
+            "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of TikTok analytics from hypothesis",
                 "value": 300,
@@ -610,9 +610,9 @@
         }
     },
     "Autoscaling": {
-        "Server 1 + its uuid": {
+        "uuid-Server-1": {
             "name": "Server 1",
-            "id": "Server 1 + its uuid",
+            "id": "uuid-Server-1",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Server 1 from Base ADEME_V19",
                 "value": 600,
@@ -704,9 +704,9 @@
                 }
             }
         },
-        "TikTok Analytics server + its uuid": {
+        "uuid-TikTok-Analytics-server": {
             "name": "TikTok Analytics server",
-            "id": "TikTok Analytics server + its uuid",
+            "id": "uuid-TikTok-Analytics-server",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
                 "value": 600,
@@ -798,9 +798,9 @@
                 }
             }
         },
-        "Server 2 + its uuid": {
+        "uuid-Server-2": {
             "name": "Server 2",
-            "id": "Server 2 + its uuid",
+            "id": "uuid-Server-2",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Server 2 from Base ADEME_V19",
                 "value": 600,
@@ -894,9 +894,9 @@
         }
     },
     "Storage": {
-        "Default SSD storage + its uuid": {
+        "uuid-Default-SSD-storage": {
             "name": "Default SSD storage",
-            "id": "Default SSD storage + its uuid",
+            "id": "uuid-Default-SSD-storage",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
                 "value": 160,

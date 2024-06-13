@@ -56,7 +56,7 @@ def css_escape(input_string):
         elif c == ' ':
             return '-'
         else:
-            return f'\\{ord(c):x}'
+            return f'{ord(c):x}'
 
     return ''.join(escape_char(c) for c in input_string)
 
@@ -66,7 +66,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         self.dont_handle_input_updates = False
         self.init_has_passed = False
         self.name = name
-        self.id = f"{css_escape(self.name)}-{str(uuid.uuid4())[:6]}"
+        self.id = f"id-{str(uuid.uuid4())[:6]}-{css_escape(self.name)}"
         self.modeling_obj_containers = []
 
     @property
