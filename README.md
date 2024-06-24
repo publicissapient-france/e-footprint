@@ -10,9 +10,9 @@ The current perimeter is the carbon footprint associated with the fabrication an
 
 Here is the link to the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
 
-## Didactic interface
+## Graphical interface
 
-You can explore the model’s [didactic interface](https://publicis-sapient-e-footprint-model.streamlit.app/). This interface allows for a limited use of the model, with only one user journey on a single service when the code allows for an unlimited amount of objects. The goal is to let users discover the inputs and explore the calculation graphs (see below).
+You can explore the model’s [graphical interface](hhttps://e-footprint-interface.nw.r.appspot.com/). This interface allows for a powerful use of the model but is still in beta for now. Please send an email to e-footprint’s main maintainer, [Vincent Villet](mailto:vincent.villet@publicissapient.com) if you wish to give feedback and / or be notified when the interface gets to a first stable version !
 
 ## Modeling examples
 

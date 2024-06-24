@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.1.6] 2024-06-13
+
+### Fixed
+- Force ModelingObject and ExplainableObject ids to start with a letter and not contain backslashes.
+
+## [2.1.5] 2024-06-06
+
+### Fixed
+- Make ModelingObject and ExplainableObject ids css escaped.
+
+## [2.1.4] 2024-05-17
+
+### Fixed
+- System footprints by category and object graph legend aligns to the right if server impact is bigger than devices impact
+
+## [2.1.3] 2024-05-16
+
+### Changed
+- Don’t round up the number of users in parallel as it creates very wrong results when there are few users in parallel.
+
 ## [2.1.2] 2024-05-16
 
 ### Fixed
