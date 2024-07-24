@@ -4,6 +4,8 @@ from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
+from efootprint.core.hardware.servers.serverless import Serverless
+from efootprint.core.hardware.servers.on_premise import OnPremise
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
@@ -13,7 +15,7 @@ from efootprint.constants.countries import country_generator, tz
 from efootprint.constants.units import u
 
 
-server = Autoscaling(
+autoscaling_server = Autoscaling(
     "server",
     carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
     power=SourceValue(300 * u.W, source=None),
@@ -24,6 +26,32 @@ server = Autoscaling(
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None))
+
+serverless_server = Serverless(
+    "serverless",
+    carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
+    power=SourceValue(300 * u.W, source=None),
+    lifespan=SourceValue(6 * u.year, source=None),
+    idle_power=SourceValue(50 * u.W, source=None),
+    ram=SourceValue(128 * u.GB, source=None),
+    cpu_cores=SourceValue(24 * u.core, source=None),
+    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
+    average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
+    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None))
+
+on_premise_server = OnPremise(
+    "on premise server",
+    carbon_footprint_fabrication=SourceValue(600 * u.kg, source=None),
+    power=SourceValue(300 * u.W, source=None),
+    lifespan=SourceValue(6 * u.year, source=None),
+    idle_power=SourceValue(50 * u.W, source=None),
+    ram=SourceValue(128 * u.GB, source=None),
+    cpu_cores=SourceValue(24 * u.core, source=None),
+    power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
+    average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
+    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    fixed_nb_of_instances=SourceValue(4000 * u.dimensionless, source=None)
+)
 
 storage = Storage(
     "storage",
@@ -38,7 +66,7 @@ storage = Storage(
 
 service = Service(
     "service",
-    server=server,
+    server=autoscaling_server,
     storage=storage,
     base_ram_consumption=SourceValue(300 * u.MB, source=None),
     base_cpu_consumption=SourceValue(2 * u.core, source=None))

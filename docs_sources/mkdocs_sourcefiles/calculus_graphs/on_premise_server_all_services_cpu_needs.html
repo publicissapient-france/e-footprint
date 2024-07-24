@@ -1,0 +1,155 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork_66262d {
+                 width: 1800px;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork_66262d" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork_66262d');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on on premise server", "label": "CPU needs of all\nservices running on\non premise server", "shape": "dot", "size": 15, "title": "CPU needs of all services running on on premise server\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363387.5 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern local timezone hourly usage converted to UTC from devices country\ntimezone from user data\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]\nconverted to UTC from Europe/Paris\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0]", "x": -350.0, "y": 600}, {"color": null, "id": "usage pattern local timezone hourly usage", "label": "usage pattern local\ntimezone hourly\nusage", "shape": "dot", "size": 15, "title": "usage pattern local timezone hourly usage\n=\nHourly usage conversion of (usage pattern time intervals in local timezone from\nhypothesis)\n=\nHourly usage conversion of ([[7, 12], [17, 23]])\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]", "x": 262.5, "y": 300}, {"color": "darkred", "id": "usage pattern time intervals in local timezone from hypothesis", "label": "usage pattern time\nintervals in local\ntimezone from\nhypothesis", "shape": "dot", "size": 15, "title": "usage pattern time intervals in local timezone from hypothesis = [[7, 12], [17,\n23]]", "x": 0.0, "y": 150}, {"color": "gold", "id": "devices country timezone from user data", "label": "devices country\ntimezone from user\ndata", "shape": "dot", "size": 15, "title": "devices country timezone from user data = Europe/Paris", "x": -450.0, "y": 450}, {"color": null, "id": "Average cpu needed over usage pattern to process streaming", "label": "Average cpu needed\nover usage pattern\nto process streaming", "shape": "dot", "size": 15, "title": "Average cpu needed over usage pattern to process streaming\n=\nCPU needed on server server to process streaming * Request duration to service\nin streaming / (Duration of user journey * One user journey)\n=\n1.0 core/uj * 4 min / (20.0 min/uj * 1 uj)\n=\n0.2 core/uj", "x": 0.0, "y": 600}, {"color": null, "id": "CPU needed on server server to process streaming", "label": "CPU needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "CPU needed on server server to process streaming = 1.0 core/uj", "x": -300.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 4 min", "x": -150.0, "y": 450}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 450}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20.0 min/uj", "x": -262.5, "y": 300}, {"color": null, "id": "One user journey", "label": "One user journey", "shape": "dot", "size": 15, "title": "One user journey = 1 uj", "x": 150.0, "y": 450}, {"color": null, "id": "Number of user journeys in parallel during usage pattern", "label": "Number of user\njourneys in parallel\nduring usage pattern", "shape": "dot", "size": 15, "title": "Number of user journeys in parallel during usage pattern\n=\nOne user journey * (Usage frequency in usage pattern * Duration of user journey\n/ Usage time fraction of usage pattern)\n=\n1 uj * (4380000000.0 uj/yr * 20.0 min/uj / 0.5)\n=\n363387.5 uj", "x": 350.0, "y": 600}, {"color": null, "id": "Usage frequency in usage pattern", "label": "Usage frequency in\nusage pattern", "shape": "dot", "size": 15, "title": "Usage frequency in usage pattern = 4380000000.0 uj/yr", "x": 300.0, "y": 450}, {"color": null, "id": "Usage time fraction of usage pattern", "label": "Usage time fraction\nof usage pattern", "shape": "dot", "size": 15, "title": "Usage time fraction of usage pattern\n=\nusage time fraction computation of (usage pattern local timezone hourly usage)\n=\nusage time fraction computation of ([0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0,\n0, 0, 0, 1, 1, 1, 1, 1, 1, 0])\n=\n0.5", "x": 450.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour cpu need", "to": "CPU needs of all services running on on premise server"}, {"arrows": "to", "from": "usage pattern UTC", "to": "service hour by hour cpu need"}, {"arrows": "to", "from": "usage pattern local timezone hourly usage", "to": "usage pattern UTC"}, {"arrows": "to", "from": "usage pattern time intervals in local timezone from hypothesis", "to": "usage pattern local timezone hourly usage"}, {"arrows": "to", "from": "devices country timezone from user data", "to": "usage pattern UTC"}, {"arrows": "to", "from": "Average cpu needed over usage pattern to process streaming", "to": "service hour by hour cpu need"}, {"arrows": "to", "from": "CPU needed on server server to process streaming", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Request duration to service in streaming", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Duration of user journey", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}, {"arrows": "to", "from": "One user journey", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Number of user journeys in parallel during usage pattern", "to": "service hour by hour cpu need"}, {"arrows": "to", "from": "One user journey", "to": "Number of user journeys in parallel during usage pattern"}, {"arrows": "to", "from": "Usage frequency in usage pattern", "to": "Number of user journeys in parallel during usage pattern"}, {"arrows": "to", "from": "Duration of user journey", "to": "Number of user journeys in parallel during usage pattern"}, {"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}, {"arrows": "to", "from": "Usage time fraction of usage pattern", "to": "Number of user journeys in parallel during usage pattern"}, {"arrows": "to", "from": "usage pattern local timezone hourly usage", "to": "Usage time fraction of usage pattern"}, {"arrows": "to", "from": "usage pattern time intervals in local timezone from hypothesis", "to": "usage pattern local timezone hourly usage"}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": false,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    </body>
+</html>

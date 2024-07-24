@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [3.0.0] 2024-07-29
+
+### Changed
+- Suppress DevicePopulation object and transfer its functions to UsagePattern for simplification of object structure. This change removes an ambiguity around the notion of visits and number of devices: by removing the notion of devices and users from the model, only user journey frequency is kept and there remains no confusion possible between user journey frequency and user journey frequency per user (which has disappeared).
+- Minor import order refactoring to comply better with PEP8 guidelines.
+
+### Added
+- Content in the documentation.
+
 ## [2.1.6] 2024-06-13
 
 ### Fixed

@@ -1,0 +1,5 @@
+# e-footprint scope
+
+e-footprint aims at being a digital service carbon footprint modeling tool (more on what is means later). First of all, what is a digital service ? **We call digital service any set of information technology tools that allow users to accomplish something, including all hardware, software, and peripheral equipment**. In other words, the sum of all digital services makes up the entirety of the digital world. This scope is very large and that’s why e-footprint has taken a detailed low-level approach. This fine granularity is complemented by a library of higher-level [builders](builders.md) that allow for the creation of objects with fewer parameters for better usability. **Of course some digital services will be harder to model with e-footprint than others, but all can be approximated**. Refer to the how-to section for more information on how to model different types of services.
+
+Read the [Why e-footprint ?](why_efootprint.md) article to understand the need for such a tool when ecodesigning a digital service.

@@ -8,7 +8,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import E
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
-    system, usage_pattern, user_journey, network, streaming_step, service, server, storage)
+    system, usage_pattern, user_journey, network, streaming_step, service, autoscaling_server, storage,
+    serverless_server, on_premise_server)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 
@@ -67,6 +68,34 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return return_str
 
 
+def write_object_reference_file(mod_obj):
+    mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
+        set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
+
+    init_sig_params = signature(mod_obj.__init__).parameters
+    mod_obj_dict["params"] = []
+    mod_obj_dict["calculated_attrs"] = []
+
+    for key, elt in init_sig_params.items():
+        if key != "self":
+            # "type": str(elt).replace(f"{key}: ", "")
+            mod_obj_dict["params"].append(obj_to_md(getattr(mod_obj, key), key))
+
+    for attr in mod_obj.calculated_attributes:
+        calc_attr = getattr(mod_obj, attr)
+        mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
+
+    with open(os.path.join(ROOT, 'obj_template.md'), 'r') as file:
+        template = Template(file.read(), trim_blocks=False)
+    rendered_file = template.render(obj_dict=mod_obj_dict)
+
+    filename = f"{mod_obj_dict['class']}.md"
+    with open(os.path.join(ROOT, "..", "mkdocs_sourcefiles", f"{mod_obj_dict['class']}.md"), "w") as file:
+        file.write(rendered_file)
+
+    return filename
+
+
 def generate_object_reference(automatically_update_yaml=False):
     country = usage_pattern.country
     device = usage_pattern.devices[0]
@@ -74,30 +103,13 @@ def generate_object_reference(automatically_update_yaml=False):
     nav_items = []
     for mod_obj in (
             system, usage_pattern, user_journey, country, device, network, streaming_step,
-            streaming_step.jobs[0], service, server, storage):
-        mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
-            set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}
+            streaming_step.jobs[0], service, autoscaling_server, storage):
+        filename = write_object_reference_file(mod_obj)
+        nav_items.append(filename)
 
-        init_sig_params = signature(mod_obj.__init__).parameters
-        mod_obj_dict["params"] = []
-        mod_obj_dict["calculated_attrs"] = []
-
-        for key, elt in init_sig_params.items():
-            if key != "self":
-                # "type": str(elt).replace(f"{key}: ", "")
-                mod_obj_dict["params"].append(obj_to_md(getattr(mod_obj, key), key))
-
-        for attr in mod_obj.calculated_attributes:
-            calc_attr = getattr(mod_obj, attr)
-            mod_obj_dict["calculated_attrs"].append(calc_attr_to_md(calc_attr, attr))
-
-        with open(os.path.join(ROOT, 'obj_template.md'), 'r') as file:
-            template = Template(file.read(), trim_blocks=False)
-        rendered_file = template.render(obj_dict=mod_obj_dict)
-
-        filename = f"{mod_obj_dict['class']}.md"
-        with open(os.path.join(ROOT, "..", "mkdocs_sourcefiles", f"{mod_obj_dict['class']}.md"), "w") as file:
-            file.write(rendered_file)
+    for new_server in (serverless_server, on_premise_server):
+        service.server = new_server
+        filename = write_object_reference_file(new_server)
         nav_items.append(filename)
 
     if automatically_update_yaml:
@@ -115,3 +127,7 @@ def generate_object_reference(automatically_update_yaml=False):
                 data["nav"][2]["e-footprint objects reference"].append({filename.replace(".md", ""): filename})
         with open(mkdocs_yml_filepath, "w") as fp:
             yaml.dump(data, fp)
+
+
+if __name__ == "__main__":
+    generate_object_reference()
