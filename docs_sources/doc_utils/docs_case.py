@@ -6,7 +6,6 @@ from efootprint.core.usage.job import Job
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
-from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -62,19 +61,6 @@ streaming_step = UserJourneyStep(
 
 user_journey = UserJourney("user journey", uj_steps=[streaming_step])
 
-device_population = DevicePopulation(
-    "device population",
-    nb_devices=SourceValue(4e7 * 0.3 * u.user, source=None),
-    country=country_generator(
-        "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None),
-        2022, tz('Europe/Paris'))(),
-    devices=[
-        Hardware(name="device on which the user journey is made",
-                 carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
-                 power=SourceValue(50 * u.W, source=None),
-                 lifespan=SourceValue(6 * u.year, source=None),
-                 fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))])
-
 network = Network(
         "network",
         bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), source=None))
@@ -82,9 +68,17 @@ network = Network(
 usage_pattern = UsagePattern(
     "usage pattern",
     user_journey=user_journey,
-    device_population=device_population,
+    devices=[
+        Hardware(name="device on which the user journey is made",
+                 carbon_footprint_fabrication=SourceValue(156 * u.kg, source=None),
+                 power=SourceValue(50 * u.W, source=None),
+                 lifespan=SourceValue(6 * u.year, source=None),
+                 fraction_of_usage_time=SourceValue(7 * u.hour / u.day, source=None))],
     network=network,
-    user_journey_freq_per_user=SourceValue(365 * u.user_journey / (u.user * u.year), source=None),
+    country=country_generator(
+            "devices country", "its 3 letter shortname, for example FRA", SourceValue(85 * u.g / u.kWh, source=None),
+            2022, tz('Europe/Paris'))(),
+    user_journey_freq=SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year, source=None),
     time_intervals=SourceObject([[7, 12], [17, 23]]))
 
 system = System("system", usage_patterns=[usage_pattern])

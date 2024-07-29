@@ -23,16 +23,16 @@ class Country(ModelingObject):
         self.timezone = timezone.set_label(f"{self.name} timezone")
 
     @property
-    def device_populations(self):
+    def usage_patterns(self):
         return self.modeling_obj_containers
 
     @property
     def systems(self) -> List:
-        return list(set(sum([device_pop.systems for device_pop in self.device_populations], start=[])))
+        return list(set(sum([usage_pattern.systems for usage_pattern in self.usage_patterns], start=[])))
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self):
-        return self.device_populations
+        return self.usage_patterns
 
 
 def tz(timezone: str):

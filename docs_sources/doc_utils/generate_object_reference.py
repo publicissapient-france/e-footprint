@@ -1,9 +1,8 @@
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
-    system, usage_pattern, user_journey, device_population, network, streaming_step, service, server, storage)
+    system, usage_pattern, user_journey, network, streaming_step, service, server, storage)
 
 import os
 from jinja2 import Template
@@ -37,9 +36,6 @@ def obj_to_md(input_obj, attr_name):
 
 def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return_str = f"### {attr_name}"
-    if issubclass(type(input_obj), ExplainableObjectDict):
-        return_str += f"\nDescription of ExplainableObjectDicts is not yes supported."
-        return return_str
     if issubclass(type(input_obj), ExplainableQuantity):
         return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
     elif issubclass(type(input_obj), ExplainableHourlyUsage):
@@ -71,12 +67,12 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
 
 
 def generate_object_reference(automatically_update_yaml=False):
-    country = device_population.country
-    device = device_population.devices[0]
+    country = usage_pattern.country
+    device = usage_pattern.devices[0]
 
     nav_items = []
     for mod_obj in (
-            system, usage_pattern, user_journey, device_population, country, device, network, streaming_step,
+            system, usage_pattern, user_journey, country, device, network, streaming_step,
             streaming_step.jobs[0], service, server, storage):
         mod_obj_dict = {"class": return_class_str(mod_obj), "modeling_obj_containers": list(
             set([return_class_str(mod_obj) for mod_obj in mod_obj.modeling_obj_containers]))}

@@ -19,7 +19,7 @@ class TestNetwork(TestCase):
             200 * u.MB / u.user_journey, label='data_download')
         self.usage_pattern.user_journey_freq = SourceValue(250 * u.user_journey / u.year)
         self.network.modeling_obj_containers = {self.usage_pattern}
-        self.usage_pattern.device_population.country = Countries.FRANCE()
+        self.usage_pattern.country = Countries.FRANCE()
         self.network_consumption = (
                 self.network.bandwidth_energy_intensity * SourceValue(300 * u.MB / u.user_journey)
         ).to(u.Wh / u.user_journey)
@@ -39,7 +39,7 @@ class TestNetwork(TestCase):
     def test_update_energy_footprint(self):
         self.network.update_energy_footprint()
         uj_freq = self.usage_pattern.user_journey_freq
-        carbon_intensity = self.usage_pattern.device_population.country.average_carbon_intensity
+        carbon_intensity = self.usage_pattern.country.average_carbon_intensity
         network_consumption = self.network_consumption
 
         energy_footprint = (uj_freq * carbon_intensity * network_consumption).to(u.kg / u.year)

@@ -67,7 +67,7 @@ class Network(ModelingObject):
                     f"{self.name} consumption during {user_journey.name}")
                 power_footprint += (
                         usage_pattern.user_journey_freq * uj_network_consumption
-                        * usage_pattern.device_population.country.average_carbon_intensity)
+                        * usage_pattern.country.average_carbon_intensity)
 
             self.energy_footprint = power_footprint.to(u.kg / u.year).set_label(
                 f"Energy footprint of {self.name}")

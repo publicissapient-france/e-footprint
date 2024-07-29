@@ -1,9 +1,13 @@
+from typing import Dict, List
+import plotly.express as px
+import plotly
+import pandas as pd
+from IPython.display import HTML
 from matplotlib import pyplot as plt
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
-from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
@@ -12,12 +16,6 @@ from efootprint.core.usage.user_journey import UserJourney
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
-
-from typing import Dict, List, Set
-import plotly.express as px
-import plotly
-import pandas as pd
-from IPython.display import HTML
 
 
 class System(ModelingObject):
@@ -78,14 +76,6 @@ class System(ModelingObject):
         return list(output_set)
 
     @property
-    def device_populations(self) -> List[DevicePopulation]:
-        output_set = set()
-        for usage_pattern in self.usage_patterns:
-            output_set.update({usage_pattern.device_population})
-
-        return list(output_set)
-
-    @property
     def networks(self) -> List[Network]:
         output_set = set()
         for usage_pattern in self.usage_patterns:
@@ -114,8 +104,8 @@ class System(ModelingObject):
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
             "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")},
-            "Devices": {device_population.name: device_population.instances_fabrication_footprint
-                        for device_population in self.device_populations},
+            "Devices": {usage_pattern.name: usage_pattern.devices_fabrication_footprint
+                        for usage_pattern in self.usage_patterns},
         }
 
         return fab_footprints
@@ -126,8 +116,8 @@ class System(ModelingObject):
             "Servers": {server.name: server.energy_footprint for server in self.servers},
             "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
             "Network": {network.name: network.energy_footprint for network in self.networks},
-            "Devices": {device_population.name: device_population.energy_footprint
-                        for device_population in self.device_populations},
+            "Devices": {usage_pattern.name: usage_pattern.devices_energy_footprint
+                        for usage_pattern in self.usage_patterns},
         }
 
         return energy_footprints
@@ -138,8 +128,8 @@ class System(ModelingObject):
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
             "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks"),
-            "Devices": sum(device_population.instances_fabrication_footprint
-                           for device_population in self.device_populations)
+            "Devices": sum(usage_pattern.devices_fabrication_footprint
+                           for usage_pattern in self.usage_patterns)
         }
 
         return fab_footprints
@@ -150,7 +140,7 @@ class System(ModelingObject):
             "Servers": sum(server.energy_footprint for server in self.servers),
             "Storage": sum(storage.energy_footprint for storage in self.storages),
             "Network": sum(network.energy_footprint for network in self.networks),
-            "Devices": sum(device_population.energy_footprint for device_population in self.device_populations)
+            "Devices": sum(usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns)
         }
 
         return energy_footprints

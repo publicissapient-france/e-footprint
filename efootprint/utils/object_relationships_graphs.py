@@ -9,8 +9,7 @@ COLOR_MAP = {
     "Hardware": "red",
     "Storage": "red",
     "Service": "gold",
-    "UsagePattern": "mediumblue",
-    "DevicePopulation": "red",
+    "UsagePattern": "red",
     "UserJourney": "dodgerblue",
     "UserJourneyStep": "deepskyblue",
     "TimeIntervals": "gold",
@@ -20,10 +19,9 @@ COLOR_MAP = {
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
     "System", "Network", "Hardware", "Country"]
 SERVICES_VIEW_CLASSES_TO_IGNORE = [
-    "System", "UsagePattern", "TimeIntervals", "Network", "Server", "Storage", "Hardware", "DevicePopulation"]
+    "System", "UsagePattern", "TimeIntervals", "Network", "Server", "Storage", "Hardware"]
 SERVICES_AND_INFRA_VIEW_CLASSES_TO_IGNORE = [
-    "UsagePattern", "TimeIntervals", "Network", "Hardware", "DevicePopulation", "System",
-    "UserJourney", "UserJourneyStep"]
+    "UsagePattern", "TimeIntervals", "Network", "Hardware", "System", "UserJourney", "UserJourneyStep"]
 
 
 def build_object_relationships_graph(

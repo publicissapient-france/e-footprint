@@ -13,12 +13,15 @@
             "name": "Youtube usage in France",
             "id": "Youtube usage in France + its uuid",
             "user_journey": "Daily Youtube usage + its uuid",
-            "device_population": "French Youtube users on laptop + its uuid",
+            "devices": [
+                "Default laptop + its uuid"
+            ],
             "network": "Default network + its uuid",
-            "user_journey_freq_per_user": {
+            "country": "France + its uuid",
+            "user_journey_freq": {
                 "label": "Usage frequency in Youtube usage in France from hypothesis",
                 "value": 365.0,
-                "unit": "user_journey / user / year",
+                "unit": "user_journey / year",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -397,25 +400,6 @@
                 }
             },
             "storage_need_from_previous_year": 0
-        }
-    },
-    "DevicePopulation": {
-        "French Youtube users on laptop + its uuid": {
-            "name": "French Youtube users on laptop",
-            "id": "French Youtube users on laptop + its uuid",
-            "nb_devices": {
-                "label": "Nb devices in French Youtube users on laptop from hypothesis",
-                "value": 12000000.0,
-                "unit": "user",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "country": "France + its uuid",
-            "devices": [
-                "Default laptop + its uuid"
-            ]
         }
     },
     "Country": {

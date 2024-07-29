@@ -57,12 +57,12 @@ class IntegrationTestBaseClass(TestCase):
     def retrieve_all_mod_obj_from_system(input_system: System):
         output_list = [input_system] + list(input_system.servers) + list(input_system.storages) \
                       + list(input_system.services) + input_system.usage_patterns \
-                      + list(input_system.device_populations) + list(input_system.networks)
+                      + list(input_system.networks)
         user_journeys = list(set([up.user_journey for up in input_system.usage_patterns]))
         uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))
         jobs = list(set(sum([uj_step.jobs for uj_step in uj_steps], start=[])))
-        devices = list(set(sum([dp.devices for dp in input_system.device_populations], start=[])))
-        countries = list(set([dp.country for dp in input_system.device_populations]))
+        devices = list(set(sum([up.devices for up in input_system.usage_patterns], start=[])))
+        countries = list(set([up.country for up in input_system.usage_patterns]))
 
         return output_list + user_journeys + uj_steps + jobs + devices + countries
 

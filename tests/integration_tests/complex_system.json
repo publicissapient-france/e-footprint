@@ -14,12 +14,15 @@
             "name": "Video watching in France in the morning",
             "id": "uuid-Video-watching-in-France-in-the-morning",
             "user_journey": "uuid-Daily-video-usage",
-            "device_population": "uuid-French-video-watchers-on-laptop",
+            "devices": [
+                "uuid-Default-laptop"
+            ],
             "network": "uuid-Default-network",
-            "user_journey_freq_per_user": {
+            "country": "uuid-France",
+            "user_journey_freq": {
                 "label": "Usage frequency in Video watching in France in the morning from hypothesis",
-                "value": 100.0,
-                "unit": "user_journey / user / year",
+                "value": 1200000000.0,
+                "unit": "user_journey / year",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -43,12 +46,15 @@
             "name": "Video watching in France in the evening",
             "id": "uuid-Video-watching-in-France-in-the-evening",
             "user_journey": "uuid-Daily-video-usage",
-            "device_population": "uuid-French-video-watchers-on-laptop",
+            "devices": [
+                "uuid-Default-laptop"
+            ],
             "network": "uuid-Default-network",
-            "user_journey_freq_per_user": {
+            "country": "uuid-France",
+            "user_journey_freq": {
                 "label": "Usage frequency in Video watching in France in the evening from hypothesis",
-                "value": 365.0,
-                "unit": "user_journey / user / year",
+                "value": 4380000000.0,
+                "unit": "user_journey / year",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -79,50 +85,6 @@
                 "uuid-Dailymotion-step",
                 "uuid-20-min-streaming-on-TikTok"
             ]
-        }
-    },
-    "DevicePopulation": {
-        "uuid-French-video-watchers-on-laptop": {
-            "name": "French video watchers on laptop",
-            "id": "uuid-French-video-watchers-on-laptop",
-            "nb_devices": {
-                "label": "Nb devices in French video watchers on laptop from hypothesis",
-                "value": 12000000.0,
-                "unit": "user",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "country": "uuid-France",
-            "devices": [
-                "uuid-Default-laptop"
-            ]
-        }
-    },
-    "Country": {
-        "uuid-France": {
-            "name": "France",
-            "id": "uuid-France",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "label": "Average carbon intensity of France from Our world in data",
-                "value": 85.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
-                }
-            },
-            "year": 2022,
-            "timezone": {
-                "label": "France timezone from user data",
-                "zone": "Europe/Paris",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
         }
     },
     "Hardware": {
@@ -178,6 +140,31 @@
                 "source": {
                     "name": "Traficom study",
                     "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "uuid-France": {
+            "name": "France",
+            "id": "uuid-France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "year": 2022,
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
                 }
             }
         }

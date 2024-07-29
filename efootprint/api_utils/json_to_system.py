@@ -2,7 +2,6 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.core.service import Service
@@ -17,7 +16,6 @@ from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.network import Network
-from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.constants.countries import Country
 
 import pytz
@@ -89,11 +87,6 @@ def json_to_system(system_dict):
                     mod_obj.__dict__[f"{attr_key}{PREVIOUS_LIST_VALUE_SET_SUFFIX}"] = copy(output_val)
             mod_obj.__dict__["dont_handle_input_updates"] = False
             mod_obj.__dict__["init_has_passed"] = True
-
-    for mod_obj in class_obj_dict["DevicePopulation"].values():
-        mod_obj.user_journey_freq_per_up = ExplainableObjectDict()
-        mod_obj.nb_user_journeys_in_parallel_during_usage_per_up = ExplainableObjectDict()
-        mod_obj.utc_time_intervals_per_up = ExplainableObjectDict()
 
     for obj_type in class_obj_dict.keys():
         if obj_type != "System":

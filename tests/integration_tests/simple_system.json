@@ -13,12 +13,15 @@
             "name": "Youtube usage in France",
             "id": "uuid-Youtube-usage-in-France",
             "user_journey": "uuid-Daily-Youtube-usage",
-            "device_population": "uuid-French-Youtube-users-on-laptop",
+            "devices": [
+                "uuid-Default-laptop"
+            ],
             "network": "uuid-Default-network",
-            "user_journey_freq_per_user": {
+            "country": "uuid-France",
+            "user_journey_freq": {
                 "label": "Usage frequency in Youtube usage in France from hypothesis",
-                "value": 365.0,
-                "unit": "user_journey / user / year",
+                "value": 4380000000.0,
+                "unit": "user_journey / year",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -399,50 +402,6 @@
             "storage_need_from_previous_year": 0
         }
     },
-    "DevicePopulation": {
-        "uuid-French-Youtube-users-on-laptop": {
-            "name": "French Youtube users on laptop",
-            "id": "uuid-French-Youtube-users-on-laptop",
-            "nb_devices": {
-                "label": "Nb devices in French Youtube users on laptop from hypothesis",
-                "value": 12000000.0,
-                "unit": "user",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "country": "uuid-France",
-            "devices": [
-                "uuid-Default-laptop"
-            ]
-        }
-    },
-    "Country": {
-        "uuid-France": {
-            "name": "France",
-            "id": "uuid-France",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "label": "Average carbon intensity of France from Our world in data",
-                "value": 85.0,
-                "unit": "gram / kilowatt_hour",
-                "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
-                }
-            },
-            "year": 2022,
-            "timezone": {
-                "label": "France timezone from user data",
-                "zone": "Europe/Paris",
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
-        }
-    },
     "Hardware": {
         "uuid-Default-laptop": {
             "name": "Default laptop",
@@ -496,6 +455,31 @@
                 "source": {
                     "name": "Traficom study",
                     "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "uuid-France": {
+            "name": "France",
+            "id": "uuid-France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "year": 2022,
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
                 }
             }
         }
