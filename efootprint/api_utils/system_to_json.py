@@ -1,6 +1,6 @@
-from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-
 import json
+
+from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 
 
 def recursively_write_json_dict(output_dict, mod_obj, save_calculated_attributes=True):

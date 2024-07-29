@@ -1,7 +1,6 @@
 from pint import Quantity
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
 

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a1a847 {
+             #mynetwork_9b6b02 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a1a847" class="card-body"></div>
+            <div id="mynetwork_9b6b02" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a1a847');
+                  var container = document.getElementById('mynetwork_9b6b02');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of network", "label": "Energy footprint of\nnetwork", "shape": "dot", "size": 15, "title": "Energy footprint of network\n=\nUser journey frequency of usage pattern * network consumption during user\njourney * Average carbon intensity of devices country\n=\n4380000000.0 uj/yr * 40.0 Wh/uj * 85.0 g/kWh\n=\n14892930.8 kg/yr", "x": 0.0, "y": 600}, {"color": null, "id": "User journey frequency of usage pattern", "label": "User journey\nfrequency of usage\npattern", "shape": "dot", "size": 15, "title": "User journey frequency of usage pattern\n=\nNb devices in device population * Usage frequency in usage pattern\n=\n12000000.0 user * 365.0 uj/user/yr\n=\n4380000000.0 uj/yr", "x": -250.0, "y": 450}, {"color": null, "id": "network consumption during user journey", "label": "network consumption\nduring user journey", "shape": "dot", "size": 15, "title": "network consumption during user journey\n=\nbandwith energy intensity of network * (Data download of user journey + Data\nupload of user journey)\n=\n0.1 kWh/GB * (800.0 MB/uj + 0.1 MB/uj)\n=\n40.0 Wh/uj", "x": 0.0, "y": 450}, {"color": null, "id": "bandwith energy intensity of network", "label": "bandwith energy\nintensity of network", "shape": "dot", "size": 15, "title": "bandwith energy intensity of network = 0.1 kWh/GB", "x": 0.0, "y": 300}, {"color": null, "id": "Data download of user journey", "label": "Data download of\nuser journey", "shape": "dot", "size": 15, "title": "Data download of user journey\n=\nData download of request streaming\n=\n800.0 MB/uj\n=\n800.0 MB/uj", "x": 150.0, "y": 300}, {"color": null, "id": "Data upload of user journey", "label": "Data upload of user\njourney", "shape": "dot", "size": 15, "title": "Data upload of user journey\n=\nData upload of request streaming\n=\n0.1 MB/uj\n=\n0.1 MB/uj", "x": 300.0, "y": 300}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 g/kWh", "x": 250.0, "y": 450}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "User journey frequency of usage pattern", "to": "Energy footprint of network"}, {"arrows": "to", "from": "network consumption during user journey", "to": "Energy footprint of network"}, {"arrows": "to", "from": "bandwith energy intensity of network", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Data download of user journey", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Data upload of user journey", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Energy footprint of network"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of network", "label": "Energy footprint of\nnetwork", "shape": "dot", "size": 15, "title": "Energy footprint of network\n=\nUsage frequency in usage pattern * network consumption during user journey *\nAverage carbon intensity of devices country\n=\n4380000000.0 uj/yr * 40.0 Wh/uj * 85.0 g/kWh\n=\n14892930.8 kg/yr", "x": 0.0, "y": 600}, {"color": null, "id": "Usage frequency in usage pattern", "label": "Usage frequency in\nusage pattern", "shape": "dot", "size": 15, "title": "Usage frequency in usage pattern = 4380000000.0 uj/yr", "x": -150.0, "y": 450}, {"color": null, "id": "network consumption during user journey", "label": "network consumption\nduring user journey", "shape": "dot", "size": 15, "title": "network consumption during user journey\n=\nbandwith energy intensity of network * (Data download of user journey + Data\nupload of user journey)\n=\n0.1 kWh/GB * (800.0 MB/uj + 0.1 MB/uj)\n=\n40.0 Wh/uj", "x": 0.0, "y": 450}, {"color": null, "id": "bandwith energy intensity of network", "label": "bandwith energy\nintensity of network", "shape": "dot", "size": 15, "title": "bandwith energy intensity of network = 0.1 kWh/GB", "x": -150.0, "y": 300}, {"color": null, "id": "Data download of user journey", "label": "Data download of\nuser journey", "shape": "dot", "size": 15, "title": "Data download of user journey\n=\nData download of request streaming\n=\n800.0 MB/uj\n=\n800.0 MB/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Data upload of user journey", "label": "Data upload of user\njourney", "shape": "dot", "size": 15, "title": "Data upload of user journey\n=\nData upload of request streaming\n=\n0.1 MB/uj\n=\n0.1 MB/uj", "x": 150.0, "y": 300}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 g/kWh", "x": 150.0, "y": 450}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Usage frequency in usage pattern", "to": "Energy footprint of network"}, {"arrows": "to", "from": "network consumption during user journey", "to": "Energy footprint of network"}, {"arrows": "to", "from": "bandwith energy intensity of network", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Data download of user journey", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Data upload of user journey", "to": "network consumption during user journey"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Energy footprint of network"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

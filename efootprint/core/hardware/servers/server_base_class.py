@@ -1,8 +1,8 @@
+from abc import abstractmethod
+
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-
-from abc import abstractmethod
 
 
 class Server(InfraHardware):

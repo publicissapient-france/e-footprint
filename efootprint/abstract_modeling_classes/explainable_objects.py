@@ -1,12 +1,13 @@
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
-from efootprint.constants.units import u
-
 import numbers
+import json
 from datetime import datetime
 from typing import Type, List
+
 import pytz
 from pint import Quantity
-import json
+
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
+from efootprint.constants.units import u
 
 
 class ExplainableQuantity(ExplainableObject):

@@ -1,8 +1,8 @@
+from typing import List, Type
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.job import Job
-
-from typing import List, Type
 
 
 class UserJourneyStep(ModelingObject):

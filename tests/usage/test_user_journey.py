@@ -1,12 +1,12 @@
+import unittest
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.job import Job
 from efootprint.constants.units import u
-
-import unittest
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 
 class TestUserJourney(TestCase):

@@ -1,3 +1,8 @@
+from typing import List
+from unittest import TestCase
+import os
+import json
+
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.api_utils.json_to_system import json_to_system
@@ -5,11 +10,6 @@ from efootprint.api_utils.system_to_json import system_to_json
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
 from efootprint.logger import logger
-
-from typing import List
-from unittest import TestCase
-import os
-import json
 
 INTEGRATION_TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 

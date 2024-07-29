@@ -1,10 +1,11 @@
+import os
+
+import pandas as pd
+import requests
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources
 from efootprint.constants.units import u
 from efootprint.logger import logger
-
-import pandas as pd
-import os
-import requests
 
 ROOT_PATH = os.path.dirname(os.path.abspath(__file__))
 

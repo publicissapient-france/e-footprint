@@ -1,11 +1,11 @@
+import json
+import os.path
+from copy import deepcopy
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.constants.units import u
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
-
-import json
-import os.path
-from copy import deepcopy
 
 
 API_UTILS_TEST_DIR = os.path.dirname(os.path.abspath(__file__))

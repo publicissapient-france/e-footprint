@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ecbd84 {
+             #mynetwork_2878c2 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ecbd84" class="card-body"></div>
+            <div id="mynetwork_2878c2" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ecbd84');
+                  var container = document.getElementById('mynetwork_2878c2');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of server", "label": "Energy footprint of\nserver", "shape": "dot", "size": 15, "title": "Energy footprint of server\n=\nPower of server instances * Average carbon intensity of server electricity\n=\n5364660.5 kWh/yr * 100.0 g/kWh\n=\n536466.1 kg/yr", "x": 0.0, "y": 1800}, {"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": -337.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100.0 g/kWh", "x": 337.5, "y": 1650}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of server", "label": "Energy footprint of\nserver", "shape": "dot", "size": 15, "title": "Energy footprint of server\n=\nPower of server instances * Average carbon intensity of server electricity\n=\n5364660.5 kWh/yr * 100.0 g/kWh\n=\n536466.1 kg/yr", "x": 0.0, "y": 1800}, {"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": -300.0, "y": 1650}, {"color": null, "id": "Average carbon intensity of server electricity", "label": "Average carbon\nintensity of server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of server electricity = 100.0 g/kWh", "x": 300.0, "y": 1650}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Power of server instances", "to": "Energy footprint of server"}, {"arrows": "to", "from": "Average carbon intensity of server electricity", "to": "Energy footprint of server"}]);
 
                   nodeColors = {};

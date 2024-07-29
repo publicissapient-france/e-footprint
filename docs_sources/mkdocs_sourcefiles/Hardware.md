@@ -20,7 +20,7 @@ device on which the user journey is made fraction of usage time in hour / day.
 
 ## Backwards links
 
-- [DevicePopulation](DevicePopulation.md)
+- [UsagePattern](UsagePattern.md)
 
 
 ## Calculated attributes

@@ -1,11 +1,11 @@
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
+
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from tests.utils import create_cpu_need, create_ram_need
-
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
 
 
 class TestAutoscaling(TestCase):

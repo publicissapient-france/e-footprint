@@ -1,9 +1,9 @@
+from typing import List
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-
-from typing import List
 
 
 class Network(ModelingObject):

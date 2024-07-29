@@ -21,7 +21,6 @@ from efootprint.core.usage.job import Job
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
-from efootprint.core.hardware.device_population import DevicePopulation
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -59,7 +58,7 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    Autoscaling server c12b67
+    Autoscaling id-8a22da-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -158,16 +157,10 @@ The user journey is then simply a list of user journey steps:
 user_journey = UserJourney("Mean video consumption user journey", uj_steps=[streaming_step, upload_step])
 ```
 
-## Define the device population and how often it runs the user journey
+## Describe usage
 
 
 ```python
-device_population = DevicePopulation(
-    "French households’ laptops",
-    nb_devices=SourceValue(4e7 * 0.3 * u.user, Sources.USER_DATA),
-    country=Countries.FRANCE(),
-    devices=[default_laptop()])
-
 network = Network(
         "WIFI network",
         bandwidth_energy_intensity=SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
@@ -175,22 +168,22 @@ network = Network(
 usage_pattern = UsagePattern(
     "Daily video streaming consumption",
     user_journey=user_journey,
-    device_population=device_population,
+    devices=[default_laptop()],
     network=network,
-    user_journey_freq_per_user=SourceValue(365 * u.user_journey / (u.user * u.year), Sources.USER_DATA),
+    country=Countries.FRANCE(),
+    user_journey_freq=SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year, Sources.USER_DATA),
     time_intervals=SourceObject([[7, 12], [17, 23]]))
 
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-05-16 15:41:53,657 - INFO - Computing calculated attributes for System System
-    2024-05-16 15:41:53,658 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-05-16 15:41:53,659 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-05-16 15:41:53,660 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-05-16 15:41:53,662 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-05-16 15:41:53,667 - INFO - Computing calculated attributes for Network WIFI network
-    2024-05-16 15:41:53,669 - INFO - Computing calculated attributes for Autoscaling server
-    2024-05-16 15:41:53,676 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-07-29 16:02:45,398 - INFO - Computing calculated attributes for System System
+    2024-07-29 16:02:45,398 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-07-29 16:02:45,399 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-07-29 16:02:45,402 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-07-29 16:02:45,406 - INFO - Computing calculated attributes for Network WIFI network
+    2024-07-29 16:02:45,408 - INFO - Computing calculated attributes for Autoscaling server
+    2024-07-29 16:02:45,414 - INFO - Computing calculated attributes for Storage SSD storage
 
 
 ## Results
@@ -204,7 +197,7 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    Autoscaling server c12b67
+    Autoscaling id-8a22da-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -220,8 +213,8 @@ print(server)
     calculated_attributes:
       available_ram_per_instance: 114.9 gigabyte
       available_cpu_per_instance: 19.6 core
-      all_services_cpu_needs: [0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.32 core, 73283.32 core, 73283.32 core, 73283.32 core, 73283.32 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.32 core, 73283.32 core, 73283.32 core, 73283.32 core, 73283.32 core, 73283.32 core, 0.0 core, 0.0 core, 0.0 core]
-      all_services_ram_needs: [0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 3664.17 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte]
+      all_services_cpu_needs: [0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 0.0 core, 0.0 core, 0.0 core]
+      all_services_ram_needs: [0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte]
       fraction_of_time_in_use: 0.46 dimensionless
       nb_of_instances: 1713.71 dimensionless
       instances_fabrication_footprint: 171370.83 kilogram / year
@@ -258,7 +251,7 @@ Any e-footprint calculation can generate its calculation graph for full auditabi
 
 
 ```python
-device_population.instances_fabrication_footprint.calculus_graph_to_file(
+usage_pattern.devices_fabrication_footprint.calculus_graph_to_file(
     "device_population_fab_footprint_calculus_graph.html", width="800px", height="500px", notebook=True)
 ```
 
@@ -328,15 +321,14 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-05-16 15:41:55,553 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-05-16 15:41:55,555 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-05-16 15:41:55,556 - INFO - Computing calculated attributes for DevicePopulation French households’ laptops
-    2024-05-16 15:41:55,559 - INFO - Computing calculated attributes for Service LLM inference
-    2024-05-16 15:41:55,562 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-05-16 15:41:55,568 - INFO - Computing calculated attributes for Network WIFI network
-    2024-05-16 15:41:55,570 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
-    2024-05-16 15:41:55,578 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-05-16 15:41:55,584 - INFO - Computing calculated attributes for Autoscaling server
+    2024-07-29 16:02:47,234 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-07-29 16:02:47,236 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-07-29 16:02:47,238 - INFO - Computing calculated attributes for Service LLM inference
+    2024-07-29 16:02:47,240 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-07-29 16:02:47,244 - INFO - Computing calculated attributes for Network WIFI network
+    2024-07-29 16:02:47,246 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
+    2024-07-29 16:02:47,251 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-07-29 16:02:47,257 - INFO - Computing calculated attributes for Autoscaling server
 
 
 

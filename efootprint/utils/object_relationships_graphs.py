@@ -1,6 +1,6 @@
-from efootprint.utils.graph_tools import WIDTH, HEIGHT, set_string_max_width
-
 from pyvis.network import Network
+
+from efootprint.utils.graph_tools import WIDTH, HEIGHT, set_string_max_width
 
 COLOR_MAP = {
     "Autoscaling": "red",

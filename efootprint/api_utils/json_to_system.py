@@ -1,3 +1,7 @@
+import pytz
+import json
+from copy import copy
+
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
@@ -17,10 +21,6 @@ from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.network import Network
 from efootprint.constants.countries import Country
-
-import pytz
-import json
-from copy import copy
 
 
 def json_to_explainable_quantity(input_dict):

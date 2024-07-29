@@ -1,11 +1,12 @@
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-
 import unittest
 from unittest.mock import MagicMock, patch
-from pint import UnitRegistry
 from datetime import datetime
+
+from pint import UnitRegistry
 import pytz
+
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 
 u = UnitRegistry()
 

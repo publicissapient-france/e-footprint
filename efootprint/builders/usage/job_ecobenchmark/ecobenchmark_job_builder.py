@@ -1,12 +1,13 @@
+from typing import List
+
+import pandas as pd
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source
 from efootprint.core.usage.job import Job, JobTypes
 from efootprint.core.service import Service
 from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_data_analysis import ECOBENCHMARK_DATA, \
     ECOBENCHMARK_RESULTS_LINK, default_request_duration
 from efootprint.constants.units import u
-
-from typing import List
-import pandas as pd
 
 ECOBENCHMARK_DF = pd.read_csv(ECOBENCHMARK_DATA)
 ecobenchmark_source = Source(

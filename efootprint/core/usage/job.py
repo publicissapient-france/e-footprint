@@ -1,8 +1,8 @@
+from typing import List, Type
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.service import Service
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
-
-from typing import List, Type
 
 
 class JobTypes:

@@ -1,3 +1,7 @@
+from copy import deepcopy
+from typing import List
+import os
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
@@ -19,10 +23,6 @@ from efootprint.utils.object_relationships_graphs import build_object_relationsh
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop, default_screen
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
-
-from copy import deepcopy
-from typing import List
-import os
 
 
 class IntegrationTest(IntegrationTestBaseClass):

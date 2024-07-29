@@ -1,19 +1,19 @@
-from efootprint.logger import logger
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
-from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
-from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
-    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
-from efootprint.utils.tools import convert_to_list
-
 import uuid
 from abc import ABCMeta, abstractmethod
 from typing import List, Type
 from copy import copy
 import os
 import json
-from IPython.display import HTML
 import re
+
+from IPython.display import HTML
+
+from efootprint.logger import logger
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
+from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
+    USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
+from efootprint.utils.tools import convert_to_list
 
 
 PREVIOUS_LIST_VALUE_SET_SUFFIX = "__previous_list_value_set"
@@ -164,11 +164,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         f"{self.name}’s {name} changed from {str(old_value)} to {str(input_value)}")
                     super().__setattr__(name, input_value)
                     self.handle_model_input_update(old_value)
-
-            elif issubclass(type(input_value), ExplainableObjectDict):
-                if self.init_has_passed:
-                    assert name in self.calculated_attributes
-                input_value.set_modeling_obj_container(self, name)
 
         super().__setattr__(name, input_value)
 
@@ -326,8 +321,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         output_dict[key] = [elt.id for elt in value]
             elif issubclass(type(value), ExplainableObject):
                 output_dict[key] = value.to_json(save_calculated_attributes)
-            elif issubclass(type(value), ExplainableObjectDict):
-                output_dict[key] = value.to_json(save_calculated_attributes)
             elif issubclass(type(value), ModelingObject):
                 output_dict[key] = value.id
 
@@ -358,8 +351,6 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         str_value = "[" + ", ".join([elt.id for elt in input_value]) + "]"
                         key_value_str = f"{input_key}: {str_value}\n"
             elif issubclass(type(input_value), ExplainableObject):
-                key_value_str = f"{input_key}: {input_value}\n"
-            elif issubclass(type(input_value), ExplainableObjectDict):
                 key_value_str = f"{input_key}: {input_value}\n"
             elif issubclass(type(input_value), ModelingObject):
                 key_value_str = f"{input_key}: {input_value.id}\n"

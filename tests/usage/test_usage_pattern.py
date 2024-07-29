@@ -1,11 +1,11 @@
+import unittest
+from unittest.mock import MagicMock, patch
+
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.constants.units import u
-
-import unittest
-from unittest.mock import MagicMock, patch
 
 
 class TestUsagePattern(unittest.TestCase):

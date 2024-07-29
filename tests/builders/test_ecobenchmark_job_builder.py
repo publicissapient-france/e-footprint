@@ -1,11 +1,11 @@
+import unittest
+
 from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder import ecobenchmark_job
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.builders.hardware.servers_defaults import default_autoscaling
 from efootprint.builders.hardware.storage_defaults import default_ssd
 from efootprint.core.service import Service
-
-import unittest
 
 
 class TestJobEcobenchmarkBuilder(unittest.TestCase):

@@ -1,11 +1,11 @@
+from abc import abstractmethod
+from typing import List
+
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage, ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-
-from abc import abstractmethod
-from typing import List
 
 
 class Hardware(ModelingObject):

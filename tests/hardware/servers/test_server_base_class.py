@@ -1,10 +1,10 @@
+from unittest import TestCase
+from unittest.mock import MagicMock, patch, PropertyMock
+
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
-
-from unittest import TestCase
-from unittest.mock import MagicMock, patch, PropertyMock
 
 
 class TestServerBaseClass(TestCase):

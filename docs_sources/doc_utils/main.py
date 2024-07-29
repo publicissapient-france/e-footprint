@@ -1,9 +1,9 @@
+import os
+
 from docs_sources.doc_utils.format_builders_md import format_builders_ipynb_to_md_and_save_to_mkdocs_sourcefiles
 from docs_sources.doc_utils.format_tutorial_md import efootprint_tutorial_to_md, \
     format_tutorial_and_save_to_mkdocs_sourcefiles
 from docs_sources.doc_utils.generate_object_reference import generate_object_reference
-
-import os
 
 file_path = os.path.dirname(os.path.abspath(__file__))
 

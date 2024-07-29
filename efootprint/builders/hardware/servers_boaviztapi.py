@@ -1,10 +1,10 @@
+import requests
+
 from efootprint.constants.sources import Source, Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.on_premise import OnPremise
-
-import requests
 
 
 def call_boaviztapi(url, method="GET", **kwargs):

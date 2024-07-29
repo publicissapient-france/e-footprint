@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6e2f58 {
+             #mynetwork_a7b6a3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6e2f58" class="card-body"></div>
+            <div id="mynetwork_a7b6a3" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6e2f58');
+                  var container = document.getElementById('mynetwork_a7b6a3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Data download in network", "label": "Data download in\nnetwork", "shape": "dot", "size": 15, "title": "Data download in network\n=\nData download of user journey * User journey frequency of usage pattern\n=\n800.0 MB/uj * 4380000000.0 uj/yr\n=\n3504000.0 TB/yr", "x": 0.0, "y": 450}, {"color": null, "id": "Data download of user journey", "label": "Data download of\nuser journey", "shape": "dot", "size": 15, "title": "Data download of user journey\n=\nData download of request streaming\n=\n800.0 MB/uj\n=\n800.0 MB/uj", "x": -112.5, "y": 300}, {"color": null, "id": "User journey frequency of usage pattern", "label": "User journey\nfrequency of usage\npattern", "shape": "dot", "size": 15, "title": "User journey frequency of usage pattern\n=\nNb devices in device population * Usage frequency in usage pattern\n=\n12000000.0 user * 365.0 uj/user/yr\n=\n4380000000.0 uj/yr", "x": 112.5, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Data download of user journey", "to": "Data download in network"}, {"arrows": "to", "from": "User journey frequency of usage pattern", "to": "Data download in network"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Data download in network", "label": "Data download in\nnetwork", "shape": "dot", "size": 15, "title": "Data download in network\n=\nData download of user journey * Usage frequency in usage pattern\n=\n800.0 MB/uj * 4380000000.0 uj/yr\n=\n3504000.0 TB/yr", "x": 0.0, "y": 450}, {"color": null, "id": "Data download of user journey", "label": "Data download of\nuser journey", "shape": "dot", "size": 15, "title": "Data download of user journey\n=\nData download of request streaming\n=\n800.0 MB/uj\n=\n800.0 MB/uj", "x": -75.0, "y": 300}, {"color": null, "id": "Usage frequency in usage pattern", "label": "Usage frequency in\nusage pattern", "shape": "dot", "size": 15, "title": "Usage frequency in usage pattern = 4380000000.0 uj/yr", "x": 75.0, "y": 300}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Data download of user journey", "to": "Data download in network"}, {"arrows": "to", "from": "Usage frequency in usage pattern", "to": "Data download in network"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

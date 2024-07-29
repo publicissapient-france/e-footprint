@@ -1,11 +1,11 @@
+from typing import List, Type
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.usage.job import Job
-
-from typing import List, Set, Type
 
 
 class UserJourney(ModelingObject):

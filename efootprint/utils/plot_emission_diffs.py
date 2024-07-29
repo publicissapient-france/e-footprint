@@ -1,9 +1,10 @@
-from efootprint.constants.units import u
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from typing import List, Dict
 
 import matplotlib.pyplot as plt
 import numpy as np
-from typing import List, Dict
+
+from efootprint.constants.units import u
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 
 
 class EmissionPlotter:

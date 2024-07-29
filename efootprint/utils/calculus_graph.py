@@ -1,6 +1,6 @@
-from efootprint.utils.graph_tools import set_string_max_width
-
 from pyvis.network import Network
+
+from efootprint.utils.graph_tools import set_string_max_width
 
 
 def nodes_at_depth(node, depth=0, depth_lists=None):

@@ -1,8 +1,8 @@
+from pint import Quantity
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.constants.sources import Sources
-
-from pint import Quantity
 
 
 SOURCE_VALUE_DEFAULT_NAME = "unnamed source"

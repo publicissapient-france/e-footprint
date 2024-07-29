@@ -22,7 +22,7 @@ ExplainableQuantity in terabyte / year, representing the data download in networ
 Depends directly on:  
   
 - [Data download of user journey](UserJourney.md#data_download)
-- [User journey frequency of usage pattern](DevicePopulation.md#user_journey_freq_per_up)  
+- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
 
 through the following calculations:  
 
@@ -36,7 +36,7 @@ ExplainableQuantity in terabyte / year, representing the data upload in network.
 Depends directly on:  
   
 - [Data upload of user journey](UserJourney.md#data_upload)
-- [User journey frequency of usage pattern](DevicePopulation.md#user_journey_freq_per_up)  
+- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
 
 through the following calculations:  
 
@@ -49,7 +49,7 @@ ExplainableQuantity in kilogram / year, representing the energy footprint of net
   
 Depends directly on:  
   
-- [User journey frequency of usage pattern](DevicePopulation.md#user_journey_freq_per_up)
+- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)
 - [bandwith energy intensity of network](Network.md#bandwidth_energy_intensity)
 - [Data download of user journey](UserJourney.md#data_download)
 - [Data upload of user journey](UserJourney.md#data_upload)

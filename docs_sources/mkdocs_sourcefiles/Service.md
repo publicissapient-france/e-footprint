@@ -30,11 +30,11 @@ Representation of the evolution throughout a typical day of the service hour by 
   
 Depends directly on:  
   
-- [usage pattern UTC](DevicePopulation.md#utc_time_intervals_per_up)
+- [usage pattern UTC](UsagePattern.md#utc_time_intervals)
 - [RAM needed on server server to process streaming](Job.md#ram_needed)
 - [Request duration to service in streaming](Job.md#request_duration)
 - [Duration of user journey](UserJourney.md#duration)
-- [Number of user journeys in parallel during usage pattern](DevicePopulation.md#nb_user_journeys_in_parallel_during_usage_per_up)  
+- [Number of user journeys in parallel during usage pattern](UsagePattern.md#nb_user_journeys_in_parallel_during_usage)  
 
 through the following calculations:  
 
@@ -47,11 +47,11 @@ Representation of the evolution throughout a typical day of the service hour by 
   
 Depends directly on:  
   
-- [usage pattern UTC](DevicePopulation.md#utc_time_intervals_per_up)
+- [usage pattern UTC](UsagePattern.md#utc_time_intervals)
 - [CPU needed on server server to process streaming](Job.md#cpu_needed)
 - [Request duration to service in streaming](Job.md#request_duration)
 - [Duration of user journey](UserJourney.md#duration)
-- [Number of user journeys in parallel during usage pattern](DevicePopulation.md#nb_user_journeys_in_parallel_during_usage_per_up)  
+- [Number of user journeys in parallel during usage pattern](UsagePattern.md#nb_user_journeys_in_parallel_during_usage)  
 
 through the following calculations:  
 
@@ -65,7 +65,7 @@ ExplainableQuantity in terabyte / year, representing the storage needed for serv
 Depends directly on:  
   
 - [Data upload of request streaming](Job.md#data_upload)
-- [User journey frequency of usage pattern](DevicePopulation.md#user_journey_freq_per_up)  
+- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
 
 through the following calculations:  
 

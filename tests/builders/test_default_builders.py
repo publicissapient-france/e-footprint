@@ -1,11 +1,11 @@
+import unittest
+
 from efootprint.builders.hardware.devices_defaults import default_smartphone, default_laptop, \
     default_box, default_screen
 from efootprint.builders.hardware.network_defaults import default_wifi_network, default_mobile_network
 from efootprint.builders.hardware.servers_defaults import default_serverless, default_autoscaling, \
     default_onpremise
 from efootprint.builders.hardware.storage_defaults import default_ssd, default_hdd
-
-import unittest
 
 
 class TestDefaultBuilders(unittest.TestCase):

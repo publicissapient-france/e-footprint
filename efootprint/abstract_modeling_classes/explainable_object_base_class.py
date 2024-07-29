@@ -1,13 +1,14 @@
-from efootprint.logger import logger
-from efootprint.utils.calculus_graph import build_calculus_graph
-from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
-
 from typing import Type, Optional
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import os
 import json
+
 from IPython.display import HTML
+
+from efootprint.logger import logger
+from efootprint.utils.calculus_graph import build_calculus_graph
+from efootprint.utils.graph_tools import add_unique_id_to_mynetwork
 
 
 class ObjectLinkedToModelingObj(ABC):

@@ -1,10 +1,11 @@
+from typing import List
+
+import pytz
+
 from efootprint.constants.units import u
 from efootprint.constants.sources import Source,Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-
-import pytz
-from typing import List
 
 
 class Country(ModelingObject):

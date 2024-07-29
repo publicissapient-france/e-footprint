@@ -20,7 +20,7 @@ description to be done
 
 ## Backwards links
 
-- [DevicePopulation](DevicePopulation.md)
+- [UsagePattern](UsagePattern.md)
 
 
 ## Calculated attributes

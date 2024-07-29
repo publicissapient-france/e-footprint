@@ -1,13 +1,14 @@
+import os
+from inspect import signature
+
+from jinja2 import Template
+import ruamel.yaml
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, user_journey, network, streaming_step, service, server, storage)
-
-import os
-from jinja2 import Template
-import ruamel.yaml
-from inspect import signature
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 

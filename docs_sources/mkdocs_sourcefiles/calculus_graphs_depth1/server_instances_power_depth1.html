@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6dbf21 {
+             #mynetwork_2211f3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_6dbf21" class="card-body"></div>
+            <div id="mynetwork_2211f3" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6dbf21');
+                  var container = document.getElementById('mynetwork_2211f3');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Power of server", "label": "Power of server", "shape": "dot", "size": 15, "title": "Power of server = 300 W", "x": -450.0, "y": 1500}, {"color": null, "id": "PUE of server", "label": "PUE of server", "shape": "dot", "size": 15, "title": "PUE of server = 1.2", "x": 0.0, "y": 1500}, {"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0, 0.0,\n0.0])\n=\n1700.0", "x": 450.0, "y": 1500}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Power of server instances", "label": "Power of server\ninstances", "shape": "dot", "size": 15, "title": "Power of server instances\n=\nPower of server * PUE of server * Nb of server instances\n=\n300 W * 1.2 * 1700.0\n=\n5364660.5 kWh/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Power of server", "label": "Power of server", "shape": "dot", "size": 15, "title": "Power of server = 300 W", "x": -400.0, "y": 1500}, {"color": null, "id": "PUE of server", "label": "PUE of server", "shape": "dot", "size": 15, "title": "PUE of server = 1.2", "x": 0.0, "y": 1500}, {"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0, 0.0,\n0.0])\n=\n1700.0", "x": 400.0, "y": 1500}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Power of server", "to": "Power of server instances"}, {"arrows": "to", "from": "PUE of server", "to": "Power of server instances"}, {"arrows": "to", "from": "Nb of server instances", "to": "Power of server instances"}]);
 
                   nodeColors = {};

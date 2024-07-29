@@ -1,10 +1,11 @@
+from unittest import TestCase
+from unittest.mock import MagicMock
+
+import pytz
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import Source
-
-from unittest import TestCase
-from unittest.mock import MagicMock
-import pytz
 
 
 class TestExplainableObjectBaseClass(TestCase):

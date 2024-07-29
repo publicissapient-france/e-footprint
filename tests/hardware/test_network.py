@@ -1,11 +1,11 @@
+from unittest import TestCase
+from unittest.mock import MagicMock
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.countries import Countries
 from efootprint.constants.sources import Sources
 from efootprint.core.hardware.network import Network
 from efootprint.constants.units import u
-
-from unittest import TestCase
-from unittest.mock import MagicMock
 
 
 class TestNetwork(TestCase):
