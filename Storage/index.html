@@ -266,11 +266,74 @@
   
   
     <li class="md-nav__item">
-      <a href="../perimeter/" class="md-nav__link">
+      <a href="../explanation_overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Perimeter
+    Explanation overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../efootprint_scope/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    e-footprint scope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../why_efootprint/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Why e-footprint ?
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How to get started
   </span>
   
 
@@ -292,27 +355,6 @@
   
   <span class="md-ellipsis">
     The e-footprint methodology
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../explanation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Why e-footprint ?
   </span>
   
 
@@ -627,9 +669,22 @@
 
               
             
-          </ul>
-        </nav>
-      
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OnPremise/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On Premise
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -642,15 +697,23 @@
   
   
     <li class="md-nav__item">
-      <a href="../DevicePopulation/" class="md-nav__link">
+      <a href="../Serverless/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    DevicePopulation
+    Serverless
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1732,7 +1795,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_73dbde {
+             #mynetwork_87d386 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1754,7 +1817,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_73dbde" class="card-body"></div>
+            <div id="mynetwork_87d386" class="card-body"></div>
         </div>
 
 
@@ -1784,12 +1847,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_73dbde');
+                  var container = document.getElementById('mynetwork_87d386');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": 0.0, "y": 600}, {"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request streaming * (User journey frequency of usage pattern)\n=\n0.1 MB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": 0.0, "y": 450}, {"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request streaming * (Usage frequency in usage pattern)\n=\n0.1 MB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 300}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage needed for service", "to": "Storage need of storage"}]);
 
                   nodeColors = {};
@@ -1896,7 +1959,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8b6983 {
+             #mynetwork_900197 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1918,7 +1981,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8b6983" class="card-body"></div>
+            <div id="mynetwork_900197" class="card-body"></div>
         </div>
 
 
@@ -1948,12 +2011,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8b6983');
+                  var container = document.getElementById('mynetwork_900197');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -75.0, "y": 600}, {"color": "darkred", "id": "Time interval during which active storage is considered from hypothesis", "label": "Time interval during\nwhich active storage\nis considered from\nhypothesis", "shape": "dot", "size": 15, "title": "Time interval during which active storage is considered from hypothesis = 1 h", "x": 75.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 0.0, "y": 600}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Time interval during which active storage is considered from hypothesis", "label": "Time interval during\nwhich active storage\nis considered from\nhypothesis", "shape": "dot", "size": 15, "title": "Time interval during which active storage is considered from hypothesis = 1 h", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need of storage", "to": "Active storage required for storage"}, {"arrows": "to", "from": "Time interval during which active storage is considered from hypothesis", "to": "Active storage required for storage"}]);
 
                   nodeColors = {};
@@ -2062,7 +2125,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_7a3cb3 {
+             #mynetwork_dfaff5 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2084,7 +2147,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_7a3cb3" class="card-body"></div>
+            <div id="mynetwork_dfaff5" class="card-body"></div>
         </div>
 
 
@@ -2114,12 +2177,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_7a3cb3');
+                  var container = document.getElementById('mynetwork_dfaff5');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": 0.0, "y": 900}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -112.5, "y": 600}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3", "x": -150.0, "y": 750}, {"color": null, "id": "one year", "label": "one year", "shape": "dot", "size": 15, "title": "one year = 1 yr", "x": 0.0, "y": 750}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 150.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -112.5, "y": 450}, {"color": null, "id": "Data replication factor of storage", "label": "Data replication\nfactor of storage", "shape": "dot", "size": 15, "title": "Data replication factor of storage = 3", "x": -150.0, "y": 600}, {"color": null, "id": "one year", "label": "one year", "shape": "dot", "size": 15, "title": "one year = 1 yr", "x": 0.0, "y": 600}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 150.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need of storage", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "Data replication factor of storage", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "one year", "to": "Long term storage required for storage"}, {"arrows": "to", "from": "Active storage required for storage", "to": "Long term storage required for storage"}]);
 
                   nodeColors = {};
@@ -2227,7 +2290,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_006cd6 {
+             #mynetwork_a97c5b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2249,7 +2312,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_006cd6" class="card-body"></div>
+            <div id="mynetwork_a97c5b" class="card-body"></div>
         </div>
 
 
@@ -2279,12 +2342,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_006cd6');
+                  var container = document.getElementById('mynetwork_a97c5b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": -112.5, "y": 900}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 112.5, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 0.0, "y": 900}, {"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": -112.5, "y": 750}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 112.5, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Long term storage required for storage", "to": "Number of idle storage units for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of idle storage units for storage"}]);
 
                   nodeColors = {};
@@ -2392,7 +2455,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8123a5 {
+             #mynetwork_ffa8c8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2414,7 +2477,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8123a5" class="card-body"></div>
+            <div id="mynetwork_ffa8c8" class="card-body"></div>
         </div>
 
 
@@ -2444,12 +2507,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8123a5');
+                  var container = document.getElementById('mynetwork_ffa8c8');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": 0.0, "y": 900}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": -75.0, "y": 750}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 75.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": 0.0, "y": 750}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": -75.0, "y": 600}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 75.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Active storage required for storage", "to": "Number of active instances for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of active instances for storage"}]);
 
                   nodeColors = {};
@@ -2556,7 +2619,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_6b1b54 {
+             #mynetwork_56512b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2578,7 +2641,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_6b1b54" class="card-body"></div>
+            <div id="mynetwork_56512b" class="card-body"></div>
         </div>
 
 
@@ -2608,12 +2671,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_6b1b54');
+                  var container = document.getElementById('mynetwork_56512b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363387.5 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour cpu need", "to": "CPU needs of all services running on storage"}]);
 
                   nodeColors = {};
@@ -2720,7 +2783,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_673e21 {
+             #mynetwork_68bb5d {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2742,7 +2805,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_673e21" class="card-body"></div>
+            <div id="mynetwork_68bb5d" class="card-body"></div>
         </div>
 
 
@@ -2772,12 +2835,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_673e21');
+                  var container = document.getElementById('mynetwork_68bb5d');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.0\nGB/uj * 363388.0 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.0\nGB/uj * 363387.5 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour ram need", "to": "RAM needs of all services running on storage"}]);
 
                   nodeColors = {};
@@ -2885,7 +2948,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_9351ae {
+             #mynetwork_1e6cfd {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -2907,7 +2970,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_9351ae" class="card-body"></div>
+            <div id="mynetwork_1e6cfd" class="card-body"></div>
         </div>
 
 
@@ -2937,12 +3000,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_9351ae');
+                  var container = document.getElementById('mynetwork_1e6cfd');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 0.0 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB, 0.0\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": -337.5, "y": 900}, {"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 337.5, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core,\n72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 0.0 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB, 0.0\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1050}, {"color": null, "id": "CPU needs of all services running on storage", "label": "CPU needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "CPU needs of all services running on storage\n=\nservice hour by hour cpu need\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": -300.0, "y": 900}, {"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 300.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "CPU needs of all services running on storage", "to": "Fraction of time in use of storage"}, {"arrows": "to", "from": "RAM needs of all services running on storage", "to": "Fraction of time in use of storage"}]);
 
                   nodeColors = {};
@@ -3050,7 +3113,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a813ab {
+             #mynetwork_41b07b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3072,7 +3135,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a813ab" class="card-body"></div>
+            <div id="mynetwork_41b07b" class="card-body"></div>
         </div>
 
 
@@ -3102,12 +3165,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a813ab');
+                  var container = document.getElementById('mynetwork_41b07b');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1200}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 1050}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 900}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Number of active instances for storage", "to": "Number of total instances for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Number of total instances for storage"}]);
 
                   nodeColors = {};
@@ -3216,7 +3279,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a73a4a {
+             #mynetwork_b94de1 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3238,7 +3301,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_a73a4a" class="card-body"></div>
+            <div id="mynetwork_b94de1" class="card-body"></div>
         </div>
 
 
@@ -3268,12 +3331,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a73a4a');
+                  var container = document.getElementById('mynetwork_b94de1');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances of storage fabrication footprint", "label": "Instances of storage\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of storage fabrication footprint\n=\nCarbon footprint fabrication of storage * Number of total instances for storage\n/ Lifespan of storage\n=\n160 kg * 657.0 / 6 yr\n=\n17520.0 kg/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Carbon footprint fabrication of storage", "label": "Carbon footprint\nfabrication of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of storage = 160 kg", "x": -150.0, "y": 1200}, {"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1200}, {"color": null, "id": "Lifespan of storage", "label": "Lifespan of storage", "shape": "dot", "size": 15, "title": "Lifespan of storage = 6 yr", "x": 150.0, "y": 1200}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Instances of storage fabrication footprint", "label": "Instances of storage\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of storage fabrication footprint\n=\nCarbon footprint fabrication of storage * Number of total instances for storage\n/ Lifespan of storage\n=\n160 kg * 657.0 / 6 yr\n=\n17520.0 kg/yr", "x": 0.0, "y": 1200}, {"color": null, "id": "Carbon footprint fabrication of storage", "label": "Carbon footprint\nfabrication of\nstorage", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of storage = 160 kg", "x": -150.0, "y": 1050}, {"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Lifespan of storage", "label": "Lifespan of storage", "shape": "dot", "size": 15, "title": "Lifespan of storage = 6 yr", "x": 150.0, "y": 1050}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of storage", "to": "Instances of storage fabrication footprint"}, {"arrows": "to", "from": "Number of total instances for storage", "to": "Instances of storage fabrication footprint"}, {"arrows": "to", "from": "Lifespan of storage", "to": "Instances of storage fabrication footprint"}]);
 
                   nodeColors = {};
@@ -3385,7 +3448,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_27907e {
+             #mynetwork_486416 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3407,7 +3470,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_27907e" class="card-body"></div>
+            <div id="mynetwork_486416" class="card-body"></div>
         </div>
 
 
@@ -3437,12 +3500,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_27907e');
+                  var container = document.getElementById('mynetwork_486416');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Active instances power", "label": "Active instances\npower", "shape": "dot", "size": 15, "title": "Active instances power\n=\nNumber of active instances for storage * Power of storage * PUE of storage\n=\n0.0 * 1.3 W * 1.2\n=\n0.0 W", "x": -500.0, "y": 1200}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -642.8571428571429, "y": 1050}, {"color": null, "id": "Power of storage", "label": "Power of storage", "shape": "dot", "size": 15, "title": "Power of storage = 1.3 W", "x": -428.57142857142856, "y": 1050}, {"color": null, "id": "PUE of storage", "label": "PUE of storage", "shape": "dot", "size": 15, "title": "PUE of storage = 1.2", "x": -214.28571428571428, "y": 1050}, {"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core,\n72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 0.0 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB, 0.0\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1200}, {"color": null, "id": "Idle instances power", "label": "Idle instances power", "shape": "dot", "size": 15, "title": "Idle instances power\n=\nNumber of idle storage units for storage * Idle power of storage * PUE of\nstorage\n=\n657.0 * 0 W * 1.2\n=\n0.0 W", "x": 500.0, "y": 1200}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 428.57142857142856, "y": 1050}, {"color": null, "id": "Idle power of storage", "label": "Idle power of\nstorage", "shape": "dot", "size": 15, "title": "Idle power of storage = 0 W", "x": 642.8571428571429, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": 0.0, "y": 1200}, {"color": null, "id": "Active instances power", "label": "Active instances\npower", "shape": "dot", "size": 15, "title": "Active instances power\n=\nNumber of active instances for storage * Power of storage * PUE of storage\n=\n0.0 * 1.3 W * 1.2\n=\n0.0 W", "x": -450.0, "y": 1050}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -578.5714285714287, "y": 900}, {"color": null, "id": "Power of storage", "label": "Power of storage", "shape": "dot", "size": 15, "title": "Power of storage = 1.3 W", "x": -385.7142857142857, "y": 900}, {"color": null, "id": "PUE of storage", "label": "PUE of storage", "shape": "dot", "size": 15, "title": "PUE of storage = 1.2", "x": -192.85714285714286, "y": 900}, {"color": null, "id": "Fraction of time in use of storage", "label": "Fraction of time in\nuse of storage", "shape": "dot", "size": 15, "title": "Fraction of time in use of storage\n=\nusage time fraction computation of (retrieving usage hours of (CPU needs of all\nservices running on storage) + retrieving usage hours of (RAM needs of all\nservices running on storage))\n=\nusage time fraction computation of (retrieving usage hours of ([0.0 core, 0.0\ncore, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core,\n72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 0.0 core, 0.0 core, 0.0 core]) + retrieving usage hours of ([0.0 GB, 0.0\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]))\n=\n0.5", "x": 0.0, "y": 1050}, {"color": null, "id": "Idle instances power", "label": "Idle instances power", "shape": "dot", "size": 15, "title": "Idle instances power\n=\nNumber of idle storage units for storage * Idle power of storage * PUE of\nstorage\n=\n657.0 * 0 W * 1.2\n=\n0.0 W", "x": 450.0, "y": 1050}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 385.7142857142857, "y": 900}, {"color": null, "id": "Idle power of storage", "label": "Idle power of\nstorage", "shape": "dot", "size": 15, "title": "Idle power of storage = 0 W", "x": 578.5714285714287, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Active instances power", "to": "Storage power for storage"}, {"arrows": "to", "from": "Number of active instances for storage", "to": "Active instances power"}, {"arrows": "to", "from": "Power of storage", "to": "Active instances power"}, {"arrows": "to", "from": "PUE of storage", "to": "Active instances power"}, {"arrows": "to", "from": "Fraction of time in use of storage", "to": "Storage power for storage"}, {"arrows": "to", "from": "Idle instances power", "to": "Storage power for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Idle instances power"}, {"arrows": "to", "from": "Idle power of storage", "to": "Idle instances power"}, {"arrows": "to", "from": "PUE of storage", "to": "Idle instances power"}]);
 
                   nodeColors = {};
@@ -3550,7 +3613,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8bfb48 {
+             #mynetwork_341c02 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -3572,7 +3635,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_8bfb48" class="card-body"></div>
+            <div id="mynetwork_341c02" class="card-body"></div>
         </div>
 
 
@@ -3602,12 +3665,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8bfb48');
+                  var container = document.getElementById('mynetwork_341c02');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of storage", "label": "Energy footprint of\nstorage", "shape": "dot", "size": 15, "title": "Energy footprint of storage\n=\nStorage power for storage * Average carbon intensity of storage electricity\n=\n0.2 kWh/yr * 100.0 g/kWh\n=\n0.0 kg/yr", "x": 0.0, "y": 1500}, {"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": -375.0, "y": 1350}, {"color": null, "id": "Average carbon intensity of storage electricity", "label": "Average carbon\nintensity of storage\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of storage electricity = 100.0 g/kWh", "x": 375.0, "y": 1350}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of storage", "label": "Energy footprint of\nstorage", "shape": "dot", "size": 15, "title": "Energy footprint of storage\n=\nStorage power for storage * Average carbon intensity of storage electricity\n=\n0.2 kWh/yr * 100.0 g/kWh\n=\n0.0 kg/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Storage power for storage", "label": "Storage power for\nstorage", "shape": "dot", "size": 15, "title": "Storage power for storage\n=\nActive instances power * Fraction of time in use of storage + Idle instances\npower\n=\n0.0 W * 0.5 + 0.0 W\n=\n0.2 kWh/yr", "x": -337.5, "y": 1200}, {"color": null, "id": "Average carbon intensity of storage electricity", "label": "Average carbon\nintensity of storage\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of storage electricity = 100.0 g/kWh", "x": 337.5, "y": 1200}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage power for storage", "to": "Energy footprint of storage"}, {"arrows": "to", "from": "Average carbon intensity of storage electricity", "to": "Energy footprint of storage"}]);
 
                   nodeColors = {};

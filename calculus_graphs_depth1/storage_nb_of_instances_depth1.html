@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_a813ab {
+             #mynetwork_41b07b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_a813ab" class="card-body"></div>
+            <div id="mynetwork_41b07b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_a813ab');
+                  var container = document.getElementById('mynetwork_41b07b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1200}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 1050}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 1050}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 900}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Number of active instances for storage", "to": "Number of total instances for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Number of total instances for storage"}]);
 
                   nodeColors = {};

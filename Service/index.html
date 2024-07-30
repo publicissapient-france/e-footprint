@@ -266,11 +266,74 @@
   
   
     <li class="md-nav__item">
-      <a href="../perimeter/" class="md-nav__link">
+      <a href="../explanation_overview/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Perimeter
+    Explanation overview
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../efootprint_scope/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    e-footprint scope
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../why_efootprint/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Why e-footprint ?
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../get_started/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    How to get started
   </span>
   
 
@@ -292,27 +355,6 @@
   
   <span class="md-ellipsis">
     The e-footprint methodology
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../explanation/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Why e-footprint ?
   </span>
   
 
@@ -625,9 +667,22 @@
 
               
             
-          </ul>
-        </nav>
-      
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../OnPremise/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    On Premise
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -640,15 +695,23 @@
   
   
     <li class="md-nav__item">
-      <a href="../DevicePopulation/" class="md-nav__link">
+      <a href="../Serverless/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    DevicePopulation
+    Serverless
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -1432,11 +1495,11 @@
 <p>Representation of the evolution throughout a typical day of the service hour by hour ram need by 24 values in gigabyte.  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../DevicePopulation/#utc_time_intervals_per_up">usage pattern UTC</a></li>
+<li><a href="../UsagePattern/#utc_time_intervals">usage pattern UTC</a></li>
 <li><a href="../Job/#ram_needed">RAM needed on server server to process streaming</a></li>
 <li><a href="../Job/#request_duration">Request duration to service in streaming</a></li>
 <li><a href="../UserJourney/#duration">Duration of user journey</a></li>
-<li><a href="../DevicePopulation/#nb_user_journeys_in_parallel_during_usage_per_up">Number of user journeys in parallel during usage pattern</a>  </li>
+<li><a href="../UsagePattern/#nb_user_journeys_in_parallel_during_usage">Number of user journeys in parallel during usage pattern</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -1472,7 +1535,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_37a888 {
+             #mynetwork_85819f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1494,7 +1557,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_37a888" class="card-body"></div>
+            <div id="mynetwork_85819f" class="card-body"></div>
         </div>
 
 
@@ -1524,12 +1587,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_37a888');
+                  var container = document.getElementById('mynetwork_85819f');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.0\nGB/uj * 363388.0 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern local timezone hourly usage converted to UTC from devices country\ntimezone from user data\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]\nconverted to UTC from Europe/Paris\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0]", "x": -400.0, "y": 600}, {"color": null, "id": "Average ram needed over usage pattern to process streaming", "label": "Average ram needed\nover usage pattern\nto process streaming", "shape": "dot", "size": 15, "title": "Average ram needed over usage pattern to process streaming\n=\nRAM needed on server server to process streaming * Request duration to service\nin streaming / (Duration of user journey * One user journey)\n=\n50.0 MB/uj * 4 min / (20.0 min/uj * 1 uj)\n=\n0.0 GB/uj", "x": 0.0, "y": 600}, {"color": null, "id": "RAM needed on server server to process streaming", "label": "RAM needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "RAM needed on server server to process streaming = 50.0 MB/uj", "x": -375.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 4 min", "x": -225.0, "y": 450}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": -75.0, "y": 450}, {"color": null, "id": "One user journey", "label": "One user journey", "shape": "dot", "size": 15, "title": "One user journey = 1 uj", "x": 75.0, "y": 450}, {"color": null, "id": "Number of user journeys in parallel during usage pattern", "label": "Number of user\njourneys in parallel\nduring usage pattern", "shape": "dot", "size": 15, "title": "Number of user journeys in parallel during usage pattern\n=\nOne user journey * (User journey frequency of usage pattern * Duration of user\njourney / Usage time fraction of usage pattern) + Rounding up of user journeys\nin parallel to next integer\n=\n1 uj * (4380000000.0 uj/yr * 20.0 min/uj / 0.5) + 0.5 uj\n=\n363388.0 uj", "x": 400.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.0\nGB/uj * 363387.5 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern local timezone hourly usage converted to UTC from devices country\ntimezone from user data\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]\nconverted to UTC from Europe/Paris\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0]", "x": -350.0, "y": 600}, {"color": null, "id": "Average ram needed over usage pattern to process streaming", "label": "Average ram needed\nover usage pattern\nto process streaming", "shape": "dot", "size": 15, "title": "Average ram needed over usage pattern to process streaming\n=\nRAM needed on server server to process streaming * Request duration to service\nin streaming / (Duration of user journey * One user journey)\n=\n50.0 MB/uj * 4 min / (20.0 min/uj * 1 uj)\n=\n0.0 GB/uj", "x": 0.0, "y": 600}, {"color": null, "id": "RAM needed on server server to process streaming", "label": "RAM needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "RAM needed on server server to process streaming = 50.0 MB/uj", "x": -300.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 4 min", "x": -150.0, "y": 450}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 450}, {"color": null, "id": "One user journey", "label": "One user journey", "shape": "dot", "size": 15, "title": "One user journey = 1 uj", "x": 150.0, "y": 450}, {"color": null, "id": "Number of user journeys in parallel during usage pattern", "label": "Number of user\njourneys in parallel\nduring usage pattern", "shape": "dot", "size": 15, "title": "Number of user journeys in parallel during usage pattern\n=\nOne user journey * (Usage frequency in usage pattern * Duration of user journey\n/ Usage time fraction of usage pattern)\n=\n1 uj * (4380000000.0 uj/yr * 20.0 min/uj / 0.5)\n=\n363387.5 uj", "x": 350.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "service hour by hour ram need"}, {"arrows": "to", "from": "Average ram needed over usage pattern to process streaming", "to": "service hour by hour ram need"}, {"arrows": "to", "from": "RAM needed on server server to process streaming", "to": "Average ram needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Request duration to service in streaming", "to": "Average ram needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Duration of user journey", "to": "Average ram needed over usage pattern to process streaming"}, {"arrows": "to", "from": "One user journey", "to": "Average ram needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Number of user journeys in parallel during usage pattern", "to": "service hour by hour ram need"}]);
 
                   nodeColors = {};
@@ -1600,11 +1663,11 @@
 <p>Representation of the evolution throughout a typical day of the service hour by hour cpu need by 24 values in core.  </p>
 <p>Depends directly on:  </p>
 <ul>
-<li><a href="../DevicePopulation/#utc_time_intervals_per_up">usage pattern UTC</a></li>
+<li><a href="../UsagePattern/#utc_time_intervals">usage pattern UTC</a></li>
 <li><a href="../Job/#cpu_needed">CPU needed on server server to process streaming</a></li>
 <li><a href="../Job/#request_duration">Request duration to service in streaming</a></li>
 <li><a href="../UserJourney/#duration">Duration of user journey</a></li>
-<li><a href="../DevicePopulation/#nb_user_journeys_in_parallel_during_usage_per_up">Number of user journeys in parallel during usage pattern</a>  </li>
+<li><a href="../UsagePattern/#nb_user_journeys_in_parallel_during_usage">Number of user journeys in parallel during usage pattern</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -1640,7 +1703,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_d269b9 {
+             #mynetwork_b9aa31 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1662,7 +1725,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_d269b9" class="card-body"></div>
+            <div id="mynetwork_b9aa31" class="card-body"></div>
         </div>
 
 
@@ -1692,12 +1755,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_d269b9');
+                  var container = document.getElementById('mynetwork_b9aa31');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363388.0 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.6 core, 72677.6 core,\n72677.6 core, 72677.6 core, 72677.6 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6 core, 72677.6\ncore, 72677.6 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern local timezone hourly usage converted to UTC from devices country\ntimezone from user data\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]\nconverted to UTC from Europe/Paris\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0]", "x": -400.0, "y": 600}, {"color": null, "id": "Average cpu needed over usage pattern to process streaming", "label": "Average cpu needed\nover usage pattern\nto process streaming", "shape": "dot", "size": 15, "title": "Average cpu needed over usage pattern to process streaming\n=\nCPU needed on server server to process streaming * Request duration to service\nin streaming / (Duration of user journey * One user journey)\n=\n1.0 core/uj * 4 min / (20.0 min/uj * 1 uj)\n=\n0.2 core/uj", "x": 0.0, "y": 600}, {"color": null, "id": "CPU needed on server server to process streaming", "label": "CPU needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "CPU needed on server server to process streaming = 1.0 core/uj", "x": -375.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 4 min", "x": -225.0, "y": 450}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": -75.0, "y": 450}, {"color": null, "id": "One user journey", "label": "One user journey", "shape": "dot", "size": 15, "title": "One user journey = 1 uj", "x": 75.0, "y": 450}, {"color": null, "id": "Number of user journeys in parallel during usage pattern", "label": "Number of user\njourneys in parallel\nduring usage pattern", "shape": "dot", "size": 15, "title": "Number of user journeys in parallel during usage pattern\n=\nOne user journey * (User journey frequency of usage pattern * Duration of user\njourney / Usage time fraction of usage pattern) + Rounding up of user journeys\nin parallel to next integer\n=\n1 uj * (4380000000.0 uj/yr * 20.0 min/uj / 0.5) + 0.5 uj\n=\n363388.0 uj", "x": 400.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "service hour by hour cpu need", "label": "service hour by hour\ncpu need", "shape": "dot", "size": 15, "title": "service hour by hour cpu need\n=\nusage pattern UTC * Average cpu needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.2\ncore/uj * 363387.5 uj\n=\n[0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 72677.5 core, 72677.5 core,\n72677.5 core, 72677.5 core, 72677.5 core, 0.0 core, 0.0 core, 0.0 core, 0.0\ncore, 0.0 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5 core, 72677.5\ncore, 72677.5 core, 0.0 core, 0.0 core, 0.0 core]", "x": 0.0, "y": 750}, {"color": null, "id": "usage pattern UTC", "label": "usage pattern UTC", "shape": "dot", "size": 15, "title": "usage pattern UTC\n=\nusage pattern local timezone hourly usage converted to UTC from devices country\ntimezone from user data\n=\n[0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0]\nconverted to UTC from Europe/Paris\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0]", "x": -350.0, "y": 600}, {"color": null, "id": "Average cpu needed over usage pattern to process streaming", "label": "Average cpu needed\nover usage pattern\nto process streaming", "shape": "dot", "size": 15, "title": "Average cpu needed over usage pattern to process streaming\n=\nCPU needed on server server to process streaming * Request duration to service\nin streaming / (Duration of user journey * One user journey)\n=\n1.0 core/uj * 4 min / (20.0 min/uj * 1 uj)\n=\n0.2 core/uj", "x": 0.0, "y": 600}, {"color": null, "id": "CPU needed on server server to process streaming", "label": "CPU needed on server\nserver to process\nstreaming", "shape": "dot", "size": 15, "title": "CPU needed on server server to process streaming = 1.0 core/uj", "x": -300.0, "y": 450}, {"color": null, "id": "Request duration to service in streaming", "label": "Request duration to\nservice in streaming", "shape": "dot", "size": 15, "title": "Request duration to service in streaming = 4 min", "x": -150.0, "y": 450}, {"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 450}, {"color": null, "id": "One user journey", "label": "One user journey", "shape": "dot", "size": 15, "title": "One user journey = 1 uj", "x": 150.0, "y": 450}, {"color": null, "id": "Number of user journeys in parallel during usage pattern", "label": "Number of user\njourneys in parallel\nduring usage pattern", "shape": "dot", "size": 15, "title": "Number of user journeys in parallel during usage pattern\n=\nOne user journey * (Usage frequency in usage pattern * Duration of user journey\n/ Usage time fraction of usage pattern)\n=\n1 uj * (4380000000.0 uj/yr * 20.0 min/uj / 0.5)\n=\n363387.5 uj", "x": 350.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern UTC", "to": "service hour by hour cpu need"}, {"arrows": "to", "from": "Average cpu needed over usage pattern to process streaming", "to": "service hour by hour cpu need"}, {"arrows": "to", "from": "CPU needed on server server to process streaming", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Request duration to service in streaming", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Duration of user journey", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "One user journey", "to": "Average cpu needed over usage pattern to process streaming"}, {"arrows": "to", "from": "Number of user journeys in parallel during usage pattern", "to": "service hour by hour cpu need"}]);
 
                   nodeColors = {};
@@ -1769,7 +1832,7 @@
 <p>Depends directly on:  </p>
 <ul>
 <li><a href="../Job/#data_upload">Data upload of request streaming</a></li>
-<li><a href="../DevicePopulation/#user_journey_freq_per_up">User journey frequency of usage pattern</a>  </li>
+<li><a href="../UsagePattern/#user_journey_freq">Usage frequency in usage pattern</a>  </li>
 </ul>
 <p>through the following calculations:  </p>
 <html>
@@ -1805,7 +1868,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_99e835 {
+             #mynetwork_fe1ba3 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -1827,7 +1890,7 @@
         <div class="card" style="width: 100%">
 
 
-            <div id="mynetwork_99e835" class="card-body"></div>
+            <div id="mynetwork_fe1ba3" class="card-body"></div>
         </div>
 
 
@@ -1857,13 +1920,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_99e835');
+                  var container = document.getElementById('mynetwork_fe1ba3');
 
 
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request streaming * (User journey frequency of usage pattern)\n=\n0.1 MB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 450}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.1 MB/uj", "x": -75.0, "y": 300}, {"color": null, "id": "User journey frequency of usage pattern", "label": "User journey\nfrequency of usage\npattern", "shape": "dot", "size": 15, "title": "User journey frequency of usage pattern\n=\nNb devices in device population * Usage frequency in usage pattern\n=\n12000000.0 user * 365.0 uj/user/yr\n=\n4380000000.0 uj/yr", "x": 75.0, "y": 300}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Data upload of request streaming", "to": "Storage needed for service"}, {"arrows": "to", "from": "User journey frequency of usage pattern", "to": "Storage needed for service"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request streaming * (Usage frequency in usage pattern)\n=\n0.1 MB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 300}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.1 MB/uj", "x": -75.0, "y": 150}, {"color": null, "id": "Usage frequency in usage pattern", "label": "Usage frequency in\nusage pattern", "shape": "dot", "size": 15, "title": "Usage frequency in usage pattern = 4380000000.0 uj/yr", "x": 75.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Data upload of request streaming", "to": "Storage needed for service"}, {"arrows": "to", "from": "Usage frequency in usage pattern", "to": "Storage needed for service"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

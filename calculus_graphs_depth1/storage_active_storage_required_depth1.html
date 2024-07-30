@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_8b6983 {
+             #mynetwork_900197 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_8b6983" class="card-body"></div>
+            <div id="mynetwork_900197" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_8b6983');
+                  var container = document.getElementById('mynetwork_900197');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 0.0, "y": 750}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -75.0, "y": 600}, {"color": "darkred", "id": "Time interval during which active storage is considered from hypothesis", "label": "Time interval during\nwhich active storage\nis considered from\nhypothesis", "shape": "dot", "size": 15, "title": "Time interval during which active storage is considered from hypothesis = 1 h", "x": 75.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": 0.0, "y": 600}, {"color": null, "id": "Storage need of storage", "label": "Storage need of\nstorage", "shape": "dot", "size": 15, "title": "Storage need of storage\n=\nStorage needed for service\n=\n219.0 TB/yr\n=\n219.0 TB/yr", "x": -75.0, "y": 450}, {"color": "darkred", "id": "Time interval during which active storage is considered from hypothesis", "label": "Time interval during\nwhich active storage\nis considered from\nhypothesis", "shape": "dot", "size": 15, "title": "Time interval during which active storage is considered from hypothesis = 1 h", "x": 75.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Storage need of storage", "to": "Active storage required for storage"}, {"arrows": "to", "from": "Time interval during which active storage is considered from hypothesis", "to": "Active storage required for storage"}]);
 
                   nodeColors = {};

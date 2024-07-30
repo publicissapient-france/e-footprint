@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_006cd6 {
+             #mynetwork_a97c5b {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_006cd6" class="card-body"></div>
+            <div id="mynetwork_a97c5b" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_006cd6');
+                  var container = document.getElementById('mynetwork_a97c5b');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": -112.5, "y": 900}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 112.5, "y": 900}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 0.0, "y": 900}, {"color": null, "id": "Long term storage required for storage", "label": "Long term storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Long term storage required for storage\n=\nStorage need of storage * Data replication factor of storage * one year - Active\nstorage required for storage\n=\n219.0 TB/yr * 3 * 1 yr - 25.0 GB\n=\n657.0 TB", "x": -112.5, "y": 750}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 112.5, "y": 750}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Long term storage required for storage", "to": "Number of idle storage units for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of idle storage units for storage"}]);
 
                   nodeColors = {};
