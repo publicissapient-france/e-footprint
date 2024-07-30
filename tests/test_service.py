@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -25,8 +25,8 @@ class TestService(unittest.TestCase):
         self.assertEqual(self.service.storage, self.storage)
         self.assertEqual(self.service.base_ram_consumption, self.base_ram)
         self.assertEqual(self.service.base_cpu_consumption, self.base_cpu)
-        self.assertEqual(ExplainableHourlyUsage([0 * u.GB] * 24, " "), self.service.hour_by_hour_ram_need)
-        self.assertEqual(ExplainableHourlyUsage([0 * u.core] * 24, " "), self.service.hour_by_hour_cpu_need)
+        self.assertEqual(ExplainableHourlyQuantities([0 * u.GB] * 24, " "), self.service.hour_by_hour_ram_need)
+        self.assertEqual(ExplainableHourlyQuantities([0 * u.core] * 24, " "), self.service.hour_by_hour_cpu_need)
         self.assertEqual(ExplainableQuantity(0 * u.TB / u.year, " "), self.service.storage_needed)
 
     def test_service_invalid_ram_consumption(self):
@@ -74,7 +74,7 @@ class TestService(unittest.TestCase):
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "parallel_uj")
-        usage_pattern.utc_time_intervals = ExplainableHourlyUsage(
+        usage_pattern.utc_time_intervals = ExplainableHourlyQuantities(
             [1 * u.dimensionless] * 24, "utc_time_intervals")
 
         for elt in [uj_step, uj_step2]:
@@ -102,7 +102,7 @@ class TestService(unittest.TestCase):
         usage_pattern.user_journey.duration = ExplainableQuantity(1 * u.hour, "uj_duration")
         usage_pattern.nb_user_journeys_in_parallel_during_usage = ExplainableQuantity(
             10 * u.user_journey, "uj_in_parallel")
-        usage_pattern.utc_time_intervals = ExplainableHourlyUsage([1 * u.dimensionless] * 24, "utc time intervals")
+        usage_pattern.utc_time_intervals = ExplainableHourlyQuantities([1 * u.dimensionless] * 24, "utc time intervals")
 
         for elt in [uj_step, uj_step2]:
             elt.usage_patterns = [usage_pattern]

@@ -1,6 +1,6 @@
 from pint import Quantity
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
 from efootprint.constants.units import u
 
 
@@ -19,7 +19,7 @@ def create_ram_need(hours_in_use, ram: Quantity = 100 * u.GB):
         start, end = time_interval
         for i in range(start, end):
             hour_by_hour_ram_need[i] = ram
-    return ExplainableHourlyUsage(hour_by_hour_ram_need, "hour_by_hour_ram_need")
+    return ExplainableHourlyQuantities(hour_by_hour_ram_need, "hour_by_hour_ram_need")
 
 
 def create_cpu_need(hours_in_use, cpu: Quantity = 1 * u.core):
@@ -28,6 +28,6 @@ def create_cpu_need(hours_in_use, cpu: Quantity = 1 * u.core):
         start, end = time_interval
         for i in range(start, end):
             hour_by_hour_cpu_need[i] = cpu
-    return ExplainableHourlyUsage(hour_by_hour_cpu_need, "hour_by_hour_cpu_need")
+    return ExplainableHourlyQuantities(hour_by_hour_cpu_need, "hour_by_hour_cpu_need")
 
 

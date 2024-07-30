@@ -3,7 +3,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -51,7 +51,7 @@ class TestInfraHardware(TestCase):
         self.test_infra_hardware_multiple_services.modeling_obj_containers = [self.service2, self.service3]
 
     def test_update_all_services_ram_needs_single_service(self):
-        expected_value = ExplainableHourlyUsage([0 * u.GB] * 24, "expected hourly usage")
+        expected_value = ExplainableHourlyQuantities([0 * u.GB] * 24, "expected hourly usage")
         for i in range(8):
             expected_value.value[i] = 100 * u.GB
 
@@ -66,7 +66,7 @@ class TestInfraHardware(TestCase):
             self.assertEqual([service1, service2], self.test_infra_hardware_multiple_services.services)
 
     def test_all_services_infra_needs_multiple_services(self):
-        expected_value = ExplainableHourlyUsage([0 * u.GB] * 24, "expected hourly usage")
+        expected_value = ExplainableHourlyQuantities([0 * u.GB] * 24, "expected hourly usage")
         for i in range(6, 8):
             expected_value.value[i] = 100 * u.GB
         for i in range(8, 14):
@@ -78,7 +78,7 @@ class TestInfraHardware(TestCase):
         self.assertEqual(expected_value.value, self.test_infra_hardware_multiple_services.all_services_ram_needs.value)
 
     def test_all_services_cpu_needs_single_service(self):
-        expected_value = ExplainableHourlyUsage([0 * u.core] * 24, "expected hourly usage")
+        expected_value = ExplainableHourlyQuantities([0 * u.core] * 24, "expected hourly usage")
         for i in range(8):
             expected_value.value[i] = 1 * u.core
 
@@ -86,7 +86,7 @@ class TestInfraHardware(TestCase):
         self.assertEqual(expected_value.value, self.test_infra_hardware_single_service.all_services_cpu_needs.value)
 
     def test_all_services_cpu_needs_multiple_services(self):
-        expected_value = ExplainableHourlyUsage([0 * u.core] * 24, "expected hourly usage")
+        expected_value = ExplainableHourlyQuantities([0 * u.core] * 24, "expected hourly usage")
         for i in range(6, 8):
             expected_value.value[i] = 1 * u.core
         for i in range(8, 14):

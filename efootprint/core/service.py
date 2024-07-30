@@ -1,5 +1,5 @@
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -15,10 +15,10 @@ class Service(ModelingObject):
         super().__init__(name)
         self.storage_needed = ExplainableQuantity(
             0 * u.TB / u.year, f"No storage need for {self.name} because no associated uj step with usage pattern.")
-        self.hour_by_hour_cpu_need = ExplainableHourlyUsage(
+        self.hour_by_hour_cpu_need = ExplainableHourlyQuantities(
                 [0 * u.core] * 24,
                 f"No CPU need for {self.name} because no associated uj step with usage pattern")
-        self.hour_by_hour_ram_need = ExplainableHourlyUsage(
+        self.hour_by_hour_ram_need = ExplainableHourlyQuantities(
                 [0 * u.GB] * 24,
                 f"No RAM need for {self.name} because no associated uj step with usage pattern")
         self.server = server
@@ -80,7 +80,7 @@ class Service(ModelingObject):
                 logger.warning(
                     f"{self.name} is installed on {self.server.name} but unused, so it consumes "
                     f"{base_resource_consumption.value} of {resource} for nothing.")
-            return ExplainableHourlyUsage(
+            return ExplainableHourlyQuantities(
                 [0 * resource_unit] * 24,
                 f"No {resource} need for {self.name} because no associated user journey steps with usage pattern")
         else:

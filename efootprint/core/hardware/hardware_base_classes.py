@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage, ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -83,7 +83,7 @@ class InfraHardware(Hardware):
             self.all_services_ram_needs = all_service_ram_needs.set_label(
                 f"RAM needs of all services running on {self.name}")
         else:
-            self.all_services_ram_needs = ExplainableHourlyUsage(
+            self.all_services_ram_needs = ExplainableHourlyQuantities(
                 [0 * u.GB] * 24,
                 f"No RAM need for {self.name} because no associated service")
 
@@ -95,7 +95,7 @@ class InfraHardware(Hardware):
             self.all_services_cpu_needs = all_services_cpu_needs.set_label(
                 f"CPU needs of all services running on {self.name}")
         else:
-            self.all_services_cpu_needs = ExplainableHourlyUsage(
+            self.all_services_cpu_needs = ExplainableHourlyQuantities(
                 [0 * u.core] * 24,
                 f"No CPU need for {self.name} because no associated service")
 
@@ -104,7 +104,7 @@ class InfraHardware(Hardware):
             hourly_usage_sum = self.all_services_cpu_needs.to_usage() + self.all_services_ram_needs.to_usage()
 
         else:
-            hourly_usage_sum = ExplainableHourlyUsage(
+            hourly_usage_sum = ExplainableHourlyQuantities(
                 [0 * u.dimensionless] * 24,
                 f"No activity for {self.name} because no associated service")
 

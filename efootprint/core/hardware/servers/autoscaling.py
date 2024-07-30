@@ -1,6 +1,6 @@
 import math
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
@@ -23,13 +23,13 @@ class Autoscaling(Server):
                 self.all_services_cpu_needs / self.available_cpu_per_instance).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
-        nb_of_servers_raw = ExplainableHourlyUsage(
+        nb_of_servers_raw = ExplainableHourlyQuantities(
             [max(ram_nb_of_servers, cpu_nb_of_servers) for ram_nb_of_servers, cpu_nb_of_servers
              in zip(nb_of_servers_based_on_ram_alone.value, nb_of_servers_based_on_cpu_alone.value)],
             f"Raw nb of instances",
-            left_child=nb_of_servers_based_on_ram_alone,
-            right_child=nb_of_servers_based_on_cpu_alone,
-            child_operator="max compared with"
+            left_parent=nb_of_servers_based_on_ram_alone,
+            right_parent=nb_of_servers_based_on_cpu_alone,
+            operator="max compared with"
         )
 
         hour_by_hour_nb_of_instances__list = []
@@ -44,9 +44,9 @@ class Autoscaling(Server):
 
             hour_by_hour_nb_of_instances__list.append(nb_of_instances_per_hour)
 
-        hour_by_hour_nb_of_instances = ExplainableHourlyUsage(
-            hour_by_hour_nb_of_instances__list, f"Hour by hour nb of instances", left_child=nb_of_servers_raw,
-            child_operator="Rounding up of instances nb"
+        hour_by_hour_nb_of_instances = ExplainableHourlyQuantities(
+            hour_by_hour_nb_of_instances__list, f"Hour by hour nb of instances", left_parent=nb_of_servers_raw,
+            operator="Rounding up of instances nb"
         )
 
         nb_of_instances = hour_by_hour_nb_of_instances.mean()
