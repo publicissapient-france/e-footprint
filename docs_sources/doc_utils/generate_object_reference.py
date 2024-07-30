@@ -5,7 +5,7 @@ from jinja2 import Template
 import ruamel.yaml
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
     system, usage_pattern, user_journey, network, streaming_step, service, autoscaling_server, storage,
@@ -40,7 +40,7 @@ def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return_str = f"### {attr_name}"
     if issubclass(type(input_obj), ExplainableQuantity):
         return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
-    elif issubclass(type(input_obj), ExplainableHourlyUsage):
+    elif issubclass(type(input_obj), ExplainableHourlyQuantities):
         return_str += f"""  \nRepresentation of the evolution throughout a typical day of the {input_obj.label.lower()} by 24 values in {input_obj.value[0].units}."""
 
     formula_expl = "=".join(input_obj.explain().split("\n=\n")[:2])

@@ -1,26 +1,23 @@
+from typing import List
+
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
+from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.hardware.servers.server_base_class import Server
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
-from efootprint.logger import logger
-
-from typing import List
 
 
 class Service(ModelingObject):
     def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue = None):
         super().__init__(name)
-        self.storage_needed = ExplainableQuantity(
-            0 * u.TB / u.year, f"No storage need for {self.name} because no associated uj step with usage pattern.")
-        self.hour_by_hour_cpu_need = ExplainableHourlyUsage(
-                [0 * u.core] * 24,
-                f"No CPU need for {self.name} because no associated uj step with usage pattern")
-        self.hour_by_hour_ram_need = ExplainableHourlyUsage(
-                [0 * u.GB] * 24,
-                f"No RAM need for {self.name} because no associated uj step with usage pattern")
+        self.storage_needed = None
+        self.hour_by_hour_cpu_need = None
+        self.hour_by_hour_ram_need = None
+        self.hourly_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
+        self.hourly_avg_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
+        self.hourly_data_upload_across_usage_patterns_per_job = ExplainableObjectDict()
         self.server = server
         self.storage = storage
         if not base_ram_consumption.value.check("[]"):
@@ -38,7 +35,11 @@ class Service(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["hour_by_hour_ram_need", "hour_by_hour_cpu_need", "storage_needed"]
+        return [
+            "hourly_job_occurrences_across_usage_patterns_per_job",
+            "hourly_avg_job_occurrences_across_usage_patterns_per_job",
+            "hour_by_hour_ram_need", "hour_by_hour_cpu_need", "hourly_data_upload_across_usage_patterns_per_job",
+            "storage_needed"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -56,52 +57,61 @@ class Service(ModelingObject):
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
-    def update_storage_needed(self):
-        if len(self.usage_patterns) == 0:
-            self.storage_needed = ExplainableQuantity(
-                0 * u.TB / u.year,
-                f"No storage for {self.name} because no associated user journey steps with usage pattern")
-        else:
-            storage_needs = 0
-            for job in self.jobs:
-                job_up = job.usage_patterns
-                if len(job_up) > 0:
-                    storage_needs += job.data_upload * sum(up.user_journey_freq for up in job_up)
+    def compute_calculated_attribute_summed_across_usage_patterns_per_job(
+            self, calculated_attribute_name: str, calculated_attribute_label: str):
+        hourly_calc_attr_summed_across_ups_per_job = ExplainableObjectDict()
 
-            self.storage_needed = storage_needs.to(u.TB / u.year).set_label(
-                f"Storage needed for {self.name}")
+        for job in self.jobs:
+            job_hourly_calc_attr_summed_across_ups = 0
+            for usage_pattern in job.usage_patterns:
+                job_hourly_calc_attr_summed_across_ups += getattr(usage_pattern, calculated_attribute_name)[job]
+
+            hourly_calc_attr_summed_across_ups_per_job[job] = job_hourly_calc_attr_summed_across_ups.set_label(
+                f"Hourly {job.name} {calculated_attribute_label} across usage patterns")
+
+        return hourly_calc_attr_summed_across_ups_per_job
+
+    def update_hourly_job_occurrences_across_usage_patterns_per_job(self):
+        hourly_job_occurrences_across_ups = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
+            "hourly_job_occurrences_per_job", "occurrences")
+
+        self.hourly_job_occurrences_across_usage_patterns_per_job = hourly_job_occurrences_across_ups
+
+    def update_hourly_avg_job_occurrences_across_usage_patterns_per_job(self):
+        hourly_avg_job_occurrences_across_ups = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
+            "hourly_avg_job_occurrences_per_job", "avearge occurrences")
+
+        self.hourly_avg_job_occurrences_across_usage_patterns_per_job = hourly_avg_job_occurrences_across_ups
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
-        one_user_journey = ExplainableQuantity(1 * u.user_journey, "One user journey")
-        if len(self.usage_patterns) == 0:
-            base_resource_consumption = getattr(self, f"base_{resource}_consumption")
-            if base_resource_consumption.magnitude > 0:
-                logger.warning(
-                    f"{self.name} is installed on {self.server.name} but unused, so it consumes "
-                    f"{base_resource_consumption.value} of {resource} for nothing.")
-            return ExplainableHourlyUsage(
-                [0 * resource_unit] * 24,
-                f"No {resource} need for {self.name} because no associated user journey steps with usage pattern")
-        else:
-            hour_by_hour_resource_needs = 0
-            for job in self.jobs:
-                for usage_pattern in job.usage_patterns:
-                    average_uj_resource_needed_for_up = (
-                        getattr(job, f"{resource}_needed") * job.request_duration /
-                        (usage_pattern.user_journey.duration * one_user_journey)).to(
-                        resource_unit / u.user_journey).set_label(
-                        f"Average {resource} needed over {usage_pattern.name} to process {job.name}")
+        hour_by_hour_resource_needs = 0
+        for job in self.jobs:
+            hour_by_hour_resource_needs += (
+                    self.hourly_avg_job_occurrences_across_usage_patterns_per_job[job]
+                    * getattr(job, f"{resource}_needed")
+            ).to(resource_unit).set_label(f"Hour by hour average {resource} needed to process {job.name}")
 
-                    hour_by_hour_resource_needs += (
-                            (average_uj_resource_needed_for_up * usage_pattern.nb_user_journeys_in_parallel_during_usage)
-                            * usage_pattern.utc_time_intervals)
-
-            return hour_by_hour_resource_needs.set_label(
-                f"{self.name} hour by hour {resource} need")
+        return hour_by_hour_resource_needs.set_label(f"{self.name} hour by hour {resource} need")
 
     def update_hour_by_hour_ram_need(self):
         self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
 
     def update_hour_by_hour_cpu_need(self):
         self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
+
+    def update_hourly_data_upload_across_usage_patterns_per_job(self):
+        hourly_data_upload_across_ups_per_job = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
+            "hourly_data_upload_per_job", "data upload")
+
+        self.hourly_data_upload_across_usage_patterns_per_job = hourly_data_upload_across_ups_per_job
+            
+    def update_storage_needed(self):
+        storage_needed = 0
+
+        if self.jobs:
+            for job in self.jobs:
+                storage_needed += self.hourly_data_upload_across_usage_patterns_per_job[job]
+            storage_needed = storage_needed.to(u.TB).set_label(f"Hour by hour storage need for {self.name}")
+
+        self.storage_needed = storage_needed

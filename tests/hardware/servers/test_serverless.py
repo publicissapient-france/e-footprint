@@ -5,7 +5,6 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.serverless import Serverless
-from tests.utils import create_cpu_need, create_ram_need
 
 SERVER_MODULE = "footprint_model.core.server.Server"
 
@@ -46,6 +45,6 @@ class TestServerless(TestCase):
                 patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.server_base.update_instances_power()
+            self.server_base.update_instances_energy()
             self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_base.instances_power.value, 2))

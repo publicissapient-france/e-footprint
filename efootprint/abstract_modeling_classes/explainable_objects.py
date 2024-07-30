@@ -1,10 +1,13 @@
-import numbers
 import json
+import numbers
 from datetime import datetime
-from typing import Type, List
+from typing import Type
 
+import pandas as pd
+import pint_pandas
 import pytz
-from pint import Quantity
+from pint import Quantity, Unit
+import numpy as np
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
 from efootprint.constants.units import u
@@ -12,14 +15,14 @@ from efootprint.constants.units import u
 
 class ExplainableQuantity(ExplainableObject):
     def __init__(
-            self, value: Quantity, label: str = None, left_child: Type["ExplainableQuantity"] = None,
-            right_child: Type["ExplainableQuantity"] = None, child_operator: str = None, source: Source = None):
+            self, value: Quantity, label: str = None, left_parent: Type["ExplainableQuantity"] = None,
+            right_parent: Type["ExplainableQuantity"] = None, operator: str = None, source: Source = None):
         if not isinstance(value, Quantity):
             raise ValueError(
                 f"Variable 'value' of type {type(value)} does not correspond to the appropriate 'Quantity' type, "
                 "it is indeed mandatory to define a unit"
             )
-        super().__init__(value, label, left_child, right_child, child_operator, source)
+        super().__init__(value, label, left_parent, right_parent, operator, source)
 
     def to(self, unit_to_convert_to):
         self.value = self.value.to(unit_to_convert_to)
@@ -33,9 +36,9 @@ class ExplainableQuantity(ExplainableObject):
     def compare_with_and_return_max(self, other):
         if issubclass(type(other), ExplainableQuantity):
             if self.value >= other.value:
-                return ExplainableQuantity(self.value, left_child=self, right_child=other, child_operator="max")
+                return ExplainableQuantity(self.value, left_parent=self, right_parent=other, operator="max")
             else:
-                return ExplainableQuantity(other.value, left_child=self, right_child=other, child_operator="max")
+                return ExplainableQuantity(other.value, left_parent=self, right_parent=other, operator="max")
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
 
@@ -60,7 +63,7 @@ class ExplainableQuantity(ExplainableObject):
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableQuantity(self.value, left_child=self)
+            return ExplainableQuantity(self.value, left_parent=self)
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value + other.value, "", self, other, "+")
         else:
@@ -68,7 +71,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return ExplainableQuantity(self.value, left_child=self)
+            return ExplainableQuantity(self.value, left_parent=self)
         elif issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value - other.value, "", self, other, "-")
         else:
@@ -77,7 +80,7 @@ class ExplainableQuantity(ExplainableObject):
     def __mul__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value * other.value, "", self, other, "*")
-        elif issubclass(type(other), ExplainableHourlyUsage):
+        elif issubclass(type(other), ExplainableHourlyQuantities):
             return other.__mul__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -85,7 +88,7 @@ class ExplainableQuantity(ExplainableObject):
     def __truediv__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(self.value / other.value, "", self, other, "/")
-        elif issubclass(type(other), ExplainableHourlyUsage):
+        elif issubclass(type(other), ExplainableHourlyQuantities):
             return other.__rtruediv__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -105,7 +108,7 @@ class ExplainableQuantity(ExplainableObject):
     def __rtruediv__(self, other):
         if issubclass(type(other), ExplainableQuantity):
             return ExplainableQuantity(other.value / self.value, "", other, self, "/")
-        elif issubclass(type(other), ExplainableHourlyUsage):
+        elif issubclass(type(other), ExplainableHourlyQuantities):
             return other.__truediv__(self)
         else:
             raise ValueError(f"Can only make operation with another ExplainableQuantity, not with {type(other)}")
@@ -132,79 +135,97 @@ class ExplainableQuantity(ExplainableObject):
         return json.dumps(self.to_json())
 
     def __str__(self):
-        return f"{round(self.value, 2)}"
+        if isinstance(self.value, Quantity):
+            return f"{round(self.value, 2)}"
+        else:
+            return str(self.value)
 
 
-class ExplainableHourlyUsage(ExplainableObject):
+class ExplainableHourlyQuantities(ExplainableObject):
     def __init__(
-            self, value: List[Quantity], label: str = None, left_child: ExplainableObject = None,
-            right_child: ExplainableObject = None, child_operator: str = None, source: Source = None):
-        super().__init__(value, label, left_child, right_child, child_operator, source)
+            self, value: pd.DataFrame, label: str = None, left_parent: ExplainableObject = None,
+            right_parent: ExplainableObject = None, operator: str = None, source: Source = None):
+        if not isinstance(value, pd.DataFrame):
+            raise ValueError(f"ExplainableHourlyQuantities values must be pandas DataFrames, got {type(value)}")
+        if value.columns != ["value"]:
+            raise ValueError(
+                f"ExplainableHourlyQuantities values must have only one column named value, got {value.columns}")
+        if not isinstance(value.dtypes.iloc[0], pint_pandas.pint_array.PintType):
+            raise ValueError(f"The pd DataFrame value of an ExplainableHourlyQuantities object must be typed with Pint, "
+                             f"got {type(value.dtypes.iloc[0])} dtype")
+        super().__init__(value, label, left_parent, right_parent, operator, source)
+
+    def to(self, unit_to_convert_to: Unit, rounding=None):
+        self.value["value"] = self.value["value"].pint.to(unit_to_convert_to)
+        if rounding is not None:
+            self.value["value"] = pint_pandas.PintArray(
+                [round(elt, rounding) for elt in self.value["value"].values._data], dtype=self.unit)
+
+        return self
+
+    def return_shifted_hourly_quantities(self, hours: int):
+        return ExplainableHourlyQuantities(
+            self.value.copy().shift(hours, fill_value=0 * self.unit, freq="h"),
+            left_parent=self, operator=f"shift by {hours}")
+
+    @property
+    def unit(self):
+        return self.value.dtypes.iloc[0].units
+
+    @property
+    def value_as_float_list(self):
+        return [float(elt) for elt in self.value["value"].values._data]
 
     def convert_to_utc(self, local_timezone):
         utc_tz = pytz.timezone('UTC')
         current_time = datetime.now()
-        time_diff = (local_timezone.value.utcoffset(current_time) - utc_tz.utcoffset(current_time))
+        time_diff = (utc_tz.utcoffset(current_time) - local_timezone.value.utcoffset(current_time))
         time_diff_in_hours = int(time_diff.total_seconds() / 3600)
 
-        return ExplainableHourlyUsage(
-            self.value[time_diff_in_hours:] + self.value[:time_diff_in_hours], "",
-            left_child=self, right_child=local_timezone, child_operator="converted to UTC from")
+        return ExplainableHourlyQuantities(
+            self.value.copy().shift(time_diff_in_hours, freq="h"),
+            left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
-    def compute_usage_time_fraction(self):
-        unused_hours = 0
-        for elt in self.value:
-            if not issubclass(type(elt), Quantity):
-                raise ValueError("compute_usage_time_fraction should be called on pint Quantity elements")
-            else:
-                if elt.magnitude == 0:
-                    unused_hours += 1
+    def create_empty_hourly_quantities_with_same_index(self, dtype=u.dimensionless):
+        copy_df = self.value.copy()
+        copy_df["value"] = pint_pandas.PintArray([0] * len(self.value), dtype=dtype)
 
-        return ExplainableQuantity(
-            ((24 - unused_hours) / 24) * u.dimensionless, "", self, None, "usage time fraction computation")
-
-    def to_usage(self):
-        usage_hours = []
-        for i, elt in enumerate(self.value):
-            if not issubclass(type(elt), Quantity):
-                raise ValueError("to_usage method should be called with pint Quantity elements")
-            if elt.magnitude != 0:
-                usage_hours.append(1 * u.dimensionless)
-            else:
-                usage_hours.append(0 * u.dimensionless)
-
-        return ExplainableHourlyUsage(usage_hours, "", left_child=self, child_operator="retrieving usage hours")
+        return ExplainableHourlyQuantities(copy_df, left_parent=self, operator="empty")
 
     def sum(self):
-        return ExplainableQuantity(sum(self.value), left_child=self, child_operator="sum")
+        return ExplainableQuantity(self.value["value"].sum(), left_parent=self, operator="sum")
 
     def mean(self):
-        return ExplainableQuantity(sum(self.value) / 24, left_child=self, child_operator="mean")
+        return ExplainableQuantity(self.value["value"].mean() / 24, left_parent=self, operator="mean")
 
     def max(self):
-        return ExplainableQuantity(max(self.value), left_child=self, child_operator="max")
+        return ExplainableQuantity(self.value["value"].max(), left_parent=self, operator="max")
+
+    def abs(self):
+        return ExplainableHourlyQuantities(
+            pd.DataFrame({"value": self.value["value"].abs()}), left_parent=self, operator="abs")
 
     def __eq__(self, other):
-        if issubclass(type(other), ExplainableHourlyUsage):
+        if issubclass(type(other), ExplainableHourlyQuantities):
             if len(self.value) != len(other.value):
                 raise ValueError(
                     f"Can only compare ExplainableHourlyUsages with values of same length. Here we are trying to "
                     f"compare {self.value} and {other.value}.")
-            return_bool = True
-            for i in range(len(self.value)):
-                if self.value[i] != other.value[i]:
-                    return_bool = False
-            return return_bool
+
+            return (self.value["value"] == other.value["value"]).all()
         else:
             raise ValueError(f"Can only compare with another ExplainableHourlyUsage, not {type(other)}")
+
+    def __len__(self):
+        return len(self.value)
 
     def __add__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
             # summing with sum() adds an implicit 0 as starting value
-            return ExplainableHourlyUsage(self.value, left_child=self)
-        elif issubclass(type(other), ExplainableHourlyUsage):
-            return ExplainableHourlyUsage(
-                [elt1 + elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "+")
+            return ExplainableHourlyQuantities(self.value, left_parent=self)
+        elif issubclass(type(other), ExplainableHourlyQuantities):
+            df_sum = self.value.add(other.value, fill_value=0 * self.unit)
+            return ExplainableHourlyQuantities(df_sum, "", self, other, "+")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
 
@@ -213,25 +234,23 @@ class ExplainableHourlyUsage(ExplainableObject):
 
     def __sub__(self, other):
         if issubclass(type(other), numbers.Number) and other == 0:
-            return ExplainableHourlyUsage(self.value, left_child=self)
-        elif issubclass(type(other), ExplainableHourlyUsage):
-            return ExplainableHourlyUsage(
-                [elt1 - elt2 for elt1, elt2 in zip(self.value, other.value)], "", self, other, "-")
+            return ExplainableHourlyQuantities(self.value, left_parent=self)
+        elif issubclass(type(other), ExplainableHourlyQuantities):
+            return ExplainableHourlyQuantities(self.value - other.value, "", self, other, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
 
     def __rsub__(self, other):
-        if issubclass(type(other), ExplainableHourlyUsage):
-            return ExplainableHourlyUsage(
-                [elt1 - elt2 for elt1, elt2 in zip(other.value, self.value)], "", other, self, "-")
+        if issubclass(type(other), ExplainableHourlyQuantities):
+            return ExplainableHourlyQuantities(other.value - self.value, "", other, self, "-")
         else:
             raise ValueError(f"Can only make operation with another ExplainableHourlyUsage, not with {type(other)}")
 
     def __mul__(self, other):
-        if issubclass(type(other), ExplainableHourlyUsage):
+        if issubclass(type(other), ExplainableHourlyQuantities):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([other.value * elt for elt in self.value], "", self, other, "*")
+            return ExplainableHourlyQuantities(self.value * other.value, "", self, other, "*")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
@@ -240,26 +259,28 @@ class ExplainableHourlyUsage(ExplainableObject):
         return self.__mul__(other)
 
     def __truediv__(self, other):
-        if issubclass(type(other), ExplainableHourlyUsage):
+        if issubclass(type(other), ExplainableHourlyQuantities):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([elt / other.value for elt in self.value], "", self, other, "/")
+            return ExplainableHourlyQuantities(self.value / other.value, "", self, other, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
 
     def __rtruediv__(self, other):
-        if issubclass(type(other), ExplainableHourlyUsage):
+        if issubclass(type(other), ExplainableHourlyQuantities):
             raise NotImplementedError
         elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyUsage([other.value / elt for elt in self.value], "", other, self, "/")
+            return ExplainableHourlyQuantities(other.value / self.value, "", other, self, "/")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
-            "label": self.label, "values": [elt.magnitude for elt in self.value], "unit": str(self.value[0].units)}
+            "label": self.label,
+            "values": list(map(lambda x: round(x, 2), self.value["value"].values._data)),
+            "unit": str(self.value.dtypes.iloc[0].units)}
 
         if self.source is not None:
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}
@@ -272,8 +293,17 @@ class ExplainableHourlyUsage(ExplainableObject):
         return output_dict
 
     def __repr__(self):
-        return json.dumps(self.to_json())
+        return json.dumps(self.to_json(), cls=NpEncoder)
 
     def __str__(self):
         return ("[" + ", ".join([str(round(hourly_value, 2)) for hourly_value in self.value]) + "]").replace(
             "dimensionless", "")
+
+
+class NpEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        if isinstance(obj, np.floating):
+            return float(obj)
+        return super(NpEncoder, self).default(obj)

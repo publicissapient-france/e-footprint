@@ -1,8 +1,11 @@
+import math
 from typing import List, Type
 
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.service import Service
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.constants.units import u
 
 
 class JobTypes:
@@ -33,34 +36,33 @@ class Job(ModelingObject):
         super().__init__(name)
         self.job_type = job_type
         self.service = service
-        if not data_upload.value.check("[]/[user_journey]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
-        if not data_download.value.check("[]/[user_journey]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
-        self.data_upload = data_upload
-        self.data_upload.set_label(f"Data upload of request {self.name}")
-        self.data_download = data_download
-        self.data_download.set_label(f"Data download of request {self.name}")
-
+        if not data_upload.value.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+        self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
+        if not data_download.value.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+        self.data_download = data_download.set_label(f"Data download of request {self.name}")
         if not request_duration.value.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
-        self.request_duration = request_duration
-        self.request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
-
-        # check ram_needed value format
-        if not ram_needed.value.check("[] / [user_journey]"):
+        self.request_duration = request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
+        if not ram_needed.value.check("[]"):
             raise ValueError(
-                "Variable 'ram_needed' does not have the appropriate '[] / [user_journey]' dimensionality")
-        self.ram_needed = ram_needed
-        self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
-
-        # check cpu_need value format
-        if not cpu_needed.value.check("[cpu] / [user_journey]"):
+                "Variable 'ram_needed' does not have the appropriate '[]' dimensionality")
+        self.ram_needed = ram_needed.set_label(
+            f"RAM needed on server {self.service.server.name} to process {self.name}")
+        if not cpu_needed.value.check("[cpu]"):
             raise ValueError(
-                "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
-        self.cpu_needed = cpu_needed
-        self.cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
+                "Variable 'cpu_needed' does not have the appropriate '[cpu]' dimensionality")
+        self.cpu_needed = cpu_needed.set_label(
+            f"CPU needed on server {self.service.server.name} to process {self.name}")
+
         self.description = description
+
+    @property
+    def duration_in_full_hours(self):
+        return ExplainableQuantity(
+                math.ceil(self.request_duration.to(u.hour).magnitude) * u.dimensionless,
+                f"{self.name} duration in full hours")
 
     @property
     def user_journey_steps(self) -> List[Type["UserJourneyStep"]]:

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage, ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -36,8 +36,7 @@ class InfraHardware(Hardware):
         self.all_services_cpu_needs = None
         self.all_services_ram_needs = None
         self.nb_of_instances = None
-        self.instances_power = None
-        self.fraction_of_time_in_use = None
+        self.instances_energy = None
         self.energy_footprint = None
         self.instances_fabrication_footprint = None
         if not average_carbon_intensity.value.check("[time]**2 / [length]**2"):
@@ -52,8 +51,8 @@ class InfraHardware(Hardware):
     @property
     def calculated_attributes_defined_in_infra_hardware_class(self):
         return [
-            "all_services_cpu_needs", "all_services_ram_needs", "fraction_of_time_in_use",
-            "nb_of_instances", "instances_fabrication_footprint", "instances_power", "energy_footprint"]
+            "all_services_cpu_needs", "all_services_ram_needs",
+            "nb_of_instances", "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -64,7 +63,7 @@ class InfraHardware(Hardware):
         pass
 
     @abstractmethod
-    def update_instances_power(self):
+    def update_instances_energy(self):
         pass
 
     @property
@@ -76,48 +75,26 @@ class InfraHardware(Hardware):
         return list(set(sum([service.systems for service in self.services], start=[])))
 
     def update_all_services_ram_needs(self):
-        if len(self.services) > 0:
-            service_ram_needs_list = [service.hour_by_hour_ram_need for service in self.services]
-            all_service_ram_needs = sum(service_ram_needs_list)
+        all_services_ram_needs = 0
+        for service in self.services:
+            all_services_ram_needs += service.hour_by_hour_ram_need
 
-            self.all_services_ram_needs = all_service_ram_needs.set_label(
-                f"RAM needs of all services running on {self.name}")
-        else:
-            self.all_services_ram_needs = ExplainableHourlyUsage(
-                [0 * u.GB] * 24,
-                f"No RAM need for {self.name} because no associated service")
+        self.all_services_ram_needs = all_services_ram_needs.set_label(
+            f"RAM needs of all services running on {self.name}")
 
     def update_all_services_cpu_needs(self):
-        if len(self.services) > 0:
-            service_cpu_needs_list = [service.hour_by_hour_cpu_need for service in self.services]
-            all_services_cpu_needs = sum(service_cpu_needs_list)
+        all_services_cpu_needs = 0
+        for service in self.services:
+            all_services_cpu_needs += service.hour_by_hour_cpu_need
 
-            self.all_services_cpu_needs = all_services_cpu_needs.set_label(
-                f"CPU needs of all services running on {self.name}")
-        else:
-            self.all_services_cpu_needs = ExplainableHourlyUsage(
-                [0 * u.core] * 24,
-                f"No CPU need for {self.name} because no associated service")
-
-    def update_fraction_of_time_in_use(self):
-        if len(self.services) > 0:
-            hourly_usage_sum = self.all_services_cpu_needs.to_usage() + self.all_services_ram_needs.to_usage()
-
-        else:
-            hourly_usage_sum = ExplainableHourlyUsage(
-                [0 * u.dimensionless] * 24,
-                f"No activity for {self.name} because no associated service")
-
-        fraction_of_time_in_use = hourly_usage_sum.compute_usage_time_fraction()
-
-        self.fraction_of_time_in_use = fraction_of_time_in_use.set_label(
-            f"Fraction of time in use of {self.name}")
+        self.all_services_cpu_needs = all_services_cpu_needs.set_label(
+            f"CPU needs of all services running on {self.name}")
 
     def update_instances_fabrication_footprint(self):
         self.instances_fabrication_footprint = (
-                self.carbon_footprint_fabrication * self.nb_of_instances / self.lifespan).to(
-            u.kg / u.year).set_label(f"Instances of {self.name} fabrication footprint")
+                self.carbon_footprint_fabrication * self.nb_of_instances * ExplainableQuantity(1 * u.hour, "one hour")
+                / self.lifespan).to(u.kg).set_label(f"Hour by hour instances of {self.name} fabrication footprint")
 
     def update_energy_footprint(self):
-        self.energy_footprint = (self.instances_power * self.average_carbon_intensity).to(
-            u.kg / u.year).set_label(f"Energy footprint of {self.name}")
+        self.energy_footprint = (self.instances_energy * self.average_carbon_intensity).to(
+            u.kg).set_label(f"Hour by hour energy footprint of {self.name}")

@@ -2234,6 +2234,24 @@ uncertainties = ["uncertainties (>=3.1.6)"]
 xarray = ["xarray"]
 
 [[package]]
+name = "pint-pandas"
+version = "0.6"
+description = "Extend Pandas Dataframe with Physical quantities module"
+optional = false
+python-versions = ">=3.9"
+files = [
+    {file = "Pint_Pandas-0.6-py3-none-any.whl", hash = "sha256:9ef7fd53be9cfd94e7d35dfad48dc34a62d9c15b149d5c205ee7ce703954da72"},
+    {file = "pint_pandas-0.6.tar.gz", hash = "sha256:d691f82d461e9c8e8487b13000cc99d4d8f7d608257fb2eb7d556a2271bec95c"},
+]
+
+[package.dependencies]
+pandas = ">=1.5"
+pint = ">=0.21"
+
+[package.extras]
+test = ["codecov", "coveralls", "nbval", "pyarrow", "pytest", "pytest-cov", "pytest-mpl", "pytest-subtests"]
+
+[[package]]
 name = "platformdirs"
 version = "4.2.2"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a `user data dir`."
@@ -3140,13 +3158,13 @@ win32 = ["pywin32"]
 
 [[package]]
 name = "setuptools"
-version = "71.1.0"
+version = "72.1.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-71.1.0-py3-none-any.whl", hash = "sha256:33874fdc59b3188304b2e7c80d9029097ea31627180896fb549c578ceb8a0855"},
-    {file = "setuptools-71.1.0.tar.gz", hash = "sha256:032d42ee9fb536e33087fb66cac5f840eb9391ed05637b3f2a76a7c8fb477936"},
+    {file = "setuptools-72.1.0-py3-none-any.whl", hash = "sha256:5a03e1860cf56bb6ef48ce186b0e557fdba433237481a9a625176c2831be15d1"},
+    {file = "setuptools-72.1.0.tar.gz", hash = "sha256:8d243eff56d095e5817f796ede6ae32941278f542e0f941867cc05ae52b162ec"},
 ]
 
 [package.extras]
@@ -3518,4 +3536,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "7a113ab72de0814ee3dbb48620e8125f691cb672883f6f6389ee9631fd6863f1"
+content-hash = "549cbf3daa59d81136e455505d74c472fac2b08612167e9762ed80d8dd1a3a9f"

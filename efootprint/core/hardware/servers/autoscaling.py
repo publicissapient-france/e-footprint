@@ -1,6 +1,9 @@
 import math
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyUsage
+import pandas as pd
+import pint_pandas
+
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
@@ -23,38 +26,30 @@ class Autoscaling(Server):
                 self.all_services_cpu_needs / self.available_cpu_per_instance).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
-        nb_of_servers_raw = ExplainableHourlyUsage(
-            [max(ram_nb_of_servers, cpu_nb_of_servers) for ram_nb_of_servers, cpu_nb_of_servers
-             in zip(nb_of_servers_based_on_ram_alone.value, nb_of_servers_based_on_cpu_alone.value)],
+        nb_of_servers_raw_df = pd.DataFrame(
+            {"value": pd.merge(nb_of_servers_based_on_cpu_alone.value, nb_of_servers_based_on_ram_alone.value,
+                               left_index=True, right_index=True).max(axis=1)})
+        nb_of_servers_raw = ExplainableHourlyQuantities(
+            nb_of_servers_raw_df,
             f"Raw nb of instances",
-            left_child=nb_of_servers_based_on_ram_alone,
-            right_child=nb_of_servers_based_on_cpu_alone,
-            child_operator="max compared with"
+            left_parent=nb_of_servers_based_on_ram_alone,
+            right_parent=nb_of_servers_based_on_cpu_alone,
+            operator="max compared with"
         )
 
-        hour_by_hour_nb_of_instances__list = []
-        for hour in range(24):
-            nb_of_servers_raw_that_hour = nb_of_servers_raw.value[hour]
-            if math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude != 0:
-                nb_of_instances_per_hour = nb_of_servers_raw_that_hour + (
-                        math.ceil(nb_of_servers_raw_that_hour.magnitude) - nb_of_servers_raw_that_hour.magnitude
-                ) * u.dimensionless
-            else:
-                nb_of_instances_per_hour = nb_of_servers_raw_that_hour
-
-            hour_by_hour_nb_of_instances__list.append(nb_of_instances_per_hour)
-
-        hour_by_hour_nb_of_instances = ExplainableHourlyUsage(
-            hour_by_hour_nb_of_instances__list, f"Hour by hour nb of instances", left_child=nb_of_servers_raw,
-            child_operator="Rounding up of instances nb"
+        hour_by_hour_nb_of_instances_df = nb_of_servers_raw_df.copy()
+        hour_by_hour_nb_of_instances_df["value"] = pint_pandas.PintArray(hour_by_hour_nb_of_instances_df["value"].apply(
+            lambda x: math.ceil(x)).values, dtype=u.dimensionless)
+        hour_by_hour_nb_of_instances = ExplainableHourlyQuantities(
+            hour_by_hour_nb_of_instances_df, f"Hour by hour nb of instances", left_parent=nb_of_servers_raw,
+            operator="Rounding up of instances nb"
         )
 
-        nb_of_instances = hour_by_hour_nb_of_instances.mean()
+        self.nb_of_instances = hour_by_hour_nb_of_instances.set_label(f"Hour by hour of {self.name} instances")
 
-        self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances")
+    def update_instances_energy(self):
+        energy_spent_by_one_instance_over_one_hour = self.power * self.power_usage_effectiveness * ExplainableQuantity(
+            1 * u.hour, "one hour")
+        server_power = (energy_spent_by_one_instance_over_one_hour * self.nb_of_instances).to(u.kWh)
 
-    def update_instances_power(self):
-        effective_active_power = self.power * self.power_usage_effectiveness
-        server_power = (effective_active_power * self.nb_of_instances).to(u.kWh / u.year)
-
-        self.instances_power = server_power.set_label(f"Power of {self.name} instances")
+        self.instances_energy = server_power.set_label(f"Hour by hour energy consumed by {self.name} instances")

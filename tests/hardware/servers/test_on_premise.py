@@ -5,7 +5,6 @@ from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.on_premise import OnPremise
-from tests.utils import create_cpu_need, create_ram_need
 
 
 class TestOnPremise(TestCase):
@@ -58,7 +57,7 @@ class TestOnPremise(TestCase):
                 patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.server_base.update_instances_power()
+            self.server_base.update_instances_energy()
             self.assertEqual(20600.1 * u.kWh / u.year,
                              round(self.server_base.instances_power.value, 2))
 

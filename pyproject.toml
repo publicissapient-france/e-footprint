@@ -46,6 +46,7 @@ pyvis = '0.3.2'
 plotly = '5.19'
 pandas = '2.2'
 requests = '2.31'
+Pint-Pandas= "^0.6"
 
 [tool.poetry.group.dev.dependencies]
 pytest = '*'

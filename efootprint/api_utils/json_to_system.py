@@ -2,7 +2,7 @@ import pytz
 import json
 from copy import copy
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
@@ -38,7 +38,7 @@ def json_to_explainable_quantity(input_dict):
     elif "unit" in input_dict.keys():
         unit = u(input_dict["unit"])
         value = [elt * unit for elt in input_dict["values"]]
-        output = ExplainableHourlyUsage(
+        output = ExplainableHourlyQuantities(
             value, label=input_dict["label"], source=source)
     elif "zone" in input_dict.keys():
         output = SourceObject(

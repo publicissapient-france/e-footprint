@@ -1,14 +1,13 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timedelta
 
-from pint import UnitRegistry
 import pytz
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyUsage
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-
-u = UnitRegistry()
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.constants.units import u
 
 
 class TestExplainableQuantity(unittest.TestCase):
@@ -64,61 +63,112 @@ class TestExplainableQuantity(unittest.TestCase):
         self.assertDictEqual({"label": "1 Watt", "value": 1, "unit": "watt"}, self.a.to_json())
 
 
-class TestExplainableHourlyUsage(unittest.TestCase):
+class TestExplainableHourlyQuantities(unittest.TestCase):
 
     def setUp(self):
-        self.usage1 = [1 * u.W] * 24
-        self.usage2 = [2 * u.W] * 24
-        self.hourly_usage1 = ExplainableHourlyUsage(self.usage1, "Usage 1")
-        self.hourly_usage2 = ExplainableHourlyUsage(self.usage2, "Usage 2")
-        self.sum_hourly_usage = self.hourly_usage1 + self.hourly_usage2
+        self.usage1 = [1] * 24
+        self.usage2 = [2] * 24
+        self.start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        self.hourly_usage1 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(self.usage1, self.start_date, pint_unit=u.W), "Usage 1")
+        self.hourly_usage2 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(self.usage2, self.start_date, pint_unit=u.W), "Usage 2")
 
     def test_init(self):
         self.assertEqual(self.hourly_usage1.label, "Usage 1")
         self.assertEqual(len(self.hourly_usage1.value), 24)
 
-    def test_addition(self):
-        result_usage = [3 * u.W] * 24
-        for value, expected in zip(self.sum_hourly_usage.value, result_usage):
-            self.assertEqual(expected, value)
+    def test_addition_between_hourly_quantities_with_same_unit(self):
+        sum_hourly_usage = self.hourly_usage1 + self.hourly_usage2
+        self.assertEqual([3] * 24, sum_hourly_usage.value_as_float_list)
+
+    def test_addition_between_hourly_quantities_with_homogeneous_but_different_units(self):
+        hourly_usage1 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list([1, 2, 3], self.start_date, pint_unit=u.kW), "Usage 1")
+        hourly_usage2 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list([10, 20, 30], self.start_date, pint_unit=u.W), "Usage 2")
+        sum_hourly_usage = hourly_usage1 + hourly_usage2
+        self.assertEqual([1.01, 2.02, 3.03], sum_hourly_usage.value_as_float_list)
+
+    def test_addition_between_non_overlapping_hourly_quantities_with_same_units(self):
+        hourly_usage1 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list([1, 2, 3], datetime.strptime("2025-01-01", "%Y-%m-%d"), pint_unit=u.W), "Usage 1")
+        hourly_usage2 = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list([10, 20, 30], datetime.strptime("2025-01-02", "%Y-%m-%d"), pint_unit=u.W), "Usage 2")
+        sum_hourly_usage = hourly_usage1 + hourly_usage2
+        self.assertEqual([1, 2, 3, 10, 20, 30], sum_hourly_usage.value_as_float_list)
+        self.assertEqual(hourly_usage1.value.index.min(), sum_hourly_usage.value.index.min())
+        self.assertEqual(hourly_usage2.value.index.max(), sum_hourly_usage.value.index.max())
+
+    def test_addition_with_shifted_hourly_quantities(self):
+        nb_hours_shifted = 2
+        shifted_hour_usage = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(
+                self.usage2, self.start_date + timedelta(hours=nb_hours_shifted), pint_unit=u.W), "Usage 2")
+        sum_hourly_usage = self.hourly_usage1 + shifted_hour_usage
+
+        self.assertTrue(isinstance(sum_hourly_usage, ExplainableHourlyQuantities))
+        self.assertEqual(len(self.hourly_usage1) + nb_hours_shifted, len(sum_hourly_usage))
+        self.assertEqual(self.hourly_usage1.value.index.min(), sum_hourly_usage.value.index.min())
+        self.assertEqual(self.hourly_usage1.value_as_float_list[:nb_hours_shifted],
+                         sum_hourly_usage.value_as_float_list[:nb_hours_shifted])
+        self.assertEqual(shifted_hour_usage.value_as_float_list[-nb_hours_shifted:],
+                         sum_hourly_usage.value_as_float_list[-nb_hours_shifted:])
+
+    def test_addition_with_quantity_fails(self):
+        with self.assertRaises(ValueError):
+            addition_result = self.hourly_usage1 + ExplainableQuantity(4 * u.W, "4W")
+
+    def test_mul_with_quantity(self):
+        mul_result = self.hourly_usage1 * ExplainableQuantity(4 * u.h, "4 hours")
+
+        self.assertTrue(isinstance(mul_result, ExplainableHourlyQuantities))
+        self.assertTrue(u.Wh.is_compatible_with(mul_result.unit))
+        self.assertEqual([4] * 24, mul_result.value_as_float_list)
 
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1
-        for value in result.value:
-            self.assertEqual(1 * u.W, value)
+        self.assertEqual([1] * 24, result.value_as_float_list)
+
+    def test_subtraction_with_quantity_fails(self):
+        with self.assertRaises(ValueError):
+            subtraction_result = self.hourly_usage1 - ExplainableQuantity(4 * u.W, "4W")
+
+    def test_create_empty_hourly_dimensionless_quantities_with_same_index(self):
+        df = self.hourly_usage1.create_empty_hourly_quantities_with_same_index()
+
+        self.assertTrue(isinstance(df, ExplainableHourlyQuantities))
+        self.assertEqual(u.dimensionless, df.unit)
+        self.assertEqual(len(self.hourly_usage1), len(df))
+        self.assertEqual([0] * len(df), df.value_as_float_list)
 
     @patch('efootprint.abstract_modeling_classes.explainable_objects.datetime')
     def test_convert_to_utc(self, mock_datetime):
+        start_date = datetime(2023, 10, 1)
         # Artificially fix datetime to avoid test crashing because of annual time changes.
-        mock_datetime.now.return_value = datetime(2023, 10, 1)
-        usage = ExplainableHourlyUsage(
-            [i * u.dimensionless for i in range(1, 6)], "usage")
+        mock_datetime.now.return_value = start_date
+        mock_data = [1] * 12
+        usage = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(mock_data, start_date=start_date), "usage")
 
-        # Let's say the local timezone is 2 hours ahead of UTC
         local_tz_ahead_utc = ExplainableObject(pytz.timezone('Europe/Berlin'), "local timezone ahead UTC")
         local_tz_behind_utc = ExplainableObject(pytz.timezone('America/New_York'), "local timezone behind UTC")
 
         converted_ahead_utc = usage.convert_to_utc(local_tz_ahead_utc)
         converted_behind_utc = usage.convert_to_utc(local_tz_behind_utc)
 
-        # If Berlin is 2 hours ahead, converting to UTC would result in the array shifted by 2 positions to the left
-        self.assertEqual([i * u.dimensionless for i in [3, 4, 5, 1, 2]], converted_ahead_utc.value)
-        self.assertEqual([i * u.dimensionless for i in [2,3, 4, 5, 1]], converted_behind_utc.value)
+        # Berlin is 2 hours ahead, converting to UTC results in the array shifted by 2 positions to the left
+        self.assertEqual(mock_data, converted_ahead_utc.value_as_float_list)
+        self.assertEqual(mock_data, converted_behind_utc.value_as_float_list)
+
+        self.assertEqual(start_date - timedelta(hours=2), converted_ahead_utc.value.index.min().to_timestamp())
+        self.assertEqual(start_date + timedelta(hours=4), converted_behind_utc.value.index.min().to_timestamp())
 
         # Check other attributes of converted ExplainableHourlyUsage
-        self.assertEqual("", converted_ahead_utc.label)
+        self.assertEqual(None, converted_ahead_utc.label)
         self.assertEqual(usage, converted_ahead_utc.left_parent)
         self.assertEqual(local_tz_ahead_utc, converted_ahead_utc.right_parent)
         self.assertEqual("converted to UTC from", converted_ahead_utc.operator)
-
-    def test_compute_usage_time_fraction(self):
-        fraction = self.hourly_usage1.compute_usage_time_fraction()
-        self.assertEqual(fraction, ExplainableQuantity(1 * u.dimensionless, "1"))
-
-    def test_to_usage(self):
-        usage = self.hourly_usage1.to_usage()
-        for i, elt in enumerate(usage.value):
-            self.assertEqual(1 * u.dimensionless, elt)
 
     def test_sum(self):
         summed = self.hourly_usage1.sum()
@@ -128,6 +178,14 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         maximum = self.hourly_usage1.max()
         self.assertEqual(maximum, ExplainableQuantity(1 * u.W, "1 W"))
 
+    def test_abs(self):
+        self.assertEqual(self.hourly_usage1, self.hourly_usage1.abs())
+
+    def test_abs_complex_case(self):
+        test_data = ExplainableHourlyQuantities(create_hourly_usage_df_from_list([1, -1, -4]), "test")
+
+        self.assertEqual([1, 1, 4], test_data.abs().value_as_float_list)
+
     def test_eq_returns_true_when_equal(self):
         self.assertTrue(self.hourly_usage1 == self.hourly_usage1)
 
@@ -135,7 +193,9 @@ class TestExplainableHourlyUsage(unittest.TestCase):
         self.assertFalse(self.hourly_usage1 == self.hourly_usage2)
 
     def test_to_json(self):
-        self.assertDictEqual({"label": "Usage 1", "values": [1] * 24, "unit": "watt"}, self.hourly_usage1.to_json())
+        self.maxDiff = None
+        self.assertDictEqual(
+            {"label": "Usage 1", "values": [1] * 24, "unit": "watt"}, self.hourly_usage1.to_json())
 
 
 if __name__ == "__main__":

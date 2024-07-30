@@ -1,7 +1,6 @@
 from typing import List
 
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -9,10 +8,13 @@ from efootprint.constants.units import u
 class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
         super().__init__(name)
-        self.data_upload = None
-        self.data_download = None
-        self.energy_footprint = None
-        self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(f"bandwith energy intensity of {self.name}")
+        self.energy_footprint = 0
+        if not bandwidth_energy_intensity.value.check("[energy]/[]"):
+            raise ValueError(
+                "Value of variable 'storage_need_from_previous_year' does not have the appropriate "
+                "'energy/data transfer' dimensionality")
+        self.bandwidth_energy_intensity = bandwidth_energy_intensity.set_label(
+            f"bandwith energy intensity of {self.name}")
 
     @property
     def calculated_attributes(self):
@@ -30,48 +32,25 @@ class Network(ModelingObject):
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
-    def update_data_upload(self):
-        if len(self.usage_patterns) > 0:
-            data_upload = 0
-            for usage_pattern in self.usage_patterns:
-                data_upload += usage_pattern.user_journey.data_upload * usage_pattern.user_journey_freq
-
-            self.data_upload = data_upload.to(u.TB / u.year).set_label(
-                f"Data upload in {self.name}")
-        else:
-            self.data_download = ExplainableQuantity(
-                0 * u.MB / u.year, f"No data upload for {self.name} because no associated usage pattern")
-
-    def update_data_download(self):
-        if len(self.usage_patterns) > 0:
-            data_download = 0
-            for usage_pattern in self.usage_patterns:
-                data_download += usage_pattern.user_journey.data_download * usage_pattern.user_journey_freq
-
-            self.data_download = data_download.to(u.TB / u.year).set_label(
-                f"Data download in {self.name}")
-        else:
-            self.data_download = ExplainableQuantity(
-                0 * u.MB / u.year, f"No data download for {self.name} because no associated usage pattern")
-
     def update_energy_footprint(self):
-        if len(self.usage_patterns) > 0:
-            power_footprint = 0
-            for usage_pattern in self.usage_patterns:
-                user_journey = usage_pattern.user_journey
-                uj_network_consumption = (
+        energy_footprint = 0
+
+        usage_patterns_with_jobs = [up for up in self.usage_patterns if len(up.jobs) > 0]
+
+        if usage_patterns_with_jobs:
+            for usage_pattern in usage_patterns_with_jobs:
+                up_hourly_data_transferred_through_network = 0
+                for job in usage_pattern.jobs:
+                    up_hourly_data_transferred_through_network += usage_pattern.hourly_data_upload_per_job[job]
+                    up_hourly_data_transferred_through_network += usage_pattern.hourly_data_download_per_job[job]
+    
+                up_network_consumption = (
                             self.bandwidth_energy_intensity
-                            * (user_journey.data_download + user_journey.data_upload)
-                ).to(u.Wh / u.user_journey)
-                uj_network_consumption.set_label(
-                    f"{self.name} consumption during {user_journey.name}")
-                power_footprint += (
-                        usage_pattern.user_journey_freq * uj_network_consumption
-                        * usage_pattern.country.average_carbon_intensity)
+                            * up_hourly_data_transferred_through_network).to(u.kWh).set_label(
+                    f"{usage_pattern.name} network energy consumption")
+    
+                energy_footprint += up_network_consumption * usage_pattern.country.average_carbon_intensity
+            
+            energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
 
-            self.energy_footprint = power_footprint.to(u.kg / u.year).set_label(
-                f"Energy footprint of {self.name}")
-
-        else:
-            self.energy_footprint = ExplainableQuantity(
-                0 * u.kg / u.year, f"No energy footprint for {self.name} because no associated usage pattern")
+        self.energy_footprint = energy_footprint
