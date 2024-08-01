@@ -1,11 +1,10 @@
 import unittest
 from unittest.mock import MagicMock, patch
-from datetime import datetime, timedelta
 
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
-from efootprint.core.usage.usage_pattern import (
-    UsagePattern, create_random_hourly_usage_df, create_hourly_usage_df_from_list)
+from efootprint.core.usage.usage_pattern import UsagePattern
+from efootprint.builders.time_builders import create_random_hourly_usage_df, create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 
 
@@ -41,74 +40,8 @@ class TestUsagePattern(unittest.TestCase):
         )
         self.usage_pattern.dont_handle_input_updates = True
 
-    def test_create_random_hourly_usage_df(self):
-        nb_days = 2
-        min_val = 1
-        max_val = 27
-        start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.uj
-        df = create_random_hourly_usage_df(nb_days, min_val, max_val, start_date, pint_unit)
-
-        self.assertEqual(start_date, datetime.strptime(df.index.min().strftime("%Y-%m-%d"), "%Y-%m-%d"))
-        self.assertEqual(nb_days * 24 + 1, len(df))
-        self.assertEqual(pint_unit, df.dtypes.iloc[0].units)
-        self.assertGreaterEqual(df["value"].min(), min_val * pint_unit)
-        self.assertLessEqual(df["value"].max(), max_val * pint_unit)
-
-    def test_create_hourly_usage_df_from_list(self):
-        start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.uj
-        input_list = [1, 2, 5, 7]
-        df = create_hourly_usage_df_from_list(input_list, start_date, pint_unit)
-
-        self.assertEqual(len(input_list), len(df))
-        self.assertEqual(input_list, list(df["value"].values._data))
-        self.assertEqual(start_date, datetime.strptime(df.index.min().strftime("%Y-%m-%d"), "%Y-%m-%d"))
-        self.assertEqual(start_date + timedelta(hours=len(input_list) - 1),
-                         df.index.max().to_timestamp().to_pydatetime())
-
     def test_services(self):
         self.assertEqual([self.service1, self.service2], self.usage_pattern.services)
-    
-    def test_update_nb_user_journeys_in_parallel_entire_hour(self):
-        input_huj_starts = [20, 10, 14, 15]
-        with patch.object(self.usage_pattern, "utc_hourly_user_journey_starts",
-                          SourceHourlyValues(create_hourly_usage_df_from_list(input_huj_starts))), \
-                patch.object(self.usage_pattern.user_journey, "duration", SourceValue(1 * u.hour / u.user_journey)):
-            self.usage_pattern.update_nb_user_journeys_in_parallel()
-            self.assertEqual(
-                input_huj_starts,
-                self.usage_pattern.nb_user_journeys_in_parallel.value_as_float_list)
-
-    def test_update_nb_user_journeys_in_parallel_2_hours(self):
-        input_huj_starts = [20, 10, 14, 15]
-        with patch.object(self.usage_pattern, "utc_hourly_user_journey_starts",
-                          SourceHourlyValues(create_hourly_usage_df_from_list(input_huj_starts))), \
-                patch.object(self.usage_pattern.user_journey, "duration", SourceValue(2 * u.hour / u.user_journey)):
-            self.usage_pattern.update_nb_user_journeys_in_parallel()
-            self.assertEqual(
-                [20, 30, 24, 29, 15],
-                self.usage_pattern.nb_user_journeys_in_parallel.value_as_float_list)
-
-    def test_update_nb_user_journeys_in_parallel_partial_hour(self):
-        input_huj_starts = [20, 10, 14, 15]
-        with patch.object(self.usage_pattern, "utc_hourly_user_journey_starts",
-                          SourceHourlyValues(create_hourly_usage_df_from_list(input_huj_starts))), \
-                patch.object(self.usage_pattern.user_journey, "duration", SourceValue(30 * u.min / u.user_journey)):
-            self.usage_pattern.update_nb_user_journeys_in_parallel()
-            self.assertEqual(
-                [10, 5, 7, 7.5],
-                self.usage_pattern.nb_user_journeys_in_parallel.value_as_float_list)
-
-    def test_update_nb_user_journeys_in_parallel_partial_hour_greater_than_one(self):
-        input_huj_starts = [20, 10, 14, 15]
-        with patch.object(self.usage_pattern, "utc_hourly_user_journey_starts",
-                          SourceHourlyValues(create_hourly_usage_df_from_list(input_huj_starts))), \
-                patch.object(self.usage_pattern.user_journey, "duration", SourceValue(150 * u.min / u.user_journey)):
-            self.usage_pattern.update_nb_user_journeys_in_parallel()
-            self.assertEqual(
-                [20, 30, 34, 34, 22, 7.5],
-                self.usage_pattern.nb_user_journeys_in_parallel.value_as_float_list)
 
     def test_devices_energy(self):
         test_device1 = MagicMock()

@@ -33,10 +33,10 @@ class Job(ModelingObject):
         super().__init__(name)
         self.job_type = job_type
         self.service = service
-        if not data_upload.value.check("[]/[user_journey]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
-        if not data_download.value.check("[]/[user_journey]"):
-            raise ValueError("Variable 'data_upload' does not have the appropriate '[]/[user_journey]' dimensionality")
+        if not data_upload.value.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
+        if not data_download.value.check("[]"):
+            raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
         self.data_upload = data_upload
         self.data_upload.set_label(f"Data upload of request {self.name}")
         self.data_download = data_download
@@ -48,19 +48,23 @@ class Job(ModelingObject):
         self.request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
 
         # check ram_needed value format
-        if not ram_needed.value.check("[] / [user_journey]"):
+        if not ram_needed.value.check("[]"):
             raise ValueError(
-                "Variable 'ram_needed' does not have the appropriate '[] / [user_journey]' dimensionality")
+                "Variable 'ram_needed' does not have the appropriate '[]' dimensionality")
         self.ram_needed = ram_needed
         self.ram_needed.set_label(f"RAM needed on server {self.service.server.name} to process {self.name}")
 
         # check cpu_need value format
-        if not cpu_needed.value.check("[cpu] / [user_journey]"):
+        if not cpu_needed.value.check("[cpu]"):
             raise ValueError(
-                "Variable 'cpu_needed' does not have the appropriate '[cpu] / [user_journey]' dimensionality")
+                "Variable 'cpu_needed' does not have the appropriate '[cpu]' dimensionality")
         self.cpu_needed = cpu_needed
         self.cpu_needed.set_label(f"CPU needed on server {self.service.server.name} to process {self.name}")
         self.description = description
+
+    @property
+    def occurences_across_time(self):
+        return self.service.job_occurences_across_time_per_job[self]
 
     @property
     def user_journey_steps(self) -> List[Type["UserJourneyStep"]]:

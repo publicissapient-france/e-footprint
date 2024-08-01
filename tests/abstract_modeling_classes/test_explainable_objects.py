@@ -6,7 +6,7 @@ import pytz
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.core.usage.usage_pattern import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 
 

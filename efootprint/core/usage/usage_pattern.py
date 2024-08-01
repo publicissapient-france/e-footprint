@@ -1,16 +1,10 @@
 from typing import List
-import math
-
-import pandas as pd
-import numpy as np
-import pint_pandas
-import pint
-from datetime import datetime, timedelta
 
 from efootprint.constants.countries import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.user_journey import UserJourney
+from efootprint.core.usage.compute_nb_occurences_in_parallel import compute_nb_occurences_in_parallel
 from efootprint.core.service import Service
 from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -21,7 +15,6 @@ class UsagePattern(ModelingObject):
     def __init__(self, name: str, user_journey: UserJourney, devices: List[Hardware], network: Network,
                  country: Country, hourly_user_journey_starts: ExplainableHourlyQuantities):
         super().__init__(name)
-        self.usage_time_fraction = None
         self.utc_hourly_user_journey_starts = None
         self.nb_user_journeys_in_parallel = None
         self.devices_energy = None
@@ -59,19 +52,8 @@ class UsagePattern(ModelingObject):
         self.utc_hourly_user_journey_starts = utc_hourly_user_journey_starts.set_label(f"{self.name} UTC")
 
     def update_nb_user_journeys_in_parallel(self):
-        nb_of_user_journeys_in_parallel = self.utc_hourly_user_journey_starts. \
-            create_empty_hourly_dimensionless_quantities_with_same_index()
-        uj_duration_in_nb_of_hours = self.user_journey.duration.to(u.hour / u.uj).magnitude
-        nb_of_full_hours_in_uj_duration = math.floor(uj_duration_in_nb_of_hours)
-        for hour in range(0, nb_of_full_hours_in_uj_duration):
-            nb_of_user_journeys_in_parallel += self.utc_hourly_user_journey_starts.return_shifted_hourly_quantities(
-                hour)
-
-        nonfull_duration_rest = uj_duration_in_nb_of_hours - nb_of_full_hours_in_uj_duration
-        if nonfull_duration_rest > 0:
-            nb_of_user_journeys_in_parallel += self.utc_hourly_user_journey_starts.return_shifted_hourly_quantities(
-                nb_of_full_hours_in_uj_duration
-            ) * ExplainableQuantity(nonfull_duration_rest * u.dimensionless, "non full duration rest")
+        nb_of_user_journeys_in_parallel = compute_nb_occurences_in_parallel(
+            self.utc_hourly_user_journey_starts, self.user_journey.duration)
 
         self.nb_user_journeys_in_parallel = nb_of_user_journeys_in_parallel.set_label(
             f"{self.name} hourly nb of user journeys in parallel")
@@ -111,27 +93,3 @@ class UsagePattern(ModelingObject):
     def update_instances_fabrication_footprint(self):
         self.instances_fabrication_footprint = (self.devices_fabrication_footprint + 0).set_label(
             f"{self.name} total fabrication footprint")
-
-
-def create_random_hourly_usage_df(
-        nb_days: int = 1, min_val: int = 1, max_val: int = 10,
-        start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
-        pint_unit: pint.Unit = u.dimensionless):
-    end_date = start_date + timedelta(days=nb_days)
-    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
-
-    data = np.random.randint(min_val, max_val, size=len(period_index))
-    df = pd.DataFrame(data, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
-
-    return df
-
-
-def create_hourly_usage_df_from_list(
-        input_list: List[int], start_date: datetime = datetime.strptime("2025-01-01", "%Y-%m-%d"),
-        pint_unit: pint.Unit = u.dimensionless):
-    end_date = start_date + timedelta(hours=len(input_list) - 1)
-    period_index = pd.period_range(start=start_date, end=end_date, freq='h')
-
-    df = pd.DataFrame(input_list, index=period_index, columns=['value'], dtype=f"pint[{str(pint_unit)}]")
-
-    return df

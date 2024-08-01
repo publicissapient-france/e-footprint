@@ -13,9 +13,9 @@ class TestJob(TestCase):
         self.service.name = "service"
 
         self.job = Job(
-            "test job", service=self.service, data_download=SourceValue(200 * u.MB / u.uj),
-            data_upload=SourceValue(100 * u.MB / u.uj),
-            ram_needed=SourceValue(400 * u.MB / u.uj), cpu_needed=SourceValue(2 * u.core / u.uj),
+            "test job", service=self.service, data_download=SourceValue(200 * u.MB),
+            data_upload=SourceValue(100 * u.MB),
+            ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
             request_duration=SourceValue(2 * u.min))
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj_step(self):
