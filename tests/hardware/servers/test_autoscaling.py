@@ -44,6 +44,6 @@ class TestAutoscaling(TestCase):
                 patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
                 patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
                 patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.server_base.update_instances_power()
+            self.server_base.update_instances_energy()
             self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
                              round(self.server_base.instances_power.value, 2))

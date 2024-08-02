@@ -80,6 +80,6 @@ class TestStorage(TestCase):
               patch.object(self.storage_base, "power", SourceValue(1.3 * u.W)), \
               patch.object(self.storage_base, "idle_power", SourceValue(0.3 * u.W)), \
               patch.object(self.storage_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.storage_base.update_instances_power()
+            self.storage_base.update_instances_energy()
             expected_power = SourceValue((15.6 / 2 + 0.36) * u.W).to(u.kWh / u.year)
             self.assertEqual(round(expected_power.value, 0), round(self.storage_base.instances_power.value, 0))

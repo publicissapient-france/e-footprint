@@ -29,7 +29,7 @@ class Serverless(Server):
 
         self.nb_of_instances = nb_of_servers_raw.set_label(f"Nb of {self.name} instances")
 
-    def update_instances_power(self):
+    def update_instances_energy(self):
         effective_active_power = self.power * self.power_usage_effectiveness
         server_power = (effective_active_power * self.nb_of_instances).to(u.kWh / u.year)
 

@@ -61,5 +61,5 @@ class Server(InfraHardware):
         pass
 
     @abstractmethod
-    def update_instances_power(self):
+    def update_instances_energy(self):
         pass

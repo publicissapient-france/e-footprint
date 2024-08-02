@@ -22,7 +22,7 @@ class TestServerBaseClass(TestCase):
             def update_nb_of_instances(self):
                 return SourceValue(10 * u.dimensionless)
 
-            def update_instances_power(self):
+            def update_instances_energy(self):
                 return SourceValue(100 * u.W)
 
         self.country = MagicMock()

@@ -54,7 +54,7 @@ class OnPremise(Server):
         else:
             self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances").to(u.dimensionless)
 
-    def update_instances_power(self):
+    def update_instances_energy(self):
         effective_active_power = self.power * self.power_usage_effectiveness
         effective_idle_power = self.idle_power * self.power_usage_effectiveness
 

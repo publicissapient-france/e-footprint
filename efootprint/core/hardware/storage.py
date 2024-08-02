@@ -90,7 +90,7 @@ class Storage(InfraHardware):
         self.nb_of_instances = nb_of_instances.set_label(
             f"Number of total instances for {self.name}")
 
-    def update_instances_power(self):
+    def update_instances_energy(self):
         active_storage_power = (
                 self.nb_of_active_instances * self.power * self.power_usage_effectiveness
         ).set_label(f"Active instances power")
