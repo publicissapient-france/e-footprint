@@ -15,6 +15,7 @@ from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.logger import logger
 from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
 
@@ -49,6 +50,7 @@ class System(ModelingObject):
     def after_init(self):
         self.init_has_passed = True
         self.launch_attributes_computation_chain()
+        logger.info(f"Finished computing full system {self.name}")
         self.initial_total_energy_footprints = self.total_energy_footprints
         self.initial_total_fabrication_footprints = self.total_fabrication_footprints
 
@@ -104,7 +106,7 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
-            "Network": {"networks": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks")},
+            "Network": {"networks": 0},
             "Devices": {usage_pattern.name: usage_pattern.devices_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
         }
@@ -128,7 +130,7 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
-            "Network": ExplainableQuantity(0 * u.kg / u.year, "No fabrication footprint for networks"),
+            "Network": 0,
             "Devices": sum(usage_pattern.devices_fabrication_footprint
                            for usage_pattern in self.usage_patterns)
         }

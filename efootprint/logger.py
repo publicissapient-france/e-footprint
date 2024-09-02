@@ -22,3 +22,5 @@ def write_logs_to_file(input_logger=logger, input_formatter=formatter, log_level
     fh.setFormatter(input_formatter)
     fh.setLevel(log_level)
     input_logger.addHandler(fh)
+
+write_logs_to_file(log_level=logging.DEBUG)

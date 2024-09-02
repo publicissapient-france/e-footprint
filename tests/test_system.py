@@ -5,6 +5,7 @@ import unittest
 from efootprint.core.system import System
 from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 
 
 class TestSystem(TestCase):
@@ -46,7 +47,7 @@ class TestSystem(TestCase):
             "Servers": SourceValue(100 * u.kg / u.year),
             "Storage": SourceValue(100 * u.kg / u.year),
             "Devices": SourceValue(100 * u.kg / u.year),
-            "Network": SourceValue(0 * u.kg / u.year)
+            "Network": 0
         }
         self.assertDictEqual(expected_dict, self.system.total_fabrication_footprints)
 
@@ -60,6 +61,9 @@ class TestSystem(TestCase):
         }
 
         self.assertDictEqual(expected_dict, energy_footprints)
+
+    def test_footprints_by_category_and_object(self):
+        raise NotImplementedError
 
 
 if __name__ == '__main__':

@@ -9,9 +9,9 @@ class UserJourneyStep(ModelingObject):
     def __init__(self, name: str, user_time_spent: SourceValue, jobs: List[Job]):
         super().__init__(name)
 
-        if not user_time_spent.value.check("[time]/[user_journey]"):
+        if not user_time_spent.value.check("[time]"):
             raise ValueError(
-                "Variable 'user_time_spent' does not have the appropriate '[time]/[user_journey]' dimensionality")
+                "Variable 'user_time_spent' does not have the appropriate '[time]' dimensionality")
         self.user_time_spent = user_time_spent
         self.user_time_spent.set_label(f"Time spent on step {self.name}")
         self.jobs = jobs

@@ -18,7 +18,7 @@ class Network(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["data_download", "data_upload", "energy_footprint"]
+        return ["energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:

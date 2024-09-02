@@ -9,7 +9,8 @@ import re
 from IPython.display import HTML
 
 from efootprint.logger import logger
-from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, \
+    ObjectLinkedToModelingObj
 from efootprint.utils.graph_tools import WIDTH, HEIGHT, add_unique_id_to_mynetwork
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
@@ -155,7 +156,7 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
                         self.handle_object_list_link_update(input_value, old_list_value)
                     super().__setattr__(old_list_value_attr_name, copy(input_value))
 
-            elif issubclass(type(input_value), ExplainableObject):
+            elif issubclass(type(input_value), ObjectLinkedToModelingObj):
                 input_value.set_modeling_obj_container(self, name)
                 is_a_user_attribute_update = self.init_has_passed and (
                     name not in self.calculated_attributes and old_value is not None)

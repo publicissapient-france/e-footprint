@@ -57,9 +57,9 @@ class Service(ModelingObject):
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
-    def compute_calculated_attribute_summed_across_usage_patterns_per_job(
-            self, calculated_attribute_name: str, calculated_attribute_label: str):
-        hourly_calc_attr_summed_across_ups_per_job = ExplainableObjectDict()
+    def update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+            self, hourly_calc_attr_summed_across_ups_per_job: ExplainableObjectDict,
+            calculated_attribute_name: str, calculated_attribute_label: str):
 
         for job in self.jobs:
             job_hourly_calc_attr_summed_across_ups = 0
@@ -69,19 +69,19 @@ class Service(ModelingObject):
             hourly_calc_attr_summed_across_ups_per_job[job] = job_hourly_calc_attr_summed_across_ups.set_label(
                 f"Hourly {job.name} {calculated_attribute_label} across usage patterns")
 
-        return hourly_calc_attr_summed_across_ups_per_job
-
     def update_hourly_job_occurrences_across_usage_patterns_per_job(self):
-        hourly_job_occurrences_across_ups = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
+        self.hourly_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
+
+        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+            self.hourly_job_occurrences_across_usage_patterns_per_job,
             "hourly_job_occurrences_per_job", "occurrences")
 
-        self.hourly_job_occurrences_across_usage_patterns_per_job = hourly_job_occurrences_across_ups
-
     def update_hourly_avg_job_occurrences_across_usage_patterns_per_job(self):
-        hourly_avg_job_occurrences_across_ups = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
-            "hourly_avg_job_occurrences_per_job", "avearge occurrences")
+        self.hourly_avg_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
 
-        self.hourly_avg_job_occurrences_across_usage_patterns_per_job = hourly_avg_job_occurrences_across_ups
+        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+            self.hourly_avg_job_occurrences_across_usage_patterns_per_job,
+            "hourly_avg_job_occurrences_per_job", "average occurrences")
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
@@ -101,10 +101,11 @@ class Service(ModelingObject):
         self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
 
     def update_hourly_data_upload_across_usage_patterns_per_job(self):
-        hourly_data_upload_across_ups_per_job = self.compute_calculated_attribute_summed_across_usage_patterns_per_job(
-            "hourly_data_upload_per_job", "data upload")
+        self.hourly_data_upload_across_usage_patterns_per_job = ExplainableObjectDict()
 
-        self.hourly_data_upload_across_usage_patterns_per_job = hourly_data_upload_across_ups_per_job
+        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+            self.hourly_data_upload_across_usage_patterns_per_job,
+            "hourly_data_upload_per_job", "data upload")
             
     def update_storage_needed(self):
         storage_needed = 0
