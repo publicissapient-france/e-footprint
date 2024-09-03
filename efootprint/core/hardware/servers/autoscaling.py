@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import pandas as pd
 import pint_pandas
 
@@ -20,15 +21,18 @@ class Autoscaling(Server):
 
     def update_nb_of_instances(self):
         nb_of_servers_based_on_ram_alone = (
-                self.all_services_ram_needs / self.available_ram_per_instance).set_label(
+                self.all_services_ram_needs / self.available_ram_per_instance).to(u.dimensionless).set_label(
             f"Raw nb of {self.name} instances based on RAM alone")
         nb_of_servers_based_on_cpu_alone = (
-                self.all_services_cpu_needs / self.available_cpu_per_instance).set_label(
+                self.all_services_cpu_needs / self.available_cpu_per_instance).to(u.dimensionless).set_label(
             f"Raw nb of {self.name} instances based on CPU alone")
 
-        nb_of_servers_raw_df = pd.DataFrame(
-            {"value": pd.merge(nb_of_servers_based_on_cpu_alone.value, nb_of_servers_based_on_ram_alone.value,
-                               left_index=True, right_index=True).max(axis=1)})
+        nb_of_servers_raw_np = np.maximum(
+            nb_of_servers_based_on_ram_alone.value["value"],
+            nb_of_servers_based_on_cpu_alone.value["value"]
+        )
+        nb_of_servers_raw_df = pd.DataFrame({"value": nb_of_servers_raw_np})
+
         nb_of_servers_raw = ExplainableHourlyQuantities(
             nb_of_servers_raw_df,
             f"Raw nb of instances",
@@ -37,11 +41,11 @@ class Autoscaling(Server):
             operator="max compared with"
         )
 
-        hour_by_hour_nb_of_instances_df = nb_of_servers_raw_df.copy()
-        hour_by_hour_nb_of_instances_df["value"] = pint_pandas.PintArray(hour_by_hour_nb_of_instances_df["value"].apply(
-            lambda x: math.ceil(x)).values, dtype=u.dimensionless)
+        nb_of_servers_rounded_np = np.ceil(nb_of_servers_raw_np)
+        nb_of_servers_rounded_df = pd.DataFrame(
+            {"value": pint_pandas.PintArray(nb_of_servers_rounded_np, dtype=u.dimensionless)})
         hour_by_hour_nb_of_instances = ExplainableHourlyQuantities(
-            hour_by_hour_nb_of_instances_df, f"Hour by hour nb of instances", left_parent=nb_of_servers_raw,
+            nb_of_servers_rounded_df, f"Hour by hour nb of instances", left_parent=nb_of_servers_raw,
             operator="Rounding up of instances nb"
         )
 
