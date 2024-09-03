@@ -6,7 +6,8 @@ import pytz
 
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.builders.time_builders import create_hourly_usage_df_from_list
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list, \
+    create_empty_hourly_quantities_with_same_index
 from efootprint.constants.units import u
 
 
@@ -62,6 +63,9 @@ class TestExplainableQuantity(unittest.TestCase):
     def test_to_json(self):
         self.assertDictEqual({"label": "1 Watt", "value": 1, "unit": "watt"}, self.a.to_json())
 
+    def test_ceil(self):
+        self.a = ExplainableQuantity(1.5 * u.W, "1.5 Watt")
+        self.assertEqual(2 * u.W, self.a.ceil().value)
 
 class TestExplainableHourlyQuantities(unittest.TestCase):
 
@@ -134,14 +138,6 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         with self.assertRaises(ValueError):
             subtraction_result = self.hourly_usage1 - ExplainableQuantity(4 * u.W, "4W")
 
-    def test_create_empty_hourly_dimensionless_quantities_with_same_index(self):
-        df = self.hourly_usage1.create_empty_hourly_quantities_with_same_index()
-
-        self.assertTrue(isinstance(df, ExplainableHourlyQuantities))
-        self.assertEqual(u.dimensionless, df.unit)
-        self.assertEqual(len(self.hourly_usage1), len(df))
-        self.assertEqual([0] * len(df), df.value_as_float_list)
-
     @patch('efootprint.abstract_modeling_classes.explainable_objects.datetime')
     def test_convert_to_utc(self, mock_datetime):
         start_date = datetime(2023, 10, 1)
@@ -196,6 +192,52 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.maxDiff = None
         self.assertDictEqual(
             {"label": "Usage 1", "values": [1] * 24, "unit": "watt"}, self.hourly_usage1.to_json())
+
+    def test_ceil_dimensionless(self):
+        usage_data = [1.5] * 24
+        hourly_usage_data = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(usage_data, pint_unit=u.dimensionless), "test")
+
+        ceil = hourly_usage_data.ceil()
+        self.assertEqual([2] * 24, ceil.value_as_float_list)
+        self.assertEqual(u.dimensionless, ceil.unit)
+
+    def test_ceil_with_unit_specified(self):
+        usage_data = [1.5] * 24
+        hourly_usage_data = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(usage_data, pint_unit=u.GB), "test")
+
+        ceil = hourly_usage_data.ceil()
+        self.assertEqual([2] * 24, ceil.value_as_float_list)
+        self.assertEqual(u.GB, ceil.unit)
+
+    def test_copy(self):
+        usage_data = [1.5] * 24
+        expected_data = [1.5] * 24
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        end_date = start_date + timedelta(hours=len(usage_data) - 1)
+
+        hourly_usage_data = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(usage_data, start_date=start_date, pint_unit=u.GB, ), "test")
+
+        duplicated = hourly_usage_data.copy()
+        self.assertEqual(expected_data, duplicated.value_as_float_list)
+        self.assertEqual(u.GB, duplicated.unit)
+        self.assertEqual(start_date, duplicated.value.index.min().to_timestamp())
+        self.assertEqual(end_date, duplicated.value.index.max().to_timestamp())
+
+    def test_copy_with_changes_on_source(self):
+        usage_data = [1.5] * 24
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+
+        hourly_usage_data = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(usage_data, start_date=start_date, pint_unit=u.GB, ), "test")
+
+        duplicated = hourly_usage_data.copy()
+        hourly_usage_data = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list([3] * 24, start_date=start_date, pint_unit=u.GB, ), "test")
+
+        self.assertNotEqual(hourly_usage_data.value_as_float_list, duplicated.value_as_float_list)
 
 
 if __name__ == "__main__":

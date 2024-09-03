@@ -11,7 +11,7 @@ class TestTimeBuilders(unittest.TestCase):
         min_val = 1
         max_val = 27
         start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.uj
+        pint_unit = u.dimensionless
         df = create_random_hourly_usage_df(nb_days, min_val, max_val, start_date, pint_unit)
 
         self.assertEqual(start_date, datetime.strptime(df.index.min().strftime("%Y-%m-%d"), "%Y-%m-%d"))
@@ -22,7 +22,7 @@ class TestTimeBuilders(unittest.TestCase):
 
     def test_create_hourly_usage_df_from_list(self):
         start_date = datetime.strptime("2025-07-14", "%Y-%m-%d")
-        pint_unit = u.uj
+        pint_unit = u.dimensionless
         input_list = [1, 2, 5, 7]
         df = create_hourly_usage_df_from_list(input_list, start_date, pint_unit)
 

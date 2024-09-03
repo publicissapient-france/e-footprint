@@ -10,7 +10,6 @@ from pint import Quantity, Unit
 import numpy as np
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
-from efootprint.constants.units import u
 
 
 class ExplainableQuantity(ExplainableObject):
@@ -41,6 +40,10 @@ class ExplainableQuantity(ExplainableObject):
                 return ExplainableQuantity(other.value, left_parent=self, right_parent=other, operator="max")
         else:
             raise ValueError(f"Can only compare with another ExplainableQuantity, not {type(other)}")
+
+    def ceil(self):
+        self.value = np.ceil(self.value)
+        return self
 
     def __gt__(self, other):
         if issubclass(type(other), ExplainableQuantity):
@@ -151,8 +154,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             raise ValueError(
                 f"ExplainableHourlyQuantities values must have only one column named value, got {value.columns}")
         if not isinstance(value.dtypes.iloc[0], pint_pandas.pint_array.PintType):
-            raise ValueError(f"The pd DataFrame value of an ExplainableHourlyQuantities object must be typed with Pint, "
-                             f"got {type(value.dtypes.iloc[0])} dtype")
+            raise ValueError(f"The pd DataFrame value of an ExplainableHourlyQuantities object must be typed with Pint,"
+                             f" got {type(value.dtypes.iloc[0])} dtype")
         super().__init__(value, label, left_parent, right_parent, operator, source)
 
     def to(self, unit_to_convert_to: Unit, rounding=None):
@@ -165,8 +168,7 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def return_shifted_hourly_quantities(self, hours: int):
         return ExplainableHourlyQuantities(
-            self.value.copy().shift(hours, fill_value=0 * self.unit, freq="h"),
-            left_parent=self, operator=f"shift by {hours}")
+            self.value.shift(hours, freq="h"), left_parent=self, operator=f"shift by {hours}")
 
     @property
     def unit(self):
@@ -186,12 +188,6 @@ class ExplainableHourlyQuantities(ExplainableObject):
             self.value.copy().shift(time_diff_in_hours, freq="h"),
             left_parent=self, right_parent=local_timezone, operator="converted to UTC from")
 
-    def create_empty_hourly_quantities_with_same_index(self, dtype=u.dimensionless):
-        copy_df = self.value.copy()
-        copy_df["value"] = pint_pandas.PintArray([0] * len(self.value), dtype=dtype)
-
-        return ExplainableHourlyQuantities(copy_df, left_parent=self, operator="empty")
-
     def sum(self):
         return ExplainableQuantity(self.value["value"].sum(), left_parent=self, operator="sum")
 
@@ -203,7 +199,20 @@ class ExplainableHourlyQuantities(ExplainableObject):
 
     def abs(self):
         return ExplainableHourlyQuantities(
-            pd.DataFrame({"value": self.value["value"].abs()}), left_parent=self, operator="abs")
+            pd.DataFrame(
+                {"value": pint_pandas.PintArray(np.abs(self.value["value"].values.data), dtype=self.unit)},
+                index=self.value.index),
+            left_parent=self, operator="abs")
+
+    def ceil(self):
+        return ExplainableHourlyQuantities(
+            pd.DataFrame(
+                {"value": pint_pandas.PintArray(np.ceil(self.value["value"].values.data), dtype=self.unit)},
+                index=self.value.index),
+            left_parent=self, operator="ceil")
+
+    def copy(self):
+        return ExplainableHourlyQuantities(self.value.copy(), left_parent=self, operator="duplicate")
 
     def __eq__(self, other):
         if issubclass(type(other), ExplainableHourlyQuantities):
@@ -253,7 +262,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(self.value * other.value, "", self, other, "*")
         else:
             raise ValueError(
-                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
+                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
+                f"not with {type(other)}")
 
     def __rmul__(self, other):
         return self.__mul__(other)
@@ -265,7 +275,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(self.value / other.value, "", self, other, "/")
         else:
             raise ValueError(
-                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
+                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
+                f"not with {type(other)}")
 
     def __rtruediv__(self, other):
         if issubclass(type(other), ExplainableHourlyQuantities):
@@ -274,7 +285,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return ExplainableHourlyQuantities(other.value / self.value, "", other, self, "/")
         else:
             raise ValueError(
-                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, not with {type(other)}")
+                f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity,"
+                f" not with {type(other)}")
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
@@ -296,8 +308,11 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return json.dumps(self.to_json(), cls=NpEncoder)
 
     def __str__(self):
-        return ("[" + ", ".join([str(round(hourly_value, 2)) for hourly_value in self.value]) + "]").replace(
-            "dimensionless", "")
+        compact_unit = "{:~}".format(self.unit)
+        str_rounded_values = ", ".join(
+            [str(round(hourly_value.magnitude, 2)) for hourly_value in self.value["value"].tolist()])
+
+        return f"in {compact_unit}: [{str_rounded_values}]"
 
 
 class NpEncoder(json.JSONEncoder):

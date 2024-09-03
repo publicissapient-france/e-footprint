@@ -18,7 +18,6 @@ class Storage(InfraHardware):
         self.storage_delta = None
         self.full_cumulative_storage_need = None
         self.long_term_storage_required = None
-        self.nb_of_idle_instances = None
         self.nb_of_active_instances = None
         self.instances_power = None
         if not idle_power.value.check("[power]"):
@@ -60,12 +59,12 @@ class Storage(InfraHardware):
     def update_storage_dumps(self):
         storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
         storage_dumps_df = - self.all_services_storage_needs.value.copy().shift(
-            periods=storage_duration_in_hours, freq='H')
+            periods=storage_duration_in_hours, freq='h')
         storage_dumps_df = storage_dumps_df[storage_dumps_df.index <= self.all_services_storage_needs.value.index.max()]
 
         self.storage_dumps = ExplainableHourlyQuantities(
             storage_dumps_df, label=f"Storage dumps for {self.name}", left_parent=self.all_services_storage_needs,
-            right_parent= None, operator="shift by storage duration and negate")
+            right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
     def update_storage_delta(self):
         storage_delta = self.all_services_storage_needs + self.storage_dumps
@@ -74,7 +73,7 @@ class Storage(InfraHardware):
 
     def update_full_cumulative_storage_need(self):
         storage_delta_df = self.storage_delta.value.copy()
-        storage_delta_df.iloc[0] += self.initial_storage_need.value
+        storage_delta_df.iat[0, 0] += self.initial_storage_need.value
         full_cumulative_storage_need = storage_delta_df.cumsum()
 
         self.full_cumulative_storage_need = ExplainableHourlyQuantities(
@@ -82,8 +81,13 @@ class Storage(InfraHardware):
             left_parent=self.storage_delta, right_parent=self.initial_storage_need,
             operator="cumulative sum of storage delta with initial storage need")
 
+    def update_raw_nb_of_instances(self):
+        raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)
+
+        self.raw_nb_of_instances = raw_nb_of_instances.set_label(f"Hourly raw number of instances for {self.name}")
+
     def update_nb_of_instances(self):
-        nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)
+        nb_of_instances = self.raw_nb_of_instances.ceil()
 
         self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of instances for {self.name}")
 

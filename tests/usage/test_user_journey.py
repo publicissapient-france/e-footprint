@@ -23,15 +23,15 @@ class TestUserJourney(TestCase):
         self.step1 = UserJourneyStep(
             "test_uj_step1",
             jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min / u.uj))
+            user_time_spent=SourceValue(2 * u.min))
         self.job2 = MagicMock(
-            spec={"data_download": SourceValue(200 * u.MB / u.uj), "data_upload": SourceValue(100 * u.MB / u.uj)})
+            spec={"data_download": SourceValue(200 * u.MB), "data_upload": SourceValue(100 * u.MB)})
         self.step2 = UserJourneyStep(
             "test_uj_step2", jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min / u.uj))
+            user_time_spent=SourceValue(2 * u.min))
         self.step3 = UserJourneyStep(
             "test_uj_step3", jobs=[self.job],
-            user_time_spent=SourceValue(2 * u.min / u.uj))
+            user_time_spent=SourceValue(2 * u.min))
         self.user_journey = UserJourney("test user journey", uj_steps=[self.step1])
         self.user_journey.dont_handle_input_updates = True
         self.usage_pattern = MagicMock()
@@ -54,30 +54,30 @@ class TestUserJourney(TestCase):
     def test_update_duration_with_multiple_steps(self):
         self.user_journey.add_step(self.step1)
         for step in self.user_journey.uj_steps:
-            step.user_time_spent = SourceValue(5 * u.min / u.user_journey)
+            step.user_time_spent = SourceValue(5 * u.min)
 
         self.user_journey.update_duration()
-        expected_duration = SourceValue(10 * u.min / u.user_journey)
+        expected_duration = SourceValue(10 * u.min)
 
         self.assertEqual(self.user_journey.duration.value, expected_duration.value)
 
     def test_update_data_download_with_multiple_steps(self):
         self.user_journey.add_step(self.step1)
 
-        with patch.object(self.job, "data_download", new=SourceValue(10 * u.MB / u.user_journey)):
+        with patch.object(self.job, "data_download", new=SourceValue(10 * u.MB)):
             self.user_journey.update_data_download()
 
-        expected_data_download = SourceValue(20 * u.MB / u.user_journey)
+        expected_data_download = SourceValue(20 * u.MB)
 
         self.assertEqual(self.user_journey.data_download.value, expected_data_download.value)
 
     def test_update_data_upload_with_multiple_steps(self):
         self.user_journey.add_step(self.step1)
 
-        with patch.object(self.job, "data_upload", new=SourceValue(10 * u.MB / u.user_journey)):
+        with patch.object(self.job, "data_upload", new=SourceValue(10 * u.MB)):
             self.user_journey.update_data_upload()
 
-        expected_data_upload = SourceValue(20 * u.MB / u.user_journey)
+        expected_data_upload = SourceValue(20 * u.MB)
 
         self.assertEqual(self.user_journey.data_upload.value, expected_data_upload.value)
 

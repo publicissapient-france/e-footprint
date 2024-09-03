@@ -12,7 +12,8 @@ class Hardware(ModelingObject):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, fraction_of_usage_time: SourceValue):
         super().__init__(name)
-        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(f"Carbon footprint fabrication of {self.name}")
+        self.carbon_footprint_fabrication = carbon_footprint_fabrication.set_label(
+            f"Carbon footprint fabrication of {self.name}")
         self.power = power.set_label(f"Power of {self.name}")
         self.lifespan = lifespan.set_label(f"Lifespan of {self.name}")
         if not fraction_of_usage_time.value.check("[]"):
@@ -35,6 +36,7 @@ class InfraHardware(Hardware):
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
         self.all_services_cpu_needs = None
         self.all_services_ram_needs = None
+        self.raw_nb_of_instances = None
         self.nb_of_instances = None
         self.instances_energy = None
         self.energy_footprint = None
@@ -51,12 +53,16 @@ class InfraHardware(Hardware):
     @property
     def calculated_attributes_defined_in_infra_hardware_class(self):
         return [
-            "all_services_cpu_needs", "all_services_ram_needs",
+            "all_services_cpu_needs", "all_services_ram_needs", "raw_nb_of_instances",
             "nb_of_instances", "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
         return []
+
+    @abstractmethod
+    def update_raw_nb_of_instances(self):
+        pass
 
     @abstractmethod
     def update_nb_of_instances(self):

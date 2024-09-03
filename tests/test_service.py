@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
@@ -51,24 +52,26 @@ class TestService(unittest.TestCase):
         usage_pattern3.hourly_calc_attr_per_job = {job2: SourceHourlyValues(
             create_hourly_usage_df_from_list([1, 2, 3]))}
         job2.usage_patterns = [usage_pattern3]
+        input_expl_dict = ExplainableObjectDict()
 
         with patch.object(Service, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = [job1, job2]
-            result = self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-                "hourly_calc_attr_per_job", "my calc attr")
+            self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+                input_expl_dict, "hourly_calc_attr_per_job", "my calc attr")
 
-            self.assertEqual([job1, job2], list(result.keys()))
-            self.assertEqual([4, 4, 9], result[job1].value_as_float_list)
-            self.assertEqual([1, 2, 3], result[job2].value_as_float_list)
-            self.assertEqual("Hourly job1 my calc attr across usage patterns", result[job1].label)
+            self.assertEqual([job1, job2], list(input_expl_dict.keys()))
+            self.assertEqual([4, 4, 9], input_expl_dict[job1].value_as_float_list)
+            self.assertEqual([1, 2, 3], input_expl_dict[job2].value_as_float_list)
+            self.assertEqual("Hourly job1 my calc attr across usage patterns", input_expl_dict[job1].label)
 
     def test_compute_calculated_attribute_summed_across_usage_patterns_per_job_no_jobs(self):
         with patch.object(Service, "jobs", new_callable=PropertyMock) as mock_jobs:
             mock_jobs.return_value = []
-            result = self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-                "hourly_calc_attr_per_job", "my calc attr")
+            input_expl_dict = ExplainableObjectDict()
+            self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
+                input_expl_dict, "hourly_calc_attr_per_job", "my calc attr")
 
-            self.assertEqual([], list(result.keys()))
+            self.assertEqual([], list(input_expl_dict.keys()))
 
     def test_update_hour_by_hour_ram_need(self):
         job1 = MagicMock()

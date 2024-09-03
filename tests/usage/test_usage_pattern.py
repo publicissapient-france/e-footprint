@@ -17,9 +17,9 @@ class TestUsagePattern(unittest.TestCase):
         self.service2 = MagicMock()
 
         user_journey = MagicMock()
-        user_journey.duration = SourceValue(2.0 * u.min / u.user_journey, label="duration")
-        user_journey.data_upload = SourceValue(2.0 * u.MB / u.user_journey, label="data_upload")
-        user_journey.data_download = SourceValue(3.0 * u.MB / u.user_journey, label="data_download")
+        user_journey.duration = SourceValue(2.0 * u.min, label="duration")
+        user_journey.data_upload = SourceValue(2.0 * u.MB, label="data_upload")
+        user_journey.data_download = SourceValue(3.0 * u.MB, label="data_download")
 
         user_journey.services = [self.service1, self.service2]
         country = MagicMock()

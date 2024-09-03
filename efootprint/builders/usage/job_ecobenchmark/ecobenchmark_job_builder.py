@@ -26,8 +26,8 @@ def ecobenchmark_job(
     else:
         tech_row = filter_df.iloc[0]
 
-    cpu_needed = SourceValue(tech_row['avg_cpu_core_per_request'] * u.core / u.uj, ecobenchmark_source)
-    ram_needed = SourceValue(tech_row['avg_ram_per_request_in_MB'] * u.MB / u.uj, ecobenchmark_source)
+    cpu_needed = SourceValue(tech_row['avg_cpu_core_per_request'] * u.core, ecobenchmark_source)
+    ram_needed = SourceValue(tech_row['avg_ram_per_request_in_MB'] * u.MB, ecobenchmark_source)
 
     return Job(
         name, service, data_upload, data_download, request_duration=default_request_duration(),

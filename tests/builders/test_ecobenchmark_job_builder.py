@@ -14,7 +14,7 @@ class TestJobEcobenchmarkBuilder(unittest.TestCase):
         storage = default_ssd()
         service = Service("test service", server, storage, base_ram_consumption=SourceValue(1 * u.MB))
         ecobenchmark_job(
-            "test job", service, data_upload=SourceValue(1 * u.MB / u.uj), data_download=SourceValue(1 * u.MB / u.uj),
+            "test job", service, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
             technology='php-symfony')
 
     def test_ecobenchmark_job_raises_valueerror_if_technology_is_not_in_list(self):
@@ -24,5 +24,5 @@ class TestJobEcobenchmarkBuilder(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             ecobenchmark_job(
-                "test job", service, data_upload=SourceValue(1 * u.MB / u.uj), data_download=SourceValue(1 * u.MB / u.uj),
+                "test job", service, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
                 technology='unexisting-tech')

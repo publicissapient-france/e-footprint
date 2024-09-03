@@ -19,12 +19,12 @@ class TestUserJourneyStep(TestCase):
 
         self.user_journey_step = UserJourneyStep(
             "test uj step",
-            user_time_spent=SourceValue(2 * u.min / u.uj),
+            user_time_spent=SourceValue(2 * u.min),
             jobs=[self.job])
 
     def test_user_journey_step_without_job_doesnt_break(self):
         uj_step_without_job = UserJourneyStep(
-            "", user_time_spent=SourceValue(2 * u.min / u.uj), jobs=[])
+            "", user_time_spent=SourceValue(2 * u.min), jobs=[])
 
     def test_self_delete_should_raise_error_if_self_has_associated_uj(self):
         uj = MagicMock()

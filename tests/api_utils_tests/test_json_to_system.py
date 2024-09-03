@@ -49,7 +49,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
     def test_update_value_after_system_creation(self):
         class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)
 
-        list(class_obj_dict["Job"].values())[0].data_download = SourceValue(100 * u.GB / u.uj, label="new value")
+        list(class_obj_dict["Job"].values())[0].data_download = SourceValue(100 * u.GB, label="new value")
 
     def test_system_id_doesnt_change(self):
         class_obj_dict, flat_obj_dict = json_to_system(self.base_system_dict)

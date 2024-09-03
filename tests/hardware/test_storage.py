@@ -98,15 +98,25 @@ class TestStorage(TestCase):
             self.storage_base.update_nb_of_active_instances()
             self.assertEqual([1, 3, 3.5], self.storage_base.nb_of_active_instances.value_as_float_list)
 
-    def test_nb_of_instances(self):
+    def test_raw_nb_of_instances(self):
         full_storage_data = SourceHourlyValues(create_hourly_usage_df_from_list([10, 12, 14], pint_unit=u.TB))
         storage_capacity = SourceValue(2 * u.TB)
         expected_data = [5, 6, 7]
 
         with patch.object(self.storage_base, "full_cumulative_storage_need", full_storage_data), \
                 patch.object(self.storage_base, "storage_capacity", storage_capacity):
+            self.storage_base.update_raw_nb_of_instances()
+            self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
+
+    def test_nb_of_instances(self):
+        raw_nb_of_instances = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1.5, 2.5, 3.5], pint_unit=u.dimensionless))
+        expected_data = [2, 3, 4]
+
+        with patch.object(self.storage_base, "raw_nb_of_instances", raw_nb_of_instances):
             self.storage_base.update_nb_of_instances()
             self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
+            self.assertEqual(u.dimensionless, self.storage_base.nb_of_instances.unit)
 
     def test_update_instances_energy(self):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")

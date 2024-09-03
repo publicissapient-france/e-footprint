@@ -78,36 +78,36 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
-        cls.streaming_job = Job("streaming", cls.youtube, data_upload=SourceValue(50 * u.kB / u.uj),
-                                data_download=SourceValue((2.5 / 3) * u.GB / u.uj),
+        cls.streaming_job = Job("streaming", cls.youtube, data_upload=SourceValue(50 * u.kB),
+                                data_download=SourceValue((2.5 / 3) * u.GB),
                                 request_duration=SourceValue(4 * u.min),
-                                ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+                                ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
-            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[cls.streaming_job])
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.youtube, data_upload=SourceValue(300 * u.kB / u.uj),
-                             data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(0.4 * u.s),
-                             ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+        cls.upload_job = Job("upload", cls.youtube, data_upload=SourceValue(300 * u.kB),
+                             data_download=SourceValue(0 * u.GB), request_duration=SourceValue(0.4 * u.s),
+                             ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.upload_step = UserJourneyStep(
-            "0.4s of upload", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[cls.upload_job])
+            "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
-            "dailymotion", cls.dailymotion, data_upload=SourceValue(300 * u.kB / u.uj),
-            data_download=SourceValue(3 * u.MB / u.uj), request_duration=SourceValue(1 * u.s),
-            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+            "dailymotion", cls.dailymotion, data_upload=SourceValue(300 * u.kB),
+            data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
+            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.dailymotion_step = UserJourneyStep(
-            "Dailymotion step", user_time_spent=SourceValue(1 * u.min / u.uj), jobs=[cls.dailymotion_job])
+            "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
-            "tiktok", cls.tiktok, data_upload=SourceValue(0 * u.kB / u.uj),
-            data_download=SourceValue((2.5 / 3) * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+            "tiktok", cls.tiktok, data_upload=SourceValue(0 * u.kB),
+            data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.tiktok_analytics_job = Job(
-            "tiktok analytics", cls.tiktok_analytics, data_upload=SourceValue(50 * u.kB / u.uj),
-            data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
-            ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+            "tiktok analytics", cls.tiktok_analytics, data_upload=SourceValue(50 * u.kB),
+            data_download=SourceValue(0 * u.GB), request_duration=SourceValue(4 * u.min),
+            ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.tiktok_step = UserJourneyStep(
-            "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min / u.uj),
+            "20 min streaming on TikTok", user_time_spent=SourceValue(20 * u.min),
             jobs=[cls.tiktok_job, cls.tiktok_analytics_job])
 
         cls.uj = UserJourney(
@@ -205,11 +205,11 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             "new service", self.server1, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(1 * u.core, Sources.HYPOTHESIS))
         new_uj = UserJourneyStep(
-            "new uj step", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[
+            "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[
                 Job(
-                    "dailymotion", new_service, data_upload=SourceValue(300 * u.kB / u.uj),
-                    data_download=SourceValue(3 * u.MB / u.uj), request_duration=SourceValue(1 * u.s),
-                    ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+                    "dailymotion", new_service, data_upload=SourceValue(300 * u.kB),
+                    data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
+                    ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
             ])
         self.uj.uj_steps += [new_uj]
 
@@ -289,9 +289,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         with self.assertRaises(ValueError):
             self.system.plot_emission_diffs(filepath=file)
 
-        self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB / u.uj)
+        self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
         self.system.plot_emission_diffs(filepath=file)
         self.streaming_step.jobs[0].data_upload = SourceValue(
-            50 * u.kB / u.uj, label="Data upload of request streaming")
+            50 * u.kB, label="Data upload of request streaming")
 
         self.assertTrue(os.path.isfile(file))

@@ -2,9 +2,11 @@ from copy import deepcopy
 from typing import List
 import os
 
+import pandas as pd
+
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -22,6 +24,7 @@ from efootprint.utils.calculus_graph import build_calculus_graph
 from efootprint.utils.object_relationships_graphs import build_object_relationships_graph, \
     USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop, default_screen
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from tests.integration_tests.integration_test_base_class import IntegrationTestBaseClass
 
 
@@ -49,31 +52,32 @@ class IntegrationTest(IntegrationTestBaseClass):
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            data_replication_factor=SourceValue(3 * u.dimensionless)
+            data_replication_factor=SourceValue(3 * u.dimensionless),
+            data_storage_duration=SourceValue(3 * u.hours),
+            initial_storage_need=SourceValue(1 * u.TB)
         )
         cls.service = Service(
             "Youtube", cls.server, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
             base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
-        cls.streaming_job = Job("streaming", cls.service, data_upload=SourceValue(50 * u.kB / u.uj),
-                      data_download=SourceValue((2.5 / 3) * u.GB / u.uj), request_duration=SourceValue(4 * u.min),
-                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+        cls.streaming_job = Job("streaming", cls.service, data_upload=SourceValue(50 * u.kB),
+                      data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
+                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
-            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[cls.streaming_job])
+            "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.service, data_upload=SourceValue(300 * u.kB / u.uj),
-                      data_download=SourceValue(0 * u.GB / u.uj), request_duration=SourceValue(0.4 * u.s),
-                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+        cls.upload_job = Job("upload", cls.service, data_upload=SourceValue(300 * u.MB),
+                      data_download=SourceValue(0 * u.GB), request_duration=SourceValue(40 * u.s),
+                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.upload_step = UserJourneyStep(
-            "0.4s of upload", user_time_spent=SourceValue(1 * u.s / u.uj), jobs=[cls.upload_job])
+            "40s of upload", user_time_spent=SourceValue(1 * u.min), jobs=[cls.upload_job])
 
         cls.uj = UserJourney("Daily Youtube usage", uj_steps=[cls.streaming_step, cls.upload_step])
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
 
         cls.usage_pattern = UsagePattern(
-            "Youtube usage in France", cls.uj, [default_laptop()], cls.network,
-            Countries.FRANCE(), SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year),
-            SourceObject([[7, 23]], Sources.USER_DATA))
+            "Youtube usage in France", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
+            SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]])))
 
         cls.system = System("system 1", [cls.usage_pattern])
 
@@ -108,19 +112,19 @@ class IntegrationTest(IntegrationTestBaseClass):
     def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = round(self.initial_energy_footprints[obj].value, 2)
-                self.assertNotEqual(initial_energy_footprint, obj.energy_footprint.value)
+                initial_energy_footprint = self.initial_energy_footprints[obj].value
+                self.assertFalse(initial_energy_footprint.equals(obj.energy_footprint.value))
                 if type(obj) != Network:
-                    initial_fab_footprint = round(self.initial_fab_footprints[obj].value, 2)
-                    new_footprint = round(obj.instances_fabrication_footprint.value + obj.energy_footprint.value, 2)
-                    self.assertNotEqual(
-                        initial_fab_footprint + initial_energy_footprint, new_footprint)
+                    initial_fab_footprint = self.initial_fab_footprints[obj].value
+                    new_footprint = obj.instances_fabrication_footprint.value + obj.energy_footprint.value
+                    self.assertFalse(
+                        (initial_fab_footprint + initial_energy_footprint).equals(new_footprint))
                     logger.info(
                         f"{obj.name} footprint has changed from {initial_fab_footprint + initial_energy_footprint}"
                         f" to {new_footprint}")
                 else:
                     logger.info(f"{obj.name} footprint has changed from "
-                                f"{round(initial_energy_footprint, 2)} to {round(obj.energy_footprint.value, 2)}")
+                                f"{initial_energy_footprint} to {obj.energy_footprint.value}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
 
@@ -136,8 +140,8 @@ class IntegrationTest(IntegrationTestBaseClass):
                 initial_energy_footprint = self.initial_energy_footprints[obj].value
                 if type(obj) != Network:
                     initial_fab_footprint = self.initial_fab_footprints[obj].value
-                    self.assertEqual(initial_fab_footprint, obj.instances_fabrication_footprint.value)
-                self.assertEqual(initial_energy_footprint, obj.energy_footprint.value)
+                    pd.testing.assert_frame_equal(initial_fab_footprint, obj.instances_fabrication_footprint.value)
+                pd.testing.assert_frame_equal(initial_energy_footprint, obj.energy_footprint.value)
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")
@@ -157,21 +161,19 @@ class IntegrationTest(IntegrationTestBaseClass):
                     else:
                         expl_attr_new_value.value *= 100 * u.dimensionless
                     expl_attr_new_value.label = expl_attr.label
-                    logger.info(f"{expl_attr_new_value.label} changing from {round(old_value, 1)} to"
-                                f" {round(expl_attr_new_value.value, 1)}")
+                    logger.info(f"{expl_attr_new_value.label} changing from {old_value} to"
+                                f" {expl_attr_new_value.value}")
                     input_object.__setattr__(expl_attr_name, expl_attr_new_value)
                     new_footprint = self.system.total_footprint
-                    logger.info(f"system footprint went from {round(self.initial_footprint.value, 1)} "
-                                f"to {round(new_footprint.value, 1)}")
-                    assert round(self.initial_footprint.magnitude, 2) != round(new_footprint.magnitude, 2)
+                    logger.info(f"system footprint went from \n{self.initial_footprint} to \n{new_footprint}")
+                    self.assertFalse(self.initial_footprint.value.equals(new_footprint.value))
                     input_object.__setattr__(expl_attr_name, expl_attr)
-                    assert round(self.system.total_footprint.magnitude, 2) == \
-                           round(self.initial_footprint.magnitude, 2)
+                    self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         test_variations_on_obj_inputs(self.streaming_step)
         test_variations_on_obj_inputs(
-            self.server, attrs_to_skip=["fraction_of_usage_time", "idle_power"],
-            special_mult={"ram": 0.01})
+            self.server, attrs_to_skip=["fraction_of_usage_time"],
+            special_mult={"ram": 0.01, "server_utilization_rate": 0.5})
         test_variations_on_obj_inputs(
             self.storage, attrs_to_skip=["fraction_of_usage_time"])
         test_variations_on_obj_inputs(
@@ -179,17 +181,11 @@ class IntegrationTest(IntegrationTestBaseClass):
             special_mult={"base_ram_consumption": 380, "base_cpu_consumption": 10})
         test_variations_on_obj_inputs(self.uj)
         test_variations_on_obj_inputs(self.network)
-        test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["time_intervals"])
+        test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
         test_variations_on_obj_inputs(self.streaming_job)
 
-    def test_time_intervals_change(self):
-        logger.warning("Updating time intervals in usage pattern")
-        old_time_intervals = deepcopy(self.usage_pattern.time_intervals)
-        self.usage_pattern.time_intervals = SourceObject([[7, 13]], Sources.USER_DATA)
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
-        logger.warning("Setting time intervals back to initial value in usage pattern")
-        self.usage_pattern.time_intervals = old_time_intervals
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
+    def test_hourly_user_journey_starts_update(self):
+        raise NotImplementedError
 
     def test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
@@ -263,9 +259,9 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.service, data_upload=SourceValue(5 * u.kB / u.uj),
-                      data_download=SourceValue(5 * u.GB / u.uj), request_duration=SourceValue(4 * u.s),
-                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))
+        new_job = Job("new job", self.service, data_upload=SourceValue(5 * u.kB),
+                      data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
+                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
 
         self.streaming_step.jobs += [new_job]
 
@@ -283,10 +279,10 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
         new_step = UserJourneyStep(
-            "new_step", user_time_spent=SourceValue(2 * u.min / u.uj),
-            jobs=[Job("new job", self.service, data_upload=SourceValue(5 * u.kB / u.uj),
-                      data_download=SourceValue(5 * u.GB / u.uj), request_duration=SourceValue(4 * u.s),
-                      ram_needed=SourceValue(100 * u.MB / u.uj), cpu_needed=SourceValue(1 * u.core / u.uj))]
+            "new_step", user_time_spent=SourceValue(2 * u.min),
+            jobs=[Job("new job", self.service, data_upload=SourceValue(5 * u.kB),
+                      data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
+                      ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))]
         )
         self.uj.uj_steps = [new_step]
 
@@ -349,24 +345,24 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Add uj step without service")
 
         step_without_job = UserJourneyStep(
-            "User checks her phone", user_time_spent=SourceValue(20 * u.min / u.uj), jobs=[])
+            "User checks her phone", user_time_spent=SourceValue(20 * u.min), jobs=[])
 
         self.uj.add_step(step_without_job)
 
         self.footprint_has_not_changed([self.server, self.storage])
         self.footprint_has_changed([self.usage_pattern])
-        self.assertNotEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertFalse(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Setting user time spent of the new step to 0s")
-        step_without_job.user_time_spent = SourceValue(0 * u.min / u.uj)
+        step_without_job.user_time_spent = SourceValue(0 * u.min)
         self.footprint_has_not_changed([self.server, self.storage])
-        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Deleting the new uj step")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
         step_without_job.self_delete()
         self.footprint_has_not_changed([self.server, self.storage])
-        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
     def test_system_to_json(self):
         self.run_system_to_json_test(self.system)

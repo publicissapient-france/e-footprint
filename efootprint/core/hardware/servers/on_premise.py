@@ -1,6 +1,8 @@
-import math
+import numpy as np
+import pandas as pd
+import pint_pandas
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.server_base_class import Server
@@ -22,47 +24,39 @@ class OnPremise(Server):
                 f"User defined number of {self.name} instances").to(u.dimensionless)
 
     def update_nb_of_instances(self):
-        ram_needed_per_day = self.all_services_ram_needs.max().set_label(
-            f"Max daily {self.name} RAM need")
-        cpu_needed_per_day = self.all_services_cpu_needs.max().set_label(
-            f"Max daily {self.name} CPU need")
+        max_nb_of_instances = self.raw_nb_of_instances.max().ceil().to(u.dimensionless)
 
-        nb_of_servers_based_on_ram_alone = (
-                ram_needed_per_day / self.available_ram_per_instance).set_label(
-            f"Raw nb of {self.name} instances based on RAM alone")
-        nb_of_servers_based_on_cpu_alone = (
-                cpu_needed_per_day / self.available_cpu_per_instance).set_label(
-            f"Raw nb of {self.name} instances based on CPU alone")
+        nb_of_instances_df = pd.DataFrame(
+            {"value": pint_pandas.PintArray(
+                    max_nb_of_instances.magnitude * np.ones(len(self.raw_nb_of_instances)), dtype=u.dimensionless)},
+            index=self.raw_nb_of_instances.value.index
+        )
 
-        nb_of_servers_raw = nb_of_servers_based_on_ram_alone.compare_with_and_return_max(
-            nb_of_servers_based_on_cpu_alone)
-
-        if math.ceil(nb_of_servers_raw.magnitude) - nb_of_servers_raw.magnitude != 0:
-            nb_of_instances = nb_of_servers_raw + ExplainableQuantity(
-                (math.ceil(nb_of_servers_raw.magnitude) - nb_of_servers_raw.magnitude)
-                * u.dimensionless, "Extra server capacity because number of servers must be an integer")
-        else:
-            nb_of_instances = nb_of_servers_raw
+        nb_of_instances = ExplainableHourlyQuantities(
+            nb_of_instances_df,
+            "Nb of instances",
+            left_parent=self.raw_nb_of_instances,
+            right_parent=None
+        )
 
         if self.fixed_nb_of_instances:
-            if nb_of_instances > self.fixed_nb_of_instances:
+            if max_nb_of_instances.value > self.fixed_nb_of_instances.value:
                 raise ValueError(
-                    f"The number of {self.name} instances computed from its resources need is superior to the number of "
-                    f"instances specified by the user ({nb_of_instances.value} > {self.fixed_nb_of_instances})")
+                    f"The number of {self.name} instances computed from its resources need is superior to the number of"
+                    f" instances specified by the user ({max_nb_of_instances.value} > {self.fixed_nb_of_instances})")
             else:
-                self.nb_of_instances = self.fixed_nb_of_instances
+                fixed_nb_of_instances_df = pd.DataFrame(
+                    {"value": pint_pandas.PintArray(
+                        np.full(len(self.raw_nb_of_instances),self.fixed_nb_of_instances.value),dtype=u.dimensionless
+                    )},
+                    index=self.raw_nb_of_instances.value.index
+                )
+                nb_of_instances_re_calculate = ExplainableHourlyQuantities(
+                    fixed_nb_of_instances_df,
+                    "Nb of instances",
+                    left_parent=self.raw_nb_of_instances,
+                    right_parent=self.fixed_nb_of_instances
+                )
+                self.nb_of_instances = nb_of_instances_re_calculate.set_label(f"Fixed number of {self.name} instances")
         else:
-            self.nb_of_instances = nb_of_instances.set_label(f"Nb of {self.name} instances").to(u.dimensionless)
-
-    def update_instances_energy(self):
-        effective_active_power = self.power * self.power_usage_effectiveness
-        effective_idle_power = self.idle_power * self.power_usage_effectiveness
-
-        fraction_of_time_not_in_use = ExplainableQuantity(1 * u.dimensionless, "100%") - self.fraction_of_time_in_use
-        server_power = (
-                self.nb_of_instances *
-                ((effective_active_power * self.fraction_of_time_in_use)
-                 + (effective_idle_power * fraction_of_time_not_in_use))
-        ).to(u.kWh / u.year)
-
-        self.instances_power = server_power.set_label(f"Power of {self.name} instances")
+            self.nb_of_instances = nb_of_instances.set_label(f"Hour by hour of {self.name} instances")

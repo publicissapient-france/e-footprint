@@ -1,8 +1,9 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.on_premise import OnPremise
 
@@ -40,45 +41,31 @@ class TestOnPremise(TestCase):
         self.server_with_fixed_nb_of_instances.dont_handle_input_updates = True
 
     def test_nb_of_instances_on_premise_rounds_up_to_next_integer(self):
-        hour_by_hour_ram_need = create_ram_need([[10, 20]], ram=950 * u.GB)
-        hour_by_hour_cpu_need = create_cpu_need([[10, 20]])
+        raw_data = [0.5, 1, 1.5, 1.5, 5.5]
+        expected_data = [6, 6, 6, 6, 6]
 
-        with patch.object(self.server_base, "all_services_ram_needs", new= hour_by_hour_ram_need), \
-                patch.object(self.server_base, "all_services_cpu_needs", new=hour_by_hour_cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(25 * u.core)):
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data):
             self.server_base.update_nb_of_instances()
-            self.assertEqual(10 * u.dimensionless, self.server_base.nb_of_instances.value)
-
-    def test_compute_instances_power(self):
-        with patch.object(self.server_base,
-                          "fraction_of_time_in_use", SourceValue(((24 - 10) / 24) * u.dimensionless)), \
-                patch.object(self.server_base, "nb_of_instances", SourceValue(10 * u.dimensionless)), \
-                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.server_base.update_instances_energy()
-            self.assertEqual(20600.1 * u.kWh / u.year,
-                             round(self.server_base.instances_power.value, 2))
+            self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances_takes_fixed_nb_of_instances_into_account(self):
-        hour_by_hour_ram_need = create_ram_need([[10, 20]], ram=950 * u.GB)
-        hour_by_hour_cpu_need = create_cpu_need([[10, 20]])
+        raw_data = [0.5, 1, 1.5, 1.5, 5.5]
+        expected_data = [12, 12, 12, 12, 12]
 
-        with patch.object(self.server_with_fixed_nb_of_instances, "all_services_ram_needs", new=hour_by_hour_ram_need), \
-                patch.object(self.server_with_fixed_nb_of_instances, "all_services_cpu_needs", new=hour_by_hour_cpu_need), \
-                patch.object(self.server_with_fixed_nb_of_instances, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
-                patch.object(self.server_with_fixed_nb_of_instances, "available_cpu_per_instance", new=SourceValue(25 * u.core)):
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+
+        with patch.object(self.server_with_fixed_nb_of_instances, "raw_nb_of_instances", new=hourly_raw_data):
             self.server_with_fixed_nb_of_instances.update_nb_of_instances()
-            self.assertEqual(12 * u.dimensionless, self.server_with_fixed_nb_of_instances.nb_of_instances.value)
+            self.assertEqual(
+                expected_data,
+                self.server_with_fixed_nb_of_instances.nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances_raises_error_if_fixed_number_of_instances_is_surpassed(self):
-        hour_by_hour_ram_need = create_ram_need([[10, 20]], ram=1250 * u.GB)
-        hour_by_hour_cpu_need = create_cpu_need([[10, 20]])
+        raw_data = [0.5, 1, 1.5, 1.5, 14]
 
-        with patch.object(self.server_with_fixed_nb_of_instances, "all_services_ram_needs", new=hour_by_hour_ram_need), \
-                patch.object(self.server_with_fixed_nb_of_instances, "all_services_cpu_needs", new=hour_by_hour_cpu_need), \
-                patch.object(self.server_with_fixed_nb_of_instances, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
-                patch.object(self.server_with_fixed_nb_of_instances, "available_cpu_per_instance", new=SourceValue(25 * u.core)):
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+
+        with patch.object(self.server_with_fixed_nb_of_instances, "raw_nb_of_instances", new=hourly_raw_data):
             with self.assertRaises(ValueError):
                 self.server_with_fixed_nb_of_instances.update_nb_of_instances()

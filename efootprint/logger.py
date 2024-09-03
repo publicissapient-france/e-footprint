@@ -23,4 +23,6 @@ def write_logs_to_file(input_logger=logger, input_formatter=formatter, log_level
     fh.setLevel(log_level)
     input_logger.addHandler(fh)
 
-write_logs_to_file(log_level=logging.DEBUG)
+
+if os.environ.get("WRITE_EFOOTPRINT_LOGS", None) is not None:
+    write_logs_to_file(log_level=logging.DEBUG)

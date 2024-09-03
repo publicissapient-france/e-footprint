@@ -1,8 +1,9 @@
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
 from efootprint.core.hardware.servers.serverless import Serverless
 
@@ -28,23 +29,11 @@ class TestServerless(TestCase):
         self.server_base.dont_handle_input_updates = True
 
     def test_nb_of_instances_serverless(self):
-        ram_need = (create_ram_need([[0, 12]], 100 * u.GB) + create_ram_need([[12, 24]], 150 * u.GB))
-        cpu_need = create_cpu_need([[0, 24]], 1 * u.core)
+        raw_data = [0.5, 1, 1.5, 1.5, 5]
+        expected_data = [0.5, 1, 1.5, 1.5, 5]
 
-        with patch.object(self.server_base, "all_services_ram_needs", new=ram_need), \
-                patch.object(self.server_base, "all_services_cpu_needs", new=cpu_need), \
-                patch.object(self.server_base, "available_ram_per_instance", new=SourceValue(100 * u.GB)), \
-                patch.object(self.server_base, "available_cpu_per_instance", new=SourceValue(25 * u.core)):
+        hourly_raw_data = SourceHourlyValues(create_hourly_usage_df_from_list(raw_data, pint_unit=u.dimensionless))
+        with patch.object(self.server_base, "raw_nb_of_instances", new=hourly_raw_data):
             self.server_base.update_nb_of_instances()
-            self.assertEqual(1.25 * u.dimensionless, round(self.server_base.nb_of_instances.value, 2))
 
-    def test_compute_instances_power_serverless(self):
-        with patch.object(self.server_base,
-                          "fraction_of_time_in_use", SourceValue(((24 - 10) / 24) * u.dimensionless)), \
-                patch.object(self.server_base, "nb_of_instances", SourceValue(10 * u.dimensionless)), \
-                patch.object(self.server_base, "power", SourceValue(300 * u.W)), \
-                patch.object(self.server_base, "idle_power", SourceValue(50 * u.W)), \
-                patch.object(self.server_base, "power_usage_effectiveness", SourceValue(1.2 * u.dimensionless)):
-            self.server_base.update_instances_energy()
-            self.assertEqual(round((3600 * u.W).to(u.kWh / u.year), 2),
-                             round(self.server_base.instances_power.value, 2))
+            self.assertEqual(expected_data, self.server_base.nb_of_instances.value_as_float_list)
