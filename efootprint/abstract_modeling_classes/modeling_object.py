@@ -303,10 +303,10 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for key, value in self.__dict__.items():
             if (
                     (key in self.calculated_attributes and not save_calculated_attributes)
-                    or key in ["calculated_attributes", "all_changes"]
+                    or key in ["all_changes", "modeling_obj_containers"]
                     or key.startswith("previous")
                     or key.startswith("initial")
-                    or key == "modeling_obj_containers"):
+            ):
                 continue
             if type(value) == str:
                 output_dict[key] = value

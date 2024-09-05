@@ -1,7 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch, PropertyMock
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.constants.units import u
@@ -37,56 +36,18 @@ class TestService(unittest.TestCase):
         with self.assertRaises(ValueError):
             Service("Invalid CPU Service", self.server, self.storage, self.base_ram, invalid_cpu)
 
-    def test_compute_calculated_attribute_summed_across_usage_patterns_per_job(self):
-        job1 = MagicMock()
-        job1.name = "job1"
-        usage_pattern1 = MagicMock()
-        usage_pattern2 = MagicMock()
-        usage_pattern1.hourly_calc_attr_per_job = {job1: SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 5]))}
-        usage_pattern2.hourly_calc_attr_per_job = {job1: SourceHourlyValues(
-            create_hourly_usage_df_from_list([3, 2, 4]))}
-        job1.usage_patterns = [usage_pattern1, usage_pattern2]
-        job2 = MagicMock()
-        usage_pattern3 = MagicMock()
-        usage_pattern3.hourly_calc_attr_per_job = {job2: SourceHourlyValues(
-            create_hourly_usage_df_from_list([1, 2, 3]))}
-        job2.usage_patterns = [usage_pattern3]
-        input_expl_dict = ExplainableObjectDict()
-
-        with patch.object(Service, "jobs", new_callable=PropertyMock) as mock_jobs:
-            mock_jobs.return_value = [job1, job2]
-            self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-                input_expl_dict, "hourly_calc_attr_per_job", "my calc attr")
-
-            self.assertEqual([job1, job2], list(input_expl_dict.keys()))
-            self.assertEqual([4, 4, 9], input_expl_dict[job1].value_as_float_list)
-            self.assertEqual([1, 2, 3], input_expl_dict[job2].value_as_float_list)
-            self.assertEqual("Hourly job1 my calc attr across usage patterns", input_expl_dict[job1].label)
-
-    def test_compute_calculated_attribute_summed_across_usage_patterns_per_job_no_jobs(self):
-        with patch.object(Service, "jobs", new_callable=PropertyMock) as mock_jobs:
-            mock_jobs.return_value = []
-            input_expl_dict = ExplainableObjectDict()
-            self.service.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-                input_expl_dict, "hourly_calc_attr_per_job", "my calc attr")
-
-            self.assertEqual([], list(input_expl_dict.keys()))
-
     def test_update_hour_by_hour_ram_need(self):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        job1_avg_occurrences_across_time = SourceHourlyValues(
+        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2_avg_occurrences_across_time = SourceHourlyValues(
+        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([20, 15, 5, 3]))
         job1.ram_needed = SourceValue(2 * u.GB)
         job2.ram_needed = SourceValue(3 * u.GB)
 
-        with patch.object(self.service, "hourly_avg_job_occurrences_across_usage_patterns_per_job",
-                          {job1: job1_avg_occurrences_across_time, job2: job2_avg_occurrences_across_time}), \
-                patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
+        with patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
             service_jobs.return_value = [job1, job2]
             self.service.update_hour_by_hour_ram_need()
             self.assertEqual(u.GB, self.service.hour_by_hour_ram_need.unit)
@@ -96,16 +57,14 @@ class TestService(unittest.TestCase):
         job1 = MagicMock()
         job2 = MagicMock()
 
-        job1_avg_occurrences_across_time = SourceHourlyValues(
+        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2_avg_occurrences_across_time = SourceHourlyValues(
+        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
             create_hourly_usage_df_from_list([20, 15, 5, 3]))
         job1.cpu_needed = SourceValue(2 * u.core)
         job2.cpu_needed = SourceValue(3 * u.core)
 
-        with patch.object(self.service, "hourly_avg_job_occurrences_across_usage_patterns_per_job",
-                          {job1: job1_avg_occurrences_across_time, job2: job2_avg_occurrences_across_time}), \
-                patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
+        with patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
             service_jobs.return_value = [job1, job2]
             self.service.update_hour_by_hour_cpu_need()
             self.assertEqual(u.core, self.service.hour_by_hour_cpu_need.unit)

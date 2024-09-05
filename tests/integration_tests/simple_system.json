@@ -12,34 +12,32 @@
         "uuid-Youtube-usage-in-France": {
             "name": "Youtube usage in France",
             "id": "uuid-Youtube-usage-in-France",
-            "user_journey": "uuid-Daily-Youtube-usage",
-            "devices": [
-                "uuid-Default-laptop"
-            ],
-            "network": "uuid-Default-network",
-            "country": "uuid-France",
-            "user_journey_freq": {
-                "label": "Usage frequency in Youtube usage in France from hypothesis",
-                "value": 4380000000.0,
-                "unit": "user_journey / year",
+            "hourly_user_journey_starts": {
+                "label": "Youtube usage in France hourly nb of visits from hypothesis",
+                "values": [
+                    1000.0,
+                    2000.0,
+                    4000.0,
+                    5000.0,
+                    8000.0,
+                    12000.0,
+                    2000.0,
+                    2000.0,
+                    3000.0
+                ],
+                "unit": "dimensionless",
+                "start_date": "2025-01-01 00:00:00",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
-            "time_intervals": {
-                "label": "Youtube usage in France time intervals in local timezone from user data",
-                "value": [
-                    [
-                        7,
-                        23
-                    ]
-                ],
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
+            "user_journey": "uuid-Daily-Youtube-usage",
+            "devices": [
+                "uuid-Default-laptop"
+            ],
+            "network": "uuid-Default-network",
+            "country": "uuid-France"
         }
     },
     "UserJourney": {
@@ -48,7 +46,7 @@
             "id": "uuid-Daily-Youtube-usage",
             "uj_steps": [
                 "uuid-20-min-streaming-on-Youtube",
-                "uuid-02e4s-of-upload"
+                "uuid-40s-of-upload"
             ]
         }
     },
@@ -58,8 +56,8 @@
             "id": "uuid-20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
-                "value": 20.0,
-                "unit": "minute / user_journey",
+                "value": 20,
+                "unit": "minute",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -69,13 +67,13 @@
                 "uuid-streaming"
             ]
         },
-        "uuid-02e4s-of-upload": {
-            "name": "0.4s of upload",
-            "id": "uuid-02e4s-of-upload",
+        "uuid-40s-of-upload": {
+            "name": "40s of upload",
+            "id": "uuid-40s-of-upload",
             "user_time_spent": {
-                "label": "Time spent on step 0.4s of upload from hypothesis",
-                "value": 1.0,
-                "unit": "second / user_journey",
+                "label": "Time spent on step 40s of upload from hypothesis",
+                "value": 1,
+                "unit": "minute",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -94,8 +92,8 @@
             "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
-                "value": 50.0,
-                "unit": "kilobyte / user_journey",
+                "value": 50,
+                "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -104,7 +102,7 @@
             "data_download": {
                 "label": "Data download of request streaming from hypothesis",
                 "value": 0.8333333333333334,
-                "unit": "gigabyte / user_journey",
+                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -112,8 +110,8 @@
             },
             "request_duration": {
                 "label": "Request duration to Youtube in streaming from hypothesis",
-                "value": 4,
-                "unit": "minute",
+                "value": 0.06666666666666667,
+                "unit": "hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -121,8 +119,8 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Default server to process streaming from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
+                "value": 100,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -130,8 +128,8 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Default server to process streaming from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
+                "value": 1,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -146,8 +144,8 @@
             "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte / user_journey",
+                "value": 300,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -155,8 +153,8 @@
             },
             "data_download": {
                 "label": "Data download of request upload from hypothesis",
-                "value": 0.0,
-                "unit": "gigabyte / user_journey",
+                "value": 0,
+                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -164,8 +162,8 @@
             },
             "request_duration": {
                 "label": "Request duration to Youtube in upload from hypothesis",
-                "value": 0.4,
-                "unit": "second",
+                "value": 0.011111111111111112,
+                "unit": "hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -173,8 +171,8 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Default server to process upload from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
+                "value": 100,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -182,8 +180,8 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Default server to process upload from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
+                "value": 1,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -399,7 +397,24 @@
                     "link": null
                 }
             },
-            "storage_need_from_previous_year": 0
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "value": 3,
+                "unit": "hour",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_storage_need": {
+                "label": "Default SSD storage initial storage need from hypothesis",
+                "value": 1,
+                "unit": "terabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            }
         }
     },
     "Hardware": {

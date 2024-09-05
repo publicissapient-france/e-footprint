@@ -30,6 +30,9 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
     def max(self):
         return EmptyExplainableObject()
 
+    def abs(self):
+        return EmptyExplainableObject()
+
     @property
     def magnitude(self):
         return self
@@ -50,6 +53,12 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         if issubclass(type(other), ExplainableObject):
             return other.__add__(self)
         elif isinstance(other, EmptyExplainableObject):
+            return EmptyExplainableObject()
+        else:
+            raise ValueError
+
+    def __sub__(self, other):
+        if isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject()
         else:
             raise ValueError
@@ -358,8 +367,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
             "label": self.label,
-            "values": list(map(lambda x: round(x, 2), self.value["value"].values._data)),
-            "unit": str(self.value.dtypes.iloc[0].units)}
+            "values": list(map(lambda x: round(float(x), 2), self.value["value"].values._data)),
+            "unit": str(self.value.dtypes.iloc[0].units),
+            "start_date": self.value.index[0].strftime("%Y-%m-%d %H:%M:%S")
+        }
 
         if self.source is not None:
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}

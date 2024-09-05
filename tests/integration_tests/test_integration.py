@@ -1,8 +1,5 @@
 from copy import deepcopy
-from typing import List
 import os
-
-import pandas as pd
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
 from efootprint.constants.sources import Sources
@@ -54,7 +51,7 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless),
             data_storage_duration=SourceValue(3 * u.hours),
-            initial_storage_need=SourceValue(1 * u.TB)
+            base_storage_need=SourceValue(1 * u.TB)
         )
         cls.service = Service(
             "Youtube", cls.server, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
@@ -108,43 +105,6 @@ class IntegrationTest(IntegrationTestBaseClass):
             self.system, classes_to_ignore=USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE)
         object_relationships_graph.show(
             os.path.join(os.path.abspath(os.path.dirname(__file__)), "object_relationships_graph.html"), notebook=False)
-
-    def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
-        for obj in objects_to_test:
-            try:
-                initial_energy_footprint = self.initial_energy_footprints[obj].value
-                self.assertFalse(initial_energy_footprint.equals(obj.energy_footprint.value))
-                if type(obj) != Network:
-                    initial_fab_footprint = self.initial_fab_footprints[obj].value
-                    new_footprint = obj.instances_fabrication_footprint.value + obj.energy_footprint.value
-                    self.assertFalse(
-                        (initial_fab_footprint + initial_energy_footprint).equals(new_footprint))
-                    logger.info(
-                        f"{obj.name} footprint has changed from {initial_fab_footprint + initial_energy_footprint}"
-                        f" to {new_footprint}")
-                else:
-                    logger.info(f"{obj.name} footprint has changed from "
-                                f"{initial_energy_footprint} to {obj.energy_footprint.value}")
-            except AssertionError:
-                raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
-
-        for prev_fp, initial_fp in zip(
-                (self.system.previous_total_energy_footprints, self.system.previous_total_fabrication_footprints),
-                (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
-            for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(initial_fp[key], prev_fp[key])
-
-    def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
-        for obj in objects_to_test:
-            try:
-                initial_energy_footprint = self.initial_energy_footprints[obj].value
-                if type(obj) != Network:
-                    initial_fab_footprint = self.initial_fab_footprints[obj].value
-                    pd.testing.assert_frame_equal(initial_fab_footprint, obj.instances_fabrication_footprint.value)
-                pd.testing.assert_frame_equal(initial_energy_footprint, obj.energy_footprint.value)
-                logger.info(f"{obj.name} footprint is the same as in setup")
-            except AssertionError:
-                raise AssertionError(f"Footprint has changed for {obj.name}")
 
     def test_variations_on_inputs(self):
         def test_variations_on_obj_inputs(input_object: ModelingObject, attrs_to_skip=None, special_mult=None):
@@ -241,22 +201,22 @@ class IntegrationTest(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(3 * u.hours),
-            initial_storage_need=SourceValue(1 * u.TB)
+            base_storage_need=SourceValue(1 * u.TB)
         )
         logger.warning("Changing service storage")
         self.service.storage = new_storage
 
-        self.assertEqual(0, self.storage.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, self.storage.energy_footprint.magnitude)
+        self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
+        self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
         self.footprint_has_changed([self.storage])
-        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial service storage")
         self.service.storage = self.storage
         self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.storage])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
@@ -266,16 +226,15 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         self.streaming_step.jobs += [new_job]
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.usage_pattern])
         self.footprint_has_changed([self.storage, self.server, self.network])
 
         logger.warning("Changing back to previous jobs")
         self.streaming_step.jobs = [self.streaming_job]
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_uj_steps(self):
         logger.warning("Modifying uj steps")
@@ -287,43 +246,41 @@ class IntegrationTest(IntegrationTestBaseClass):
         )
         self.uj.uj_steps = [new_step]
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_changed([self.storage, self.server, self.network])
 
         logger.warning("Changing back to previous uj steps")
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_user_journey(self):
         logger.warning("Changing user journey")
         new_uj = UserJourney("New version of daily Youtube usage", uj_steps=[self.streaming_step])
         self.usage_pattern.user_journey = new_uj
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_changed([self.storage, self.server, self.network, self.usage_pattern])
 
         logger.warning("Changing back to previous uj")
         self.usage_pattern.user_journey = self.uj
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.storage, self.server, self.network, self.usage_pattern])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
 
     def test_update_country_in_usage_pattern(self):
         logger.warning("Changing usage pattern country")
 
         self.usage_pattern.country = Countries.MALAYSIA()
 
-        self.assertNotEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_changed([self.network, self.usage_pattern])
 
         logger.warning("Changing back to initial usage pattern country")
         self.usage_pattern.country = Countries.FRANCE()
 
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.network, self.usage_pattern])
 
     def test_update_network(self):
@@ -332,15 +289,15 @@ class IntegrationTest(IntegrationTestBaseClass):
             "New network with same specs as default", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         self.usage_pattern.network = new_network
 
-        self.assertEqual(0, self.network.energy_footprint.magnitude)
+        self.assertEqual(0, self.network.energy_footprint.max().magnitude)
         self.footprint_has_changed([self.network])
-        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial network")
         self.usage_pattern.network = self.network
-        self.assertEqual(0, new_network.energy_footprint.magnitude)
+        self.assertEqual(0, new_network.energy_footprint.max().magnitude)
         self.footprint_has_not_changed([self.network])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_uj_step_without_job(self):
         logger.warning("Add uj step without service")

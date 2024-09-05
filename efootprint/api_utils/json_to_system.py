@@ -1,3 +1,8 @@
+from datetime import datetime
+
+import numpy as np
+import pandas as pd
+import pint_pandas
 import pytz
 import json
 from copy import copy
@@ -6,6 +11,7 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 from efootprint.abstract_modeling_classes.modeling_object import PREVIOUS_LIST_VALUE_SET_SUFFIX
 from efootprint.abstract_modeling_classes.source_objects import SourceObject
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject, Source
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.units import u
 from efootprint.logger import logger
 from efootprint.core.service import Service
@@ -23,7 +29,7 @@ from efootprint.core.hardware.network import Network
 from efootprint.constants.countries import Country
 
 
-def json_to_explainable_quantity(input_dict):
+def json_to_explainable_object(input_dict):
     output = None
     source = None
     if "source" in input_dict.keys():
@@ -32,14 +38,14 @@ def json_to_explainable_quantity(input_dict):
         value = input_dict["value"] * u(input_dict["unit"])
         output = ExplainableQuantity(
             value, label=input_dict["label"], source=source)
-    elif "value" in input_dict.keys():
-        output = ExplainableObject(
-            value=input_dict["value"], label=input_dict["label"], source=source)
-    elif "unit" in input_dict.keys():
-        unit = u(input_dict["unit"])
-        value = [elt * unit for elt in input_dict["values"]]
+    elif "values" in input_dict.keys() and "unit" in input_dict.keys():
         output = ExplainableHourlyQuantities(
-            value, label=input_dict["label"], source=source)
+            create_hourly_usage_df_from_list(
+                input_dict["values"],
+                pint_unit=u(input_dict["unit"]),
+                start_date=datetime.strptime(input_dict["start_date"], "%Y-%m-%d %H:%M:%S"),
+            ),
+            label=input_dict["label"], source=source)
     elif "zone" in input_dict.keys():
         output = SourceObject(
             pytz.timezone(input_dict["zone"]), source, input_dict["label"])
@@ -61,7 +67,7 @@ def json_to_system(system_dict):
             new_obj.__dict__["modeling_obj_containers"] = []
             for attr_key, attr_value in system_dict[class_key][class_instance_key].items():
                 if type(attr_value) == dict:
-                    new_obj.__dict__[attr_key] = json_to_explainable_quantity(attr_value)
+                    new_obj.__dict__[attr_key] = json_to_explainable_object(attr_value)
                     new_obj.__dict__[attr_key].set_modeling_obj_container(new_obj, attr_key)
                 else:
                     new_obj.__dict__[attr_key] = attr_value
@@ -110,17 +116,3 @@ def get_obj_by_key_similarity(obj_container_dict, input_key):
     for key in obj_container_dict.keys():
         if input_key in key:
             return obj_container_dict[key]
-
-
-if __name__ == "__main__":
-    with open("full_dict.json", "rb") as file:
-        full_dict = json.load(file)
-
-    class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-
-    streaming_step__retrieved = get_obj_by_key_similarity(flat_obj_dict, "20 min streaming on Youtube")
-
-    system__retrieved = get_obj_by_key_similarity(flat_obj_dict, "system")
-
-    from quickstart import system
-    assert round(system__retrieved.total_footprint.magnitude, 2) == round(system.total_footprint.magnitude, 2)

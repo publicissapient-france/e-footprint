@@ -3,8 +3,9 @@ import os.path
 from copy import copy
 
 from efootprint.api_utils.json_to_system import json_to_system
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject, SourceHourlyValues
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -46,7 +47,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
+            initial_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
         cls.youtube = Service(
             "Youtube", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
@@ -116,11 +119,11 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         cls.network = Network("Default network", SourceValue(0.05 * u("kWh/GB"), Sources.TRAFICOM_STUDY))
         cls.usage_pattern1 = UsagePattern(
             "Video watching in France in the morning", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
-            SourceValue(4e7 * 0.3 * 100 * u.user_journey / u.year), SourceObject([[7, 10]], Sources.USER_DATA))
+            SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 2, 4, 5, 8, 12, 2, 2, 3]])))
 
         cls.usage_pattern2 = UsagePattern(
             "Video watching in France in the evening", cls.uj, [default_laptop()], cls.network, Countries.FRANCE(),
-            SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year), SourceObject([[18, 23]], Sources.USER_DATA))
+            SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 2, 1, 5, 2, 1, 7, 8, 3]])))
 
         cls.system = System("system 1", [cls.usage_pattern1, cls.usage_pattern2])
 
@@ -143,6 +146,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cls.usage_pattern2: cls.usage_pattern2.energy_footprint,
         }
 
+        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprints
+        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprints
+
         cls.ref_json_filename = "complex_system.json"
 
     def test_remove_dailymotion_and_tiktok_uj_step(self):
@@ -150,26 +156,26 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
 
         self.footprint_has_changed([self.server1, self.server2, self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion and TikTok uj step back")
         self.uj.uj_steps = [self.streaming_step, self.upload_step, self.dailymotion_step, self.tiktok_step]
 
         self.footprint_has_not_changed([self.server1, self.server2, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_dailymotion_single_job(self):
         logger.warning("Removing Dailymotion job")
         self.dailymotion_step.jobs = []
 
         self.footprint_has_changed([self.server1, self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting Dailymotion job back")
         self.dailymotion_step.jobs = [self.dailymotion_job]
 
         self.footprint_has_not_changed([self.server1, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_one_tiktok_job(self):
         logger.warning("Removing one TikTok job")
@@ -177,13 +183,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.footprint_has_changed([self.server3, self.storage])
         self.footprint_has_not_changed([self.server2])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Putting TikTok job back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
         self.footprint_has_not_changed([self.server3, self.server2, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_remove_all_tiktok_jobs(self):
         logger.warning("Removing all TikTok jobs")

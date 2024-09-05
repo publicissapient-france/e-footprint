@@ -20,26 +20,32 @@ class IntegrationTestBaseClass(TestCase):
         cls.initial_energy_footprints = {}
         cls.initial_fab_footprints = {}
 
-        cls.ref_json_filename = "default_ref_json_file.json"
+        cls.ref_json_filename = None
 
     def footprint_has_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
             try:
-                initial_energy_footprint = round(self.initial_energy_footprints[obj].value, 2)
-                self.assertNotEqual(initial_energy_footprint, obj.energy_footprint.value)
+                initial_energy_footprint = self.initial_energy_footprints[obj]
+                self.assertFalse(initial_energy_footprint.value.equals(obj.energy_footprint.value))
                 if type(obj) != Network:
-                    initial_fab_footprint = round(self.initial_fab_footprints[obj].value, 2)
-                    new_footprint = round(obj.instances_fabrication_footprint.value + obj.energy_footprint.value, 2)
-                    self.assertNotEqual(
-                        initial_fab_footprint + initial_energy_footprint, new_footprint)
+                    initial_fab_footprint = self.initial_fab_footprints[obj]
+                    new_footprint = obj.instances_fabrication_footprint + obj.energy_footprint
+                    self.assertFalse(
+                        (initial_fab_footprint + initial_energy_footprint).value.equals(new_footprint.value))
                     logger.info(
-                        f"{obj.name} footprint has changed from {initial_fab_footprint + initial_energy_footprint}"
-                        f" to {new_footprint}")
+                        f"{obj.name} footprint has changed from {str(initial_fab_footprint + initial_energy_footprint)}"
+                        f" to {str(new_footprint)}")
                 else:
                     logger.info(f"{obj.name} footprint has changed from "
-                                f"{round(initial_energy_footprint, 2)} to {round(obj.energy_footprint.value, 2)}")
+                                f"{initial_energy_footprint} to {obj.energy_footprint.value}")
             except AssertionError:
                 raise AssertionError(f"Footprint hasn’t changed for {obj.name}")
+
+        for prev_fp, initial_fp in zip(
+                (self.system.previous_total_energy_footprints, self.system.previous_total_fabrication_footprints),
+                (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
+            for key in ["Servers", "Storage", "Devices", "Network"]:
+                self.assertEqual(initial_fp[key], prev_fp[key])
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
@@ -47,8 +53,8 @@ class IntegrationTestBaseClass(TestCase):
                 initial_energy_footprint = self.initial_energy_footprints[obj].value
                 if type(obj) != Network:
                     initial_fab_footprint = self.initial_fab_footprints[obj].value
-                    self.assertEqual(initial_fab_footprint, obj.instances_fabrication_footprint.value)
-                self.assertEqual(initial_energy_footprint, obj.energy_footprint.value)
+                    self.assertTrue(initial_fab_footprint.equals(obj.instances_fabrication_footprint.value))
+                self.assertTrue(initial_energy_footprint.equals(obj.energy_footprint.value))
                 logger.info(f"{obj.name} footprint is the same as in setup")
             except AssertionError:
                 raise AssertionError(f"Footprint has changed for {obj.name}")

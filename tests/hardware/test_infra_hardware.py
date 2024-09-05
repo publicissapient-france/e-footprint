@@ -17,6 +17,9 @@ class TestInfraHardware(TestCase):
                 super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
                 self.dont_handle_pubsub_topic_messages = True
 
+            def update_raw_nb_of_instances(self):
+                self.raw_nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([1.5, 3]))
+
             def update_nb_of_instances(self):
                 self.nb_of_instances = SourceHourlyValues(create_hourly_usage_df_from_list([2, 3]))
 

@@ -37,10 +37,7 @@ class Service(ModelingObject):
     @property
     def calculated_attributes(self):
         return [
-            "hourly_job_occurrences_across_usage_patterns_per_job",
-            "hourly_avg_job_occurrences_across_usage_patterns_per_job",
-            "hour_by_hour_ram_need", "hour_by_hour_cpu_need", "hourly_data_upload_across_usage_patterns_per_job",
-            "storage_needed"]
+            "hour_by_hour_ram_need", "hour_by_hour_cpu_need", "storage_needed"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -58,41 +55,12 @@ class Service(ModelingObject):
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
-    def update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-            self, hourly_calc_attr_summed_across_ups_per_job: ExplainableObjectDict,
-            calculated_attribute_name: str, calculated_attribute_label: str):
-        for job in self.jobs:
-            job_hourly_calc_attr_summed_across_ups = EmptyExplainableObject()
-            for usage_pattern in job.usage_patterns:
-                job_hourly_calc_attr_summed_across_ups += getattr(usage_pattern, calculated_attribute_name)[job]
-
-            hourly_calc_attr_summed_across_ups_per_job[job] = job_hourly_calc_attr_summed_across_ups.set_label(
-                    f"Hourly {job.name} {calculated_attribute_label} across usage patterns")
-
-    def update_hourly_job_occurrences_across_usage_patterns_per_job(self):
-        self.hourly_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
-
-        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-            self.hourly_job_occurrences_across_usage_patterns_per_job,
-            "hourly_job_occurrences_per_job", "occurrences")
-
-    def update_hourly_avg_job_occurrences_across_usage_patterns_per_job(self):
-        self.hourly_avg_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
-
-        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-            self.hourly_avg_job_occurrences_across_usage_patterns_per_job,
-            "hourly_avg_job_occurrences_per_job", "average occurrences")
-
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
         hour_by_hour_resource_needs = EmptyExplainableObject()
         for job in self.jobs:
-            try:
-                hour_by_hour_resource_needs += (
-                        self.hourly_avg_job_occurrences_across_usage_patterns_per_job[job]
-                        * getattr(job, f"{resource}_needed"))
-            except:
-                a = 1
+            hour_by_hour_resource_needs += (
+                job.hourly_avg_occurrences_across_usage_patterns * getattr(job, f"{resource}_needed"))
 
         return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
 
@@ -101,19 +69,11 @@ class Service(ModelingObject):
 
     def update_hour_by_hour_cpu_need(self):
         self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
-
-    def update_hourly_data_upload_across_usage_patterns_per_job(self):
-        self.hourly_data_upload_across_usage_patterns_per_job = ExplainableObjectDict()
-
-        self.update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
-            self.hourly_data_upload_across_usage_patterns_per_job,
-            "hourly_data_upload_per_job", "data upload")
             
     def update_storage_needed(self):
         storage_needed = EmptyExplainableObject()
 
-        if self.jobs:
-            for job in self.jobs:
-                storage_needed += self.hourly_data_upload_across_usage_patterns_per_job[job]
+        for job in self.jobs:
+            storage_needed += job.hourly_data_upload_across_usage_patterns
 
         self.storage_needed = storage_needed.to(u.TB).set_label(f"Hour by hour storage need for {self.name}")

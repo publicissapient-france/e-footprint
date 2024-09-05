@@ -33,25 +33,25 @@ class Network(ModelingObject):
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
+    @property
+    def jobs(self):
+        return list(set(sum([up.jobs for up in self.usage_patterns], start=[])))
+
     def update_energy_footprint(self):
+        hourly_data_transferred_per_up = {up: EmptyExplainableObject() for up in self.usage_patterns}
+        for job in self.jobs:
+            for up in job.usage_patterns:
+                hourly_data_transferred_per_up[up] += job.hourly_data_upload_per_usage_pattern[up]
+                hourly_data_transferred_per_up[up] += job.hourly_data_download_per_usage_pattern[up]
+
         energy_footprint = EmptyExplainableObject()
+        for up in self.usage_patterns:
+            up_network_consumption = (
+                        self.bandwidth_energy_intensity * hourly_data_transferred_per_up[up]).to(u.kWh).set_label(
+                f"{up.name} network energy consumption")
 
-        usage_patterns_with_jobs = [up for up in self.usage_patterns if len(up.jobs) > 0]
+            energy_footprint += up_network_consumption * up.country.average_carbon_intensity
 
-        if usage_patterns_with_jobs:
-            for usage_pattern in usage_patterns_with_jobs:
-                up_hourly_data_transferred_through_network = EmptyExplainableObject()
-                for job in usage_pattern.jobs:
-                    up_hourly_data_transferred_through_network += usage_pattern.hourly_data_upload_per_job[job]
-                    up_hourly_data_transferred_through_network += usage_pattern.hourly_data_download_per_job[job]
-    
-                up_network_consumption = (
-                            self.bandwidth_energy_intensity
-                            * up_hourly_data_transferred_through_network).to(u.kWh).set_label(
-                    f"{usage_pattern.name} network energy consumption")
-    
-                energy_footprint += up_network_consumption * usage_pattern.country.average_carbon_intensity
-            
-            energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
+        energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")
 
         self.energy_footprint = energy_footprint

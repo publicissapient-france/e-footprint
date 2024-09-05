@@ -34,7 +34,7 @@ class UserJourneyStep(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UserJourney"]]:
-        if len(self.user_journeys) > 0:
+        if self.user_journeys:
             return self.user_journeys
         else:
-            return self.services
+            return self.jobs

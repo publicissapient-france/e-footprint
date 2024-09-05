@@ -41,7 +41,7 @@ storage = Storage(
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     data_replication_factor=SourceValue(3 * u.dimensionless, source=None),
     data_storage_duration=SourceValue(3 * u.year, source=None),
-    initial_storage_need=SourceValue(0 * u.TB, source=None))
+    base_storage_need=SourceValue(0 * u.TB, source=None))
 
 service = Service(
     "service",

@@ -1,7 +1,8 @@
 import math
 
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
+    EmptyExplainableObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 
@@ -11,7 +12,7 @@ class Storage(InfraHardware):
                  lifespan: SourceValue, idle_power: SourceValue, storage_capacity: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
-                 initial_storage_need: SourceValue):
+                 base_storage_need: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
         self.all_services_storage_needs = None
         self.storage_dumps = None
@@ -36,11 +37,11 @@ class Storage(InfraHardware):
         if not data_storage_duration.value.check("[time]"):
             raise ValueError("Value of variable 'data_storage_duration' does not have appropriate time dimensionality")
         self.data_storage_duration = data_storage_duration.set_label(f"Data storage duration of {self.name}")
-        if not initial_storage_need.value.check("[]"):
+        if not base_storage_need.value.check("[]"):
             raise ValueError(
                 "Value of variable 'storage_need_from_previous_year' does not have the appropriate"
                 " '[]' dimensionality")
-        self.initial_storage_need = initial_storage_need.set_label(f"{self.name} storage need from previous year")
+        self.base_storage_need = base_storage_need.set_label(f"{self.name} initial storage need")
 
     @property
     def calculated_attributes(self):
@@ -49,22 +50,26 @@ class Storage(InfraHardware):
             "nb_of_active_instances"] + self.calculated_attributes_defined_in_infra_hardware_class
 
     def update_all_services_storage_needs(self):
-        if len(self.services) > 0:
-            all_services_storage_needs = (sum(service.storage_needed for service in self.services).to(u.TB)
-                                          * self.data_replication_factor)
+        all_services_storage_needs = (
+                sum([service.storage_needed for service in self.services], start=EmptyExplainableObject()).to(u.TB)
+                * self.data_replication_factor)
 
-            self.all_services_storage_needs = all_services_storage_needs.set_label(
-                f"Storage need of {self.name}")
+        self.all_services_storage_needs = all_services_storage_needs.set_label(
+            f"Storage need of {self.name}")
 
     def update_storage_dumps(self):
-        storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-        storage_dumps_df = - self.all_services_storage_needs.value.copy().shift(
-            periods=storage_duration_in_hours, freq='h')
-        storage_dumps_df = storage_dumps_df[storage_dumps_df.index <= self.all_services_storage_needs.value.index.max()]
+        if isinstance(self.all_services_storage_needs, EmptyExplainableObject):
+            self.storage_dumps = EmptyExplainableObject()
+        else:
+            storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
+            storage_dumps_df = - self.all_services_storage_needs.value.copy().shift(
+                periods=storage_duration_in_hours, freq='h')
+            storage_dumps_df = storage_dumps_df[
+                storage_dumps_df.index <= self.all_services_storage_needs.value.index.max()]
 
-        self.storage_dumps = ExplainableHourlyQuantities(
-            storage_dumps_df, label=f"Storage dumps for {self.name}", left_parent=self.all_services_storage_needs,
-            right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
+            self.storage_dumps = ExplainableHourlyQuantities(
+                storage_dumps_df, label=f"Storage dumps for {self.name}", left_parent=self.all_services_storage_needs,
+                right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
     def update_storage_delta(self):
         storage_delta = self.all_services_storage_needs + self.storage_dumps
@@ -72,14 +77,17 @@ class Storage(InfraHardware):
         self.storage_delta = storage_delta.set_label(f"Hourly storage delta for {self.name}")
 
     def update_full_cumulative_storage_need(self):
-        storage_delta_df = self.storage_delta.value.copy()
-        storage_delta_df.iat[0, 0] += self.initial_storage_need.value
-        full_cumulative_storage_need = storage_delta_df.cumsum()
+        if isinstance(self.storage_delta, EmptyExplainableObject):
+            self.full_cumulative_storage_need = EmptyExplainableObject()
+        else:
+            storage_delta_df = self.storage_delta.value.copy()
+            storage_delta_df.iat[0, 0] += self.base_storage_need.value
+            full_cumulative_storage_need = storage_delta_df.cumsum()
 
-        self.full_cumulative_storage_need = ExplainableHourlyQuantities(
-            full_cumulative_storage_need, label=f"Full cumulative storage need for {self.name}",
-            left_parent=self.storage_delta, right_parent=self.initial_storage_need,
-            operator="cumulative sum of storage delta with initial storage need")
+            self.full_cumulative_storage_need = ExplainableHourlyQuantities(
+                full_cumulative_storage_need, label=f"Full cumulative storage need for {self.name}",
+                left_parent=self.storage_delta, right_parent=self.base_storage_need,
+                operator="cumulative sum of storage delta with initial storage need")
 
     def update_raw_nb_of_instances(self):
         raw_nb_of_instances = (self.full_cumulative_storage_need / self.storage_capacity).to(u.dimensionless)

@@ -22,7 +22,7 @@ class TestStorage(TestCase):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
             data_replication_factor=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(0 * u.years, Sources.HYPOTHESIS),
-            initial_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS)
+            base_storage_need=SourceValue(0 * u.TB, Sources.HYPOTHESIS)
         )
 
         self.storage_base.dont_handle_input_updates = True
@@ -82,7 +82,7 @@ class TestStorage(TestCase):
             create_hourly_usage_df_from_list([2, -2, 4, -5, 6], start_date, pint_unit=u.TB))
 
         with patch.object(self.storage_base, "storage_delta", delta_data), \
-                patch.object(self.storage_base, "initial_storage_need", SourceValue(5 * u.TB)):
+                patch.object(self.storage_base, "base_storage_need", SourceValue(5 * u.TB)):
             self.storage_base.update_full_cumulative_storage_need()
 
             self.assertEqual([7, 5, 9, 4, 10], self.storage_base.full_cumulative_storage_need.value_as_float_list)
@@ -106,7 +106,7 @@ class TestStorage(TestCase):
         with patch.object(self.storage_base, "full_cumulative_storage_need", full_storage_data), \
                 patch.object(self.storage_base, "storage_capacity", storage_capacity):
             self.storage_base.update_raw_nb_of_instances()
-            self.assertEqual(expected_data, self.storage_base.nb_of_instances.value_as_float_list)
+            self.assertEqual(expected_data, self.storage_base.raw_nb_of_instances.value_as_float_list)
 
     def test_nb_of_instances(self):
         raw_nb_of_instances = SourceHourlyValues(
