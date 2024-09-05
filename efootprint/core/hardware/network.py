@@ -1,5 +1,6 @@
 from typing import List
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
@@ -8,7 +9,7 @@ from efootprint.constants.units import u
 class Network(ModelingObject):
     def __init__(self, name: str, bandwidth_energy_intensity: SourceValue):
         super().__init__(name)
-        self.energy_footprint = 0
+        self.energy_footprint = None
         if not bandwidth_energy_intensity.value.check("[energy]/[]"):
             raise ValueError(
                 "Value of variable 'storage_need_from_previous_year' does not have the appropriate "
@@ -33,13 +34,13 @@ class Network(ModelingObject):
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 
     def update_energy_footprint(self):
-        energy_footprint = 0
+        energy_footprint = EmptyExplainableObject()
 
         usage_patterns_with_jobs = [up for up in self.usage_patterns if len(up.jobs) > 0]
 
         if usage_patterns_with_jobs:
             for usage_pattern in usage_patterns_with_jobs:
-                up_hourly_data_transferred_through_network = 0
+                up_hourly_data_transferred_through_network = EmptyExplainableObject()
                 for job in usage_pattern.jobs:
                     up_hourly_data_transferred_through_network += usage_pattern.hourly_data_upload_per_job[job]
                     up_hourly_data_transferred_through_network += usage_pattern.hourly_data_download_per_job[job]

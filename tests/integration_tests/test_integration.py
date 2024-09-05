@@ -190,16 +190,16 @@ class IntegrationTest(IntegrationTestBaseClass):
     def test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")
         self.uj.uj_steps = [self.streaming_step]
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.uj.uj_steps = [self.streaming_step, self.upload_step]
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_device_pop_update(self):
         logger.warning("Updating devices in usage pattern")
         self.usage_pattern.devices = [default_laptop(), default_screen()]
-        assert round(self.initial_footprint.magnitude, 2) != round(self.system.total_footprint.magnitude, 2)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.usage_pattern.devices = [default_laptop()]
-        assert round(self.initial_footprint.magnitude, 2) == round(self.system.total_footprint.magnitude, 2)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_server(self):
         new_server = Autoscaling(
@@ -217,18 +217,17 @@ class IntegrationTest(IntegrationTestBaseClass):
 
         logger.warning("Changing service server")
         self.service.server = new_server
-
-        self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, self.server.energy_footprint.magnitude)
+        self.assertEqual(0, self.server.instances_fabrication_footprint.max().magnitude)
+        self.assertEqual(0, self.server.energy_footprint.max().magnitude)
         self.footprint_has_changed([self.server])
-        self.assertEqual(self.system.total_footprint.value, self.initial_footprint.value)
+        self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
         logger.warning("Changing back to initial service server")
         self.service.server = self.server
-        self.assertEqual(0, new_server.instances_fabrication_footprint.magnitude)
-        self.assertEqual(0, new_server.energy_footprint.magnitude)
+        self.assertEqual(0, new_server.instances_fabrication_footprint.max().magnitude)
+        self.assertEqual(0, new_server.energy_footprint.max().magnitude)
         self.footprint_has_not_changed([self.server])
-        self.assertEqual(self.initial_footprint.value, self.system.total_footprint.value)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_update_storage(self):
         new_storage = Storage(
@@ -240,7 +239,9 @@ class IntegrationTest(IntegrationTestBaseClass):
             storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+            data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+            data_storage_duration=SourceValue(3 * u.hours),
+            initial_storage_need=SourceValue(1 * u.TB)
         )
         logger.warning("Changing service storage")
         self.service.storage = new_storage

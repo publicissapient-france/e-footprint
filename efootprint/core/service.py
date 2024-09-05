@@ -1,5 +1,6 @@
 from typing import List
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -60,14 +61,13 @@ class Service(ModelingObject):
     def update_expl_dict_with_calculated_attribute_summed_across_usage_patterns_per_job(
             self, hourly_calc_attr_summed_across_ups_per_job: ExplainableObjectDict,
             calculated_attribute_name: str, calculated_attribute_label: str):
-
         for job in self.jobs:
-            job_hourly_calc_attr_summed_across_ups = 0
+            job_hourly_calc_attr_summed_across_ups = EmptyExplainableObject()
             for usage_pattern in job.usage_patterns:
                 job_hourly_calc_attr_summed_across_ups += getattr(usage_pattern, calculated_attribute_name)[job]
 
             hourly_calc_attr_summed_across_ups_per_job[job] = job_hourly_calc_attr_summed_across_ups.set_label(
-                f"Hourly {job.name} {calculated_attribute_label} across usage patterns")
+                    f"Hourly {job.name} {calculated_attribute_label} across usage patterns")
 
     def update_hourly_job_occurrences_across_usage_patterns_per_job(self):
         self.hourly_job_occurrences_across_usage_patterns_per_job = ExplainableObjectDict()
@@ -85,14 +85,16 @@ class Service(ModelingObject):
 
     def compute_hour_by_hour_resource_need(self, resource):
         resource_unit = u(self.resources_unit_dict[resource])
-        hour_by_hour_resource_needs = 0
+        hour_by_hour_resource_needs = EmptyExplainableObject()
         for job in self.jobs:
-            hour_by_hour_resource_needs += (
-                    self.hourly_avg_job_occurrences_across_usage_patterns_per_job[job]
-                    * getattr(job, f"{resource}_needed")
-            ).to(resource_unit).set_label(f"Hour by hour average {resource} needed to process {job.name}")
+            try:
+                hour_by_hour_resource_needs += (
+                        self.hourly_avg_job_occurrences_across_usage_patterns_per_job[job]
+                        * getattr(job, f"{resource}_needed"))
+            except:
+                a = 1
 
-        return hour_by_hour_resource_needs.set_label(f"{self.name} hour by hour {resource} need")
+        return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
 
     def update_hour_by_hour_ram_need(self):
         self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
@@ -108,11 +110,10 @@ class Service(ModelingObject):
             "hourly_data_upload_per_job", "data upload")
             
     def update_storage_needed(self):
-        storage_needed = 0
+        storage_needed = EmptyExplainableObject()
 
         if self.jobs:
             for job in self.jobs:
                 storage_needed += self.hourly_data_upload_across_usage_patterns_per_job[job]
-            storage_needed = storage_needed.to(u.TB).set_label(f"Hour by hour storage need for {self.name}")
 
-        self.storage_needed = storage_needed
+        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hour by hour storage need for {self.name}")

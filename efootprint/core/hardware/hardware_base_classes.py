@@ -1,7 +1,8 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity, \
+    EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -81,26 +82,30 @@ class InfraHardware(Hardware):
         return list(set(sum([service.systems for service in self.services], start=[])))
 
     def update_all_services_ram_needs(self):
-        all_services_ram_needs = 0
+        all_services_ram_needs = EmptyExplainableObject()
         for service in self.services:
             all_services_ram_needs += service.hour_by_hour_ram_need
 
-        self.all_services_ram_needs = all_services_ram_needs.set_label(
-            f"RAM needs of all services running on {self.name}")
+        self.all_services_ram_needs = all_services_ram_needs.to(u.GB).set_label(
+                f"RAM needs of all services running on {self.name}")
 
     def update_all_services_cpu_needs(self):
-        all_services_cpu_needs = 0
+        all_services_cpu_needs = EmptyExplainableObject()
         for service in self.services:
             all_services_cpu_needs += service.hour_by_hour_cpu_need
 
-        self.all_services_cpu_needs = all_services_cpu_needs.set_label(
+        self.all_services_cpu_needs = all_services_cpu_needs.to(u.core).set_label(
             f"CPU needs of all services running on {self.name}")
 
     def update_instances_fabrication_footprint(self):
-        self.instances_fabrication_footprint = (
+        instances_fabrication_footprint = (
                 self.carbon_footprint_fabrication * self.nb_of_instances * ExplainableQuantity(1 * u.hour, "one hour")
-                / self.lifespan).to(u.kg).set_label(f"Hour by hour instances of {self.name} fabrication footprint")
+                / self.lifespan)
+
+        self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
+                f"Hour by hour instances of {self.name} fabrication footprint")
 
     def update_energy_footprint(self):
-        self.energy_footprint = (self.instances_energy * self.average_carbon_intensity).to(
-            u.kg).set_label(f"Hour by hour energy footprint of {self.name}")
+        energy_footprint = (self.instances_energy * self.average_carbon_intensity)
+
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hour by hour energy footprint of {self.name}")

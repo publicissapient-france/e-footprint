@@ -1,5 +1,6 @@
 from typing import List, Type
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
@@ -74,14 +75,14 @@ class UserJourney(ModelingObject):
         self.duration = user_time_spent_sum.set_label(f"Duration of {self.name}")
 
     def update_data_download(self):
-        all_data_download = 0
+        all_data_download = EmptyExplainableObject()
         for job in self.jobs:
             all_data_download += job.data_download
 
         self.data_download = all_data_download.set_label(f"Data download of {self.name}")
 
     def update_data_upload(self):
-        all_data_upload = 0
+        all_data_upload = EmptyExplainableObject()
         for job in self.jobs:
             all_data_upload += job.data_upload
 

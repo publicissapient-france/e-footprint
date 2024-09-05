@@ -50,7 +50,7 @@ class System(ModelingObject):
     def after_init(self):
         self.init_has_passed = True
         self.launch_attributes_computation_chain()
-        logger.info(f"Finished computing full system {self.name}")
+        logger.info(f"Finished computing {self.name} modeling")
         self.initial_total_energy_footprints = self.total_energy_footprints
         self.initial_total_fabrication_footprints = self.total_fabrication_footprints
 

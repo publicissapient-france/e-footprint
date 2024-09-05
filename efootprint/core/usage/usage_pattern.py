@@ -11,7 +11,8 @@ from efootprint.core.service import Service
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import (
+    ExplainableQuantity, ExplainableHourlyQuantities, EmptyExplainableObject)
 
 
 class UsagePattern(ModelingObject):
@@ -84,7 +85,7 @@ class UsagePattern(ModelingObject):
         self.devices_energy_footprint = energy_footprint.set_label(f"Energy footprint of {self.name}")
 
     def update_devices_fabrication_footprint(self):
-        devices_fabrication_footprint_over_one_hour = 0
+        devices_fabrication_footprint_over_one_hour = EmptyExplainableObject()
         for device in self.devices:
             device_uj_fabrication_footprint = (
                     device.carbon_footprint_fabrication * ExplainableQuantity(1 * u.hour, "one hour")
@@ -107,8 +108,8 @@ class UsagePattern(ModelingObject):
             f"{self.name} total fabrication footprint")
 
     def compute_hourly_job_occurrences(self, job):
-        job_occurrences = 0
-        delay_between_uj_start_and_job_evt = 0
+        job_occurrences = EmptyExplainableObject()
+        delay_between_uj_start_and_job_evt = EmptyExplainableObject()
         delay_in_hours_between_uj_start_and_job_evt = 0
         for uj_step in self.user_journey.uj_steps:
             for uj_step_job in uj_step.jobs:
@@ -128,24 +129,28 @@ class UsagePattern(ModelingObject):
 
     def update_hourly_avg_job_occurrences_per_job(self):
         for job in self.jobs:
-            self.hourly_avg_job_occurrences_per_job[job] = compute_nb_avg_hourly_occurrences(
-                self.hourly_job_occurrences_per_job[job], job.request_duration).set_label(
-                f"Average hourly {job.name} occurrences in {self.name}")
+            hourly_avg_job_occurrences = compute_nb_avg_hourly_occurrences(
+                self.hourly_job_occurrences_per_job[job], job.request_duration)
+            if isinstance(hourly_avg_job_occurrences, ExplainableHourlyQuantities):
+                hourly_avg_job_occurrences.set_label(f"Average hourly {job.name} occurrences in {self.name}")
+
+            self.hourly_avg_job_occurrences_per_job[job] = hourly_avg_job_occurrences
 
     def compute_job_hourly_data_exchange(self, job: Job, data_exchange_type: str):
         data_exchange_type_no_underscore = data_exchange_type.replace("_", " ")
 
-        job_hourly_data_exchange = 0
+        job_hourly_data_exchange = EmptyExplainableObject()
         data_exchange_per_hour = (getattr(job, data_exchange_type) / job.duration_in_full_hours).set_label(
             f"{data_exchange_type_no_underscore} per hour for job {job.name} in {self.name}")
 
         for hour_shift in range(0, job.duration_in_full_hours.magnitude):
-            job_hourly_data_exchange += (
-                    self.hourly_job_occurrences_per_job[job].return_shifted_hourly_quantities(hour_shift)
-                    * data_exchange_per_hour)
+            if not isinstance(self.hourly_job_occurrences_per_job[job], EmptyExplainableObject):
+                job_hourly_data_exchange += (
+                        self.hourly_job_occurrences_per_job[job].return_shifted_hourly_quantities(hour_shift)
+                        * data_exchange_per_hour)
 
         return job_hourly_data_exchange.set_label(
-            f"Hourly {data_exchange_type_no_underscore} for {job.name} in {self.name}")
+                f"Hourly {data_exchange_type_no_underscore} for {job.name} in {self.name}")
 
     def update_hourly_data_upload_per_job(self):
         for job in self.jobs:

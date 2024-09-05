@@ -4,6 +4,8 @@ from efootprint.abstract_modeling_classes.explainable_object_base_class import (
 from typing import Type
 import json
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
+
 
 class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
     # TODO: optimization opportunity: as such in the case of several values of an ExplainableObjectDict
@@ -24,11 +26,14 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         self.attr_name_in_mod_obj_container = attr_name
 
     def __setitem__(self, key, value: ExplainableObject):
-        if not issubclass(type(value), ExplainableObject):
-            raise ValueError(f"ExplainableObjectDicts only accept ExplainableObjects as values, received {type(value)}")
+        if not issubclass(type(value), ExplainableObject) and not isinstance(value, EmptyExplainableObject):
+            raise ValueError(
+                f"ExplainableObjectDicts only accept ExplainableObjects or EmptyExplainableObject as values, "
+                f"received {type(value)}")
         super().__setitem__(key, value)
-        value.set_modeling_obj_container(
-            new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
+        if value != 0:
+            value.set_modeling_obj_container(
+                new_modeling_obj_container=self.modeling_obj_container, attr_name=self.attr_name_in_mod_obj_container)
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {}

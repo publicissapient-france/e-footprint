@@ -1,11 +1,15 @@
 import math
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
+    EmptyExplainableObject
 from efootprint.constants.units import u
 
 
 def compute_nb_avg_hourly_occurrences(
         hourly_occurrences_starts: ExplainableHourlyQuantities, event_duration: ExplainableQuantity):
+    if isinstance(hourly_occurrences_starts, EmptyExplainableObject):
+        return EmptyExplainableObject()
+
     nb_avg_hourly_occurrences_in_parallel = None
     event_duration_in_nb_of_hours = event_duration.to(u.hour).magnitude
     nb_of_full_hours_in_event_duration = math.floor(event_duration_in_nb_of_hours)
