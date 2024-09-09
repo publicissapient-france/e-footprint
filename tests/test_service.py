@@ -78,15 +78,17 @@ class TestService(unittest.TestCase):
             self.service.self_delete()
 
     def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
-        with patch.object(Service, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+        with patch.object(Service, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
+                patch.object(self.server, "modeling_obj_containers", [self.service]), \
+                patch.object(self.storage, "modeling_obj_containers", [self.service]), \
+                patch.object(self.server, "attributes_computation_chain", [self.server]), \
+                patch.object(self.storage, "attributes_computation_chain", [self.storage]):
             mock_mod_obj_attributes.return_value = [self.server, self.storage]
-            self.server.modeling_obj_containers = [self.service]
-            self.storage.modeling_obj_containers = [self.service]
             self.service.self_delete()
             self.assertEqual([], self.server.modeling_obj_containers)
             self.assertEqual([], self.storage.modeling_obj_containers)
-            self.server.launch_attributes_computation_chain.assert_called_once()
-            self.storage.launch_attributes_computation_chain.assert_called_once()
+            self.server.compute_calculated_attributes.assert_called_once()
+            self.storage.compute_calculated_attributes.assert_called_once()
 
 
 if __name__ == '__main__':

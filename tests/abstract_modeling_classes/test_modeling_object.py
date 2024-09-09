@@ -121,7 +121,7 @@ class TestModelingObject(unittest.TestCase):
 
             self.assertEqual(mock_retrieve_update_func.call_count, 3)
 
-    def test_launch_attributes_computation_chain(self):
+    def test_attributes_computation_chain(self):
         dep1 = MagicMock()
         dep2 = MagicMock()
         dep1_sub1 = MagicMock()
@@ -136,10 +136,8 @@ class TestModelingObject(unittest.TestCase):
         for obj in [dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
             obj.modeling_objects_whose_attributes_depend_directly_on_me = []
 
-        self.modeling_object.launch_attributes_computation_chain()
-
-        for dep in [dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2]:
-            dep.compute_calculated_attributes.assert_called_once()
+        self.assertEqual([self.modeling_object, dep1, dep2, dep1_sub1, dep1_sub2, dep2_sub1, dep2_sub2],
+                         self.modeling_object.attributes_computation_chain)
 
     def test_list_attribute_update_works_with_classical_syntax(self):
         val1 = MagicMock()
@@ -166,6 +164,29 @@ class TestModelingObject(unittest.TestCase):
             mod_obj.custom_input += [val3]
             assert mod_obj.custom_input__previous_list_value_set == [val1, val2, val3]
             mock_list_obj_update_func.assert_called_once_with([val1, val2, val3], [val1, val2])
+
+    def test_optimize_attributes_computation_chain_simple_case(self):
+        mod_obj1 = MagicMock()
+        mod_obj2 = MagicMock()
+        mod_obj3 = MagicMock()
+
+        attributes_computation_chain = [mod_obj1, mod_obj2, mod_obj3]
+
+        self.assertEqual([mod_obj1, mod_obj2, mod_obj3],
+                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
+
+    def test_optimize_attributes_computation_chain_complex_case(self):
+        mod_obj1 = MagicMock()
+        mod_obj2 = MagicMock()
+        mod_obj3 = MagicMock()
+        mod_obj4 = MagicMock()
+        mod_obj5 = MagicMock()
+
+        attributes_computation_chain = [
+            mod_obj1, mod_obj2, mod_obj3, mod_obj4, mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3]
+
+        self.assertEqual([mod_obj5, mod_obj1, mod_obj2, mod_obj4, mod_obj3],
+                         self.modeling_object.optimize_attributes_computation_chain(attributes_computation_chain))
 
 
 if __name__ == "__main__":

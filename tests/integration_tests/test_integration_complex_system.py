@@ -49,7 +49,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
-            initial_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
         )
         cls.youtube = Service(
             "Youtube", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
@@ -197,13 +197,13 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
 
         self.footprint_has_changed([self.server2, self.server3, self.storage])
         self.footprint_has_not_changed([self.server1])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint))
 
         logger.warning("Putting TikTok jobs back")
         self.tiktok_step.jobs = [self.tiktok_job, self.tiktok_analytics_job]
 
         self.footprint_has_not_changed([self.server3, self.server2, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_new_service(self):
         logger.warning("Adding service")
@@ -220,7 +220,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.uj.uj_steps += [new_uj]
 
         self.footprint_has_changed([self.server1, self.storage])
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Removing new service")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
@@ -230,22 +230,22 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         new_service.self_delete()
 
         self.footprint_has_not_changed([self.server1, self.storage])
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_new_usage_pattern(self):
         new_up = UsagePattern(
             "New usage pattern video watching in France", self.uj, [default_laptop()], self.network, Countries.FRANCE(),
-            SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year), SourceObject([[7, 23]], Sources.USER_DATA))
+            SourceHourlyValues(create_hourly_usage_df_from_list([elt * 1000 for elt in [1, 4, 1, 5, 3, 1, 5, 23, 2]])))
 
         logger.warning("Adding new usage pattern")
         self.system.usage_patterns += [new_up]
-        self.assertNotEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
         logger.warning("Removing the new usage pattern")
         self.system.usage_patterns = [self.usage_pattern1, self.usage_pattern2]
         new_up.self_delete()
 
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_system_to_json(self):
         self.run_system_to_json_test(self.system)
@@ -265,8 +265,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         current_ups = copy(system.usage_patterns)
         new_up = UsagePattern(
             "New usage pattern video watching in France", current_ups[0].user_journey, [default_laptop()],
-            current_ups[0].network, Countries.FRANCE(), SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year),
-            SourceObject([[7, 23]], Sources.USER_DATA))
+            current_ups[0].network, Countries.FRANCE(),
+            SourceHourlyValues(
+                create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 23, 12, 52, 24, 51, 71, 85, 3]])))
 
         logger.warning("Adding new usage pattern")
         self.assertEqual(self.initial_footprint, system.total_footprint)

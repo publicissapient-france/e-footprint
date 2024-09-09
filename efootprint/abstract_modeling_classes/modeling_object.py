@@ -90,19 +90,40 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             update_func = self.retrieve_update_function_from_attribute_name(self, attr_name)
             update_func()
 
-    def launch_attributes_computation_chain(self):
-        self.compute_calculated_attributes()
+    @property
+    def attributes_computation_chain(self):
+        attributes_computation_chain = [self]
 
         mod_objs_with_attributes_to_compute = self.modeling_objects_whose_attributes_depend_directly_on_me
 
         while len(mod_objs_with_attributes_to_compute) > 0:
             current_mod_obj_to_update = mod_objs_with_attributes_to_compute[0]
-            current_mod_obj_to_update.compute_calculated_attributes()
+            attributes_computation_chain.append(current_mod_obj_to_update)
             mod_objs_with_attributes_to_compute = mod_objs_with_attributes_to_compute[1:]
 
             for mod_obj in current_mod_obj_to_update.modeling_objects_whose_attributes_depend_directly_on_me:
                 if mod_obj not in mod_objs_with_attributes_to_compute:
                     mod_objs_with_attributes_to_compute.append(mod_obj)
+
+        return attributes_computation_chain
+
+    @staticmethod
+    def optimize_attributes_computation_chain(attributes_computation_chain):
+        # Keep only last occurrence of each mod_obj
+        optimized_chain = []
+
+        for index in range(len(attributes_computation_chain)):
+            mod_obj = attributes_computation_chain[index]
+
+            if mod_obj not in attributes_computation_chain[index + 1:]:
+                optimized_chain.append(mod_obj)
+
+        return optimized_chain
+
+    @staticmethod
+    def launch_attributes_computation_chain(attributes_computation_chain):
+        for mod_obj in attributes_computation_chain:
+            mod_obj.compute_calculated_attributes()
 
     def after_init(self):
         self.init_has_passed = True
@@ -224,11 +245,15 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
 
         old_value.remove_obj_from_modeling_obj_containers(self)
 
+        attributes_computation_chain = []
         if self in old_value.modeling_objects_whose_attributes_depend_directly_on_me:
-            self.launch_attributes_computation_chain()
+            attributes_computation_chain += self.attributes_computation_chain
         else:
-            input_value.launch_attributes_computation_chain()
-            old_value.launch_attributes_computation_chain()
+            attributes_computation_chain += input_value.attributes_computation_chain
+            attributes_computation_chain += old_value.attributes_computation_chain
+
+        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
+        self.launch_attributes_computation_chain(optimized_chain)
 
     def handle_object_list_link_update(self, input_value: List[Type["ModelingObject"]],
                                        old_value: List[Type["ModelingObject"]]):
@@ -238,11 +263,16 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
         for obj in removed_objs:
             obj.remove_obj_from_modeling_obj_containers(self)
 
+        attributes_computation_chain = []
+
         for obj in removed_objs + added_objs:
             if self not in obj.modeling_objects_whose_attributes_depend_directly_on_me:
-                obj.launch_attributes_computation_chain()
+                attributes_computation_chain += obj.attributes_computation_chain
 
-        self.launch_attributes_computation_chain()
+        attributes_computation_chain += self.attributes_computation_chain
+
+        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
+        self.launch_attributes_computation_chain(optimized_chain)
 
     def add_obj_to_modeling_obj_containers(self, new_obj):
         if new_obj not in self.modeling_obj_containers:
@@ -291,9 +321,14 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
             raise PermissionError(
                 f"You can’t delete {self.name} because "
                 f"{','.join([mod_obj.name for mod_obj in self.modeling_obj_containers])} have it as attribute.")
+
+        attributes_computation_chain = []
         for attr in self.mod_obj_attributes:
             attr.modeling_obj_containers = [elt for elt in attr.modeling_obj_containers if elt != self]
-            attr.launch_attributes_computation_chain()
+            attributes_computation_chain += attr.attributes_computation_chain
+
+        optimized_chain = self.optimize_attributes_computation_chain(attributes_computation_chain)
+        self.launch_attributes_computation_chain(optimized_chain)
 
         del self
 

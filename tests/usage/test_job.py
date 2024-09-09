@@ -27,13 +27,14 @@ class TestJob(TestCase):
         with self.assertRaises(PermissionError):
             self.job.self_delete()
 
-    def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
-        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes:
+    def test_self_delete_removes_backward_links_and_recomputes_service(self):
+        with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
+                patch.object(self.service, "modeling_obj_containers", [self.job]), \
+                patch.object(self.service, "attributes_computation_chain", [self.service]):
             mock_mod_obj_attributes.return_value = [self.service]
-            self.service.modeling_obj_containers = [self.job]
             self.job.self_delete()
             self.assertEqual([], self.service.modeling_obj_containers)
-            self.service.launch_attributes_computation_chain.assert_called_once()
+            self.service.compute_calculated_attributes.assert_called_once()
 
     def test_duration_in_full_hours(self):
         self.assertEqual(1 * u.dimensionless, self.job.duration_in_full_hours.value)
