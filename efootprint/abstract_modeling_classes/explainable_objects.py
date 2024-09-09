@@ -8,6 +8,8 @@ import pint_pandas
 import pytz
 from pint import Quantity, Unit
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source, ObjectLinkedToModelingObj)
@@ -33,6 +35,9 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
     def abs(self):
         return EmptyExplainableObject()
 
+    def sum(self):
+        return EmptyExplainableObject()
+
     @property
     def magnitude(self):
         return self
@@ -54,8 +59,13 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
             return other.__add__(self)
         elif isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject()
+        elif other == 0:
+            return self
         else:
             raise ValueError
+
+    def __radd__(self, other):
+        return self.__add__(other)
 
     def __sub__(self, other):
         if isinstance(other, EmptyExplainableObject):
@@ -332,10 +342,8 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return 0
         elif isinstance(other, EmptyExplainableObject):
             return EmptyExplainableObject()
-        elif issubclass(type(other), ExplainableHourlyQuantities):
-            raise NotImplementedError
-        elif issubclass(type(other), ExplainableQuantity):
-            return ExplainableHourlyQuantities(self.value * other.value, "", self, other, "*")
+        elif issubclass(type(other), ExplainableQuantity) or issubclass(type(other), ExplainableHourlyQuantities):
+            return ExplainableHourlyQuantities(self.value.mul(other.value, fill_value=0), "", self, other, "*")
         else:
             raise ValueError(
                 f"Can only make operation with another ExplainableHourlyUsage or ExplainableQuantity, "
@@ -383,20 +391,51 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return output_dict
 
     def __repr__(self):
-        return json.dumps(self.to_json(), cls=NpEncoder)
+        return json.dumps(self.to_json())
 
     def __str__(self):
         compact_unit = "{:~}".format(self.unit)
-        str_rounded_values = ", ".join(
-            [str(round(hourly_value.magnitude, 2)) for hourly_value in self.value["value"].tolist()])
+        nb_of_values = len(self.value)
+        rounded_values = [str(round(hourly_value.magnitude, 2)) for hourly_value in self.value["value"].tolist()]
 
-        return f"in {compact_unit}: [{str_rounded_values}]"
+        if nb_of_values < 30:
+            str_rounded_values = "[" + ", ".join(rounded_values) + "]"
+        else:
+            str_rounded_values = "first 10 vals [" + ", ".join(rounded_values[:10]) \
+                                 + "],\n    last 10 vals [" + ", ".join(rounded_values[-10:]) + "]"
 
+        return f"{nb_of_values} values from {self.value.index.min().to_timestamp()} " \
+               f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
 
-class NpEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, np.integer):
-            return int(obj)
-        if isinstance(obj, np.floating):
-            return float(obj)
-        return super(NpEncoder, self).default(obj)
+    def plot_on_ax(self, ax):
+        ax.plot(self.value.index.to_timestamp().values, self.value["value"].values.data)
+        plt.ylabel(f"{self.unit:~}")
+
+        locator = mdates.AutoDateLocator(minticks=3, maxticks=12)
+        formatter = mdates.ConciseDateFormatter(locator)
+        ax.xaxis.set_major_locator(locator)
+        ax.xaxis.set_major_formatter(formatter)
+
+    def plot(self, figsize=(10, 4), filepath=None, plt_show=False, xlims=None):
+        fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
+
+        if xlims is not None:
+            start, end = xlims
+            filtered_df = self.value[(self.value.index.to_timestamp() >= start)
+                                     & (self.value.index.to_timestamp() <= end)]
+            ax.set_xlim(xlims)
+            max_val = filtered_df["value"].max().magnitude
+            min_val = filtered_df["value"].min().magnitude
+            offset = (max_val - min_val) * 0.1
+            ax.set_ylim([min_val - offset, max_val + offset])
+
+        self.plot_on_ax(ax)
+
+        if self.label:
+            ax.set_title(self.label)
+
+        if filepath is not None:
+            plt.savefig(filepath, bbox_inches='tight')
+
+        if plt_show:
+            plt.show()

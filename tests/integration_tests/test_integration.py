@@ -145,7 +145,14 @@ class IntegrationTest(IntegrationTestBaseClass):
         test_variations_on_obj_inputs(self.streaming_job)
 
     def test_hourly_user_journey_starts_update(self):
-        raise NotImplementedError
+        logger.warning("Updating hourly user journey starts")
+        initial_hourly_uj_starts = self.usage_pattern.hourly_user_journey_starts
+        self.usage_pattern.hourly_user_journey_starts = SourceHourlyValues(
+            create_hourly_usage_df_from_list([elt * 1000 for elt in [12, 23, 41, 55, 68, 12, 23, 26, 43]]))
+
+        self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.usage_pattern.hourly_user_journey_starts = initial_hourly_uj_starts
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_uj_step_update(self):
         logger.warning("Updating uj steps in default user journey")

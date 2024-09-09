@@ -1,101 +1,99 @@
 {
     "System": {
-        "system 1 + its uuid": {
+        "uuid-system-1": {
             "name": "system 1",
-            "id": "system 1 + its uuid",
+            "id": "uuid-system-1",
             "usage_patterns": [
-                "Youtube usage in France + its uuid"
+                "uuid-Youtube-usage-in-France"
             ]
         }
     },
     "UsagePattern": {
-        "Youtube usage in France + its uuid": {
+        "uuid-Youtube-usage-in-France": {
             "name": "Youtube usage in France",
-            "id": "Youtube usage in France + its uuid",
-            "user_journey": "Daily Youtube usage + its uuid",
-            "devices": [
-                "Default laptop + its uuid"
-            ],
-            "network": "Default network + its uuid",
-            "country": "France + its uuid",
-            "user_journey_freq": {
-                "label": "Usage frequency in Youtube usage in France from hypothesis",
-                "value": 365.0,
-                "unit": "user_journey / year",
+            "id": "uuid-Youtube-usage-in-France",
+            "hourly_user_journey_starts": {
+                "label": "Youtube usage in France hourly nb of visits from hypothesis",
+                "values": [
+                    1000.0,
+                    2000.0,
+                    4000.0,
+                    5000.0,
+                    8000.0,
+                    12000.0,
+                    2000.0,
+                    2000.0,
+                    3000.0
+                ],
+                "unit": "dimensionless",
+                "start_date": "2025-01-01 00:00:00",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
-            "time_intervals": {
-                "label": "Youtube usage in France time intervals in local timezone from user data",
-                "value": [
-                    [
-                        7,
-                        23
-                    ]
-                ],
-                "source": {
-                    "name": "user data",
-                    "link": null
-                }
-            }
+            "user_journey": "uuid-Daily-Youtube-usage",
+            "devices": [
+                "uuid-Default-laptop"
+            ],
+            "network": "uuid-Default-network",
+            "country": "uuid-France"
         }
     },
     "UserJourney": {
-        "Daily Youtube usage + its uuid": {
+        "uuid-Daily-Youtube-usage": {
             "name": "Daily Youtube usage",
-            "id": "Daily Youtube usage + its uuid",
+            "id": "uuid-Daily-Youtube-usage",
             "uj_steps": [
-                "20 min streaming on Youtube + its uuid",
-                "0.4s of upload + its uuid"
+                "uuid-20-min-streaming-on-Youtube",
+                "uuid-40s-of-upload"
             ]
         }
     },
     "UserJourneyStep": {
-        "20 min streaming on Youtube + its uuid": {
+        "uuid-20-min-streaming-on-Youtube": {
             "name": "20 min streaming on Youtube",
-            "id": "20 min streaming on Youtube + its uuid",
+            "id": "uuid-20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
-                "value": 20.0,
-                "unit": "minute / user_journey",
+                "value": 20,
+                "unit": "minute",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "streaming + its uuid"
+                "uuid-streaming"
             ]
         },
-        "0.4s of upload + its uuid": {
-            "name": "0.4s of upload",
-            "id": "0.4s of upload + its uuid",
+        "uuid-40s-of-upload": {
+            "name": "40s of upload",
+            "id": "uuid-40s-of-upload",
             "user_time_spent": {
-                "label": "Time spent on step 0.4s of upload from hypothesis",
-                "value": 1.0,
-                "unit": "second / user_journey",
+                "label": "Time spent on step 40s of upload from hypothesis",
+                "value": 1,
+                "unit": "minute",
                 "source": {
                     "name": "hypothesis",
                     "link": null
                 }
             },
             "jobs": [
-                "upload + its uuid"
+                "uuid-upload"
             ]
         }
     },
     "Job": {
-        "streaming + its uuid": {
+        "uuid-streaming": {
             "name": "streaming",
-            "id": "streaming + its uuid",
+            "id": "uuid-streaming",
             "job_type": "undefined",
-            "service": "Youtube + its uuid",
+            "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
-                "value": 50.0,
-                "unit": "kilobyte / user_journey",
+                "value": 50,
+                "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -104,7 +102,7 @@
             "data_download": {
                 "label": "Data download of request streaming from hypothesis",
                 "value": 0.8333333333333334,
-                "unit": "gigabyte / user_journey",
+                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -112,8 +110,8 @@
             },
             "request_duration": {
                 "label": "Request duration to Youtube in streaming from hypothesis",
-                "value": 4,
-                "unit": "minute",
+                "value": 0.06666666666666667,
+                "unit": "hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -121,8 +119,8 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Default server to process streaming from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
+                "value": 100,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -130,8 +128,8 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Default server to process streaming from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
+                "value": 1,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -139,15 +137,15 @@
             },
             "description": ""
         },
-        "upload + its uuid": {
+        "uuid-upload": {
             "name": "upload",
-            "id": "upload + its uuid",
+            "id": "uuid-upload",
             "job_type": "undefined",
-            "service": "Youtube + its uuid",
+            "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
-                "value": 300.0,
-                "unit": "kilobyte / user_journey",
+                "value": 300,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -155,8 +153,8 @@
             },
             "data_download": {
                 "label": "Data download of request upload from hypothesis",
-                "value": 0.0,
-                "unit": "gigabyte / user_journey",
+                "value": 0,
+                "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -164,8 +162,8 @@
             },
             "request_duration": {
                 "label": "Request duration to Youtube in upload from hypothesis",
-                "value": 0.4,
-                "unit": "second",
+                "value": 0.011111111111111112,
+                "unit": "hour",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -173,8 +171,8 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Default server to process upload from hypothesis",
-                "value": 100.0,
-                "unit": "megabyte / user_journey",
+                "value": 100,
+                "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -182,8 +180,8 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Default server to process upload from hypothesis",
-                "value": 1.0,
-                "unit": "core / user_journey",
+                "value": 1,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -193,11 +191,11 @@
         }
     },
     "Service": {
-        "Youtube + its uuid": {
+        "uuid-Youtube": {
             "name": "Youtube",
-            "id": "Youtube + its uuid",
-            "server": "Default server + its uuid",
-            "storage": "Default SSD storage + its uuid",
+            "id": "uuid-Youtube",
+            "server": "uuid-Default-server",
+            "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Youtube from hypothesis",
                 "value": 300,
@@ -219,9 +217,9 @@
         }
     },
     "Autoscaling": {
-        "Default server + its uuid": {
+        "uuid-Default-server": {
             "name": "Default server",
-            "id": "Default server + its uuid",
+            "id": "uuid-Default-server",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default server from Base ADEME_V19",
                 "value": 600,
@@ -315,9 +313,9 @@
         }
     },
     "Storage": {
-        "Default SSD storage + its uuid": {
+        "uuid-Default-SSD-storage": {
             "name": "Default SSD storage",
-            "id": "Default SSD storage + its uuid",
+            "id": "uuid-Default-SSD-storage",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
                 "value": 160,
@@ -399,38 +397,30 @@
                     "link": null
                 }
             },
-            "storage_need_from_previous_year": 0
-        }
-    },
-    "Country": {
-        "France + its uuid": {
-            "name": "France",
-            "id": "France + its uuid",
-            "short_name": "FRA",
-            "average_carbon_intensity": {
-                "label": "Average carbon intensity of France from Our world in data",
-                "value": 85.0,
-                "unit": "gram / kilowatt_hour",
+            "data_storage_duration": {
+                "label": "Data storage duration of Default SSD storage from hypothesis",
+                "value": 3,
+                "unit": "hour",
                 "source": {
-                    "name": "Our world in data",
-                    "link": "https://ourworldindata.org/energy#country-profiles"
+                    "name": "hypothesis",
+                    "link": null
                 }
             },
-            "year": 2022,
-            "timezone": {
-                "label": "France timezone from user data",
-                "zone": "Europe/Paris",
+            "base_storage_need": {
+                "label": "Default SSD storage initial storage need from hypothesis",
+                "value": 1,
+                "unit": "terabyte",
                 "source": {
-                    "name": "user data",
+                    "name": "hypothesis",
                     "link": null
                 }
             }
         }
     },
     "Hardware": {
-        "Default laptop + its uuid": {
+        "uuid-Default-laptop": {
             "name": "Default laptop",
-            "id": "Default laptop + its uuid",
+            "id": "uuid-Default-laptop",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
                 "value": 156,
@@ -470,9 +460,9 @@
         }
     },
     "Network": {
-        "Default network + its uuid": {
+        "uuid-Default-network": {
             "name": "Default network",
-            "id": "Default network + its uuid",
+            "id": "uuid-Default-network",
             "bandwidth_energy_intensity": {
                 "label": "bandwith energy intensity of Default network from Traficom study",
                 "value": 0.05,
@@ -480,6 +470,31 @@
                 "source": {
                     "name": "Traficom study",
                     "link": "https://www.traficom.fi/en/news/first-study-energy-consumption-communications-networks"
+                }
+            }
+        }
+    },
+    "Country": {
+        "uuid-France": {
+            "name": "France",
+            "id": "uuid-France",
+            "short_name": "FRA",
+            "average_carbon_intensity": {
+                "label": "Average carbon intensity of France from Our world in data",
+                "value": 85.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "Our world in data",
+                    "link": "https://ourworldindata.org/energy#country-profiles"
+                }
+            },
+            "year": 2022,
+            "timezone": {
+                "label": "France timezone from user data",
+                "zone": "Europe/Paris",
+                "source": {
+                    "name": "user data",
+                    "link": null
                 }
             }
         }

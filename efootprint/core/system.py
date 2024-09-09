@@ -14,7 +14,7 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.user_journey import UserJourney
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.logger import logger
 from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
@@ -106,7 +106,7 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
-            "Network": {"networks": 0},
+            "Network": {"networks": EmptyExplainableObject()},
             "Devices": {usage_pattern.name: usage_pattern.devices_fabrication_footprint
                         for usage_pattern in self.usage_patterns},
         }
@@ -130,7 +130,7 @@ class System(ModelingObject):
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
-            "Network": 0,
+            "Network": EmptyExplainableObject(),
             "Devices": sum(usage_pattern.devices_fabrication_footprint
                            for usage_pattern in self.usage_patterns)
         }
@@ -159,13 +159,24 @@ class System(ModelingObject):
         ).set_label(f"{self.name} total carbon footprint")
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
-        fab_footprints = self.fabrication_footprints
-        energy_footprints = self.energy_footprints
+        def sum_and_remove_empty_explainable_object(expl_obj):
+            tmp_sum = expl_obj.sum()
+            if isinstance(tmp_sum, EmptyExplainableObject):
+                tmp_sum = ExplainableQuantity(0 * u.kg, "null value")
+
+            return tmp_sum
+
+        fab_footprints = {cat_key: {obj_key: sum_and_remove_empty_explainable_object(obj_value)
+                                    for obj_key, obj_value in cat_dict.items()}
+                          for cat_key, cat_dict in self.fabrication_footprints.items()}
+        energy_footprints = {cat_key: {obj_key: sum_and_remove_empty_explainable_object(obj_value)
+                                       for obj_key, obj_value in cat_dict.items()}
+                             for cat_key, cat_dict in self.energy_footprints.items()}
         categories = list(fab_footprints.keys())
 
         rows_as_dicts = []
 
-        value_colname = "tonnes CO2 emissions / year"
+        value_colname = "tonnes CO2 emissions"
         for category in categories:
             fab_objects = sorted(fab_footprints[category].items(), key=lambda x: x[0])
             energy_objects = sorted(energy_footprints[category].items(), key=lambda x: x[0])
@@ -174,7 +185,7 @@ class System(ModelingObject):
                 data_dicts = [
                     {"Type": color, "Category": category, "Object": obj[0],
                      value_colname: obj[1].value.magnitude / 1000,
-                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))} / year"}
+                     "Amount": f"{display_co2_amount(format_co2_amount(obj[1].value.magnitude))}"}
                     for obj in objs]
                 rows_as_dicts += data_dicts
 
@@ -182,12 +193,17 @@ class System(ModelingObject):
 
         total_co2 = df[value_colname].sum()
 
+        total_footprint = self.total_footprint
+
         fig = px.bar(
             df, x="Category", y=value_colname, color='Type', barmode='group', height=height, width=width,
             hover_data={"Type": False, "Category": False, "Object": True, value_colname: False, "Amount": True},
             template="plotly_white",
             title=f"Total CO2 emissions from "
-                  f"{self.name}: {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))} / year")
+                  f"{total_footprint.value.index.min().to_timestamp().date()} "
+                  f"to {total_footprint.value.index.max().to_timestamp().date()}"
+                  f": {display_co2_amount(format_co2_amount(total_co2 * 1000, rounding_value=0))}"
+                  )
 
         if (max(sum(energy_footprints["Servers"].values()), sum(fab_footprints["Servers"].values())) >
                 max(sum(energy_footprints["Devices"].values()), sum(fab_footprints["Devices"].values()))):

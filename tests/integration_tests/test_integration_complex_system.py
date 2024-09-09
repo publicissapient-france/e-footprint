@@ -5,7 +5,7 @@ from copy import copy
 from efootprint.api_utils.json_to_system import json_to_system
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
-from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceObject, SourceHourlyValues
+from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
 from efootprint.core.usage.job import Job
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -289,16 +289,16 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertTrue(len(html) > 1000)
 
     def test_plot_emission_diffs(self):
-        file = "system_emission_diffs.png"
+        raise NotImplementedError
+        # file = "system_emission_diffs.png"
+        # self.system.previous_change = None
 
-        self.system.previous_change = None
+        # with self.assertRaises(ValueError):
+        #     self.system.plot_emission_diffs(filepath=file)
 
-        with self.assertRaises(ValueError):
-            self.system.plot_emission_diffs(filepath=file)
+        # self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
+        # self.system.plot_emission_diffs(filepath=file)
+        # self.streaming_step.jobs[0].data_upload = SourceValue(
+        #     50 * u.kB, label="Data upload of request streaming")
 
-        self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
-        self.system.plot_emission_diffs(filepath=file)
-        self.streaming_step.jobs[0].data_upload = SourceValue(
-            50 * u.kB, label="Data upload of request streaming")
-
-        self.assertTrue(os.path.isfile(file))
+        # self.assertTrue(os.path.isfile(file))

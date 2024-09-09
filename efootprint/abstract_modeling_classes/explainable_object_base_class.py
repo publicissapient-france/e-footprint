@@ -130,7 +130,7 @@ class ExplainableObject(ObjectLinkedToModelingObj):
         return all_descendants
 
     def explain(self, pretty_print=True):
-        element_value_to_print = self.print_tuple_element_value(self.value)
+        element_value_to_print = str(self)
 
         if self.left_parent is None and self.right_parent is None:
             return f"{self.label} = {element_value_to_print}"
@@ -163,26 +163,10 @@ class ExplainableObject(ObjectLinkedToModelingObj):
 
         return left_explanation, self.operator, right_explanation
 
-    @staticmethod
-    def print_tuple_element_value(tuple_element_value):
-        if type(tuple_element_value) == list:
-            if type(tuple_element_value[0]) == list:
-                return f"{tuple_element_value}"
-            else:
-                output_values = []
-                for expl_quant in tuple_element_value:
-                    output_values.append(f"{round(expl_quant, 1):~P}")
-                return f"[{', '.join(output_values)}]"
-        else:
-            try:
-                return f"{round(tuple_element_value, 1):~P}"
-            except:
-                return f"{tuple_element_value}"
-
     def print_tuple_element(self, tuple_element: object, print_values_instead_of_labels: bool):
         if issubclass(type(tuple_element), ExplainableObject):
             if print_values_instead_of_labels:
-                return self.print_tuple_element_value(tuple_element.value)
+                return str(tuple_element)
             else:
                 return f"{tuple_element.label}"
         elif type(tuple_element) == str:

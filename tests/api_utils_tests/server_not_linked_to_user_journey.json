@@ -1,96 +1,96 @@
 {
-  "New server + its uuid": {
-    "name": "New server",
-    "id": "New server + its uuid",
-    "carbon_footprint_fabrication": {
-      "label": "Carbon footprint fabrication of Default server from Base ADEME_V19",
-      "value": 600,
-      "unit": "kilogram",
-      "source": {
-        "name": "Base ADEME_V19",
-        "link": "https://data.ademe.fr/datasets/base-carbone(r)"
-      }
-    },
-    "power": {
-      "label": "Power of Default server from hypothesis",
-      "value": 300,
-      "unit": "watt",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
-    },
-    "lifespan": {
-      "label": "Lifespan of Default server from hypothesis",
-      "value": 6,
-      "unit": "year",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
-    },
-    "fraction_of_usage_time": {
-      "label": "Default server fraction of usage time from hypothesis",
-      "value": 1,
-      "unit": "dimensionless",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
-    },
-    "average_carbon_intensity": {
-      "label": "unnamed source from user data",
-      "value": 100.0,
-      "unit": "gram / kilowatt_hour",
-      "source": {
-        "name": "user data",
-        "link": null
-      }
-    },
-    "server_utilization_rate": {
-      "label": "Default server utilization rate from hypothesis",
-      "value": 0.9,
-      "unit": "dimensionless",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
-    },
-    "idle_power": {
-      "label": "Idle power of Default server from hypothesis",
-      "value": 50,
-      "unit": "watt",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
-    },
-    "ram": {
-      "label": "RAM of Default server from user data",
-      "value": 128,
-      "unit": "gigabyte",
-      "source": {
-        "name": "user data",
-        "link": null
-      }
-    },
-    "cpu_cores": {
-      "label": "Nb cpus cores of Default server from user data",
-      "value": 24,
-      "unit": "core",
-      "source": {
-        "name": "user data",
-        "link": null
-      }
-    },
-    "power_usage_effectiveness": {
-      "label": "PUE of Default server from user data",
-      "value": 1.2,
-      "unit": "dimensionless",
-      "source": {
-        "name": "user data",
-        "link": null
-      }
-    }
-  }
+  "uuid-New-server": {
+            "name": "New server",
+            "id": "uuid-New-server",
+            "carbon_footprint_fabrication": {
+                "label": "Carbon footprint fabrication of New server from Base ADEME_V19",
+                "value": 600,
+                "unit": "kilogram",
+                "source": {
+                    "name": "Base ADEME_V19",
+                    "link": "https://data.ademe.fr/datasets/base-carbone(r)"
+                }
+            },
+            "power": {
+                "label": "Power of New server from hypothesis",
+                "value": 300,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "lifespan": {
+                "label": "Lifespan of New server from hypothesis",
+                "value": 6,
+                "unit": "year",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "fraction_of_usage_time": {
+                "label": "New server fraction of usage time from hypothesis",
+                "value": 1,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "average_carbon_intensity": {
+                "label": "unnamed source from user data",
+                "value": 100.0,
+                "unit": "gram / kilowatt_hour",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            },
+            "server_utilization_rate": {
+                "label": "New server utilization rate from hypothesis",
+                "value": 0.9,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "idle_power": {
+                "label": "Idle power of New server from hypothesis",
+                "value": 50,
+                "unit": "watt",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "ram": {
+                "label": "RAM of New server from user data",
+                "value": 128,
+                "unit": "gigabyte",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            },
+            "cpu_cores": {
+                "label": "Nb cpus cores of New server from user data",
+                "value": 24,
+                "unit": "core",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            },
+            "power_usage_effectiveness": {
+                "label": "PUE of New server from user data",
+                "value": 1.2,
+                "unit": "dimensionless",
+                "source": {
+                    "name": "user data",
+                    "link": null
+                }
+            }
+        }
 }

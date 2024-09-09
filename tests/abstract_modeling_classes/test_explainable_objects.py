@@ -1,3 +1,4 @@
+import random
 import unittest
 from unittest.mock import MagicMock, patch
 from datetime import datetime, timedelta
@@ -66,8 +67,8 @@ class TestExplainableQuantity(unittest.TestCase):
         self.a = ExplainableQuantity(1.5 * u.W, "1.5 Watt")
         self.assertEqual(2 * u.W, self.a.ceil().value)
 
-class TestExplainableHourlyQuantities(unittest.TestCase):
 
+class TestExplainableHourlyQuantities(unittest.TestCase):
     def setUp(self):
         self.usage1 = [1] * 24
         self.usage2 = [2] * 24
@@ -128,6 +129,29 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         self.assertTrue(isinstance(mul_result, ExplainableHourlyQuantities))
         self.assertTrue(u.Wh.is_compatible_with(mul_result.unit))
         self.assertEqual([4] * 24, mul_result.value_as_float_list)
+
+    def test_mul_2_hourly_quantities(self):
+        result = self.hourly_usage1 * self.hourly_usage2
+
+        self.assertTrue(isinstance(result, ExplainableHourlyQuantities))
+        self.assertEqual([2] * 24, result.value_as_float_list)
+        self.assertEqual(self.hourly_usage1.value.index.min, result.value.index.min)
+        self.assertEqual(self.hourly_usage1.value.index.max, result.value.index.max)
+
+    def test_mul_with_shifted_hourly_quantities(self):
+        nb_hours_shifted = 2
+        shifted_hour_usage = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(
+                self.usage2, self.start_date + timedelta(hours=nb_hours_shifted), pint_unit=u.W), "Usage 2")
+        mul_hourly_usage = self.hourly_usage1 * shifted_hour_usage
+
+        self.assertTrue(isinstance(mul_hourly_usage, ExplainableHourlyQuantities))
+        self.assertEqual(len(self.hourly_usage1) + nb_hours_shifted, len(mul_hourly_usage))
+        self.assertEqual(self.hourly_usage1.value.index.min(), mul_hourly_usage.value.index.min())
+        self.assertEqual([0] * nb_hours_shifted,
+                         mul_hourly_usage.value_as_float_list[:nb_hours_shifted])
+        self.assertEqual([0] * nb_hours_shifted,
+                         mul_hourly_usage.value_as_float_list[-nb_hours_shifted:])
 
     def test_subtraction(self):
         result = self.hourly_usage2 - self.hourly_usage1
@@ -238,6 +262,22 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
             create_hourly_usage_df_from_list([3] * 24, start_date=start_date, pint_unit=u.GB, ), "test")
 
         self.assertNotEqual(hourly_usage_data.value_as_float_list, duplicated.value_as_float_list)
+
+    def test_plot_explainable_hourly_quantities(self):
+        random_values = [random.randrange(10, 20) for _ in range(24 * 31)]
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        hourly_emission = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(random_values, start_date=start_date, pint_unit=u.kg),
+            "Hourly emission of carbon of my test service")
+        hourly_emission.plot()
+
+    def test_plot_explainable_hourly_quantities_with_xlims(self):
+        random_values = [random.randrange(10, 20) for _ in range(24 * 31)]
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        hourly_emission = ExplainableHourlyQuantities(
+            create_hourly_usage_df_from_list(random_values, start_date=start_date, pint_unit=u.kg),
+            "Hourly emission of carbon of my test service")
+        hourly_emission.plot(xlims=[start_date, start_date + timedelta(hours=3)])
 
 
 if __name__ == "__main__":

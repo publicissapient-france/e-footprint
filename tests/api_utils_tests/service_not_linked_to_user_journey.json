@@ -1,26 +1,26 @@
 {
-  "New service 2b791b": {
-    "name": "New service",
-    "id": "New service 2b791b",
-    "server": "Default server + its uuid",
-    "storage": "Default SSD storage + its uuid",
+  "uuid-NewService": {
+    "name": "New Service",
+    "id": "uuid-New-Service",
+    "server": "uuid-Default-server",
+    "storage": "uuid-Default-SSD-storage",
     "base_ram_consumption": {
-      "label": "Base RAM consumption of New service from hypothesis",
-      "value": 3000.0,
-      "unit": "megabyte",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
+        "label": "Base RAM consumption of New Service from hypothesis",
+        "value": 300,
+        "unit": "megabyte",
+        "source": {
+            "name": "hypothesis",
+            "link": null
+        }
     },
     "base_cpu_consumption": {
-      "label": "Base CPU consumption of New service from hypothesis",
-      "value": 2.0,
-      "unit": "core",
-      "source": {
-        "name": "hypothesis",
-        "link": null
-      }
+        "label": "Base CPU consumption of New Service from hypothesis",
+        "value": 2,
+        "unit": "core",
+        "source": {
+            "name": "hypothesis",
+            "link": null
+        }
     }
   }
 }

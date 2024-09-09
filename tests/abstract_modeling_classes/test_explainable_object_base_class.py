@@ -4,7 +4,6 @@ from unittest.mock import MagicMock
 import pytz
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
-from efootprint.constants.units import u
 from efootprint.abstract_modeling_classes.source_objects import Source
 
 
@@ -170,13 +169,6 @@ class TestExplainableObjectBaseClass(TestCase):
                                operator="+")
         result = eo.compute_explain_nested_tuples()
         self.assertEqual(result, (left_parent, '+', right_parent))
-
-    def test_print_tuple_element_value(self):
-        self.assertEqual("5.3 W", ExplainableObject.print_tuple_element_value(5.3456 * u.W))
-        self.assertEqual(
-            "[1.1 yr, 2.2 yr, 3.3 yr]", ExplainableObject.print_tuple_element_value(
-                [1.123 * u.year, 2.234 * u.year, 3.345 * u.year]))
-        self.assertEqual("[[1, 2], [3, 5]]", ExplainableObject.print_tuple_element_value([[1, 2], [3, 5]]))
 
     def test_print_tuple_element(self):
         left_parent = ExplainableObject(value=3, label="Label L")

@@ -42,7 +42,7 @@ class TestJsonToSystem(IntegrationTestBaseClass):
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
 
-        new_uj = flat_obj_dict["New UJ + its uuid"]
+        new_uj = flat_obj_dict["uuid-New-UJ"]
 
         assert new_uj.duration.magnitude > 0
 

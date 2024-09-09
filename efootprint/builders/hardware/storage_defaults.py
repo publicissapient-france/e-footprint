@@ -13,7 +13,9 @@ def default_ssd(name="Default SSD storage", **kwargs):
         "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-        "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+        "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+        "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
+        "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
     }
 
     output_args.update(kwargs)
@@ -30,7 +32,9 @@ def default_hdd(name="Default HDD storage", **kwargs):
         "storage_capacity": SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-        "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS)
+        "data_replication_factor": SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+        "base_storage_need": SourceValue(0 * u.TB, Sources.HYPOTHESIS),
+        "data_storage_duration": SourceValue(5 * u.year, Sources.HYPOTHESIS)
     }
 
     output_args.update(kwargs)
