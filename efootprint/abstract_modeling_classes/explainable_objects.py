@@ -13,6 +13,7 @@ import matplotlib.dates as mdates
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source, ObjectLinkedToModelingObj)
+from efootprint.utils.tools import time_it
 
 
 class EmptyExplainableObject(ObjectLinkedToModelingObj):
@@ -394,15 +395,20 @@ class ExplainableHourlyQuantities(ExplainableObject):
         return json.dumps(self.to_json())
 
     def __str__(self):
+        def _round_series_values(input_series):
+            return [str(round(hourly_value.magnitude, 2)) for hourly_value in input_series.tolist()]
+
         compact_unit = "{:~}".format(self.unit)
         nb_of_values = len(self.value)
-        rounded_values = [str(round(hourly_value.magnitude, 2)) for hourly_value in self.value["value"].tolist()]
 
         if nb_of_values < 30:
+            rounded_values = _round_series_values(self.value["value"])
             str_rounded_values = "[" + ", ".join(rounded_values) + "]"
         else:
-            str_rounded_values = "first 10 vals [" + ", ".join(rounded_values[:10]) \
-                                 + "],\n    last 10 vals [" + ", ".join(rounded_values[-10:]) + "]"
+            first_vals = _round_series_values(self.value["value"].iloc[:10])
+            last_vals = _round_series_values(self.value["value"].iloc[-10:])
+            str_rounded_values = "first 10 vals [" + ", ".join(first_vals) \
+                                 + "],\n    last 10 vals [" + ", ".join(last_vals) + "]"
 
         return f"{nb_of_values} values from {self.value.index.min().to_timestamp()} " \
                f"to {self.value.index.max().to_timestamp()} in {compact_unit}:\n    {str_rounded_values}"
