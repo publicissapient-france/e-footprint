@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [4.0.0] 2024-09-11
+
+### Changed
+- Major update: usage is now described as hourly number of user journey starts. This allows for a chronological modeling and later will allow simulation of changes in the future.
+- Server electricity consumption now depends on server load.
+
 ## [3.0.0] 2024-07-29
 
 ### Changed

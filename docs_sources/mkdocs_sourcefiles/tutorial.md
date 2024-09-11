@@ -14,6 +14,8 @@ You will get to describe:
 
 
 ```python
+import os
+
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Sources, SourceObject
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -28,8 +30,6 @@ from efootprint.constants.countries import Countries
 from efootprint.constants.units import u
 from efootprint.utils.object_relationships_graphs import USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE
 from efootprint.builders.hardware.devices_defaults import default_laptop
-
-import os
 ```
 
 ## Define the infrastructure
@@ -58,7 +58,7 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    Autoscaling id-8a22da-server
+    Autoscaling id-7fbf5c-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -76,10 +76,10 @@ print(server)
       available_cpu_per_instance: None
       all_services_cpu_needs: None
       all_services_ram_needs: None
-      fraction_of_time_in_use: None
+      raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
-      instances_power: None
+      instances_energy: None
       energy_footprint: None
     
 
@@ -97,7 +97,10 @@ storage = Storage(
     storage_capacity=SourceValue(1 * u.TB, Sources.STORAGE_EMBODIED_CARBON_STUDY),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-    data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS))
+    data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
+    data_storage_duration = SourceValue(2 * u.year, Sources.HYPOTHESIS),
+    base_storage_need = SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+    )
 ```
 
 Apart from environmental and technical attributes, e-footprint objects can link to other e-footprint objects. For example, the following service runs on the server and uploads data to the storage:
@@ -120,31 +123,31 @@ This is the modeling of the average daily usage of the streaming platform in Fra
 ```python
 streaming_step = UserJourneyStep(
     "20 min streaming",
-    user_time_spent=SourceValue(20 * u.min / u.uj, Sources.USER_DATA),
+    user_time_spent=SourceValue(20 * u.min, Sources.USER_DATA),
     jobs=[
         Job(
             "streaming",
             service=service,
-            data_upload=SourceValue(0.05 * u.MB / u.uj, Sources.USER_DATA),
-            data_download=SourceValue(800 * u.MB / u.uj, Sources.USER_DATA),
+            data_upload=SourceValue(0.05 * u.MB, Sources.USER_DATA),
+            data_download=SourceValue(800 * u.MB, Sources.USER_DATA),
             request_duration=SourceValue(4 * u.min, Sources.HYPOTHESIS),
-            cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
-            ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
+            cpu_needed=SourceValue(1 * u.core, Sources.HYPOTHESIS),
+            ram_needed=SourceValue(50 * u.MB, Sources.HYPOTHESIS)
             )
         ]
     )
 upload_step = UserJourneyStep(
     "1 min video capture then upload",
-    user_time_spent=SourceValue(70 * u.s / u.uj, Sources.USER_DATA),
+    user_time_spent=SourceValue(70 * u.s, Sources.USER_DATA),
     jobs=[
         Job(
             "video upload",
             service=service,
-            data_upload=SourceValue(20 * u.MB / u.uj, Sources.USER_DATA),
-            data_download=SourceValue(0 * u.GB / u.uj, Sources.USER_DATA),
+            data_upload=SourceValue(20 * u.MB, Sources.USER_DATA),
+            data_download=SourceValue(0 * u.GB, Sources.USER_DATA),
             request_duration=SourceValue(2 * u.s, Sources.HYPOTHESIS),
-            cpu_needed=SourceValue(1 * u.core / u.uj, Sources.HYPOTHESIS),
-            ram_needed=SourceValue(50 * u.MB / u.uj, Sources.HYPOTHESIS)
+            cpu_needed=SourceValue(1 * u.core, Sources.HYPOTHESIS),
+            ram_needed=SourceValue(50 * u.MB, Sources.HYPOTHESIS)
         )
     ]
 )
@@ -159,6 +162,91 @@ user_journey = UserJourney("Mean video consumption user journey", uj_steps=[stre
 
 ## Describe usage
 
+An e-footprint usage pattern links a user journey to devices that run it, a network, a country, and the number of times the user journey gets executed hour by hour. 
+
+
+```python
+# Let’s build synthetic usage data by summing a linear growth with a sinusoidal fluctuation components, then adding daily variation
+from datetime import datetime, timedelta
+
+from efootprint.builders.time_builders import linear_growth_hourly_values
+
+start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+nb_of_hours = 3 * 365 * 24
+
+linear_growth = linear_growth_hourly_values(nb_of_hours, start_value=5000, end_value=100000, start_date=start_date)
+linear_growth.set_label("Hourly user journeys linear growth component")
+
+linear_growth.plot()
+```
+
+
+    
+![png](tutorial_images/docs_tutorial.nbconvert_19_0.png)
+    
+
+
+
+```python
+from efootprint.builders.time_builders import sinusoidal_fluct_hourly_values
+
+sinusoidal_fluct = sinusoidal_fluct_hourly_values(
+    nb_of_hours, sin_fluct_amplitude=3000, sin_fluct_period_in_hours=3 * 30 * 24, start_date=start_date)
+
+lin_growth_plus_sin_fluct = (linear_growth + sinusoidal_fluct).set_label("Hourly user journeys linear growth with sinusoidal fluctuations")
+
+lin_growth_plus_sin_fluct.plot()
+```
+
+
+    
+![png](tutorial_images/docs_tutorial.nbconvert_20_0.png)
+    
+
+
+
+```python
+# Let’s add daily variations because people use the system less at night
+from efootprint.builders.time_builders import daily_fluct_hourly_values
+
+daily_fluct = daily_fluct_hourly_values(nb_of_hours, fluct_scale=0.8, hour_of_day_for_min_value=4, start_date=start_date)
+daily_fluct.set_label("Daily volume fluctuation")
+
+daily_fluct.plot(xlims=[start_date, start_date+timedelta(days=1)])
+```
+
+
+    
+![png](tutorial_images/docs_tutorial.nbconvert_21_0.png)
+    
+
+
+
+```python
+hourly_user_journey_starts = lin_growth_plus_sin_fluct * daily_fluct
+hourly_user_journey_starts.set_label("Hourly number of user journey started")
+
+hourly_user_journey_starts.plot(xlims=[start_date, start_date + timedelta(days=7)])
+```
+
+
+    
+![png](tutorial_images/docs_tutorial.nbconvert_22_0.png)
+    
+
+
+
+```python
+# Over 3 years the daily fluctuation color the area between daily min and max number of hourly user journeys
+hourly_user_journey_starts.plot()
+```
+
+
+    
+![png](tutorial_images/docs_tutorial.nbconvert_23_0.png)
+    
+
+
 
 ```python
 network = Network(
@@ -171,19 +259,22 @@ usage_pattern = UsagePattern(
     devices=[default_laptop()],
     network=network,
     country=Countries.FRANCE(),
-    user_journey_freq=SourceValue(4e7 * 0.3 * 365 * u.user_journey / u.year, Sources.USER_DATA),
-    time_intervals=SourceObject([[7, 12], [17, 23]]))
+    hourly_user_journey_starts=hourly_user_journey_starts
+)
 
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-07-29 16:02:45,398 - INFO - Computing calculated attributes for System System
-    2024-07-29 16:02:45,398 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-07-29 16:02:45,399 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-07-29 16:02:45,402 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-07-29 16:02:45,406 - INFO - Computing calculated attributes for Network WIFI network
-    2024-07-29 16:02:45,408 - INFO - Computing calculated attributes for Autoscaling server
-    2024-07-29 16:02:45,414 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-09-12 15:44:33,917 - INFO - Computing calculated attributes for System System
+    2024-09-12 15:44:33,918 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-09-12 15:44:33,919 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-09-12 15:44:34,056 - INFO - Computing calculated attributes for Job video upload
+    2024-09-12 15:44:34,061 - INFO - Computing calculated attributes for Job streaming
+    2024-09-12 15:44:34,066 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-09-12 15:44:34,076 - INFO - Computing calculated attributes for Network WIFI network
+    2024-09-12 15:44:34,082 - INFO - Computing calculated attributes for Autoscaling server
+    2024-09-12 15:44:34,095 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-09-12 15:44:34,120 - INFO - Finished computing System modeling
 
 
 ## Results
@@ -197,7 +288,7 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    Autoscaling id-8a22da-server
+    Autoscaling id-7fbf5c-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -213,13 +304,27 @@ print(server)
     calculated_attributes:
       available_ram_per_instance: 114.9 gigabyte
       available_cpu_per_instance: 19.6 core
-      all_services_cpu_needs: [0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 0.0 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 73283.14 core, 0.0 core, 0.0 core, 0.0 core]
-      all_services_ram_needs: [0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 3664.16 gigabyte, 0.0 gigabyte, 0.0 gigabyte, 0.0 gigabyte]
-      fraction_of_time_in_use: 0.46 dimensionless
-      nb_of_instances: 1713.71 dimensionless
-      instances_fabrication_footprint: 171370.83 kilogram / year
-      instances_power: 5408052.21 kilowatt_hour / year
-      energy_footprint: 540805.22 kilogram / year
+      all_services_cpu_needs: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in core:
+        first 10 vals [201.67, 146.34, 103.76, 76.95, 67.89, 77.33, 104.78, 148.5, 205.65, 272.44],
+        last 10 vals [11666.37, 12218.13, 12407.0, 12220.07, 11670.08, 10794.48, 9652.94, 8323.25, 6896.04, 5468.6]
+      all_services_ram_needs: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in GB:
+        first 10 vals [10.08, 7.32, 5.19, 3.85, 3.39, 3.87, 5.24, 7.43, 10.28, 13.62],
+        last 10 vals [583.32, 610.91, 620.35, 611.0, 583.5, 539.72, 482.65, 416.16, 344.8, 273.43]
+      raw_nb_of_instances: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in dimensionless:
+        first 10 vals [10.29, 7.47, 5.29, 3.93, 3.46, 3.95, 5.35, 7.58, 10.49, 13.9],
+        last 10 vals [595.22, 623.37, 633.01, 623.47, 595.41, 550.74, 492.5, 424.66, 351.84, 279.01]
+      nb_of_instances: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in dimensionless:
+        first 10 vals [11.0, 8.0, 6.0, 4.0, 4.0, 4.0, 6.0, 8.0, 11.0, 14.0],
+        last 10 vals [596.0, 624.0, 634.0, 624.0, 596.0, 551.0, 493.0, 425.0, 352.0, 280.0]
+      instances_fabrication_footprint: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in kg:
+        first 10 vals [0.13, 0.09, 0.07, 0.05, 0.05, 0.05, 0.07, 0.09, 0.13, 0.16],
+        last 10 vals [6.8, 7.12, 7.23, 7.12, 6.8, 6.29, 5.62, 4.85, 4.02, 3.19]
+      instances_energy: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in kWh:
+        first 10 vals [3.75, 2.72, 1.95, 1.42, 1.28, 1.42, 1.96, 2.75, 3.81, 5.01],
+        last 10 vals [214.33, 224.45, 227.94, 224.48, 214.38, 198.28, 177.33, 152.9, 126.67, 100.5]
+      energy_footprint: 26280 values from 2024-12-31 22:00:00 to 2027-12-31 21:00:00 in kg:
+        first 10 vals [0.37, 0.27, 0.19, 0.14, 0.13, 0.14, 0.2, 0.28, 0.38, 0.5],
+        last 10 vals [21.43, 22.45, 22.79, 22.45, 21.44, 19.83, 17.73, 15.29, 12.67, 10.05]
     
 
 
@@ -264,7 +369,7 @@ Any input change automatically triggers the computation of calculations that dep
 
 
 ```python
-streaming_step.jobs[0].data_download = SourceValue(500 * u.MB / u.uj, Sources.USER_DATA)
+streaming_step.jobs[0].data_download = SourceValue(500 * u.MB, Sources.USER_DATA)
 ```
 
 
@@ -272,12 +377,12 @@ streaming_step.jobs[0].data_download = SourceValue(500 * u.MB / u.uj, Sources.US
 system.plot_emission_diffs("bandwith reduction.png")
 ```
 
-    Plotting the impact of streaming’s data_download changing from 800.0 megabyte / user_journey to 500.0 megabyte / user_journey
+    Plotting the impact of streaming’s data_download changing from 800 megabyte to 500 megabyte
 
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_30_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_36_1.png)
     
 
 
@@ -307,11 +412,11 @@ service_inference = Service(
     base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS))
 
 llm_chat_step = UserJourneyStep(
-    "Chat with LLM to select video", user_time_spent=SourceValue(1 * u.min / u.uj, Sources.HYPOTHESIS),
-    jobs=[Job("LLM API", service_inference, SourceValue(300 * u.kB / u.uj, Sources.USER_DATA),
-              SourceValue(300 * u.kB / u.uj, Sources.USER_DATA), request_duration=SourceValue(5 * u.s, Sources.HYPOTHESIS),
-              cpu_needed=SourceValue(16 * u.core / u.uj, Sources.HYPOTHESIS),
-              ram_needed=SourceValue(128 * u.GB / u.uj, Sources.HYPOTHESIS))])
+    "Chat with LLM to select video", user_time_spent=SourceValue(1 * u.min, Sources.HYPOTHESIS),
+    jobs=[Job("LLM API", service_inference, SourceValue(300 * u.kB, Sources.USER_DATA),
+              SourceValue(300 * u.kB, Sources.USER_DATA), request_duration=SourceValue(5 * u.s, Sources.HYPOTHESIS),
+              cpu_needed=SourceValue(16 * u.core, Sources.HYPOTHESIS),
+              ram_needed=SourceValue(128 * u.GB, Sources.HYPOTHESIS))])
 ```
 
 
@@ -321,14 +426,17 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-07-29 16:02:47,234 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-07-29 16:02:47,236 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-07-29 16:02:47,238 - INFO - Computing calculated attributes for Service LLM inference
-    2024-07-29 16:02:47,240 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-07-29 16:02:47,244 - INFO - Computing calculated attributes for Network WIFI network
-    2024-07-29 16:02:47,246 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
-    2024-07-29 16:02:47,251 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-07-29 16:02:47,257 - INFO - Computing calculated attributes for Autoscaling server
+    2024-09-12 15:44:36,189 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-09-12 15:44:36,190 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-09-12 15:44:36,320 - INFO - Computing calculated attributes for Job video upload
+    2024-09-12 15:44:36,325 - INFO - Computing calculated attributes for Job LLM API
+    2024-09-12 15:44:36,331 - INFO - Computing calculated attributes for Job streaming
+    2024-09-12 15:44:36,335 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-09-12 15:44:36,343 - INFO - Computing calculated attributes for Network WIFI network
+    2024-09-12 15:44:36,350 - INFO - Computing calculated attributes for Service LLM inference
+    2024-09-12 15:44:36,355 - INFO - Computing calculated attributes for Autoscaling server
+    2024-09-12 15:44:36,367 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-09-12 15:44:36,393 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
 
 
 
@@ -341,7 +449,7 @@ system.plot_emission_diffs("LLM chat addition.png")
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_35_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_41_1.png)
     
 
 
@@ -358,7 +466,7 @@ system.plot_emission_diffs("lower LLM inference carbon intensity.png")
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_37_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_43_1.png)
     
 
 
@@ -371,14 +479,14 @@ system.plot_emission_diffs("All system diffs.png", from_start=True)
 
     Plotting the impact of:
     
-    - streaming’s data_download changing from 800.0 megabyte / user_journey to 500.0 megabyte / user_journey
+    - streaming’s data_download changing from 800 megabyte to 500 megabyte
     - Mean video consumption user journey’s uj_steps changing from ['20 min streaming', '1 min video capture then upload'] to ['20 min streaming', '1 min video capture then upload', 'Chat with LLM to select video']
     - Inference GPU server’s average_carbon_intensity changing from 300.0 gram / kilowatt_hour to 50.0 gram / kilowatt_hour
 
 
 
     
-![png](tutorial_images/docs_tutorial.nbconvert_39_1.png)
+![png](tutorial_images/docs_tutorial.nbconvert_45_1.png)
     
 
 

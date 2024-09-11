@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_bdb1a0 {
+             #mynetwork_750a8e {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_bdb1a0" class="card-body"></div>
+            <div id="mynetwork_750a8e" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_bdb1a0');
+                  var container = document.getElementById('mynetwork_750a8e');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data upload for streaming in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [1, 3, 5, 2, 6, 2, 5, 1, 5, 9],\nlast 10 vals [9, 1, 2, 5, 4, 4, 9, 3, 9, 1])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data upload for streaming in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Hourly data upload for streaming in usage pattern", "label": "Hourly data upload\nfor streaming in\nusage pattern", "shape": "dot", "size": 15, "title": "Hourly data upload for streaming in usage pattern\n=\n(shift by 0 of (Hourly streaming occurrences in usage pattern)) * data upload\nper hour for job streaming in usage pattern\n=\n(shift by 0 of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9])) * 0.05 megabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Hourly data upload for streaming in usage pattern", "to": "Hourly streaming data upload across usage patterns"}]);
 
                   nodeColors = {};

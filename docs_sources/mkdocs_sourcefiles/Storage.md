@@ -84,7 +84,7 @@ hourly storage delta for storage in terabyte.
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
-    last 10 vals [0.0, -0.0, -0.0, -0.0, -0.0, 0.0, 0.0, -0.0, 0.0, -0.0]  
+    last 10 vals [0.0, -0.0, -0.0, 0.0, -0.0, -0.0, -0.0, -0.0, -0.0, 0.0]  
   
 Depends directly on:  
   
@@ -138,8 +138,8 @@ You can also visit the <a href='../calculus_graphs/storage_nb_of_active_instance
 cpu needs of all services running on storage in core.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
-    first 10 vals [0.07, 0.2, 0.33, 0.13, 0.4, 0.13, 0.33, 0.07, 0.33, 0.6],  
-    last 10 vals [0.6, 0.07, 0.13, 0.33, 0.27, 0.27, 0.6, 0.2, 0.6, 0.07]  
+    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],  
+    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]  
   
 Depends directly on:  
   
@@ -155,8 +155,8 @@ You can also visit the <a href='../calculus_graphs/storage_all_services_cpu_need
 ram needs of all services running on storage in gigabyte.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
-    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
-    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
+    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
+    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
   
 Depends directly on:  
   
