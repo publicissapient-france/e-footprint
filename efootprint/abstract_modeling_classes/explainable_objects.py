@@ -200,7 +200,7 @@ class ExplainableQuantity(ExplainableObject):
 
     def to_json(self, with_calculated_attributes_data=False):
         output_dict = {
-            "label": self.label, "value": self.value.magnitude, "unit": str(self.value.units)}
+            "label": self.label, "value": float(self.value.magnitude), "unit": str(self.value.units)}
 
         if self.source is not None:
             output_dict["source"] = {"name": self.source.name, "link": self.source.link}

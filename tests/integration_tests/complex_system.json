@@ -89,7 +89,7 @@
             "id": "uuid-Default-laptop",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default laptop from Base ADEME_V19",
-                "value": 156,
+                "value": 156.0,
                 "unit": "kilogram",
                 "source": {
                     "name": "Base ADEME_V19",
@@ -98,7 +98,7 @@
             },
             "power": {
                 "label": "Power of Default laptop from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -107,7 +107,7 @@
             },
             "lifespan": {
                 "label": "Lifespan of Default laptop from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "year",
                 "source": {
                     "name": "hypothesis",
@@ -171,7 +171,7 @@
             "id": "uuid-20-min-streaming-on-Youtube",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on Youtube from hypothesis",
-                "value": 20,
+                "value": 20.0,
                 "unit": "minute",
                 "source": {
                     "name": "hypothesis",
@@ -187,7 +187,7 @@
             "id": "uuid-02e4s-of-upload",
             "user_time_spent": {
                 "label": "Time spent on step 0.4s of upload from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "second",
                 "source": {
                     "name": "hypothesis",
@@ -203,7 +203,7 @@
             "id": "uuid-Dailymotion-step",
             "user_time_spent": {
                 "label": "Time spent on step Dailymotion step from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "minute",
                 "source": {
                     "name": "hypothesis",
@@ -219,7 +219,7 @@
             "id": "uuid-20-min-streaming-on-TikTok",
             "user_time_spent": {
                 "label": "Time spent on step 20 min streaming on TikTok from hypothesis",
-                "value": 20,
+                "value": 20.0,
                 "unit": "minute",
                 "source": {
                     "name": "hypothesis",
@@ -240,7 +240,7 @@
             "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
@@ -267,7 +267,7 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Server 1 to process streaming from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -276,7 +276,7 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Server 1 to process streaming from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -292,7 +292,7 @@
             "service": "uuid-Youtube",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
@@ -301,7 +301,7 @@
             },
             "data_download": {
                 "label": "Data download of request upload from hypothesis",
-                "value": 0,
+                "value": 0.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -319,7 +319,7 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Server 1 to process upload from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -328,7 +328,7 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Server 1 to process upload from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -344,7 +344,7 @@
             "service": "uuid-Dailymotion",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
@@ -353,7 +353,7 @@
             },
             "data_download": {
                 "label": "Data download of request dailymotion from hypothesis",
-                "value": 3,
+                "value": 3.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -371,7 +371,7 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Server 1 to process dailymotion from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -380,7 +380,7 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Server 1 to process dailymotion from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -396,7 +396,7 @@
             "service": "uuid-TikTok-service",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
-                "value": 0,
+                "value": 0.0,
                 "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
@@ -423,7 +423,7 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server Server 2 to process tiktok from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -432,7 +432,7 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server Server 2 to process tiktok from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -448,7 +448,7 @@
             "service": "uuid-TikTok-analytics",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "kilobyte",
                 "source": {
                     "name": "hypothesis",
@@ -457,7 +457,7 @@
             },
             "data_download": {
                 "label": "Data download of request tiktok analytics from hypothesis",
-                "value": 0,
+                "value": 0.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -475,7 +475,7 @@
             },
             "ram_needed": {
                 "label": "RAM needed on server TikTok Analytics server to process tiktok analytics from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -484,7 +484,7 @@
             },
             "cpu_needed": {
                 "label": "CPU needed on server TikTok Analytics server to process tiktok analytics from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -502,7 +502,7 @@
             "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Youtube from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -511,7 +511,7 @@
             },
             "base_cpu_consumption": {
                 "label": "Base CPU consumption of Youtube from hypothesis",
-                "value": 2,
+                "value": 2.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -526,7 +526,7 @@
             "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of Dailymotion from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -535,7 +535,7 @@
             },
             "base_cpu_consumption": {
                 "label": "Base CPU consumption of Dailymotion from hypothesis",
-                "value": 2,
+                "value": 2.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -550,7 +550,7 @@
             "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of TikTok service from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -559,7 +559,7 @@
             },
             "base_cpu_consumption": {
                 "label": "Base CPU consumption of TikTok service from hypothesis",
-                "value": 2,
+                "value": 2.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -574,7 +574,7 @@
             "storage": "uuid-Default-SSD-storage",
             "base_ram_consumption": {
                 "label": "Base RAM consumption of TikTok analytics from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "megabyte",
                 "source": {
                     "name": "hypothesis",
@@ -583,7 +583,7 @@
             },
             "base_cpu_consumption": {
                 "label": "Base CPU consumption of TikTok analytics from hypothesis",
-                "value": 2,
+                "value": 2.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -598,7 +598,7 @@
             "id": "uuid-Server-1",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Server 1 from Base ADEME_V19",
-                "value": 600,
+                "value": 600.0,
                 "unit": "kilogram",
                 "source": {
                     "name": "Base ADEME_V19",
@@ -607,7 +607,7 @@
             },
             "power": {
                 "label": "Power of Server 1 from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -616,7 +616,7 @@
             },
             "lifespan": {
                 "label": "Lifespan of Server 1 from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "year",
                 "source": {
                     "name": "hypothesis",
@@ -625,7 +625,7 @@
             },
             "fraction_of_usage_time": {
                 "label": "Server 1 fraction of usage time from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
@@ -652,7 +652,7 @@
             },
             "idle_power": {
                 "label": "Idle power of Server 1 from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -661,7 +661,7 @@
             },
             "ram": {
                 "label": "RAM of Server 1 from hypothesis",
-                "value": 12,
+                "value": 12.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -670,7 +670,7 @@
             },
             "cpu_cores": {
                 "label": "Nb cpus cores of Server 1 from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -692,7 +692,7 @@
             "id": "uuid-TikTok-Analytics-server",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of TikTok Analytics server from Base ADEME_V19",
-                "value": 600,
+                "value": 600.0,
                 "unit": "kilogram",
                 "source": {
                     "name": "Base ADEME_V19",
@@ -701,7 +701,7 @@
             },
             "power": {
                 "label": "Power of TikTok Analytics server from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -710,7 +710,7 @@
             },
             "lifespan": {
                 "label": "Lifespan of TikTok Analytics server from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "year",
                 "source": {
                     "name": "hypothesis",
@@ -719,7 +719,7 @@
             },
             "fraction_of_usage_time": {
                 "label": "TikTok Analytics server fraction of usage time from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
@@ -746,7 +746,7 @@
             },
             "idle_power": {
                 "label": "Idle power of TikTok Analytics server from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -755,7 +755,7 @@
             },
             "ram": {
                 "label": "RAM of TikTok Analytics server from hypothesis",
-                "value": 128,
+                "value": 128.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -764,7 +764,7 @@
             },
             "cpu_cores": {
                 "label": "Nb cpus cores of TikTok Analytics server from hypothesis",
-                "value": 24,
+                "value": 24.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -786,7 +786,7 @@
             "id": "uuid-Server-2",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Server 2 from Base ADEME_V19",
-                "value": 600,
+                "value": 600.0,
                 "unit": "kilogram",
                 "source": {
                     "name": "Base ADEME_V19",
@@ -795,7 +795,7 @@
             },
             "power": {
                 "label": "Power of Server 2 from hypothesis",
-                "value": 300,
+                "value": 300.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -804,7 +804,7 @@
             },
             "lifespan": {
                 "label": "Lifespan of Server 2 from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "year",
                 "source": {
                     "name": "hypothesis",
@@ -813,7 +813,7 @@
             },
             "fraction_of_usage_time": {
                 "label": "Server 2 fraction of usage time from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
@@ -840,7 +840,7 @@
             },
             "idle_power": {
                 "label": "Idle power of Server 2 from hypothesis",
-                "value": 50,
+                "value": 50.0,
                 "unit": "watt",
                 "source": {
                     "name": "hypothesis",
@@ -849,7 +849,7 @@
             },
             "ram": {
                 "label": "RAM of Server 2 from hypothesis",
-                "value": 12,
+                "value": 12.0,
                 "unit": "gigabyte",
                 "source": {
                     "name": "hypothesis",
@@ -858,7 +858,7 @@
             },
             "cpu_cores": {
                 "label": "Nb cpus cores of Server 2 from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "core",
                 "source": {
                     "name": "hypothesis",
@@ -882,7 +882,7 @@
             "id": "uuid-Default-SSD-storage",
             "carbon_footprint_fabrication": {
                 "label": "Carbon footprint fabrication of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 160,
+                "value": 160.0,
                 "unit": "kilogram",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
@@ -900,7 +900,7 @@
             },
             "lifespan": {
                 "label": "Lifespan of Default SSD storage from hypothesis",
-                "value": 6,
+                "value": 6.0,
                 "unit": "year",
                 "source": {
                     "name": "hypothesis",
@@ -909,7 +909,7 @@
             },
             "fraction_of_usage_time": {
                 "label": "Default SSD storage fraction of usage time from hypothesis",
-                "value": 1,
+                "value": 1.0,
                 "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
@@ -936,7 +936,7 @@
             },
             "storage_capacity": {
                 "label": "Storage capacity of Default SSD storage from Dirty secret of SSDs: embodied carbon",
-                "value": 1,
+                "value": 1.0,
                 "unit": "terabyte",
                 "source": {
                     "name": "Dirty secret of SSDs: embodied carbon",
@@ -954,7 +954,7 @@
             },
             "data_replication_factor": {
                 "label": "Data replication factor of Default SSD storage from hypothesis",
-                "value": 3,
+                "value": 3.0,
                 "unit": "dimensionless",
                 "source": {
                     "name": "hypothesis",
@@ -963,7 +963,7 @@
             },
             "data_storage_duration": {
                 "label": "Data storage duration of Default SSD storage from hypothesis",
-                "value": 4,
+                "value": 4.0,
                 "unit": "hour",
                 "source": {
                     "name": "hypothesis",
@@ -972,7 +972,7 @@
             },
             "base_storage_need": {
                 "label": "Default SSD storage initial storage need from hypothesis",
-                "value": 100,
+                "value": 100.0,
                 "unit": "terabyte",
                 "source": {
                     "name": "hypothesis",

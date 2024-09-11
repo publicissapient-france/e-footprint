@@ -146,10 +146,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cls.usage_pattern2: cls.usage_pattern2.energy_footprint,
         }
 
-        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprints
-        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprints
+        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprint_sum_over_period
+        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
 
-        cls.ref_json_filename = "complex_system.json"
+        cls.ref_json_filename = "complex_system"
 
     def test_remove_dailymotion_and_tiktok_uj_step(self):
         logger.warning("Removing Dailymotion and TikTok uj step")
@@ -254,7 +254,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.run_json_to_system_test(self.system)
 
     def test_add_usage_pattern_after_json_to_system(self):
-        with open(os.path.join(INTEGRATION_TEST_DIR, self.ref_json_filename), "rb") as file:
+        with open(os.path.join(INTEGRATION_TEST_DIR,  f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
 
         class_obj_dict, flat_obj_dict = json_to_system(full_dict)
@@ -289,16 +289,15 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.assertTrue(len(html) > 1000)
 
     def test_plot_emission_diffs(self):
-        raise NotImplementedError
-        # file = "system_emission_diffs.png"
-        # self.system.previous_change = None
+        file = "system_emission_diffs.png"
+        self.system.previous_change = None
 
-        # with self.assertRaises(ValueError):
-        #     self.system.plot_emission_diffs(filepath=file)
+        with self.assertRaises(ValueError):
+            self.system.plot_emission_diffs(filepath=file)
 
-        # self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
-        # self.system.plot_emission_diffs(filepath=file)
-        # self.streaming_step.jobs[0].data_upload = SourceValue(
-        #     50 * u.kB, label="Data upload of request streaming")
+        self.streaming_step.jobs[0].data_upload = SourceValue(500 * u.kB)
+        self.system.plot_emission_diffs(filepath=file)
+        self.streaming_step.jobs[0].data_upload = SourceValue(
+            50 * u.kB, label="Data upload of request streaming")
 
-        # self.assertTrue(os.path.isfile(file))
+        self.assertTrue(os.path.isfile(file))

@@ -14,7 +14,8 @@ from efootprint.core.hardware.storage import Storage
 from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.user_journey import UserJourney
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject, \
+    ExplainableHourlyQuantities
 from efootprint.logger import logger
 from efootprint.utils.plot_emission_diffs import EmissionPlotter
 from efootprint.utils.tools import format_co2_amount, display_co2_amount
@@ -51,8 +52,8 @@ class System(ModelingObject):
         self.init_has_passed = True
         self.launch_attributes_computation_chain(self.attributes_computation_chain)
         logger.info(f"Finished computing {self.name} modeling")
-        self.initial_total_energy_footprints = self.total_energy_footprints
-        self.initial_total_fabrication_footprints = self.total_fabrication_footprints
+        self.initial_total_energy_footprints = self.total_energy_footprint_sum_over_period
+        self.initial_total_fabrication_footprints = self.total_fabrication_footprint_sum_over_period
 
     @property
     def servers(self) -> List[Server]:
@@ -102,7 +103,7 @@ class System(ModelingObject):
                 return usage_pattern
 
     @property
-    def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
+    def fabrication_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         fab_footprints = {
             "Servers": {server.name: server.instances_fabrication_footprint for server in self.servers},
             "Storage": {storage.name: storage.instances_fabrication_footprint for storage in self.storages},
@@ -114,7 +115,7 @@ class System(ModelingObject):
         return fab_footprints
 
     @property
-    def energy_footprints(self) -> Dict[str, Dict[str, ExplainableQuantity]]:
+    def energy_footprints(self) -> Dict[str, Dict[str, ExplainableHourlyQuantities]]:
         energy_footprints = {
             "Servers": {server.name: server.energy_footprint for server in self.servers},
             "Storage": {storage.name: storage.energy_footprint for storage in self.storages},
@@ -126,7 +127,7 @@ class System(ModelingObject):
         return energy_footprints
 
     @property
-    def total_fabrication_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def total_fabrication_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         fab_footprints = {
             "Servers": sum(server.instances_fabrication_footprint for server in self.servers),
             "Storage": sum(storage.instances_fabrication_footprint for storage in self.storages),
@@ -138,7 +139,7 @@ class System(ModelingObject):
         return fab_footprints
 
     @property
-    def total_energy_footprints(self) -> Dict[str, ExplainableQuantity]:
+    def total_energy_footprints(self) -> Dict[str, ExplainableHourlyQuantities]:
         energy_footprints = {
             "Servers": sum(server.energy_footprint for server in self.servers),
             "Storage": sum(storage.energy_footprint for storage in self.storages),
@@ -146,6 +147,52 @@ class System(ModelingObject):
             "Devices": sum(usage_pattern.devices_energy_footprint for usage_pattern in self.usage_patterns)
         }
 
+        return energy_footprints
+
+    @staticmethod
+    def sum_and_remove_empty_explainable_object(expl_obj):
+        tmp_sum = expl_obj.sum()
+        if isinstance(tmp_sum, EmptyExplainableObject):
+            tmp_sum = ExplainableQuantity(0 * u.kg, "null value")
+
+        return tmp_sum
+
+    @property
+    def fabrication_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
+        fab_footprints_sum = {}
+        for key, dict_value in self.fabrication_footprints.items():
+            fab_footprints_sum[key] = {
+                obj_key: self.sum_and_remove_empty_explainable_object(obj_value)
+                for obj_key, obj_value in dict_value.items()
+            }
+
+        return fab_footprints_sum
+
+    @property
+    def energy_footprint_sum_over_period(self) -> Dict[str, Dict[ModelingObject, ExplainableQuantity]]:
+        energy_footprints_sum = {}
+        for key, dict_value in self.energy_footprints.items():
+            energy_footprints_sum[key] = {
+                obj_key: self.sum_and_remove_empty_explainable_object(obj_value)
+                for obj_key, obj_value in dict_value.items()
+            }
+
+        return energy_footprints_sum
+
+    @property
+    def total_fabrication_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
+        fab_footprints = {
+            obj_key: self.sum_and_remove_empty_explainable_object(obj_value)
+            for obj_key, obj_value in self.total_fabrication_footprints.items()
+        }
+        return fab_footprints
+
+    @property
+    def total_energy_footprint_sum_over_period(self) -> Dict[str, ExplainableQuantity]:
+        energy_footprints = {
+            obj_key: self.sum_and_remove_empty_explainable_object(obj_value)
+            for obj_key, obj_value in self.total_energy_footprints.items()
+        }
         return energy_footprints
 
     @property
@@ -159,19 +206,8 @@ class System(ModelingObject):
         ).set_label(f"{self.name} total carbon footprint")
 
     def plot_footprints_by_category_and_object(self, filename=None, height=400, width=800, return_only_html=False):
-        def sum_and_remove_empty_explainable_object(expl_obj):
-            tmp_sum = expl_obj.sum()
-            if isinstance(tmp_sum, EmptyExplainableObject):
-                tmp_sum = ExplainableQuantity(0 * u.kg, "null value")
-
-            return tmp_sum
-
-        fab_footprints = {cat_key: {obj_key: sum_and_remove_empty_explainable_object(obj_value)
-                                    for obj_key, obj_value in cat_dict.items()}
-                          for cat_key, cat_dict in self.fabrication_footprints.items()}
-        energy_footprints = {cat_key: {obj_key: sum_and_remove_empty_explainable_object(obj_value)
-                                       for obj_key, obj_value in cat_dict.items()}
-                             for cat_key, cat_dict in self.energy_footprints.items()}
+        fab_footprints = self.fabrication_footprint_sum_over_period
+        energy_footprints = self.energy_footprint_sum_over_period
         categories = list(fab_footprints.keys())
 
         rows_as_dicts = []
@@ -258,13 +294,12 @@ class System(ModelingObject):
             print(f"Plotting the impact of {self.previous_change.replace('changed', 'changing')}")
             emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
 
-        emissions_dict__new = [self.total_energy_footprints, self.total_fabrication_footprints]
+        emissions_dict__new = [self.total_energy_footprint_sum_over_period, self.total_fabrication_footprint_sum_over_period]
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 
         EmissionPlotter(
-            ax, emissions_dict__old, emissions_dict__new, rounding_value=0,
-            timespan=ExplainableQuantity(1 * u.year, "one year")).plot_emission_diffs()
+            ax, emissions_dict__old, emissions_dict__new, rounding_value=0).plot_emission_diffs()
 
         if filepath is not None:
             plt.savefig(filepath, bbox_inches='tight')

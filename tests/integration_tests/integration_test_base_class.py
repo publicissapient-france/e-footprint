@@ -80,13 +80,14 @@ class IntegrationTestBaseClass(TestCase):
             old_ids[mod_obj.name] = mod_obj.id
             mod_obj.id = "uuid" + mod_obj.id[9:]
 
-        tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, "tmp_system_file.json")
+        tmp_filepath = os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json")
         system_to_json(input_system, save_calculated_attributes=False, output_filepath=tmp_filepath)
 
         for mod_obj in mod_obj_list:
             mod_obj.id = old_ids[mod_obj.name]
 
-        with open(os.path.join(INTEGRATION_TEST_DIR, self.ref_json_filename), 'r') as ref_file, open(tmp_filepath, 'r') as tmp_file:
+        with (open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}_tmp_file.json"), 'r') as ref_file,
+              open(tmp_filepath, 'r') as tmp_file):
             ref_file_content = ref_file.read()
             tmp_file_content = tmp_file.read()
 
@@ -95,7 +96,7 @@ class IntegrationTestBaseClass(TestCase):
         os.remove(tmp_filepath)
 
     def run_json_to_system_test(self, input_system):
-        with open(os.path.join(INTEGRATION_TEST_DIR, self.ref_json_filename), "rb") as file:
+        with open(os.path.join(INTEGRATION_TEST_DIR, f"{self.ref_json_filename}.json"), "rb") as file:
             full_dict = json.load(file)
 
         def retrieve_obj_by_name(name, mod_obj_list):

@@ -90,10 +90,10 @@ class IntegrationTest(IntegrationTestBaseClass):
             cls.network: cls.network.energy_footprint,
             cls.usage_pattern: cls.usage_pattern.devices_energy_footprint,
         }
-        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprints
-        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprints
+        cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprint_sum_over_period
+        cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
 
-        cls.ref_json_filename = "simple_system.json"
+        cls.ref_json_filename = "simple_system"
 
     def test_calculation_graph(self):
         graph = build_calculus_graph(self.system.total_footprint)

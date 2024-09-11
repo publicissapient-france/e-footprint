@@ -10,13 +10,11 @@ from efootprint.abstract_modeling_classes.explainable_objects import Explainable
 class EmissionPlotter:
     def __init__(self, ax, formatted_input_dicts__old: List[Dict[str, ExplainableQuantity]],
                  formatted_input_dicts__new: List[Dict[str, ExplainableQuantity]], rounding_value: int,
-                 timespan: ExplainableQuantity,
                  legend_labels: List[str] = ("Electricity consumption", "Fabrication")):
         self.ax = ax
         self.formatted_input_dicts__old = formatted_input_dicts__old
         self.formatted_input_dicts__new = formatted_input_dicts__new
         self.rounding_value = rounding_value
-        self.timespan = timespan
         self.legend_labels = legend_labels
         self.elements = ["Servers", "Storage", "Network", "Devices"]
         self.index = np.arange(len(self.elements))
@@ -31,14 +29,16 @@ class EmissionPlotter:
             self.unit = "tonne"
             self.dividing_number = 1000
 
-    def calculate_total_emissions(self, formatted_input_dicts):
+
+    @staticmethod
+    def calculate_total_emissions(formatted_input_dicts):
         total_emissions_in_kg = 0
         for input_dict in formatted_input_dicts:
-            total_emissions_in_kg += (sum(input_dict.values()) * self.timespan).to(u.kg).magnitude
+            total_emissions_in_kg += sum(input_dict.values()).to(u.kg).magnitude
         return total_emissions_in_kg
 
     def get_values(self, input_dict):
-        return [(input_dict.get(element, 0 * u(self.unit) / u.year) * self.timespan).to(u(self.unit)).magnitude
+        return [(input_dict.get(element, 0 * u(self.unit))).to(u(self.unit)).magnitude
                 for element in self.elements]
 
     def plot_common_values(self, common_values, i, color):
@@ -84,14 +84,14 @@ class EmissionPlotter:
 
     def set_axes_labels(self):
         self.ax.set_xlabel("Category")
-        self.ax.set_ylabel(f"{self.unit}s CO2 emissions / {self.timespan.value}".replace("1 ", ""))
+        self.ax.set_ylabel(f"{self.unit}s CO2 emissions".replace("1 ", ""))
 
         self.ax.set_xticks(self.index + self.bar_width / 2)
         self.ax.set_xticklabels(self.elements, rotation=0, ha="center")
 
         ax2 = self.ax.twinx()
         max_value = max(
-            [max(input_dict.values()) * self.timespan
+            [max(input_dict.values())
              for input_dict in self.formatted_input_dicts__new + self.formatted_input_dicts__old]
         ).to(u(self.unit)).magnitude
 
@@ -114,12 +114,10 @@ class EmissionPlotter:
             plus_sign = ""
             if rounded_total__new - rounded_total__old > 0:
                 plus_sign = "+"
-            subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {self.unit}s of CO2 emissions in" \
-                            f" {self.timespan.value} " \
+            subtitle_text = f"From {rounded_total__old} to {rounded_total__new} {self.unit}s of CO2 emissions " \
                             f"({plus_sign}{int(100 * (rounded_total__new - rounded_total__old) / rounded_total__old)}%)"
         else:
-            subtitle_text = f"{rounded_total__new} {self.unit}s of CO2 emissions in {self.timespan.value}"
-        subtitle_text = subtitle_text.replace("in 1 year", "per year")
+            subtitle_text = f"{rounded_total__new} {self.unit}s of CO2 emissions"
 
         self.ax.text(
             0.5, 1.1, subtitle_text,

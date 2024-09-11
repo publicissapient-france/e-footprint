@@ -139,8 +139,8 @@ class ModelingObject(metaclass=ABCAfterInitMeta):
     def register_footprint_values_in_systems_before_change(self, change: str):
         logger.debug(change)
         for system in self.systems:
-            system.previous_total_energy_footprints = system.total_energy_footprints
-            system.previous_total_fabrication_footprints = system.total_fabrication_footprints
+            system.previous_total_energy_footprints = system.total_energy_footprint_sum_over_period
+            system.previous_total_fabrication_footprints = system.total_fabrication_footprint_sum_over_period
             system.previous_change = change
             system.all_changes.append(change)
 
