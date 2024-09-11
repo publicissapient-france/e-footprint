@@ -26,15 +26,16 @@ base cpu consumption of service in core.
 ## Calculated attributes
 
 ### hour_by_hour_ram_need  
-Representation of the evolution throughout a typical day of the service hour by hour ram need by 24 values in gigabyte.  
+service hour by hour ram need in gigabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
-- [usage pattern UTC](UsagePattern.md#utc_time_intervals)
-- [RAM needed on server server to process streaming](Job.md#ram_needed)
-- [Request duration to service in streaming](Job.md#request_duration)
-- [Duration of user journey](UserJourney.md#duration)
-- [Number of user journeys in parallel during usage pattern](UsagePattern.md#nb_user_journeys_in_parallel_during_usage)  
+- [Hourly streaming average occurrences across usage patterns](Job.md#hourly_avg_occurrences_across_usage_patterns)
+- [RAM needed on server server to process streaming](Job.md#ram_needed)  
 
 through the following calculations:  
 
@@ -43,15 +44,16 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/service_hour_by_hour_ram_need.html' target='_blank'>link to service hour by hour ram need’s full calculation graph</a>.
 
 ### hour_by_hour_cpu_need  
-Representation of the evolution throughout a typical day of the service hour by hour cpu need by 24 values in core.  
+service hour by hour cpu need in core.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
+    first 10 vals [0.07, 0.2, 0.33, 0.13, 0.4, 0.13, 0.33, 0.07, 0.33, 0.6],  
+    last 10 vals [0.6, 0.07, 0.13, 0.33, 0.27, 0.27, 0.6, 0.2, 0.6, 0.07]  
   
 Depends directly on:  
   
-- [usage pattern UTC](UsagePattern.md#utc_time_intervals)
-- [CPU needed on server server to process streaming](Job.md#cpu_needed)
-- [Request duration to service in streaming](Job.md#request_duration)
-- [Duration of user journey](UserJourney.md#duration)
-- [Number of user journeys in parallel during usage pattern](UsagePattern.md#nb_user_journeys_in_parallel_during_usage)  
+- [Hourly streaming average occurrences across usage patterns](Job.md#hourly_avg_occurrences_across_usage_patterns)
+- [CPU needed on server server to process streaming](Job.md#cpu_needed)  
 
 through the following calculations:  
 
@@ -60,15 +62,18 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/service_hour_by_hour_cpu_need.html' target='_blank'>link to service hour by hour cpu need’s full calculation graph</a>.
 
 ### storage_needed  
-ExplainableQuantity in terabyte / year, representing the storage needed for service.  
+hourly service storage need in terabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Data upload of request streaming](Job.md#data_upload)
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
+- [Hourly streaming data upload across usage patterns](Job.md#hourly_data_upload_across_usage_patterns)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/service_storage_needed_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/service_storage_needed.html' target='_blank'>link to Storage needed for service’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/service_storage_needed.html' target='_blank'>link to Hourly service storage need’s full calculation graph</a>.

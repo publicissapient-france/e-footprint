@@ -47,9 +47,11 @@ class ExplainableObjectDict(ObjectLinkedToModelingObj, dict):
         return json.dumps(self.to_json())
 
     def __str__(self):
-        values_dict = {}
+        return_str = "{\n"
 
         for key, value in self.items():
-            values_dict[key.id] = str(value)
+            return_str += f"{key.id}: {value}, \n"
 
-        return json.dumps(values_dict)
+        return_str = return_str + "}"
+
+        return return_str

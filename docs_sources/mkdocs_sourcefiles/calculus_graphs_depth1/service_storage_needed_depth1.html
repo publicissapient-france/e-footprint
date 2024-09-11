@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fe1ba3 {
+             #mynetwork_5142f8 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_fe1ba3" class="card-body"></div>
+            <div id="mynetwork_5142f8" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fe1ba3');
+                  var container = document.getElementById('mynetwork_5142f8');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Storage needed for service", "label": "Storage needed for\nservice", "shape": "dot", "size": 15, "title": "Storage needed for service\n=\nData upload of request streaming * (Usage frequency in usage pattern)\n=\n0.1 MB/uj * (4380000000.0 uj/yr)\n=\n219.0 TB/yr", "x": 0.0, "y": 300}, {"color": null, "id": "Data upload of request streaming", "label": "Data upload of\nrequest streaming", "shape": "dot", "size": 15, "title": "Data upload of request streaming = 0.1 MB/uj", "x": -75.0, "y": 150}, {"color": null, "id": "Usage frequency in usage pattern", "label": "Usage frequency in\nusage pattern", "shape": "dot", "size": 15, "title": "Usage frequency in usage pattern = 4380000000.0 uj/yr", "x": 75.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Data upload of request streaming", "to": "Storage needed for service"}, {"arrows": "to", "from": "Usage frequency in usage pattern", "to": "Storage needed for service"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly service storage need", "label": "Hourly service\nstorage need", "shape": "dot", "size": 15, "title": "Hourly service storage need\n=\nHourly streaming data upload across usage patterns\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 900}, {"color": null, "id": "Hourly streaming data upload across usage patterns", "label": "Hourly streaming\ndata upload across\nusage patterns", "shape": "dot", "size": 15, "title": "Hourly streaming data upload across usage patterns\n=\nHourly data upload for streaming in usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 750}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly streaming data upload across usage patterns", "to": "Hourly service storage need"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

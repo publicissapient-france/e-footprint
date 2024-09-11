@@ -13,7 +13,7 @@ import matplotlib.dates as mdates
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import (
     ExplainableObject, Source, ObjectLinkedToModelingObj)
-from efootprint.utils.tools import time_it
+from efootprint.constants.units import u
 
 
 class EmptyExplainableObject(ObjectLinkedToModelingObj):
@@ -37,6 +37,9 @@ class EmptyExplainableObject(ObjectLinkedToModelingObj):
         return EmptyExplainableObject()
 
     def sum(self):
+        return EmptyExplainableObject()
+
+    def copy(self):
         return EmptyExplainableObject()
 
     @property
@@ -399,8 +402,10 @@ class ExplainableHourlyQuantities(ExplainableObject):
             return [str(round(hourly_value.magnitude, 2)) for hourly_value in input_series.tolist()]
 
         compact_unit = "{:~}".format(self.unit)
-        nb_of_values = len(self.value)
+        if self.unit == u.dimensionless:
+            compact_unit = "dimensionless"
 
+        nb_of_values = len(self.value)
         if nb_of_values < 30:
             rounded_values = _round_series_values(self.value["value"])
             str_rounded_values = "[" + ", ".join(rounded_values) + "]"

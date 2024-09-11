@@ -43,6 +43,8 @@ server utilization rate in dimensionless.
 ### available_ram_per_instance  
 ExplainableQuantity in gigabyte, representing the available ram per server instance.  
   
+Example value: 114.9 gigabyte  
+  
 Depends directly on:  
   
 - [RAM of server](Autoscaling.md#ram)
@@ -58,6 +60,8 @@ You can also visit the <a href='../calculus_graphs/server_available_ram_per_inst
 ### available_cpu_per_instance  
 ExplainableQuantity in core, representing the available cpu per server instance.  
   
+Example value: 19.6 core  
+  
 Depends directly on:  
   
 - [Nb cpus cores of server](Autoscaling.md#cpu_cores)
@@ -71,7 +75,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/server_available_cpu_per_instance.html' target='_blank'>link to Available CPU per server instance’s full calculation graph</a>.
 
 ### all_services_cpu_needs  
-Representation of the evolution throughout a typical day of the cpu needs of all services running on server by 24 values in core.  
+cpu needs of all services running on server in core.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
+    first 10 vals [0.07, 0.2, 0.33, 0.13, 0.4, 0.13, 0.33, 0.07, 0.33, 0.6],  
+    last 10 vals [0.6, 0.07, 0.13, 0.33, 0.27, 0.27, 0.6, 0.2, 0.6, 0.07]  
   
 Depends directly on:  
   
@@ -84,7 +92,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/server_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on server’s full calculation graph</a>.
 
 ### all_services_ram_needs  
-Representation of the evolution throughout a typical day of the ram needs of all services running on server by 24 values in gigabyte.  
+ram needs of all services running on server in gigabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
@@ -96,22 +108,12 @@ through the following calculations:
   
 You can also visit the <a href='../calculus_graphs/server_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on server’s full calculation graph</a>.
 
-### fraction_of_time_in_use  
-ExplainableQuantity in dimensionless, representing the fraction of time in use of server.  
+### raw_nb_of_instances  
+hourly raw number of server instances in dimensionless.  
   
-Depends directly on:  
-  
-- [CPU needs of all services running on server](Autoscaling.md#all_services_cpu_needs)
-- [RAM needs of all services running on server](Autoscaling.md#all_services_ram_needs)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_fraction_of_time_in_use_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/server_fraction_of_time_in_use.html' target='_blank'>link to Fraction of time in use of server’s full calculation graph</a>.
-
-### nb_of_instances  
-ExplainableQuantity in dimensionless, representing the nb of server instances.  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
@@ -122,50 +124,81 @@ Depends directly on:
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_nb_of_instances_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_raw_nb_of_instances_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/server_nb_of_instances.html' target='_blank'>link to Nb of server instances’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/server_raw_nb_of_instances.html' target='_blank'>link to Hourly raw number of server instances’s full calculation graph</a>.
 
-### instances_fabrication_footprint  
-ExplainableQuantity in kilogram / year, representing the instances of server fabrication footprint.  
+### nb_of_instances  
+hourly number of server instances in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],  
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  
   
 Depends directly on:  
   
+- [Hourly raw number of server instances](Autoscaling.md#raw_nb_of_instances)  
+
+through the following calculations:  
+
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_nb_of_instances_depth1.html"
+  
+You can also visit the <a href='../calculus_graphs/server_nb_of_instances.html' target='_blank'>link to Hourly number of server instances’s full calculation graph</a>.
+
+### instances_fabrication_footprint  
+hourly server instances fabrication footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]  
+  
+Depends directly on:  
+  
+- [Hourly number of server instances](Autoscaling.md#nb_of_instances)
 - [Carbon footprint fabrication of server](Autoscaling.md#carbon_footprint_fabrication)
-- [Nb of server instances](Autoscaling.md#nb_of_instances)
 - [Lifespan of server](Autoscaling.md#lifespan)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_instances_fabrication_footprint_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/server_instances_fabrication_footprint.html' target='_blank'>link to Instances of server fabrication footprint’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/server_instances_fabrication_footprint.html' target='_blank'>link to Hourly server instances fabrication footprint’s full calculation graph</a>.
 
-### instances_power  
-ExplainableQuantity in kilowatt_hour / year, representing the power of server instances.  
+### instances_energy  
+hourly energy consumed by server instances in kilowatt_hour.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
+    first 10 vals [0.06, 0.06, 0.07, 0.06, 0.07, 0.06, 0.07, 0.06, 0.07, 0.07],  
+    last 10 vals [0.07, 0.06, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.07, 0.06]  
   
 Depends directly on:  
   
-- [Power of server](Autoscaling.md#power)
+- [Hourly number of server instances](Autoscaling.md#nb_of_instances)
+- [Idle power of server](Autoscaling.md#idle_power)
 - [PUE of server](Autoscaling.md#power_usage_effectiveness)
-- [Nb of server instances](Autoscaling.md#nb_of_instances)  
+- [Hourly raw number of server instances](Autoscaling.md#raw_nb_of_instances)
+- [Power of server](Autoscaling.md#power)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_instances_power_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_instances_energy_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/server_instances_power.html' target='_blank'>link to Power of server instances’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/server_instances_energy.html' target='_blank'>link to Hourly energy consumed by server instances’s full calculation graph</a>.
 
 ### energy_footprint  
-ExplainableQuantity in kilogram / year, representing the energy footprint of server.  
+hourly server energy footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]  
   
 Depends directly on:  
   
-- [Power of server instances](Autoscaling.md#instances_power)
+- [Hourly energy consumed by server instances](Autoscaling.md#instances_energy)
 - [Average carbon intensity of server electricity](Autoscaling.md#average_carbon_intensity)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/server_energy_footprint_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/server_energy_footprint.html' target='_blank'>link to Energy footprint of server’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/server_energy_footprint.html' target='_blank'>link to Hourly server energy footprint’s full calculation graph</a>.

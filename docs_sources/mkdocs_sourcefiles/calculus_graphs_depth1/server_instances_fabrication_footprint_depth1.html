@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_0e1933 {
+             #mynetwork_c3357a {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_0e1933" class="card-body"></div>
+            <div id="mynetwork_c3357a" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_0e1933');
+                  var container = document.getElementById('mynetwork_c3357a');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances of server fabrication footprint", "label": "Instances of server\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of server fabrication footprint\n=\nCarbon footprint fabrication of server * Nb of server instances / Lifespan of\nserver\n=\n600 kg * 1700.0 / 6 yr\n=\n169995.8 kg/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Carbon footprint fabrication of server", "label": "Carbon footprint\nfabrication of\nserver", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of server = 600 kg", "x": -400.0, "y": 1500}, {"color": null, "id": "Nb of server instances", "label": "Nb of server\ninstances", "shape": "dot", "size": 15, "title": "Nb of server instances\n=\nmean of (Hour by hour nb of instances)\n=\nmean of ([0.0, 0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0,\n0.0, 0.0, 0.0, 0.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 3709.0, 0.0, 0.0,\n0.0])\n=\n1700.0", "x": 0.0, "y": 1500}, {"color": null, "id": "Lifespan of server", "label": "Lifespan of server", "shape": "dot", "size": 15, "title": "Lifespan of server = 6 yr", "x": 400.0, "y": 1500}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of server", "to": "Instances of server fabrication footprint"}, {"arrows": "to", "from": "Nb of server instances", "to": "Instances of server fabrication footprint"}, {"arrows": "to", "from": "Lifespan of server", "to": "Instances of server fabrication footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly server instances fabrication footprint", "label": "Hourly server\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly server instances fabrication footprint\n=\nHourly number of server instances * Carbon footprint fabrication of server * one\nhour / Lifespan of server\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0] * 600 kilogram *\n1 hour / 6 year\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of server instances", "label": "Hourly number of\nserver instances", "shape": "dot", "size": 15, "title": "Hourly number of server instances\n=\nceil of (Hourly raw number of server instances)\n=\nceil of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],\nlast 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": -393.75, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of server", "label": "Carbon footprint\nfabrication of\nserver", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of server = 600 kilogram", "x": -131.25, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 131.25, "y": 1500}, {"color": null, "id": "Lifespan of server", "label": "Lifespan of server", "shape": "dot", "size": 15, "title": "Lifespan of server = 6 year", "x": 393.75, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of server instances", "to": "Hourly server instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of server", "to": "Hourly server instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly server instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of server", "to": "Hourly server instances fabrication footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch, PropertyMock
 from datetime import datetime, timedelta
 
+from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.constants.sources import Sources
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, SourceHourlyValues
@@ -59,6 +60,20 @@ class TestStorage(TestCase):
             self.assertEqual([-2, -4], self.storage_base.storage_dumps.value_as_float_list)
             self.assertEqual(expected_min_date, self.storage_base.storage_dumps.value.index.min().to_timestamp())
             self.assertEqual(expected_max_date, self.storage_base.storage_dumps.value.index.max().to_timestamp())
+
+    def test_update_storage_dumps_returns_hourly_quantities_full_of_zeros_when_no_dump_during_period(self):
+        input_data = [2, 4, 6]
+        storage_duration = 5
+        start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
+        all_needed_storage = SourceHourlyValues(
+            create_hourly_usage_df_from_list(input_data, start_date, pint_unit=u.TB))
+
+        with patch.object(self.storage_base, "all_services_storage_needs", all_needed_storage), \
+            patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
+            self.storage_base.update_storage_dumps()
+
+            self.assertEqual([0, 0, 0], self.storage_base.storage_dumps.value_as_float_list)
+            self.assertTrue(all_needed_storage.value.index.equals(self.storage_base.storage_dumps.value.index))
 
     def test_storage_delta(self):
         input_data = [2, 4, 6]

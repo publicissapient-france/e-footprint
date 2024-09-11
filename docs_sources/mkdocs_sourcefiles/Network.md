@@ -16,47 +16,22 @@ bandwith energy intensity of network in kilowatt_hour / gigabyte.
 
 ## Calculated attributes
 
-### data_download  
-ExplainableQuantity in terabyte / year, representing the data download in network.  
-  
-Depends directly on:  
-  
-- [Data download of user journey](UserJourney.md#data_download)
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/network_data_download_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/network_data_download.html' target='_blank'>link to Data download in network’s full calculation graph</a>.
-
-### data_upload  
-ExplainableQuantity in terabyte / year, representing the data upload in network.  
-  
-Depends directly on:  
-  
-- [Data upload of user journey](UserJourney.md#data_upload)
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/network_data_upload_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/network_data_upload.html' target='_blank'>link to Data upload in network’s full calculation graph</a>.
-
 ### energy_footprint  
-ExplainableQuantity in kilogram / year, representing the energy footprint of network.  
+hourly network energy footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)
+- [Hourly data upload for streaming in usage pattern](Job.md#hourly_data_upload_per_usage_pattern)
+- [Hourly data download for streaming in usage pattern](Job.md#hourly_data_download_per_usage_pattern)
 - [bandwith energy intensity of network](Network.md#bandwidth_energy_intensity)
-- [Data download of user journey](UserJourney.md#data_download)
-- [Data upload of user journey](UserJourney.md#data_upload)
 - [Average carbon intensity of devices country](Country.md#average_carbon_intensity)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/network_energy_footprint_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/network_energy_footprint.html' target='_blank'>link to Energy footprint of network’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/network_energy_footprint.html' target='_blank'>link to Hourly network energy footprint’s full calculation graph</a>.

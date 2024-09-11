@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ffa8c8 {
+             #mynetwork_6d4d47 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ffa8c8" class="card-body"></div>
+            <div id="mynetwork_6d4d47" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ffa8c8');
+                  var container = document.getElementById('mynetwork_6d4d47');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": 0.0, "y": 750}, {"color": null, "id": "Active storage required for storage", "label": "Active storage\nrequired for storage", "shape": "dot", "size": 15, "title": "Active storage required for storage\n=\nStorage need of storage * Time interval during which active storage is\nconsidered from hypothesis\n=\n219.0 TB/yr * 1 h\n=\n25.0 GB", "x": -75.0, "y": 600}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 TB", "x": 75.0, "y": 600}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Active storage required for storage", "to": "Number of active instances for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Number of active instances for storage"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of active instances for storage", "label": "Hourly number of\nactive instances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of active instances for storage\n=\n(abs of (Hourly storage delta for storage) + abs of (Storage dumps for storage))\n/ Storage capacity of storage\n=\n(abs of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, -0.0, -0.0, -0.0, 0.0, 0.0, -0.0, 0.0, -0.0]) + abs of\n(8749 values from 2027-01-01 10:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0])) / 1\nterabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1500}, {"color": null, "id": "Hourly storage delta for storage", "label": "Hourly storage delta\nfor storage", "shape": "dot", "size": 15, "title": "Hourly storage delta for storage\n=\nStorage need of storage + Storage dumps for storage\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] + 8749 values\nfrom 2027-01-01 10:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, -0.0, -0.0, -0.0, -0.0, 0.0, 0.0, -0.0, 0.0, -0.0]", "x": -250.0, "y": 1350}, {"color": null, "id": "Storage dumps for storage", "label": "Storage dumps for\nstorage", "shape": "dot", "size": 15, "title": "Storage dumps for storage\n=\nStorage need of storage shift by storage duration and negate Data storage\nduration of storage\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0] shift by storage\nduration and negate 17532.0 hour\n=\n8749 values from 2027-01-01 10:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],\nlast 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]", "x": -250.0, "y": 1200}, {"color": null, "id": "Storage capacity of storage", "label": "Storage capacity of\nstorage", "shape": "dot", "size": 15, "title": "Storage capacity of storage = 1 terabyte", "x": 250.0, "y": 1350}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly storage delta for storage", "to": "Hourly number of active instances for storage"}, {"arrows": "to", "from": "Storage dumps for storage", "to": "Hourly number of active instances for storage"}, {"arrows": "to", "from": "Storage capacity of storage", "to": "Hourly number of active instances for storage"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

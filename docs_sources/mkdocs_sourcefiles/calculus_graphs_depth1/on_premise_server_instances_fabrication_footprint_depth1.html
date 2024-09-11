@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_153703 {
+             #mynetwork_768911 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_153703" class="card-body"></div>
+            <div id="mynetwork_768911" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_153703');
+                  var container = document.getElementById('mynetwork_768911');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Instances of on premise server fabrication footprint", "label": "Instances of on\npremise server\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Instances of on premise server fabrication footprint\n=\nCarbon footprint fabrication of on premise server * User defined number of on\npremise server instances / Lifespan of on premise server\n=\n600 kg * 4000 / 6 yr\n=\n400000.0 kg/yr", "x": 0.0, "y": 300}, {"color": null, "id": "Carbon footprint fabrication of on premise server", "label": "Carbon footprint\nfabrication of on\npremise server", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of on premise server = 600 kg", "x": -150.0, "y": 150}, {"color": null, "id": "User defined number of on premise server instances", "label": "User defined number\nof on premise server\ninstances", "shape": "dot", "size": 15, "title": "User defined number of on premise server instances = 4000", "x": 0.0, "y": 150}, {"color": null, "id": "Lifespan of on premise server", "label": "Lifespan of on\npremise server", "shape": "dot", "size": 15, "title": "Lifespan of on premise server = 6 yr", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Carbon footprint fabrication of on premise server", "to": "Instances of on premise server fabrication footprint"}, {"arrows": "to", "from": "User defined number of on premise server instances", "to": "Instances of on premise server fabrication footprint"}, {"arrows": "to", "from": "Lifespan of on premise server", "to": "Instances of on premise server fabrication footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server instances fabrication footprint", "label": "Hourly on premise\nserver instances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server instances fabrication footprint\n=\nFixed number of on premise server instances * Carbon footprint fabrication of on\npremise server * one hour / Lifespan of on premise server\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000],\nlast 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000] * 600\nkilogram * 1 hour / 6 year\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63,\n45.63],\nlast 10 vals [45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63, 45.63,\n45.63]", "x": 0.0, "y": 1650}, {"color": null, "id": "Fixed number of on premise server instances", "label": "Fixed number of on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Fixed number of on premise server instances\n=\nHourly raw number of on premise server instances\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],\nlast 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000],\nlast 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000]", "x": -393.75, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of on premise server", "label": "Carbon footprint\nfabrication of on\npremise server", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of on premise server = 600 kilogram", "x": -131.25, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 131.25, "y": 1500}, {"color": null, "id": "Lifespan of on premise server", "label": "Lifespan of on\npremise server", "shape": "dot", "size": 15, "title": "Lifespan of on premise server = 6 year", "x": 393.75, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Fixed number of on premise server instances", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of on premise server", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly on premise server instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of on premise server", "to": "Hourly on premise server instances fabrication footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

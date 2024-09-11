@@ -14,4 +14,5 @@ class Serverless(Server):
 
     def update_nb_of_instances(self):
         hour_by_hour_nb_of_instances = self.raw_nb_of_instances.copy()
-        self.nb_of_instances = hour_by_hour_nb_of_instances.set_label(f"Hour by hour of {self.name} instances")
+
+        self.nb_of_instances = hour_by_hour_nb_of_instances.set_label(f"Hour number of {self.name} instances")

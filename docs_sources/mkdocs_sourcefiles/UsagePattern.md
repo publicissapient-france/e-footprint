@@ -17,10 +17,7 @@ An instance of [Network](Network.md).
 ### country
 An instance of [Country](Country.md).
 
-### user_journey_freq
-usage frequency in usage pattern in user_journey / year.
-
-### time_intervals
+### hourly_user_journey_starts
 description to be done
 
 
@@ -31,82 +28,70 @@ description to be done
 
 ## Calculated attributes
 
-### hourly_usage  
-Representation of the evolution throughout a typical day of the usage pattern local timezone hourly usage by 24 values in dimensionless.  
+### utc_hourly_user_journey_starts  
+usage pattern utc in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [1, 3, 5, 2, 6, 2, 5, 1, 5, 9],  
+    last 10 vals [9, 1, 2, 5, 4, 4, 9, 3, 9, 1]  
   
 Depends directly on:  
   
-- [usage pattern time intervals in local timezone from hypothesis](UsagePattern.md#time_intervals)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_hourly_usage_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/usage_pattern_hourly_usage.html' target='_blank'>link to usage pattern local timezone hourly usage’s full calculation graph</a>.
-
-### usage_time_fraction  
-ExplainableQuantity in dimensionless, representing the usage time fraction of usage pattern.  
-  
-Depends directly on:  
-  
-- [usage pattern local timezone hourly usage](UsagePattern.md#hourly_usage)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_usage_time_fraction_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/usage_pattern_usage_time_fraction.html' target='_blank'>link to Usage time fraction of usage pattern’s full calculation graph</a>.
-
-### utc_time_intervals  
-Representation of the evolution throughout a typical day of the usage pattern utc by 24 values in dimensionless.  
-  
-Depends directly on:  
-  
-- [usage pattern local timezone hourly usage](UsagePattern.md#hourly_usage)
+- [usage pattern hourly nb of visits from hypothesis](UsagePattern.md#hourly_user_journey_starts)
 - [devices country timezone from user data](Country.md#timezone)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_utc_time_intervals_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_utc_hourly_user_journey_starts_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/usage_pattern_utc_time_intervals.html' target='_blank'>link to usage pattern UTC’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/usage_pattern_utc_hourly_user_journey_starts.html' target='_blank'>link to usage pattern UTC’s full calculation graph</a>.
 
-### nb_user_journeys_in_parallel_during_usage  
-ExplainableQuantity in user_journey, representing the number of user journeys in parallel during usage pattern.  
+### nb_user_journeys_in_parallel  
+usage pattern hourly nb of user journeys in parallel in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.33, 1.0, 1.67, 0.67, 2.0, 0.67, 1.67, 0.33, 1.67, 3.0],  
+    last 10 vals [3.0, 0.33, 0.67, 1.67, 1.33, 1.33, 3.0, 1.0, 3.0, 0.33]  
   
 Depends directly on:  
   
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)
-- [Duration of user journey](UserJourney.md#duration)
-- [Usage time fraction of usage pattern](UsagePattern.md#usage_time_fraction)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_nb_user_journeys_in_parallel_during_usage_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/usage_pattern_nb_user_journeys_in_parallel_during_usage.html' target='_blank'>link to Number of user journeys in parallel during usage pattern’s full calculation graph</a>.
-
-### devices_power  
-ExplainableQuantity in kilowatt_hour / year, representing the power of usage pattern devices.  
-  
-Depends directly on:  
-  
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)
-- [Power of device on which the user journey is made](Hardware.md#power)
+- [usage pattern UTC](UsagePattern.md#utc_hourly_user_journey_starts)
 - [Duration of user journey](UserJourney.md#duration)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_devices_power_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_nb_user_journeys_in_parallel_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/usage_pattern_devices_power.html' target='_blank'>link to Power of usage pattern devices’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/usage_pattern_nb_user_journeys_in_parallel.html' target='_blank'>link to usage pattern hourly nb of user journeys in parallel’s full calculation graph</a>.
 
-### devices_energy_footprint  
-ExplainableQuantity in kilogram / year, representing the energy footprint of usage pattern.  
+### devices_energy  
+energy consumed by usage pattern devices in kilowatt_hour.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
+    first 10 vals [0.02, 0.05, 0.08, 0.03, 0.1, 0.03, 0.08, 0.02, 0.08, 0.15],  
+    last 10 vals [0.15, 0.02, 0.03, 0.08, 0.07, 0.07, 0.15, 0.05, 0.15, 0.02]  
   
 Depends directly on:  
   
-- [Power of usage pattern devices](UsagePattern.md#devices_power)
+- [usage pattern hourly nb of user journeys in parallel](UsagePattern.md#nb_user_journeys_in_parallel)
+- [Power of device on which the user journey is made](Hardware.md#power)  
+
+through the following calculations:  
+
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/usage_pattern_devices_energy_depth1.html"
+  
+You can also visit the <a href='../calculus_graphs/usage_pattern_devices_energy.html' target='_blank'>link to Energy consumed by usage pattern devices’s full calculation graph</a>.
+
+### devices_energy_footprint  
+energy footprint of usage pattern in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.0, 0.01, 0.0, 0.01, 0.0, 0.01, 0.0, 0.01, 0.01],  
+    last 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.01, 0.0]  
+  
+Depends directly on:  
+  
+- [Energy consumed by usage pattern devices](UsagePattern.md#devices_energy)
 - [Average carbon intensity of devices country](Country.md#average_carbon_intensity)  
 
 through the following calculations:  
@@ -116,13 +101,16 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/usage_pattern_devices_energy_footprint.html' target='_blank'>link to Energy footprint of usage pattern’s full calculation graph</a>.
 
 ### devices_fabrication_footprint  
-ExplainableQuantity in kilogram / year, representing the devices fabrication footprint of usage pattern.  
+devices fabrication footprint of usage pattern in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
-- [Usage frequency in usage pattern](UsagePattern.md#user_journey_freq)
+- [usage pattern hourly nb of user journeys in parallel](UsagePattern.md#nb_user_journeys_in_parallel)
 - [Carbon footprint fabrication of device on which the user journey is made](Hardware.md#carbon_footprint_fabrication)
-- [Duration of user journey](UserJourney.md#duration)
 - [Lifespan of device on which the user journey is made](Hardware.md#lifespan)
 - [device on which the user journey is made fraction of usage time](Hardware.md#fraction_of_usage_time)  
 
@@ -133,7 +121,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/usage_pattern_devices_fabrication_footprint.html' target='_blank'>link to Devices fabrication footprint of usage pattern’s full calculation graph</a>.
 
 ### energy_footprint  
-ExplainableQuantity in kilogram / year, representing the usage pattern total energy footprint.  
+usage pattern total energy footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.0, 0.01, 0.0, 0.01, 0.0, 0.01, 0.0, 0.01, 0.01],  
+    last 10 vals [0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.01, 0.0, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -146,7 +138,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/usage_pattern_energy_footprint.html' target='_blank'>link to usage pattern total energy footprint’s full calculation graph</a>.
 
 ### instances_fabrication_footprint  
-ExplainableQuantity in kilogram / year, representing the usage pattern total fabrication footprint.  
+usage pattern total fabrication footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   

@@ -59,4 +59,4 @@ class OnPremise(Server):
                 )
                 self.nb_of_instances = nb_of_instances_re_calculate.set_label(f"Fixed number of {self.name} instances")
         else:
-            self.nb_of_instances = nb_of_instances.set_label(f"Hour by hour of {self.name} instances")
+            self.nb_of_instances = nb_of_instances.set_label(f"Hourly number of {self.name} instances")

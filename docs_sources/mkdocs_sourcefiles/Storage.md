@@ -29,8 +29,11 @@ average carbon intensity of storage electricity in gram / kilowatt_hour.
 ### data_replication_factor
 data replication factor of storage in dimensionless.
 
-### storage_need_from_previous_year
-description to be done
+### data_storage_duration
+data storage duration of storage in hour.
+
+### base_storage_need
+storage initial storage need in terabyte.
 
 
 ## Backwards links
@@ -41,11 +44,16 @@ description to be done
 ## Calculated attributes
 
 ### all_services_storage_needs  
-ExplainableQuantity in terabyte / year, representing the storage need of storage.  
+storage need of storage in terabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Storage needed for service](Service.md#storage_needed)  
+- [Hourly service storage need](Service.md#storage_needed)
+- [Data replication factor of storage](Storage.md#data_replication_factor)  
 
 through the following calculations:  
 
@@ -53,64 +61,85 @@ through the following calculations:
   
 You can also visit the <a href='../calculus_graphs/storage_all_services_storage_needs.html' target='_blank'>link to Storage need of storage’s full calculation graph</a>.
 
-### active_storage_required  
-ExplainableQuantity in gigabyte, representing the active storage required for storage.  
+### storage_dumps  
+storage dumps for storage in terabyte.  
   
-Depends directly on:  
-  
-- [Storage need of storage](Storage.md#all_services_storage_needs)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_active_storage_required_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/storage_active_storage_required.html' target='_blank'>link to Active storage required for storage’s full calculation graph</a>.
-
-### long_term_storage_required  
-ExplainableQuantity in terabyte, representing the long term storage required for storage.  
+Example value: 8749 values from 2027-01-01 10:00:00 to 2027-12-31 22:00:00 in TB:  
+    first 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0],  
+    last 10 vals [-0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0, -0.0]  
   
 Depends directly on:  
   
 - [Storage need of storage](Storage.md#all_services_storage_needs)
-- [Data replication factor of storage](Storage.md#data_replication_factor)
-- [Active storage required for storage](Storage.md#active_storage_required)  
+- [Data storage duration of storage](Storage.md#data_storage_duration)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_long_term_storage_required_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_storage_dumps_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_long_term_storage_required.html' target='_blank'>link to Long term storage required for storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_storage_dumps.html' target='_blank'>link to Storage dumps for storage’s full calculation graph</a>.
 
-### nb_of_idle_instances  
-ExplainableQuantity in dimensionless, representing the number of idle storage units for storage.  
+### storage_delta  
+hourly storage delta for storage in terabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, -0.0, -0.0, -0.0, -0.0, 0.0, 0.0, -0.0, 0.0, -0.0]  
   
 Depends directly on:  
   
-- [Long term storage required for storage](Storage.md#long_term_storage_required)
-- [Storage capacity of storage](Storage.md#storage_capacity)  
+- [Storage need of storage](Storage.md#all_services_storage_needs)
+- [Storage dumps for storage](Storage.md#storage_dumps)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_nb_of_idle_instances_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_storage_delta_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_nb_of_idle_instances.html' target='_blank'>link to Number of idle storage units for storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_storage_delta.html' target='_blank'>link to Hourly storage delta for storage’s full calculation graph</a>.
+
+### full_cumulative_storage_need  
+full cumulative storage need for storage in terabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]  
+  
+Depends directly on:  
+  
+- [Hourly storage delta for storage](Storage.md#storage_delta)
+- [storage initial storage need](Storage.md#base_storage_need)  
+
+through the following calculations:  
+
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_full_cumulative_storage_need_depth1.html"
+  
+You can also visit the <a href='../calculus_graphs/storage_full_cumulative_storage_need.html' target='_blank'>link to Full cumulative storage need for storage’s full calculation graph</a>.
 
 ### nb_of_active_instances  
-ExplainableQuantity in dimensionless, representing the number of active instances for storage.  
+hourly number of active instances for storage in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Active storage required for storage](Storage.md#active_storage_required)
+- [Hourly storage delta for storage](Storage.md#storage_delta)
+- [Storage dumps for storage](Storage.md#storage_dumps)
 - [Storage capacity of storage](Storage.md#storage_capacity)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_nb_of_active_instances_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_nb_of_active_instances.html' target='_blank'>link to Number of active instances for storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_nb_of_active_instances.html' target='_blank'>link to Hourly number of active instances for storage’s full calculation graph</a>.
 
 ### all_services_cpu_needs  
-Representation of the evolution throughout a typical day of the cpu needs of all services running on storage by 24 values in core.  
+cpu needs of all services running on storage in core.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
+    first 10 vals [0.07, 0.2, 0.33, 0.13, 0.4, 0.13, 0.33, 0.07, 0.33, 0.6],  
+    last 10 vals [0.6, 0.07, 0.13, 0.33, 0.27, 0.27, 0.6, 0.2, 0.6, 0.07]  
   
 Depends directly on:  
   
@@ -123,7 +152,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/storage_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on storage’s full calculation graph</a>.
 
 ### all_services_ram_needs  
-Representation of the evolution throughout a typical day of the ram needs of all services running on storage by 24 values in gigabyte.  
+ram needs of all services running on storage in gigabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
+    first 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],  
+    last 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0]  
   
 Depends directly on:  
   
@@ -135,77 +168,95 @@ through the following calculations:
   
 You can also visit the <a href='../calculus_graphs/storage_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on storage’s full calculation graph</a>.
 
-### fraction_of_time_in_use  
-ExplainableQuantity in dimensionless, representing the fraction of time in use of storage.  
+### raw_nb_of_instances  
+hourly raw number of instances for storage in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]  
   
 Depends directly on:  
   
-- [CPU needs of all services running on storage](Storage.md#all_services_cpu_needs)
-- [RAM needs of all services running on storage](Storage.md#all_services_ram_needs)  
+- [Full cumulative storage need for storage](Storage.md#full_cumulative_storage_need)
+- [Storage capacity of storage](Storage.md#storage_capacity)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_fraction_of_time_in_use_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_raw_nb_of_instances_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_fraction_of_time_in_use.html' target='_blank'>link to Fraction of time in use of storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_raw_nb_of_instances.html' target='_blank'>link to Hourly raw number of instances for storage’s full calculation graph</a>.
 
 ### nb_of_instances  
-ExplainableQuantity in dimensionless, representing the number of total instances for storage.  
+hourly number of instances for storage in dimensionless.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],  
+    last 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]  
   
 Depends directly on:  
   
-- [Number of active instances for storage](Storage.md#nb_of_active_instances)
-- [Number of idle storage units for storage](Storage.md#nb_of_idle_instances)  
+- [Hourly raw number of instances for storage](Storage.md#raw_nb_of_instances)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_nb_of_instances_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_nb_of_instances.html' target='_blank'>link to Number of total instances for storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_nb_of_instances.html' target='_blank'>link to Hourly number of instances for storage’s full calculation graph</a>.
 
 ### instances_fabrication_footprint  
-ExplainableQuantity in kilogram / year, representing the instances of storage fabrication footprint.  
+hourly storage instances fabrication footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
+- [Hourly number of instances for storage](Storage.md#nb_of_instances)
 - [Carbon footprint fabrication of storage](Storage.md#carbon_footprint_fabrication)
-- [Number of total instances for storage](Storage.md#nb_of_instances)
 - [Lifespan of storage](Storage.md#lifespan)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_instances_fabrication_footprint_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_instances_fabrication_footprint.html' target='_blank'>link to Instances of storage fabrication footprint’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_instances_fabrication_footprint.html' target='_blank'>link to Hourly storage instances fabrication footprint’s full calculation graph</a>.
 
-### instances_power  
-ExplainableQuantity in kilowatt_hour / year, representing the storage power for storage.  
+### instances_energy  
+storage energy for storage in hour * watt.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in W * h:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Number of active instances for storage](Storage.md#nb_of_active_instances)
+- [Hourly number of active instances for storage](Storage.md#nb_of_active_instances)
 - [Power of storage](Storage.md#power)
 - [PUE of storage](Storage.md#power_usage_effectiveness)
-- [Fraction of time in use of storage](Storage.md#fraction_of_time_in_use)
-- [Number of idle storage units for storage](Storage.md#nb_of_idle_instances)
+- [Hourly number of instances for storage](Storage.md#nb_of_instances)
 - [Idle power of storage](Storage.md#idle_power)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_instances_power_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_instances_energy_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_instances_power.html' target='_blank'>link to Storage power for storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_instances_energy.html' target='_blank'>link to Storage energy for storage’s full calculation graph</a>.
 
 ### energy_footprint  
-ExplainableQuantity in kilogram / year, representing the energy footprint of storage.  
+hourly storage energy footprint in kilogram.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
+    first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Storage power for storage](Storage.md#instances_power)
+- [Storage energy for storage](Storage.md#instances_energy)
 - [Average carbon intensity of storage electricity](Storage.md#average_carbon_intensity)  
 
 through the following calculations:  
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_energy_footprint_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_energy_footprint.html' target='_blank'>link to Energy footprint of storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_energy_footprint.html' target='_blank'>link to Hourly storage energy footprint’s full calculation graph</a>.

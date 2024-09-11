@@ -1,5 +1,6 @@
 import math
 
+from efootprint.builders.time_builders import create_hourly_usage_df_from_list
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities, \
     EmptyExplainableObject
@@ -67,8 +68,16 @@ class Storage(InfraHardware):
             storage_dumps_df = storage_dumps_df[
                 storage_dumps_df.index <= self.all_services_storage_needs.value.index.max()]
 
+            if len(storage_dumps_df) == 0:
+                storage_needs_start_date = self.all_services_storage_needs.value.index.min().to_timestamp()
+                storage_needs_end_date = self.all_services_storage_needs.value.index.max().to_timestamp()
+                storage_needs_nb_of_hours = int((storage_needs_end_date - storage_needs_start_date).seconds / 3600)
+                storage_dumps_df = create_hourly_usage_df_from_list(
+                    [0] * (storage_needs_nb_of_hours + 1), start_date=storage_needs_start_date)
+
             self.storage_dumps = ExplainableHourlyQuantities(
-                storage_dumps_df, label=f"Storage dumps for {self.name}", left_parent=self.all_services_storage_needs,
+                storage_dumps_df, label=f"Storage dumps for {self.name}",
+                left_parent=self.all_services_storage_needs,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
     def update_storage_delta(self):

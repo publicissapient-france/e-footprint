@@ -76,4 +76,4 @@ class Service(ModelingObject):
         for job in self.jobs:
             storage_needed += job.hourly_data_upload_across_usage_patterns
 
-        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hour by hour storage need for {self.name}")
+        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")

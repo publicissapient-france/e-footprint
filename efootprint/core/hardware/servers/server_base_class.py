@@ -90,7 +90,8 @@ class Server(InfraHardware):
                 right_parent=nb_of_servers_based_on_cpu_alone,
                 operator="max compared with"
             )
-            hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(f"Hour by hour of {self.name} instances")
+            hour_by_hour_raw_nb_of_instances = nb_of_servers_raw.set_label(
+                f"Hourly raw number of {self.name} instances")
 
             self.raw_nb_of_instances = hour_by_hour_raw_nb_of_instances
 
@@ -106,7 +107,7 @@ class Server(InfraHardware):
                 + extra_energy_spent_by_one_fully_active_instance_over_one_hour * self.raw_nb_of_instances)
 
         self.instances_energy = server_power.to(u.kWh).set_label(
-            f"Hour by hour energy consumed by {self.name} instances")
+            f"Hourly energy consumed by {self.name} instances")
 
 
     @abstractmethod

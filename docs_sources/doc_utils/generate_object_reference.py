@@ -5,6 +5,7 @@ from jinja2 import Template
 import ruamel.yaml
 
 from efootprint.abstract_modeling_classes.explainable_object_base_class import ExplainableObject
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
@@ -38,32 +39,44 @@ def obj_to_md(input_obj, attr_name):
 
 def calc_attr_to_md(input_obj: ExplainableObject, attr_name):
     return_str = f"### {attr_name}"
-    if issubclass(type(input_obj), ExplainableQuantity):
+    calculation_graph_obj = input_obj
+    if isinstance(input_obj, ExplainableQuantity):
         return_str += f"  \nExplainableQuantity in {input_obj.value.units}, representing the {input_obj.label.lower()}."
-    elif issubclass(type(input_obj), ExplainableHourlyQuantities):
-        return_str += f"""  \nRepresentation of the evolution throughout a typical day of the {input_obj.label.lower()} by 24 values in {input_obj.value[0].units}."""
+    elif isinstance(input_obj, ExplainableHourlyQuantities):
+        return_str += f"""  \n{input_obj.label.lower()} in {input_obj.unit}."""
+    elif isinstance(input_obj, ExplainableObjectDict):
+        dict_value = list(input_obj.values())[0]
+        dict_key = list(input_obj.keys())[0]
+        return_str += f"""  \nDictionary with {dict_key.class_as_simple_str} as keys and 
+                        {dict_value.label.lower()} as values, in {dict_value.unit}."""
+        calculation_graph_obj = dict_value
 
-    formula_expl = "=".join(input_obj.explain().split("\n=\n")[:2])
-    ancestor_md_link_list = [f'[{elt.label}]({return_class_str(elt.modeling_obj_container)}.md#{elt.attr_name_in_mod_obj_container})' for elt in input_obj.direct_ancestors_with_id]
+    str_input_obj_for_md = str(input_obj).replace("\n", "  \n")
+    return_str += f"  \n  \nExample value: {str_input_obj_for_md}"
+
+    ancestor_md_link_list = [f'[{elt.label}]({return_class_str(elt.modeling_obj_container)}' \
+                             f'.md#{elt.attr_name_in_mod_obj_container})'
+                             for elt in calculation_graph_obj.direct_ancestors_with_id]
     ancestor_md_links_list_formatted = "  \n- " + "\n- ".join(ancestor_md_link_list)
-    return_str += f"  \n  \nDepends directly on:  \n{ancestor_md_links_list_formatted}  \n\nthrough the following calculations:  \n"
+    return_str += f"  \n  \nDepends directly on:  \n{ancestor_md_links_list_formatted}" \
+                  f"  \n\nthrough the following calculations:  \n"
 
-    if issubclass(type(input_obj), ExplainableObject):
-        containing_obj_str = input_obj.modeling_obj_container.name.replace(" ", "_")
-        calculus_graph_path = os.path.join(
-            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr_name}.html")
-        input_obj.calculus_graph_to_file(calculus_graph_path)
-        calculus_graph_path_depth1 = os.path.join(
-            ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr_name}_depth1.html")
-        input_obj.calculus_graph_to_file(calculus_graph_path_depth1, width="760px", height="300px", max_depth=1)
+    containing_obj_str = calculation_graph_obj.modeling_obj_container.name.replace(" ", "_")
+    calculus_graph_path = os.path.join(
+        ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs", f"{containing_obj_str}_{attr_name}.html")
+    calculation_graph_obj.calculus_graph_to_file(calculus_graph_path)
+    calculus_graph_path_depth1 = os.path.join(
+        ROOT, "..", "mkdocs_sourcefiles", "calculus_graphs_depth1", f"{containing_obj_str}_{attr_name}_depth1.html")
+    calculation_graph_obj.calculus_graph_to_file(calculus_graph_path_depth1, width="760px", height="300px", max_depth=1)
 
-        md_calculus_graph_link_depth1 = calculus_graph_path_depth1.replace(
-            os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "docs_sources/mkdocs_sourcefiles")
-        return_str += f'\n--8<-- "{md_calculus_graph_link_depth1}"\n'
+    md_calculus_graph_link_depth1 = calculus_graph_path_depth1.replace(
+        os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "docs_sources/mkdocs_sourcefiles")
+    return_str += f'\n--8<-- "{md_calculus_graph_link_depth1}"\n'
 
-        # The relative path starts with .. instead of . because it seems like mkdocs considers md files as html within a folder
-        md_calculus_graph_link = calculus_graph_path.replace(os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "..")
-        return_str += f"  \nYou can also visit the <a href='{md_calculus_graph_link}' target='_blank'>link to {input_obj.label}’s full calculation graph</a>."
+    # The relative path starts with .. instead of . because it seems like mkdocs considers md files as html within a folder
+    md_calculus_graph_link = calculus_graph_path.replace(os.path.join(ROOT, "..", "mkdocs_sourcefiles"), "..")
+    return_str += f"  \nYou can also visit the <a href='{md_calculus_graph_link}' target='_blank'>link " \
+                  f"to {calculation_graph_obj.label}’s full calculation graph</a>."
 
     return return_str
 

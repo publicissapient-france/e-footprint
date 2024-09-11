@@ -103,9 +103,9 @@ class InfraHardware(Hardware):
                 / self.lifespan)
 
         self.instances_fabrication_footprint = instances_fabrication_footprint.to(u.kg).set_label(
-                f"Hour by hour instances of {self.name} fabrication footprint")
+                f"Hourly {self.name} instances fabrication footprint")
 
     def update_energy_footprint(self):
         energy_footprint = (self.instances_energy * self.average_carbon_intensity)
 
-        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hour by hour energy footprint of {self.name}")
+        self.energy_footprint = energy_footprint.to(u.kg).set_label(f"Hourly {self.name} energy footprint")

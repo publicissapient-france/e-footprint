@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e710f8 {
+             #mynetwork_3eedd7 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e710f8" class="card-body"></div>
+            <div id="mynetwork_3eedd7" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e710f8');
+                  var container = document.getElementById('mynetwork_3eedd7');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of on premise server", "label": "Energy footprint of\non premise server", "shape": "dot", "size": 15, "title": "Energy footprint of on premise server\n=\nPower of on premise server instances * Average carbon intensity of on premise\nserver electricity\n=\n6925140.0 kWh/yr * 100.0 g/kWh\n=\n692514.0 kg/yr", "x": 0.0, "y": 1350}, {"color": null, "id": "Power of on premise server instances", "label": "Power of on premise\nserver instances", "shape": "dot", "size": 15, "title": "Power of on premise server instances\n=\nUser defined number of on premise server instances * (Power of on premise server\n* PUE of on premise server * Fraction of time in use of on premise server + Idle\npower of on premise server * PUE of on premise server * (100% - Fraction of time\nin use of on premise server))\n=\n4000 * (300 W * 1.2 * 0.5 + 50 W * 1.2 * (1 - 0.5))\n=\n6925140.0 kWh/yr", "x": -300.0, "y": 1200}, {"color": null, "id": "Average carbon intensity of on premise server electricity", "label": "Average carbon\nintensity of on\npremise server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise server electricity = 100.0 g/kWh", "x": 300.0, "y": 1200}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of on premise server instances", "to": "Energy footprint of on premise server"}, {"arrows": "to", "from": "Average carbon intensity of on premise server electricity", "to": "Energy footprint of on premise server"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly on premise server energy footprint", "label": "Hourly on premise\nserver energy\nfootprint", "shape": "dot", "size": 15, "title": "Hourly on premise server energy footprint\n=\nHourly energy consumed by on premise server instances * Average carbon intensity\nof on premise server electricity\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [240.0, 240.0, 240.01, 240.0, 240.01, 240.0, 240.01, 240.0,\n240.01, 240.01],\nlast 10 vals [240.01, 240.0, 240.0, 240.01, 240.0, 240.0, 240.01, 240.0, 240.01,\n240.0] * 100.0 gram / kilowatt_hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0],\nlast 10 vals [24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0, 24.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly energy consumed by on premise server instances", "label": "Hourly energy\nconsumed by on\npremise server\ninstances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by on premise server instances\n=\nFixed number of on premise server instances * Idle power of on premise server *\nPUE of on premise server * one hour + Hourly raw number of on premise server\ninstances * (Power of on premise server - Idle power of on premise server) * PUE\nof on premise server * one hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000],\nlast 10 vals [4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000, 4000] * 50\nwatt * 1.2 dimensionless * 1 hour + 26281 values from 2024-12-31 22:00:00 to\n2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.01, 0.02, 0.01, 0.02, 0.01, 0.02, 0.0, 0.02, 0.03],\nlast 10 vals [0.03, 0.0, 0.01, 0.02, 0.01, 0.01, 0.03, 0.01, 0.03, 0.0] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [240.0, 240.0, 240.01, 240.0, 240.01, 240.0, 240.01, 240.0,\n240.01, 240.01],\nlast 10 vals [240.01, 240.0, 240.0, 240.01, 240.0, 240.0, 240.01, 240.0, 240.01,\n240.0]", "x": -412.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of on premise server electricity", "label": "Average carbon\nintensity of on\npremise server\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of on premise server electricity = 100.0 gram /\nkilowatt_hour", "x": 412.5, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by on premise server instances", "to": "Hourly on premise server energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of on premise server electricity", "to": "Hourly on premise server energy footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
