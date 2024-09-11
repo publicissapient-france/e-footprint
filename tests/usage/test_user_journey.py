@@ -1,6 +1,6 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.core.usage.user_journey import UserJourney
@@ -60,26 +60,6 @@ class TestUserJourney(TestCase):
         expected_duration = SourceValue(10 * u.min)
 
         self.assertEqual(self.user_journey.duration.value, expected_duration.value)
-
-    def test_update_data_download_with_multiple_steps(self):
-        self.user_journey.add_step(self.step1)
-
-        with patch.object(self.job, "data_download", new=SourceValue(10 * u.MB)):
-            self.user_journey.update_data_download()
-
-        expected_data_download = SourceValue(20 * u.MB)
-
-        self.assertEqual(self.user_journey.data_download.value, expected_data_download.value)
-
-    def test_update_data_upload_with_multiple_steps(self):
-        self.user_journey.add_step(self.step1)
-
-        with patch.object(self.job, "data_upload", new=SourceValue(10 * u.MB)):
-            self.user_journey.update_data_upload()
-
-        expected_data_upload = SourceValue(20 * u.MB)
-
-        self.assertEqual(self.user_journey.data_upload.value, expected_data_upload.value)
 
 
 if __name__ == "__main__":

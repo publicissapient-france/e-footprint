@@ -12,14 +12,12 @@ from efootprint.core.usage.job import Job
 class UserJourney(ModelingObject):
     def __init__(self, name: str, uj_steps: List[UserJourneyStep]):
         super().__init__(name)
-        self.data_upload = None
-        self.data_download = None
         self.duration = None
         self.uj_steps = uj_steps
 
     @property
     def calculated_attributes(self):
-        return ["duration", "data_download", "data_upload"]
+        return ["duration"]
 
     @property
     def servers(self) -> List[Server]:
@@ -73,17 +71,3 @@ class UserJourney(ModelingObject):
         user_time_spent_sum = sum([uj_step.user_time_spent for uj_step in self.uj_steps])
 
         self.duration = user_time_spent_sum.set_label(f"Duration of {self.name}")
-
-    def update_data_download(self):
-        all_data_download = EmptyExplainableObject()
-        for job in self.jobs:
-            all_data_download += job.data_download
-
-        self.data_download = all_data_download.set_label(f"Data download of {self.name}")
-
-    def update_data_upload(self):
-        all_data_upload = EmptyExplainableObject()
-        for job in self.jobs:
-            all_data_upload += job.data_upload
-
-        self.data_upload = all_data_upload.set_label(f"Data upload of {self.name}")
