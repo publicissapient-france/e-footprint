@@ -1,1 +1,0 @@
-This module contains work in progress functions or functions that facilitate development. Don’t put in it any function used by outside modules !

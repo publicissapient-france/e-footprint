@@ -1,2 +1,0 @@
-# External links
-- <a href="https://medium.com/publicis-sapient-france/bilan-carbone-simplifi%C3%A9-du-service-paylib-de7a62273267" target="_blank">article on the use of e-footprint for the analysis of the Paylib service (in French)</a>
