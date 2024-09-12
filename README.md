@@ -8,7 +8,7 @@ The current perimeter is the carbon footprint associated with the fabrication an
 
 ## Documentation
 
-Here is the link to the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
+Here is the link to the [e-footprint documentation](https://boavizta.github.io/e-footprint/). There you will find a description of all the e-footprint objects, their parameters, the relationship between the objects and the calculated attributes and their graphs.
 
 ## Graphical interface
 

@@ -3,7 +3,7 @@
 
 Clone your forked repository to your local machine:
 
-    git clone https://github.com/publicissapient-france/e-footprint.git
+    git clone https://github.com/Boavizta/e-footprint.git
 
 Create a new branch for your contribution:
 

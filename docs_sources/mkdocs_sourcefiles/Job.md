@@ -42,9 +42,9 @@ Dictionary with UsagePattern as keys and
                         hourly streaming occurrences in usage pattern as values, in dimensionless.  
   
 Example value: {  
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],  
-    last 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9],   
+id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],  
+    last 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1],   
 }  
   
 Depends directly on:  
@@ -62,9 +62,9 @@ Dictionary with UsagePattern as keys and
                         average hourly streaming occurrences in usage pattern as values, in dimensionless.  
   
 Example value: {  
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],  
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6],   
+id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
+    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
+    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07],   
 }  
   
 Depends directly on:  
@@ -83,7 +83,7 @@ Dictionary with UsagePattern as keys and
                         hourly data upload for streaming in usage pattern as values, in terabyte.  
   
 Example value: {  
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
+id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
     last 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],   
 }  
@@ -104,9 +104,9 @@ Dictionary with UsagePattern as keys and
                         hourly data download for streaming in usage pattern as values, in megabyte.  
   
 Example value: {  
-id-fff41e-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
-    first 10 vals [4800.0, 3200.0, 800.0, 4000.0, 2400.0, 3200.0, 6400.0, 800.0, 7200.0, 7200.0],  
-    last 10 vals [4000.0, 4000.0, 800.0, 7200.0, 4000.0, 3200.0, 1600.0, 4800.0, 3200.0, 7200.0],   
+id-ccd50d-usage-pattern: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in MB:  
+    first 10 vals [1600.0, 4000.0, 7200.0, 800.0, 2400.0, 6400.0, 4800.0, 3200.0, 1600.0, 1600.0],  
+    last 10 vals [3200.0, 5600.0, 4000.0, 5600.0, 800.0, 2400.0, 5600.0, 3200.0, 2400.0, 800.0],   
 }  
   
 Depends directly on:  
@@ -124,8 +124,8 @@ You can also visit the <a href='../calculus_graphs/streaming_hourly_data_downloa
 hourly streaming occurrences across usage patterns in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],  
-    last 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]  
+    first 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],  
+    last 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1]  
   
 Depends directly on:  
   
@@ -141,8 +141,8 @@ You can also visit the <a href='../calculus_graphs/streaming_hourly_occurrences_
 hourly streaming average occurrences across usage patterns in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],  
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]  
+    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
+    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
   
 Depends directly on:  
   

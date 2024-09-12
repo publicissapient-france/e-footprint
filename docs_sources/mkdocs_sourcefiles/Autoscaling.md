@@ -78,8 +78,8 @@ You can also visit the <a href='../calculus_graphs/server_available_cpu_per_inst
 cpu needs of all services running on server in core.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],  
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]  
+    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
+    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
   
 Depends directly on:  
   
@@ -95,8 +95,8 @@ You can also visit the <a href='../calculus_graphs/server_all_services_cpu_needs
 ram needs of all services running on server in gigabyte.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -112,8 +112,8 @@ You can also visit the <a href='../calculus_graphs/server_all_services_ram_needs
 hourly raw number of server instances in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -168,8 +168,8 @@ You can also visit the <a href='../calculus_graphs/server_instances_fabrication_
 hourly energy consumed by server instances in kilowatt_hour.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
-    first 10 vals [0.07, 0.06, 0.06, 0.07, 0.06, 0.06, 0.07, 0.06, 0.07, 0.07],  
-    last 10 vals [0.07, 0.07, 0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.07]  
+    first 10 vals [0.06, 0.07, 0.07, 0.06, 0.06, 0.07, 0.07, 0.06, 0.06, 0.06],  
+    last 10 vals [0.06, 0.07, 0.07, 0.07, 0.06, 0.06, 0.07, 0.06, 0.06, 0.06]  
   
 Depends directly on:  
   

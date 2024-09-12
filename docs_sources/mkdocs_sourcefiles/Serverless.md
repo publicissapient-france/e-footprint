@@ -78,8 +78,8 @@ You can also visit the <a href='../calculus_graphs/serverless_available_cpu_per_
 cpu needs of all services running on serverless in core.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
-    first 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],  
-    last 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6]  
+    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
+    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
   
 Depends directly on:  
   
@@ -95,8 +95,8 @@ You can also visit the <a href='../calculus_graphs/serverless_all_services_cpu_n
 ram needs of all services running on serverless in gigabyte.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -112,8 +112,8 @@ You can also visit the <a href='../calculus_graphs/serverless_all_services_ram_n
 hourly raw number of serverless instances in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -129,11 +129,11 @@ through the following calculations:
 You can also visit the <a href='../calculus_graphs/serverless_raw_nb_of_instances.html' target='_blank'>link to Hourly raw number of serverless instances’s full calculation graph</a>.
 
 ### nb_of_instances  
-hour number of serverless instances in dimensionless.  
+hourly number of serverless instances in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -143,7 +143,7 @@ through the following calculations:
 
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/serverless_nb_of_instances_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/serverless_nb_of_instances.html' target='_blank'>link to Hour number of serverless instances’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/serverless_nb_of_instances.html' target='_blank'>link to Hourly number of serverless instances’s full calculation graph</a>.
 
 ### instances_fabrication_footprint  
 hourly serverless instances fabrication footprint in kilogram.  
@@ -154,7 +154,7 @@ Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in k
   
 Depends directly on:  
   
-- [Hour number of serverless instances](Serverless.md#nb_of_instances)
+- [Hourly number of serverless instances](Serverless.md#nb_of_instances)
 - [Carbon footprint fabrication of serverless](Serverless.md#carbon_footprint_fabrication)
 - [Lifespan of serverless](Serverless.md#lifespan)  
 
@@ -168,12 +168,12 @@ You can also visit the <a href='../calculus_graphs/serverless_instances_fabricat
 hourly energy consumed by serverless instances in kilowatt_hour.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
-    first 10 vals [0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01, 0.01],  
-    last 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01]  
+    first 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.0],  
+    last 10 vals [0.0, 0.01, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Hour number of serverless instances](Serverless.md#nb_of_instances)
+- [Hourly number of serverless instances](Serverless.md#nb_of_instances)
 - [Idle power of serverless](Serverless.md#idle_power)
 - [PUE of serverless](Serverless.md#power_usage_effectiveness)
 - [Hourly raw number of serverless instances](Serverless.md#raw_nb_of_instances)

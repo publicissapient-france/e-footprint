@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_57e86a {
+             #mynetwork_d97942 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_57e86a" class="card-body"></div>
+            <div id="mynetwork_d97942" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_57e86a');
+                  var container = document.getElementById('mynetwork_d97942');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [2.0, 1.33, 0.33, 1.67, 1.0, 1.33, 2.67, 0.33, 3.0, 3.0],\nlast 10 vals [1.67, 1.67, 0.33, 3.0, 1.67, 1.33, 0.67, 2.0, 1.33, 3.0] * (50\nwatt) * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.1, 0.07, 0.02, 0.08, 0.05, 0.07, 0.13, 0.02, 0.15, 0.15],\nlast 10 vals [0.08, 0.08, 0.02, 0.15, 0.08, 0.07, 0.03, 0.1, 0.07, 0.15]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],\nlast 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9] hourly occurrences average 0.33 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [2.0, 1.33, 0.33, 1.67, 1.0, 1.33, 2.67, 0.33, 3.0, 3.0],\nlast 10 vals [1.67, 1.67, 0.33, 3.0, 1.67, 1.33, 0.67, 2.0, 1.33, 3.0]", "x": -150.0, "y": 450}, {"color": null, "id": "Power of device on which the user journey is made", "label": "Power of device on\nwhich the user\njourney is made", "shape": "dot", "size": 15, "title": "Power of device on which the user journey is made = 50 watt", "x": 0.0, "y": 450}, {"color": null, "id": "one full hour", "label": "one full hour", "shape": "dot", "size": 15, "title": "one full hour = 1 hour", "x": 150.0, "y": 450}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.67, 1.67, 3.0, 0.33, 1.0, 2.67, 2.0, 1.33, 0.67, 0.67],\nlast 10 vals [1.33, 2.33, 1.67, 2.33, 0.33, 1.0, 2.33, 1.33, 1.0, 0.33] * (50\nwatt) * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.03, 0.08, 0.15, 0.02, 0.05, 0.13, 0.1, 0.07, 0.03, 0.03],\nlast 10 vals [0.07, 0.12, 0.08, 0.12, 0.02, 0.05, 0.12, 0.07, 0.05, 0.02]", "x": 0.0, "y": 600}, {"color": null, "id": "usage pattern hourly nb of user journeys in parallel", "label": "usage pattern hourly\nnb of user journeys\nin parallel", "shape": "dot", "size": 15, "title": "usage pattern hourly nb of user journeys in parallel\n=\nusage pattern UTC hourly occurrences average Duration of user journey\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],\nlast 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1] hourly occurrences average 0.33 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.67, 1.67, 3.0, 0.33, 1.0, 2.67, 2.0, 1.33, 0.67, 0.67],\nlast 10 vals [1.33, 2.33, 1.67, 2.33, 0.33, 1.0, 2.33, 1.33, 1.0, 0.33]", "x": -150.0, "y": 450}, {"color": null, "id": "Power of device on which the user journey is made", "label": "Power of device on\nwhich the user\njourney is made", "shape": "dot", "size": 15, "title": "Power of device on which the user journey is made = 50 watt", "x": 0.0, "y": 450}, {"color": null, "id": "one full hour", "label": "one full hour", "shape": "dot", "size": 15, "title": "one full hour = 1 hour", "x": 150.0, "y": 450}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "usage pattern hourly nb of user journeys in parallel", "to": "Energy consumed by usage pattern devices"}, {"arrows": "to", "from": "Power of device on which the user journey is made", "to": "Energy consumed by usage pattern devices"}, {"arrows": "to", "from": "one full hour", "to": "Energy consumed by usage pattern devices"}]);
 
                   nodeColors = {};

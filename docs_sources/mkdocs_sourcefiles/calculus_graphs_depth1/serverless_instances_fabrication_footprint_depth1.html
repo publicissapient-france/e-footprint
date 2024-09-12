@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_fb1417 {
+             #mynetwork_6b8514 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_fb1417" class="card-body"></div>
+            <div id="mynetwork_6b8514" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_fb1417');
+                  var container = document.getElementById('mynetwork_6b8514');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless instances fabrication footprint", "label": "Hourly serverless\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly serverless instances fabrication footprint\n=\nHour number of serverless instances * Carbon footprint fabrication of serverless\n* one hour / Lifespan of serverless\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03] * 600\nkilogram * 1 hour / 6 year\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hour number of serverless instances", "label": "Hour number of\nserverless instances", "shape": "dot", "size": 15, "title": "Hour number of serverless instances\n=\nduplicate of (Hourly raw number of serverless instances)\n=\nduplicate of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]", "x": -393.75, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of serverless", "label": "Carbon footprint\nfabrication of\nserverless", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of serverless = 600 kilogram", "x": -131.25, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 131.25, "y": 1500}, {"color": null, "id": "Lifespan of serverless", "label": "Lifespan of\nserverless", "shape": "dot", "size": 15, "title": "Lifespan of serverless = 6 year", "x": 393.75, "y": 1500}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Hour number of serverless instances", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of serverless", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of serverless", "to": "Hourly serverless instances fabrication footprint"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless instances fabrication footprint", "label": "Hourly serverless\ninstances\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "Hourly serverless instances fabrication footprint\n=\nHourly number of serverless instances * Carbon footprint fabrication of\nserverless * one hour / Lifespan of serverless\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0] * 600\nkilogram * 1 hour / 6 year\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1650}, {"color": null, "id": "Hourly number of serverless instances", "label": "Hourly number of\nserverless instances", "shape": "dot", "size": 15, "title": "Hourly number of serverless instances\n=\nduplicate of (Hourly raw number of serverless instances)\n=\nduplicate of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]", "x": -393.75, "y": 1500}, {"color": null, "id": "Carbon footprint fabrication of serverless", "label": "Carbon footprint\nfabrication of\nserverless", "shape": "dot", "size": 15, "title": "Carbon footprint fabrication of serverless = 600 kilogram", "x": -131.25, "y": 1500}, {"color": null, "id": "one hour", "label": "one hour", "shape": "dot", "size": 15, "title": "one hour = 1 hour", "x": 131.25, "y": 1500}, {"color": null, "id": "Lifespan of serverless", "label": "Lifespan of\nserverless", "shape": "dot", "size": 15, "title": "Lifespan of serverless = 6 year", "x": 393.75, "y": 1500}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly number of serverless instances", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "Carbon footprint fabrication of serverless", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "one hour", "to": "Hourly serverless instances fabrication footprint"}, {"arrows": "to", "from": "Lifespan of serverless", "to": "Hourly serverless instances fabrication footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

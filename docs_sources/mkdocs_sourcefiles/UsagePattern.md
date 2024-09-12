@@ -32,8 +32,8 @@ description to be done
 usage pattern utc in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [6, 4, 1, 5, 3, 4, 8, 1, 9, 9],  
-    last 10 vals [5, 5, 1, 9, 5, 4, 2, 6, 4, 9]  
+    first 10 vals [2, 5, 9, 1, 3, 8, 6, 4, 2, 2],  
+    last 10 vals [4, 7, 5, 7, 1, 3, 7, 4, 3, 1]  
   
 Depends directly on:  
   
@@ -50,8 +50,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_utc_hourly_user
 usage pattern hourly nb of user journeys in parallel in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [2.0, 1.33, 0.33, 1.67, 1.0, 1.33, 2.67, 0.33, 3.0, 3.0],  
-    last 10 vals [1.67, 1.67, 0.33, 3.0, 1.67, 1.33, 0.67, 2.0, 1.33, 3.0]  
+    first 10 vals [0.67, 1.67, 3.0, 0.33, 1.0, 2.67, 2.0, 1.33, 0.67, 0.67],  
+    last 10 vals [1.33, 2.33, 1.67, 2.33, 0.33, 1.0, 2.33, 1.33, 1.0, 0.33]  
   
 Depends directly on:  
   
@@ -68,8 +68,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_nb_user_journey
 energy consumed by usage pattern devices in kilowatt_hour.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
-    first 10 vals [0.1, 0.07, 0.02, 0.08, 0.05, 0.07, 0.13, 0.02, 0.15, 0.15],  
-    last 10 vals [0.08, 0.08, 0.02, 0.15, 0.08, 0.07, 0.03, 0.1, 0.07, 0.15]  
+    first 10 vals [0.03, 0.08, 0.15, 0.02, 0.05, 0.13, 0.1, 0.07, 0.03, 0.03],  
+    last 10 vals [0.07, 0.12, 0.08, 0.12, 0.02, 0.05, 0.12, 0.07, 0.05, 0.02]  
   
 Depends directly on:  
   
@@ -86,8 +86,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_devices_energy.
 energy footprint of usage pattern in kilogram.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
-    first 10 vals [0.01, 0.01, 0.0, 0.01, 0.0, 0.01, 0.01, 0.0, 0.01, 0.01],  
-    last 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]  
+    first 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.0],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0]  
   
 Depends directly on:  
   
@@ -104,8 +104,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_devices_energy_
 devices fabrication footprint of usage pattern in kilogram.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   
@@ -124,8 +124,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_devices_fabrica
 usage pattern total energy footprint in kilogram.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
-    first 10 vals [0.01, 0.01, 0.0, 0.01, 0.0, 0.01, 0.01, 0.0, 0.01, 0.01],  
-    last 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]  
+    first 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.0],  
+    last 10 vals [0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0]  
   
 Depends directly on:  
   
@@ -141,8 +141,8 @@ You can also visit the <a href='../calculus_graphs/usage_pattern_energy_footprin
 usage pattern total fabrication footprint in kilogram.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:  
-    first 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],  
-    last 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]  
+    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
+    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   

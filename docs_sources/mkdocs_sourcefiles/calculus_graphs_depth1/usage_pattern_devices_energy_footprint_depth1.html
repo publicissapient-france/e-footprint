@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e6742f {
+             #mynetwork_817544 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e6742f" class="card-body"></div>
+            <div id="mynetwork_817544" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e6742f');
+                  var container = document.getElementById('mynetwork_817544');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of usage pattern", "label": "Energy footprint of\nusage pattern", "shape": "dot", "size": 15, "title": "Energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.1, 0.07, 0.02, 0.08, 0.05, 0.07, 0.13, 0.02, 0.15, 0.15],\nlast 10 vals [0.08, 0.08, 0.02, 0.15, 0.08, 0.07, 0.03, 0.1, 0.07, 0.15] * 85.0\ngram / kilowatt_hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.01, 0.01, 0.0, 0.01, 0.0, 0.01, 0.01, 0.0, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.01, 0.0, 0.01, 0.01, 0.01]", "x": 0.0, "y": 750}, {"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [2.0, 1.33, 0.33, 1.67, 1.0, 1.33, 2.67, 0.33, 3.0, 3.0],\nlast 10 vals [1.67, 1.67, 0.33, 3.0, 1.67, 1.33, 0.67, 2.0, 1.33, 3.0] * (50\nwatt) * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.1, 0.07, 0.02, 0.08, 0.05, 0.07, 0.13, 0.02, 0.15, 0.15],\nlast 10 vals [0.08, 0.08, 0.02, 0.15, 0.08, 0.07, 0.03, 0.1, 0.07, 0.15]", "x": -112.5, "y": 600}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 112.5, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of usage pattern", "label": "Energy footprint of\nusage pattern", "shape": "dot", "size": 15, "title": "Energy footprint of usage pattern\n=\nEnergy consumed by usage pattern devices * Average carbon intensity of devices\ncountry\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.03, 0.08, 0.15, 0.02, 0.05, 0.13, 0.1, 0.07, 0.03, 0.03],\nlast 10 vals [0.07, 0.12, 0.08, 0.12, 0.02, 0.05, 0.12, 0.07, 0.05, 0.02] * 85.0\ngram / kilowatt_hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.01, 0.0, 0.0],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Energy consumed by usage pattern devices", "label": "Energy consumed by\nusage pattern\ndevices", "shape": "dot", "size": 15, "title": "Energy consumed by usage pattern devices\n=\nusage pattern hourly nb of user journeys in parallel * (Power of device on which\nthe user journey is made) * one full hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.67, 1.67, 3.0, 0.33, 1.0, 2.67, 2.0, 1.33, 0.67, 0.67],\nlast 10 vals [1.33, 2.33, 1.67, 2.33, 0.33, 1.0, 2.33, 1.33, 1.0, 0.33] * (50\nwatt) * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.03, 0.08, 0.15, 0.02, 0.05, 0.13, 0.1, 0.07, 0.03, 0.03],\nlast 10 vals [0.07, 0.12, 0.08, 0.12, 0.02, 0.05, 0.12, 0.07, 0.05, 0.02]", "x": -112.5, "y": 600}, {"color": null, "id": "Average carbon intensity of devices country", "label": "Average carbon\nintensity of devices\ncountry", "shape": "dot", "size": 15, "title": "Average carbon intensity of devices country = 85.0 gram / kilowatt_hour", "x": 112.5, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Energy consumed by usage pattern devices", "to": "Energy footprint of usage pattern"}, {"arrows": "to", "from": "Average carbon intensity of devices country", "to": "Energy footprint of usage pattern"}]);
 
                   nodeColors = {};

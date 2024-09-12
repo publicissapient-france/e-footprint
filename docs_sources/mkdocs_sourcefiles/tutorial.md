@@ -58,7 +58,7 @@ Moreover, all e-footprint objects have a *calculated_attributes* attributes that
 print(server)
 ```
 
-    Autoscaling id-7fbf5c-server
+    Autoscaling id-7f6395-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -84,7 +84,7 @@ print(server)
     
 
 
-More information on e-footprint objects’ calculated_attributes can be found in the [e-footprint documentation](https://publicissapient-france.github.io/e-footprint/).
+More information on e-footprint objects’ calculated_attributes can be found in the [e-footprint documentation](https://boavizta.github.io/e-footprint/).
 
 
 ```python
@@ -265,16 +265,16 @@ usage_pattern = UsagePattern(
 system = System("System", usage_patterns=[usage_pattern])
 ```
 
-    2024-09-12 15:44:33,917 - INFO - Computing calculated attributes for System System
-    2024-09-12 15:44:33,918 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-09-12 15:44:33,919 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-09-12 15:44:34,056 - INFO - Computing calculated attributes for Job video upload
-    2024-09-12 15:44:34,061 - INFO - Computing calculated attributes for Job streaming
-    2024-09-12 15:44:34,066 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-09-12 15:44:34,076 - INFO - Computing calculated attributes for Network WIFI network
-    2024-09-12 15:44:34,082 - INFO - Computing calculated attributes for Autoscaling server
-    2024-09-12 15:44:34,095 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-09-12 15:44:34,120 - INFO - Finished computing System modeling
+    2024-09-12 16:35:37,349 - INFO - Computing calculated attributes for System System
+    2024-09-12 16:35:37,350 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-09-12 16:35:37,351 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-09-12 16:35:37,481 - INFO - Computing calculated attributes for Job streaming
+    2024-09-12 16:35:37,486 - INFO - Computing calculated attributes for Job video upload
+    2024-09-12 16:35:37,491 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-09-12 16:35:37,499 - INFO - Computing calculated attributes for Network WIFI network
+    2024-09-12 16:35:37,505 - INFO - Computing calculated attributes for Autoscaling server
+    2024-09-12 16:35:37,518 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-09-12 16:35:37,543 - INFO - Finished computing System modeling
 
 
 ## Results
@@ -288,7 +288,7 @@ Now all calculated_attributes have been computed:
 print(server)
 ```
 
-    Autoscaling id-7fbf5c-server
+    Autoscaling id-7f6395-server
      
     carbon_footprint_fabrication: 600 kilogram
     power: 300 watt
@@ -426,17 +426,17 @@ llm_chat_step = UserJourneyStep(
 user_journey.uj_steps += [llm_chat_step]
 ```
 
-    2024-09-12 15:44:36,189 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
-    2024-09-12 15:44:36,190 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
-    2024-09-12 15:44:36,320 - INFO - Computing calculated attributes for Job video upload
-    2024-09-12 15:44:36,325 - INFO - Computing calculated attributes for Job LLM API
-    2024-09-12 15:44:36,331 - INFO - Computing calculated attributes for Job streaming
-    2024-09-12 15:44:36,335 - INFO - Computing calculated attributes for Service Streaming platform
-    2024-09-12 15:44:36,343 - INFO - Computing calculated attributes for Network WIFI network
-    2024-09-12 15:44:36,350 - INFO - Computing calculated attributes for Service LLM inference
-    2024-09-12 15:44:36,355 - INFO - Computing calculated attributes for Autoscaling server
-    2024-09-12 15:44:36,367 - INFO - Computing calculated attributes for Storage SSD storage
-    2024-09-12 15:44:36,393 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
+    2024-09-12 16:35:39,647 - INFO - Computing calculated attributes for UserJourney Mean video consumption user journey
+    2024-09-12 16:35:39,648 - INFO - Computing calculated attributes for UsagePattern Daily video streaming consumption
+    2024-09-12 16:35:39,777 - INFO - Computing calculated attributes for Job streaming
+    2024-09-12 16:35:39,782 - INFO - Computing calculated attributes for Job LLM API
+    2024-09-12 16:35:39,787 - INFO - Computing calculated attributes for Job video upload
+    2024-09-12 16:35:39,792 - INFO - Computing calculated attributes for Service Streaming platform
+    2024-09-12 16:35:39,799 - INFO - Computing calculated attributes for Network WIFI network
+    2024-09-12 16:35:39,806 - INFO - Computing calculated attributes for Service LLM inference
+    2024-09-12 16:35:39,811 - INFO - Computing calculated attributes for Autoscaling server
+    2024-09-12 16:35:39,823 - INFO - Computing calculated attributes for Storage SSD storage
+    2024-09-12 16:35:39,847 - INFO - Computing calculated attributes for Autoscaling Inference GPU server
 
 
 

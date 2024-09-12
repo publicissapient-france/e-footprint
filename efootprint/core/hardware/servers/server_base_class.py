@@ -109,7 +109,6 @@ class Server(InfraHardware):
         self.instances_energy = server_power.to(u.kWh).set_label(
             f"Hourly energy consumed by {self.name} instances")
 
-
     @abstractmethod
     def update_nb_of_instances(self):
         pass

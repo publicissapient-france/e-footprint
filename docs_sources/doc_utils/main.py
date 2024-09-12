@@ -19,7 +19,7 @@ generate_object_reference()
 with open(os.path.join(file_path, "..", "..", "CHANGELOG.md"), "r") as file:
     changelog = file.read()
 
-changelog = changelog.replace("./", "https://github.com/publicissapient-france/e-footprint/tree/main/")
+changelog = changelog.replace("./", "https://github.com/Boavizta/e-footprint/tree/main/")
 
 with open(os.path.join("..", "mkdocs_sourcefiles", "Changelog.md"), "w") as file:
     file.write(changelog)
