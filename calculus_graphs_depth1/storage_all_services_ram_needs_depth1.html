@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_68bb5d {
+             #mynetwork_2b5cbf {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_68bb5d" class="card-body"></div>
+            <div id="mynetwork_2b5cbf" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_68bb5d');
+                  var container = document.getElementById('mynetwork_2b5cbf');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 900}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nusage pattern UTC * Average ram needed over usage pattern to process streaming *\nNumber of user journeys in parallel during usage pattern\n=\n[0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0] * 0.0\nGB/uj * 363387.5 uj\n=\n[0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9\nGB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 0.0 GB, 3633.9 GB, 3633.9 GB,\n3633.9 GB, 3633.9 GB, 3633.9 GB, 3633.9 GB, 0.0 GB, 0.0 GB, 0.0 GB]", "x": 0.0, "y": 750}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "RAM needs of all services running on storage", "label": "RAM needs of all\nservices running on\nstorage", "shape": "dot", "size": 15, "title": "RAM needs of all services running on storage\n=\nservice hour by hour ram need\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]", "x": 0.0, "y": 1050}, {"color": null, "id": "service hour by hour ram need", "label": "service hour by hour\nram need", "shape": "dot", "size": 15, "title": "service hour by hour ram need\n=\nHourly streaming average occurrences across usage patterns * RAM needed on\nserver server to process streaming\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.4, 0.27, 0.07, 0.33, 0.2, 0.27, 0.53, 0.07, 0.6, 0.6],\nlast 10 vals [0.33, 0.33, 0.07, 0.6, 0.33, 0.27, 0.13, 0.4, 0.27, 0.6] * 50\nmegabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03]", "x": 0.0, "y": 900}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "service hour by hour ram need", "to": "RAM needs of all services running on storage"}]);
 
                   nodeColors = {};

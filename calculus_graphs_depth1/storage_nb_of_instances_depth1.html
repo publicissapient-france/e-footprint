@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_41b07b {
+             #mynetwork_a40656 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_41b07b" class="card-body"></div>
+            <div id="mynetwork_a40656" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_41b07b');
+                  var container = document.getElementById('mynetwork_a40656');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Number of total instances for storage", "label": "Number of total\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of total instances for storage\n=\nNumber of active instances for storage + Number of idle storage units for\nstorage\n=\n0.0 + 657.0\n=\n657.0", "x": 0.0, "y": 1050}, {"color": null, "id": "Number of active instances for storage", "label": "Number of active\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Number of active instances for storage\n=\nActive storage required for storage / Storage capacity of storage\n=\n25.0 GB / 1 TB\n=\n0.0", "x": -112.5, "y": 900}, {"color": null, "id": "Number of idle storage units for storage", "label": "Number of idle\nstorage units for\nstorage", "shape": "dot", "size": 15, "title": "Number of idle storage units for storage\n=\nLong term storage required for storage / Storage capacity of storage\n=\n657.0 TB / 1 TB\n=\n657.0", "x": 112.5, "y": 900}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Number of active instances for storage", "to": "Number of total instances for storage"}, {"arrows": "to", "from": "Number of idle storage units for storage", "to": "Number of total instances for storage"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly number of instances for storage", "label": "Hourly number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly number of instances for storage\n=\nceil of (Hourly raw number of instances for storage)\n=\nceil of (26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in\ndimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01])\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],\nlast 10 vals [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly raw number of instances for storage", "label": "Hourly raw number of\ninstances for\nstorage", "shape": "dot", "size": 15, "title": "Hourly raw number of instances for storage\n=\nFull cumulative storage need for storage / Storage capacity of storage\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01] / 1\nterabyte\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01]", "x": 0.0, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly raw number of instances for storage", "to": "Hourly number of instances for storage"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

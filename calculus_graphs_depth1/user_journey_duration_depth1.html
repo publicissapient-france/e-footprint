@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ebeada {
+             #mynetwork_07757f {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ebeada" class="card-body"></div>
+            <div id="mynetwork_07757f" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ebeada');
+                  var container = document.getElementById('mynetwork_07757f');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20.0 min/uj\n=\n20.0 min/uj", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20.0 min/uj", "x": 0.0, "y": 150}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Duration of user journey", "label": "Duration of user\njourney", "shape": "dot", "size": 15, "title": "Duration of user journey\n=\nTime spent on step 20 min streaming\n=\n20 minute\n=\n0.33 hour", "x": 0.0, "y": 300}, {"color": null, "id": "Time spent on step 20 min streaming", "label": "Time spent on step\n20 min streaming", "shape": "dot", "size": 15, "title": "Time spent on step 20 min streaming = 20 minute", "x": 0.0, "y": 150}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Time spent on step 20 min streaming", "to": "Duration of user journey"}]);
 
                   nodeColors = {};

@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_1cfd83 {
+             #mynetwork_681959 {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_1cfd83" class="card-body"></div>
+            <div id="mynetwork_681959" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_1cfd83');
+                  var container = document.getElementById('mynetwork_681959');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Energy footprint of serverless", "label": "Energy footprint of\nserverless", "shape": "dot", "size": 15, "title": "Energy footprint of serverless\n=\nPower of serverless instances * Average carbon intensity of serverless\nelectricity\n=\n5363265.3 kWh/yr * 100.0 g/kWh\n=\n536326.5 kg/yr", "x": 0.0, "y": 1650}, {"color": null, "id": "Power of serverless instances", "label": "Power of serverless\ninstances", "shape": "dot", "size": 15, "title": "Power of serverless instances\n=\nPower of serverless * PUE of serverless * Nb of serverless instances\n=\n300 W * 1.2 * 1699.5\n=\n5363265.3 kWh/yr", "x": -300.0, "y": 1500}, {"color": null, "id": "Average carbon intensity of serverless electricity", "label": "Average carbon\nintensity of\nserverless\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of serverless electricity = 100.0 g/kWh", "x": 300.0, "y": 1500}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "Power of serverless instances", "to": "Energy footprint of serverless"}, {"arrows": "to", "from": "Average carbon intensity of serverless electricity", "to": "Energy footprint of serverless"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Hourly serverless energy footprint", "label": "Hourly serverless\nenergy footprint", "shape": "dot", "size": 15, "title": "Hourly serverless energy footprint\n=\nHourly energy consumed by serverless instances * Average carbon intensity of\nserverless electricity\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01] * 100.0\ngram / kilowatt_hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],\nlast 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]", "x": 0.0, "y": 1800}, {"color": null, "id": "Hourly energy consumed by serverless instances", "label": "Hourly energy\nconsumed by\nserverless instances", "shape": "dot", "size": 15, "title": "Hourly energy consumed by serverless instances\n=\nHour number of serverless instances * Idle power of serverless * PUE of\nserverless * one hour + Hourly raw number of serverless instances * (Power of\nserverless - Idle power of serverless) * PUE of serverless * one hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03] * 50\nwatt * 1.2 dimensionless * 1 hour + 26281 values from 2024-12-31 22:00:00 to\n2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.02, 0.01, 0.0, 0.02, 0.01, 0.01, 0.03, 0.0, 0.03, 0.03],\nlast 10 vals [0.02, 0.02, 0.0, 0.03, 0.02, 0.01, 0.01, 0.02, 0.01, 0.03] * (300\nwatt - 50 watt) * 1.2 dimensionless * 1 hour\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:\nfirst 10 vals [0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01, 0.01],\nlast 10 vals [0.01, 0.01, 0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01]", "x": -412.5, "y": 1650}, {"color": null, "id": "Average carbon intensity of serverless electricity", "label": "Average carbon\nintensity of\nserverless\nelectricity", "shape": "dot", "size": 15, "title": "Average carbon intensity of serverless electricity = 100.0 gram / kilowatt_hour", "x": 412.5, "y": 1650}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "Hourly energy consumed by serverless instances", "to": "Hourly serverless energy footprint"}, {"arrows": "to", "from": "Average carbon intensity of serverless electricity", "to": "Hourly serverless energy footprint"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });
