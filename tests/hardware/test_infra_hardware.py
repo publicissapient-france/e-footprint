@@ -52,31 +52,12 @@ class TestInfraHardware(TestCase):
         self.service3.hour_by_hour_cpu_need = self.cpu_needs_service3
         self.test_infra_hardware_multiple_services.modeling_obj_containers = [self.service2, self.service3]
 
-    def test_update_all_services_ram_needs_single_service(self):
-        self.test_infra_hardware_single_service.update_all_services_ram_needs()
-        self.assertEqual([0, 8], self.test_infra_hardware_single_service.all_services_ram_needs.value_as_float_list)
-
     def test_services(self):
         service1 = MagicMock()
         service2 = MagicMock()
         with patch.object(
                 self.test_infra_hardware_multiple_services, "modeling_obj_containers", new=[service1, service2]):
             self.assertEqual([service1, service2], self.test_infra_hardware_multiple_services.services)
-
-    def test_all_services_infra_needs_multiple_services(self):
-        self.test_infra_hardware_multiple_services.update_all_services_ram_needs()
-        self.assertEqual(
-            [14, 30], self.test_infra_hardware_multiple_services.all_services_ram_needs.value_as_float_list)
-
-    def test_all_services_cpu_needs_single_service(self):
-        self.test_infra_hardware_single_service.update_all_services_cpu_needs()
-        self.assertEqual(
-            [0, 8], self.test_infra_hardware_single_service.all_services_cpu_needs.value_as_float_list)
-
-    def test_all_services_cpu_needs_multiple_services(self):
-        self.test_infra_hardware_multiple_services.update_all_services_cpu_needs()
-        self.assertEqual(
-            [14, 30], self.test_infra_hardware_multiple_services.all_services_cpu_needs.value_as_float_list)
 
     def test_instances_fabrication_footprint(self):
         self.test_infra_hardware_single_service.update_nb_of_instances()

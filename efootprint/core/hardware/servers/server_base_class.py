@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 import pint_pandas
 
+from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity, \
     EmptyExplainableObject
 from efootprint.core.hardware.hardware_base_classes import InfraHardware
@@ -17,6 +18,8 @@ class Server(InfraHardware):
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
                  server_utilization_rate: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
+        self.hour_by_hour_cpu_need = None
+        self.hour_by_hour_ram_need = None
         self.available_cpu_per_instance = None
         self.available_ram_per_instance = None
         self.server_utilization_rate = None
@@ -30,8 +33,31 @@ class Server(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return ["available_ram_per_instance", "available_cpu_per_instance"
-                                      ] + self.calculated_attributes_defined_in_infra_hardware_class
+        return ["hour_by_hour_cpu_need", "hour_by_hour_ram_need", "available_ram_per_instance",
+                "available_cpu_per_instance"] + self.calculated_attributes_defined_in_infra_hardware_class
+
+    @property
+    def resources_unit_dict(self):
+        return {"ram": "GB", "cpu": "core"}
+
+    @property
+    def jobs(self):
+        return list(set(sum([service.jobs for service in self.services], start=[])))
+
+    def compute_hour_by_hour_resource_need(self, resource):
+        resource_unit = u(self.resources_unit_dict[resource])
+        hour_by_hour_resource_needs = EmptyExplainableObject()
+        for job in self.jobs:
+            hour_by_hour_resource_needs += (
+                job.hourly_avg_occurrences_across_usage_patterns * getattr(job, f"{resource}_needed"))
+
+        return hour_by_hour_resource_needs.to(resource_unit).set_label(f"{self.name} hour by hour {resource} need")
+
+    def update_hour_by_hour_cpu_need(self):
+        self.hour_by_hour_cpu_need = self.compute_hour_by_hour_resource_need("cpu")
+
+    def update_hour_by_hour_ram_need(self):
+        self.hour_by_hour_ram_need = self.compute_hour_by_hour_resource_need("ram")
 
     def update_available_ram_per_instance(self):
         services_base_ram_consumptions = [service.base_ram_consumption for service in self.services]
@@ -64,15 +90,15 @@ class Server(InfraHardware):
             f"Available CPU per {self.name} instance")
 
     def update_raw_nb_of_instances(self):
-        if isinstance(self.all_services_ram_needs, EmptyExplainableObject) \
-                and isinstance(self.all_services_cpu_needs, EmptyExplainableObject):
+        if isinstance(self.hour_by_hour_ram_need, EmptyExplainableObject) \
+                and isinstance(self.hour_by_hour_cpu_need, EmptyExplainableObject):
             self.raw_nb_of_instances = EmptyExplainableObject()
         else:
             nb_of_servers_based_on_ram_alone = (
-                    self.all_services_ram_needs / self.available_ram_per_instance).to(u.dimensionless).set_label(
+                    self.hour_by_hour_ram_need / self.available_ram_per_instance).to(u.dimensionless).set_label(
                 f"Raw nb of {self.name} instances based on RAM alone")
             nb_of_servers_based_on_cpu_alone = (
-                    self.all_services_cpu_needs / self.available_cpu_per_instance).to(u.dimensionless).set_label(
+                    self.hour_by_hour_cpu_need / self.available_cpu_per_instance).to(u.dimensionless).set_label(
                 f"Raw nb of {self.name} instances based on CPU alone")
 
             nb_of_servers_raw_np = np.maximum(

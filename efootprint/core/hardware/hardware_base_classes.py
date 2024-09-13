@@ -1,8 +1,7 @@
 from abc import abstractmethod
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_objects import ExplainableHourlyQuantities, ExplainableQuantity, \
-    EmptyExplainableObject
+from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from efootprint.constants.sources import Sources, SOURCE_VALUE_DEFAULT_NAME
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
@@ -35,8 +34,6 @@ class InfraHardware(Hardware):
                  average_carbon_intensity: SourceValue):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, SourceValue(1 * u.dimensionless, Sources.HYPOTHESIS))
-        self.all_services_cpu_needs = None
-        self.all_services_ram_needs = None
         self.raw_nb_of_instances = None
         self.nb_of_instances = None
         self.instances_energy = None
@@ -53,9 +50,8 @@ class InfraHardware(Hardware):
 
     @property
     def calculated_attributes_defined_in_infra_hardware_class(self):
-        return [
-            "all_services_cpu_needs", "all_services_ram_needs", "raw_nb_of_instances",
-            "nb_of_instances", "instances_fabrication_footprint", "instances_energy", "energy_footprint"]
+        return ["raw_nb_of_instances", "nb_of_instances", "instances_fabrication_footprint", "instances_energy",
+                "energy_footprint"]
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List:
@@ -80,22 +76,6 @@ class InfraHardware(Hardware):
     @property
     def systems(self) -> List:
         return list(set(sum([service.systems for service in self.services], start=[])))
-
-    def update_all_services_ram_needs(self):
-        all_services_ram_needs = EmptyExplainableObject()
-        for service in self.services:
-            all_services_ram_needs += service.hour_by_hour_ram_need
-
-        self.all_services_ram_needs = all_services_ram_needs.to(u.GB).set_label(
-                f"RAM needs of all services running on {self.name}")
-
-    def update_all_services_cpu_needs(self):
-        all_services_cpu_needs = EmptyExplainableObject()
-        for service in self.services:
-            all_services_cpu_needs += service.hour_by_hour_cpu_need
-
-        self.all_services_cpu_needs = all_services_cpu_needs.to(u.core).set_label(
-            f"CPU needs of all services running on {self.name}")
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = (

@@ -36,40 +36,6 @@ class TestService(unittest.TestCase):
         with self.assertRaises(ValueError):
             Service("Invalid CPU Service", self.server, self.storage, self.base_ram, invalid_cpu)
 
-    def test_update_hour_by_hour_ram_need(self):
-        job1 = MagicMock()
-        job2 = MagicMock()
-
-        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([20, 15, 5, 3]))
-        job1.ram_needed = SourceValue(2 * u.GB)
-        job2.ram_needed = SourceValue(3 * u.GB)
-
-        with patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
-            service_jobs.return_value = [job1, job2]
-            self.service.update_hour_by_hour_ram_need()
-            self.assertEqual(u.GB, self.service.hour_by_hour_ram_need.unit)
-            self.assertEqual([80, 85, 17, 9], self.service.hour_by_hour_ram_need.value_as_float_list)
-
-    def test_update_hour_by_hour_cpu_need(self):
-        job1 = MagicMock()
-        job2 = MagicMock()
-
-        job1.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([10, 20, 1, 0]))
-        job2.hourly_avg_occurrences_across_usage_patterns = SourceHourlyValues(
-            create_hourly_usage_df_from_list([20, 15, 5, 3]))
-        job1.cpu_needed = SourceValue(2 * u.core)
-        job2.cpu_needed = SourceValue(3 * u.core)
-
-        with patch.object(Service, "jobs", new_callable=PropertyMock) as service_jobs:
-            service_jobs.return_value = [job1, job2]
-            self.service.update_hour_by_hour_cpu_need()
-            self.assertEqual(u.core, self.service.hour_by_hour_cpu_need.unit)
-            self.assertEqual([80, 85, 17, 9], self.service.hour_by_hour_cpu_need.value_as_float_list)
-
     def test_self_delete_should_raise_error_if_self_has_associated_jobs(self):
         job = MagicMock()
         job.name = "job"

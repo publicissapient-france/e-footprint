@@ -25,10 +25,6 @@ class UsagePattern(ModelingObject):
         self.devices_fabrication_footprint = None
         self.energy_footprint = None
         self.instances_fabrication_footprint = None
-        self.hourly_job_occurrences_per_job = ExplainableObjectDict()
-        self.hourly_avg_job_occurrences_per_job = ExplainableObjectDict()
-        self.hourly_data_upload_per_job = ExplainableObjectDict()
-        self.hourly_data_download_per_job = ExplainableObjectDict()
         self.hourly_user_journey_starts = hourly_user_journey_starts.set_label(f"{self.name} hourly nb of visits")
         self.user_journey = user_journey
         self.devices = devices
