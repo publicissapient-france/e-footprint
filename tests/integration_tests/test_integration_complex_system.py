@@ -270,10 +270,10 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
                 create_hourly_usage_df_from_list([elt * 1000 for elt in [4, 23, 12, 52, 24, 51, 71, 85, 3]])))
 
         logger.warning("Adding new usage pattern")
-        self.assertEqual(self.initial_footprint, system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
         system.usage_patterns += [new_up]
-        self.assertEqual(self.initial_footprint, self.system.total_footprint)
-        self.assertNotEqual(self.initial_footprint, system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
+        self.assertFalse(self.initial_footprint.value.equals(system.total_footprint.value))
 
         logger.warning("Removing the new usage pattern")
         system.usage_patterns = current_ups

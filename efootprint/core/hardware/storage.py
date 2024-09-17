@@ -15,7 +15,7 @@ class Storage(InfraHardware):
                  data_replication_factor: SourceValue, data_storage_duration: SourceValue,
                  base_storage_need: SourceValue):
         super().__init__(name, carbon_footprint_fabrication, power, lifespan, average_carbon_intensity)
-        self.all_services_storage_needs = None
+        self.storage_needed = None
         self.storage_dumps = None
         self.storage_delta = None
         self.full_cumulative_storage_need = None
@@ -46,42 +46,49 @@ class Storage(InfraHardware):
 
     @property
     def calculated_attributes(self):
-        return [
-            "all_services_storage_needs", "storage_dumps", "storage_delta", "full_cumulative_storage_need",
-            "nb_of_active_instances"] + self.calculated_attributes_defined_in_infra_hardware_class
+        return ([
+            "storage_needed", "storage_dumps", "storage_delta",
+            "full_cumulative_storage_need", "nb_of_active_instances"]
+                + self.calculated_attributes_defined_in_infra_hardware_class)
 
-    def update_all_services_storage_needs(self):
-        all_services_storage_needs = (
-                sum([service.storage_needed for service in self.services], start=EmptyExplainableObject()).to(u.TB)
-                * self.data_replication_factor)
+    @property
+    def jobs(self):
+        return list(set(sum([service.jobs for service in self.services], start=[])))
 
-        self.all_services_storage_needs = all_services_storage_needs.set_label(
-            f"Storage need of {self.name}")
+    def update_storage_needed(self):
+        storage_needed = EmptyExplainableObject()
+
+        for job in self.jobs:
+            storage_needed += job.hourly_data_upload_across_usage_patterns
+
+        storage_needed *= self.data_replication_factor
+
+        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
 
     def update_storage_dumps(self):
-        if isinstance(self.all_services_storage_needs, EmptyExplainableObject):
+        if isinstance(self.storage_needed, EmptyExplainableObject):
             self.storage_dumps = EmptyExplainableObject()
         else:
             storage_duration_in_hours = math.ceil(self.data_storage_duration.to(u.hour).magnitude)
-            storage_dumps_df = - self.all_services_storage_needs.value.copy().shift(
+            storage_dumps_df = - self.storage_needed.value.copy().shift(
                 periods=storage_duration_in_hours, freq='h')
             storage_dumps_df = storage_dumps_df[
-                storage_dumps_df.index <= self.all_services_storage_needs.value.index.max()]
+                storage_dumps_df.index <= self.storage_needed.value.index.max()]
 
             if len(storage_dumps_df) == 0:
-                storage_needs_start_date = self.all_services_storage_needs.value.index.min().to_timestamp()
-                storage_needs_end_date = self.all_services_storage_needs.value.index.max().to_timestamp()
+                storage_needs_start_date = self.storage_needed.value.index.min().to_timestamp()
+                storage_needs_end_date = self.storage_needed.value.index.max().to_timestamp()
                 storage_needs_nb_of_hours = int((storage_needs_end_date - storage_needs_start_date).seconds / 3600)
                 storage_dumps_df = create_hourly_usage_df_from_list(
                     [0] * (storage_needs_nb_of_hours + 1), start_date=storage_needs_start_date)
 
             self.storage_dumps = ExplainableHourlyQuantities(
                 storage_dumps_df, label=f"Storage dumps for {self.name}",
-                left_parent=self.all_services_storage_needs,
+                left_parent=self.storage_needed,
                 right_parent=self.data_storage_duration, operator="shift by storage duration and negate")
 
     def update_storage_delta(self):
-        storage_delta = self.all_services_storage_needs + self.storage_dumps
+        storage_delta = self.storage_needed + self.storage_dumps
         
         self.storage_delta = storage_delta.set_label(f"Hourly storage delta for {self.name}")
 

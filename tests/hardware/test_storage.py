@@ -28,20 +28,20 @@ class TestStorage(TestCase):
 
         self.storage_base.dont_handle_input_updates = True
 
-    def test_update_all_services_storage_needs_single_service(self):
-        service1 = MagicMock()
-        service2 = MagicMock()
+    def test_update_storage_needs_single_service(self):
+        job1 = MagicMock()
+        job2 = MagicMock()
 
-        service1.storage_needed = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-        service2.storage_needed = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job1.hourly_data_upload_across_usage_patterns = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job2.hourly_data_upload_across_usage_patterns = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
 
-        with patch.object(Storage, "services", new_callable=PropertyMock) as services_mock, \
+        with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
-            services_mock.return_value = [service1, service2]
-            self.storage_base.update_all_services_storage_needs()
+            jobs_mock.return_value = [job1, job2]
+            self.storage_base.update_storage_needed()
 
-        self.assertEqual([6, 12, 18], self.storage_base.all_services_storage_needs.value_as_float_list)
-        self.assertEqual(u.TB, self.storage_base.all_services_storage_needs.unit)
+        self.assertEqual([6, 12, 18], self.storage_base.storage_needed.value_as_float_list)
+        self.assertEqual(u.TB, self.storage_base.storage_needed.unit)
 
     def test_update_storage_dumps(self):
         input_data = [2, 4, 6]
@@ -53,7 +53,7 @@ class TestStorage(TestCase):
         expected_min_date = start_date + timedelta(hours=1)
         expected_max_date = start_date + timedelta(hours=len(input_data) - storage_duration)
 
-        with patch.object(self.storage_base, "all_services_storage_needs", all_needed_storage), \
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
             self.storage_base.update_storage_dumps()
 
@@ -68,7 +68,7 @@ class TestStorage(TestCase):
         all_needed_storage = SourceHourlyValues(
             create_hourly_usage_df_from_list(input_data, start_date, pint_unit=u.TB))
 
-        with patch.object(self.storage_base, "all_services_storage_needs", all_needed_storage), \
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "data_storage_duration", SourceValue(storage_duration * u.hours)):
             self.storage_base.update_storage_dumps()
 
@@ -85,7 +85,7 @@ class TestStorage(TestCase):
         dump_need_update = SourceHourlyValues(
             create_hourly_usage_df_from_list(dumps_data, dump_min_date, pint_unit=u.TB))
 
-        with patch.object(self.storage_base, "all_services_storage_needs", all_needed_storage), \
+        with patch.object(self.storage_base, "storage_needed", all_needed_storage), \
             patch.object(self.storage_base, "storage_dumps", dump_need_update):
             self.storage_base.update_storage_delta()
 

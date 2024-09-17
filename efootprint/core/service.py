@@ -13,7 +13,6 @@ class Service(ModelingObject):
     def __init__(self, name: str, server: Server, storage: Storage, base_ram_consumption: SourceValue,
                  base_cpu_consumption: SourceValue = None):
         super().__init__(name)
-        self.storage_needed = None
         self.server = server
         self.storage = storage
         if not base_ram_consumption.value.check("[]"):
@@ -31,7 +30,7 @@ class Service(ModelingObject):
 
     @property
     def calculated_attributes(self):
-        return ["storage_needed"]
+        return []
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
@@ -48,11 +47,3 @@ class Service(ModelingObject):
     @property
     def jobs(self):
         return self.modeling_obj_containers
-            
-    def update_storage_needed(self):
-        storage_needed = EmptyExplainableObject()
-
-        for job in self.jobs:
-            storage_needed += job.hourly_data_upload_across_usage_patterns
-
-        self.storage_needed = storage_needed.to(u.TB).set_label(f"Hourly {self.name} storage need")
