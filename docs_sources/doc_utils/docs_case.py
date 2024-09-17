@@ -7,7 +7,6 @@ from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.servers.serverless import Serverless
 from efootprint.core.hardware.servers.on_premise import OnPremise
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -28,7 +27,10 @@ autoscaling_server = Autoscaling(
     cpu_cores=SourceValue(24 * u.core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None))
+    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    base_ram_consumption=SourceValue(300 * u.MB, source=None),
+    base_cpu_consumption=SourceValue(2 * u.core, source=None)
+)
 
 serverless_server = Serverless(
     "serverless",
@@ -69,20 +71,14 @@ storage = Storage(
     data_storage_duration=SourceValue(2 * u.year, source=None),
     base_storage_need=SourceValue(0 * u.TB, source=None))
 
-service = Service(
-    "service",
-    server=autoscaling_server,
-    storage=storage,
-    base_ram_consumption=SourceValue(300 * u.MB, source=None),
-    base_cpu_consumption=SourceValue(2 * u.core, source=None))
-
 streaming_step = UserJourneyStep(
     "20 min streaming",
     user_time_spent=SourceValue(20 * u.min, source=None),
     jobs=[
         Job(
             "streaming",
-            service=service,
+            server=autoscaling_server,
+            storage=storage,
             data_upload=SourceValue(0.05 * u.MB, source=None),
             data_download=SourceValue(800 * u.MB, source=None),
             request_duration=SourceValue(4 * u.min, source=None),

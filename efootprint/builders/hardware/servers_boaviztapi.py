@@ -90,7 +90,7 @@ def print_archetypes_and_their_configs():
 def get_cloud_server(
         provider, instance_type, average_carbon_intensity, base_efootprint_class=Autoscaling,
         lifespan=None, idle_power=None, power_usage_effectiveness=None,
-        server_utilization_rate=None
+        server_utilization_rate=None, base_ram_consumption=None, base_cpu_consumption=None
         ):
     if lifespan is None:
         lifespan = SourceValue(6 * u.year, Sources.HYPOTHESIS)
@@ -100,6 +100,10 @@ def get_cloud_server(
         power_usage_effectiveness = SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS)
     if server_utilization_rate is None:
         server_utilization_rate = SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+    if base_ram_consumption is None:
+        base_ram_consumption = SourceValue(0 * u.GB, Sources.HYPOTHESIS)
+    if base_cpu_consumption is None:
+        base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
 
     impact_url = "https://api.boavizta.org/v1/cloud/instance"
     params = {"provider": provider, "instance_type": instance_type}
@@ -128,13 +132,16 @@ def get_cloud_server(
         cpu_cores=SourceValue(cpu_spec["units"]["value"] * cpu_spec["core_units"]["value"] * u.core, impact_source),
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
-        server_utilization_rate=server_utilization_rate)
+        server_utilization_rate=server_utilization_rate,
+        base_ram_consumption=base_ram_consumption,
+        base_cpu_consumption=base_cpu_consumption)
 
 
 def on_premise_server_from_config(
         name: str, nb_of_cpu_units: int, nb_of_cores_per_cpu_unit: int, nb_of_ram_units: int,
         ram_quantity_per_unit_in_gb: int, average_carbon_intensity, lifespan=None, idle_power=None,
-        power_usage_effectiveness=None, server_utilization_rate=None, fixed_nb_of_instances=None):
+        power_usage_effectiveness=None, server_utilization_rate=None, fixed_nb_of_instances=None,
+        base_ram_consumption=None, base_cpu_consumption=None):
     impact_url = "https://api.boavizta.org/v1/server/"
     params = {"verbose": "true", "archetype": "platform_compute_medium", "criteria": ["gwp"]}
     data = {"model": {"type": "rack"},
@@ -157,6 +164,10 @@ def on_premise_server_from_config(
         power_usage_effectiveness = SourceValue(1.4 * u.dimensionless, Sources.HYPOTHESIS)
     if server_utilization_rate is None:
         server_utilization_rate = SourceValue(0.7 * u.dimensionless, Sources.HYPOTHESIS)
+    if base_ram_consumption is None:
+        base_ram_consumption = SourceValue(0 * u.GB, Sources.HYPOTHESIS)
+    if base_cpu_consumption is None:
+        base_cpu_consumption = SourceValue(0 * u.core, Sources.HYPOTHESIS)
 
     average_power_value = impact_data["verbose"]["avg_power"]["value"]
     average_power_unit = impact_data["verbose"]["avg_power"]["unit"]
@@ -177,7 +188,10 @@ def on_premise_server_from_config(
         power_usage_effectiveness=power_usage_effectiveness,
         average_carbon_intensity=average_carbon_intensity,
         server_utilization_rate=server_utilization_rate,
-        fixed_nb_of_instances=fixed_nb_of_instances)
+        fixed_nb_of_instances=fixed_nb_of_instances,
+        base_ram_consumption=base_ram_consumption,
+        base_cpu_consumption=base_cpu_consumption
+    )
 
 
 if __name__ == "__main__":

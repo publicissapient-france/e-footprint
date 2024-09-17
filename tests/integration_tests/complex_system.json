@@ -237,7 +237,8 @@
             "name": "streaming",
             "id": "uuid-streaming",
             "job_type": "undefined",
-            "service": "uuid-Youtube",
+            "server": "uuid-Server-1",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -289,7 +290,8 @@
             "name": "upload",
             "id": "uuid-upload",
             "job_type": "undefined",
-            "service": "uuid-Youtube",
+            "server": "uuid-Server-1",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -341,7 +343,8 @@
             "name": "dailymotion",
             "id": "uuid-dailymotion",
             "job_type": "undefined",
-            "service": "uuid-Dailymotion",
+            "server": "uuid-Server-1",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request dailymotion from hypothesis",
                 "value": 300.0,
@@ -393,7 +396,8 @@
             "name": "tiktok",
             "id": "uuid-tiktok",
             "job_type": "undefined",
-            "service": "uuid-TikTok-service",
+            "server": "uuid-Server-2",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request tiktok from hypothesis",
                 "value": 0.0,
@@ -445,7 +449,8 @@
             "name": "tiktok analytics",
             "id": "uuid-tiktok-analytics",
             "job_type": "undefined",
-            "service": "uuid-TikTok-analytics",
+            "server": "uuid-TikTok-Analytics-server",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request tiktok analytics from hypothesis",
                 "value": 50.0,
@@ -492,104 +497,6 @@
                 }
             },
             "description": ""
-        }
-    },
-    "Service": {
-        "uuid-Youtube": {
-            "name": "Youtube",
-            "id": "uuid-Youtube",
-            "server": "uuid-Server-1",
-            "storage": "uuid-Default-SSD-storage",
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of Youtube from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Youtube from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
-        },
-        "uuid-Dailymotion": {
-            "name": "Dailymotion",
-            "id": "uuid-Dailymotion",
-            "server": "uuid-Server-1",
-            "storage": "uuid-Default-SSD-storage",
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of Dailymotion from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Dailymotion from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
-        },
-        "uuid-TikTok-service": {
-            "name": "TikTok service",
-            "id": "uuid-TikTok-service",
-            "server": "uuid-Server-2",
-            "storage": "uuid-Default-SSD-storage",
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of TikTok service from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of TikTok service from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
-        },
-        "uuid-TikTok-analytics": {
-            "name": "TikTok analytics",
-            "id": "uuid-TikTok-analytics",
-            "server": "uuid-TikTok-Analytics-server",
-            "storage": "uuid-Default-SSD-storage",
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of TikTok analytics from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of TikTok analytics from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
         }
     },
     "Autoscaling": {
@@ -681,6 +588,24 @@
                 "label": "PUE of Server 1 from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of Youtube from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of Youtube from hypothesis",
+                "value": 2.0,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null
@@ -779,6 +704,24 @@
                     "name": "hypothesis",
                     "link": null
                 }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of TikTok analytics from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of TikTok analytics from hypothesis",
+                "value": 2.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
             }
         },
         "uuid-Server-2": {
@@ -869,6 +812,24 @@
                 "label": "PUE of Server 2 from hypothesis",
                 "value": 1.2,
                 "unit": "dimensionless",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of TikTok service from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of TikTok service from hypothesis",
+                "value": 2.0,
+                "unit": "core",
                 "source": {
                     "name": "hypothesis",
                     "link": null

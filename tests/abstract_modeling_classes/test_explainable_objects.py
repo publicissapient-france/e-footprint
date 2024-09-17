@@ -268,7 +268,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         hourly_emission = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(random_values, start_date=start_date, pint_unit=u.kg),
-            "Hourly emission of carbon of my test service")
+            "Hourly emission of carbon of my test")
         hourly_emission.plot()
 
     def test_plot_explainable_hourly_quantities_with_xlims(self):
@@ -276,7 +276,7 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
         start_date = datetime.strptime("2025-01-01", "%Y-%m-%d")
         hourly_emission = ExplainableHourlyQuantities(
             create_hourly_usage_df_from_list(random_values, start_date=start_date, pint_unit=u.kg),
-            "Hourly emission of carbon of my test service")
+            "Hourly emission of carbon of my test")
         hourly_emission.plot(xlims=[start_date, start_date + timedelta(hours=3)])
 
 

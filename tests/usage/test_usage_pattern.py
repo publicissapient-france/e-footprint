@@ -12,15 +12,16 @@ class TestUsagePattern(unittest.TestCase):
     def setUp(self):
         self.storage = MagicMock()
         self.server = MagicMock()
-        self.service1 = MagicMock()
-        self.service2 = MagicMock()
+
+        self.job1 = MagicMock()
+        self.job2 = MagicMock()
 
         user_journey = MagicMock()
         user_journey.duration = SourceValue(2.0 * u.min, label="duration")
         user_journey.data_upload = SourceValue(2.0 * u.MB, label="data_upload")
         user_journey.data_download = SourceValue(3.0 * u.MB, label="data_download")
 
-        user_journey.services = [self.service1, self.service2]
+        user_journey.jobs = [self.job1, self.job2]
         country = MagicMock()
         country.average_carbon_intensity = SourceValue(100 * u.g / u.kWh)
         self.device1 = MagicMock()
@@ -40,8 +41,8 @@ class TestUsagePattern(unittest.TestCase):
         )
         self.usage_pattern.dont_handle_input_updates = True
 
-    def test_services(self):
-        self.assertEqual([self.service1, self.service2], self.usage_pattern.services)
+    def test_jobs(self):
+        self.assertEqual([self.job1, self.job2], self.usage_pattern.jobs)
 
     def test_devices_energy(self):
         test_device1 = MagicMock()

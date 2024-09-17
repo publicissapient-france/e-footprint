@@ -11,7 +11,6 @@ from efootprint.constants.units import u
 from efootprint.core.hardware.network import Network
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject, \
@@ -68,14 +67,6 @@ class System(ModelingObject):
         output_set = set()
         for usage_pattern in self.usage_patterns:
             output_set.update(usage_pattern.user_journey.storages)
-
-        return list(output_set)
-
-    @property
-    def services(self) -> List[Service]:
-        output_set = set()
-        for usage_pattern in self.usage_patterns:
-            output_set.update(usage_pattern.user_journey.services)
 
         return list(output_set)
 

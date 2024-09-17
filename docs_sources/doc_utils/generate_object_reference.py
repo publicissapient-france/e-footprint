@@ -9,7 +9,7 @@ from efootprint.abstract_modeling_classes.explainable_object_dict import Explain
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, ExplainableHourlyQuantities
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
 from docs_sources.doc_utils.docs_case import (
-    system, usage_pattern, user_journey, network, streaming_step, service, autoscaling_server, storage,
+    system, usage_pattern, user_journey, network, streaming_step, autoscaling_server, storage,
     serverless_server, on_premise_server)
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -116,12 +116,12 @@ def generate_object_reference(automatically_update_yaml=False):
     nav_items = []
     for mod_obj in (
             system, usage_pattern, user_journey, country, device, network, streaming_step,
-            streaming_step.jobs[0], service, autoscaling_server, storage):
+            streaming_step.jobs[0], autoscaling_server, storage):
         filename = write_object_reference_file(mod_obj)
         nav_items.append(filename)
 
     for new_server in (serverless_server, on_premise_server):
-        service.server = new_server
+        streaming_step.jobs[0].server = new_server
         filename = write_object_reference_file(new_server)
         nav_items.append(filename)
 

@@ -15,11 +15,12 @@ class TestServerBaseClass(TestCase):
             def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                          lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                          power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
-                         server_utilization_rate: SourceValue):
+                         server_utilization_rate: SourceValue, base_ram_consumption: SourceValue,
+                         base_cpu_consumption: SourceValue):
                 super().__init__(
                     name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores,
                     power_usage_effectiveness,
-                    average_carbon_intensity, server_utilization_rate)
+                    average_carbon_intensity, server_utilization_rate, base_ram_consumption, base_cpu_consumption)
 
             def update_nb_of_instances(self):
                 return SourceValue(10 * u.dimensionless)
@@ -35,7 +36,9 @@ class TestServerBaseClass(TestCase):
             cpu_cores=SourceValue(0 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh),
-            server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS)
+            server_utilization_rate=SourceValue(0 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(0 * u.core, Sources.HYPOTHESIS)
         )
         self.server_base.dont_handle_input_updates = True
 
@@ -74,53 +77,29 @@ class TestServerBaseClass(TestCase):
         self.assertEqual([80, 85, 17, 9], self.server_base.hour_by_hour_ram_need.value_as_float_list)
 
 
-    def test_available_cpu_per_instance_single_service(self):
-        service = MagicMock()
-        service.base_cpu_consumption = SourceValue(2 * u.core)
-        with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
+    def test_available_cpu_per_instance(self):
+        with patch.object(self.server_base, "base_cpu_consumption", SourceValue(2 * u.core)), \
                 patch.object(self.server_base, "cpu_cores", SourceValue(24 * u.core)), \
                 patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            mock_service.return_value = {service}
             self.server_base.update_available_cpu_per_instance()
             expected_value = SourceValue((24 * 0.7 - 2) * u.core)
 
             self.assertEqual(expected_value.value, self.server_base.available_cpu_per_instance.value)
 
-    def test_available_ram_per_instance_multiple_services(self):
-        service1 = MagicMock()
-        service1.base_ram_consumption = SourceValue(10 * u.GB)
-        service2 = MagicMock()
-        service2.base_ram_consumption = SourceValue(30 * u.GB)
-        with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
+    def test_available_ram_per_instance(self):
+        with patch.object(self.server_base, "base_ram_consumption", SourceValue(2 * u.GB)), \
+                patch.object(self.server_base, "ram", SourceValue(24 * u.GB)), \
                 patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            mock_service.return_value = {service1, service2}
             self.server_base.update_available_ram_per_instance()
-            expected_value = SourceValue((128 * 0.7 - 10 - 30) * u.GB)
+            expected_value = SourceValue((24 * 0.7 - 2) * u.GB)
 
             self.assertEqual(expected_value.value, self.server_base.available_ram_per_instance.value)
 
-    def test_available_cpu_per_instance_multiple_services(self):
-        service1 = MagicMock()
-        service1.base_cpu_consumption = SourceValue(2 * u.core)
-        service2 = MagicMock()
-        service2.base_cpu_consumption = SourceValue(1 * u.core)
-        with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "cpu_cores", SourceValue(24 * u.core)), \
-                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            mock_service.return_value = {service1, service2}
-            self.server_base.update_available_cpu_per_instance()
-            expected_value = SourceValue((24 * 0.7 - 2 - 1) * u.core)
-
-            self.assertEqual(expected_value.value, self.server_base.available_cpu_per_instance.value)
 
     def test_available_ram_per_instance_should_raise_value_error_when_demand_exceeds_server_capacity(self):
-        service = MagicMock()
-        service.base_ram_consumption = SourceValue(129 * u.GB)
-        with patch.object(Server, "services", new_callable=PropertyMock) as mock_service, \
-                patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
-                patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
-            mock_service.return_value = {service}
+        with patch.object(self.server_base, "ram", SourceValue(128 * u.GB)), \
+            patch.object(self.server_base, "base_ram_consumption", SourceValue(129 * u.GB)), \
+            patch.object(self.server_base, "server_utilization_rate", SourceValue(0.7 * u.dimensionless)):
             with self.assertRaises(ValueError):
                 self.server_base.update_available_ram_per_instance()
 

@@ -25,10 +25,6 @@ class UserJourneyStep(ModelingObject):
         return list(set(sum([uj.usage_patterns for uj in self.user_journeys], start=[])))
 
     @property
-    def services(self) -> List[Type["Service"]]:
-        return [job.service for job in self.jobs]
-
-    @property
     def systems(self) -> List:
         return list(set(sum([up.systems for up in self.usage_patterns], start=[])))
 

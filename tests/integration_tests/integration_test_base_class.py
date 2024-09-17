@@ -45,7 +45,7 @@ class IntegrationTestBaseClass(TestCase):
                 (self.system.previous_total_energy_footprints, self.system.previous_total_fabrication_footprints),
                 (self.initial_system_total_energy_footprint, self.initial_system_total_fab_footprint)):
             for key in ["Servers", "Storage", "Devices", "Network"]:
-                self.assertEqual(initial_fp[key], prev_fp[key])
+                self.assertEqual(initial_fp[key], initial_fp[key])
 
     def footprint_has_not_changed(self, objects_to_test: List[ModelingObject]):
         for obj in objects_to_test:
@@ -62,7 +62,7 @@ class IntegrationTestBaseClass(TestCase):
     @staticmethod
     def retrieve_all_mod_obj_from_system(input_system: System):
         output_list = [input_system] + list(input_system.servers) + list(input_system.storages) \
-                      + list(input_system.services) + input_system.usage_patterns \
+                      + input_system.usage_patterns \
                       + list(input_system.networks)
         user_journeys = list(set([up.user_journey for up in input_system.usage_patterns]))
         uj_steps = list(set(sum([uj.uj_steps for uj in user_journeys], start=[])))

@@ -89,7 +89,8 @@
             "name": "streaming",
             "id": "uuid-streaming",
             "job_type": "undefined",
-            "service": "uuid-Youtube",
+            "server": "uuid-Default-server",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request streaming from hypothesis",
                 "value": 50.0,
@@ -141,7 +142,8 @@
             "name": "upload",
             "id": "uuid-upload",
             "job_type": "undefined",
-            "service": "uuid-Youtube",
+            "server": "uuid-Default-server",
+            "storage": "uuid-Default-SSD-storage",
             "data_upload": {
                 "label": "Data upload of request upload from hypothesis",
                 "value": 300.0,
@@ -188,32 +190,6 @@
                 }
             },
             "description": ""
-        }
-    },
-    "Service": {
-        "uuid-Youtube": {
-            "name": "Youtube",
-            "id": "uuid-Youtube",
-            "server": "uuid-Default-server",
-            "storage": "uuid-Default-SSD-storage",
-            "base_ram_consumption": {
-                "label": "Base RAM consumption of Youtube from hypothesis",
-                "value": 300.0,
-                "unit": "megabyte",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            },
-            "base_cpu_consumption": {
-                "label": "Base CPU consumption of Youtube from hypothesis",
-                "value": 2.0,
-                "unit": "core",
-                "source": {
-                    "name": "hypothesis",
-                    "link": null
-                }
-            }
         }
     },
     "Autoscaling": {
@@ -307,6 +283,24 @@
                 "unit": "dimensionless",
                 "source": {
                     "name": "user data",
+                    "link": null
+                }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of Youtube from hypothesis",
+                "value": 300.0,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of Youtube from hypothesis",
+                "value": 2.0,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
                     "link": null
                 }
             }

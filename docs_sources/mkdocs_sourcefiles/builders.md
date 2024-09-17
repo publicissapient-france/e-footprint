@@ -128,12 +128,14 @@ print(default_autoscaling())
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
+    base_ram_consumption: 0 megabyte
+    base_cpu_consumption: 0 core
      
     calculated_attributes:
+      hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
       available_ram_per_instance: None
       available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -159,12 +161,14 @@ print(default_serverless())
     ram: 128 gigabyte
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
+    base_ram_consumption: 0 megabyte
+    base_cpu_consumption: 0 core
      
     calculated_attributes:
+      hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
       available_ram_per_instance: None
       available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -191,12 +195,14 @@ print(default_onpremise())
     cpu_cores: 24 core
     power_usage_effectiveness: 1.2 dimensionless
     fixed_nb_of_instances: None
+    base_ram_consumption: 0 megabyte
+    base_cpu_consumption: 0 core
      
     calculated_attributes:
+      hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
       available_ram_per_instance: None
       available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -234,14 +240,12 @@ print(default_hdd())
     base_storage_need: 0 terabyte
      
     calculated_attributes:
-      all_services_storage_needs: None
+      storage_needed: None
       storage_dumps: None
       storage_delta: None
       full_cumulative_storage_need: None
-      nb_of_active_instances: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
+      nb_of_active_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
       instances_energy: None
@@ -271,13 +275,11 @@ print(default_ssd())
     base_storage_need: 0 terabyte
      
     calculated_attributes:
-      all_services_storage_needs: None
+      storage_needed: None
       storage_dumps: None
       storage_delta: None
       full_cumulative_storage_need: None
       nb_of_active_instances: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -315,13 +317,11 @@ print(default_ssd("My custom default SSD with higher carbon intensity", average_
     base_storage_need: 0 terabyte
      
     calculated_attributes:
-      all_services_storage_needs: None
+      storage_needed: None
       storage_dumps: None
       storage_delta: None
       full_cumulative_storage_need: None
       nb_of_active_instances: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -360,12 +360,12 @@ print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
     ram: 384.0 gigabyte
     cpu_cores: 48.0 core
     power_usage_effectiveness: 1.2 dimensionless
+    base_ram_consumption: 0 megabyte
+    base_cpu_consumption: 0 core
      
     calculated_attributes:
-      available_ram_per_instance: None
-      available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
+      hour_by_hour_ram_need: None
+      hour_by_hour_cpu_need: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -380,7 +380,8 @@ print(get_cloud_server("aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh)))
 from efootprint.core.hardware.servers.serverless import Serverless
 
 print(get_cloud_server(
-    "aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh), base_efootprint_class=Serverless, lifespan=SourceValue(7 * u.year)))
+    "aws", "m5.xlarge", SourceValue(100 * u.g / u.kWh), base_efootprint_class=Serverless,
+    lifespan=SourceValue(7 * u.year), base_ram_consumption=SourceValue(1 * u.MB)))
 ```
 
     Serverless id-f7f713-aws-m52exlarge-instances
@@ -397,10 +398,10 @@ print(get_cloud_server(
     power_usage_effectiveness: 1.2 dimensionless
      
     calculated_attributes:
+      hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
       available_ram_per_instance: None
       available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -438,10 +439,10 @@ print(on_premise_server_from_config(
     fixed_nb_of_instances: None
      
     calculated_attributes:
+      hour_by_hour_cpu_need: None
+      hour_by_hour_ram_need: None
       available_ram_per_instance: None
       available_cpu_per_instance: None
-      all_services_cpu_needs: None
-      all_services_ram_needs: None
       raw_nb_of_instances: None
       nb_of_instances: None
       instances_fabrication_footprint: None
@@ -455,13 +456,11 @@ print(on_premise_server_from_config(
 
 ```python
 from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_job_builder import ecobenchmark_job
-from efootprint.core.service import Service
 
 server = default_autoscaling()
 storage = default_ssd()
-service = Service("test service", server, storage, base_ram_consumption=SourceValue(1 * u.MB))
 job = ecobenchmark_job(
-    "test job", service, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
+    "test job", server, storage, data_upload=SourceValue(1 * u.MB), data_download=SourceValue(1 * u.MB),
     technology='php-symfony')
 
 print(job)
@@ -473,7 +472,8 @@ print(job)
     Job id-38bded-test-job
      
     job_type: undefined
-    service: id-6d32c2-test-service
+    server: id-038a89-Default-autoscaling
+    storage: id-b64333-Default-SSD-storage
     data_upload: 1 megabyte
     data_download: 1 megabyte
     request_duration: 1 second

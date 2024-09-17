@@ -91,6 +91,24 @@
                     "name": "user data",
                     "link": null
                 }
+            },
+            "base_ram_consumption": {
+                "label": "Base RAM consumption of Youtube from hypothesis",
+                "value": 300,
+                "unit": "megabyte",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
+            },
+            "base_cpu_consumption": {
+                "label": "Base CPU consumption of Youtube from hypothesis",
+                "value": 2,
+                "unit": "core",
+                "source": {
+                    "name": "hypothesis",
+                    "link": null
+                }
             }
         }
 }

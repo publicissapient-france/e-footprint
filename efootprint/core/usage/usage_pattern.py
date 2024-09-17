@@ -1,12 +1,10 @@
 from typing import List
 
-from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.constants.countries import Country
 from efootprint.constants.units import u
 from efootprint.core.hardware.hardware_base_classes import Hardware
 from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
-from efootprint.core.service import Service
 from efootprint.core.usage.job import Job
 from efootprint.core.hardware.network import Network
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
@@ -42,12 +40,8 @@ class UsagePattern(ModelingObject):
         return self.jobs
 
     @property
-    def services(self) -> List[Service]:
-        return self.user_journey.services
-
-    @property
     def jobs(self) -> List[Job]:
-        return list(set(sum([service.jobs for service in self.services], start=[])))
+        return self.user_journey.jobs
 
     @property
     def systems(self) -> List:

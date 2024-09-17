@@ -12,10 +12,11 @@ class OnPremise(Server):
     def __init__(self, name: str, carbon_footprint_fabrication: SourceValue, power: SourceValue,
                  lifespan: SourceValue, idle_power: SourceValue, ram: SourceValue, cpu_cores: SourceValue,
                  power_usage_effectiveness: SourceValue, average_carbon_intensity: SourceValue,
-                 server_utilization_rate: SourceValue, fixed_nb_of_instances: SourceValue = None):
+                 server_utilization_rate: SourceValue, base_ram_consumption: SourceValue, base_cpu_consumption: SourceValue,
+                 fixed_nb_of_instances: SourceValue = None):
         super().__init__(
             name, carbon_footprint_fabrication, power, lifespan, idle_power, ram, cpu_cores, power_usage_effectiveness,
-            average_carbon_intensity, server_utilization_rate)
+            average_carbon_intensity, server_utilization_rate, base_ram_consumption, base_cpu_consumption)
         self.fixed_nb_of_instances = None
         if fixed_nb_of_instances:
             if not fixed_nb_of_instances.value.check("[]"):

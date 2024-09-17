@@ -4,7 +4,8 @@ from typing import List, Type
 from efootprint.abstract_modeling_classes.explainable_object_dict import ExplainableObjectDict
 from efootprint.abstract_modeling_classes.explainable_objects import ExplainableQuantity, EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.service import Service
+from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.storage import Storage
 from efootprint.abstract_modeling_classes.source_objects import SourceValue
 from efootprint.constants.units import u
 from efootprint.core.usage.compute_nb_occurrences_in_parallel import compute_nb_avg_hourly_occurrences
@@ -32,7 +33,7 @@ class JobTypes:
 
 
 class Job(ModelingObject):
-    def __init__(self, name: str, service: Service, data_upload: SourceValue, data_download: SourceValue,
+    def __init__(self, name: str, server: Server, storage: Storage, data_upload: SourceValue, data_download: SourceValue,
                  request_duration: SourceValue, cpu_needed: SourceValue, ram_needed: SourceValue,
                  job_type: JobTypes = JobTypes.UNDEFINED, description: str = ""):
         super().__init__(name)
@@ -44,7 +45,8 @@ class Job(ModelingObject):
         self.hourly_avg_occurrences_across_usage_patterns = None
         self.hourly_data_upload_across_usage_patterns = None
         self.job_type = job_type
-        self.service = service
+        self.server = server
+        self.storage = storage
         if not data_upload.value.check("[]"):
             raise ValueError("Variable 'data_upload' does not have the appropriate '[]' dimensionality")
         self.data_upload = data_upload.set_label(f"Data upload of request {self.name}")
@@ -53,17 +55,17 @@ class Job(ModelingObject):
         self.data_download = data_download.set_label(f"Data download of request {self.name}")
         if not request_duration.value.check("[time]"):
             raise ValueError("Variable 'request_duration' does not have the appropriate '[time]' dimensionality")
-        self.request_duration = request_duration.set_label(f"Request duration to {self.service.name} in {self.name}")
+        self.request_duration = request_duration.set_label(f"Request duration to {self.name} in {self.name}")
         if not ram_needed.value.check("[]"):
             raise ValueError(
                 "Variable 'ram_needed' does not have the appropriate '[]' dimensionality")
         self.ram_needed = ram_needed.set_label(
-            f"RAM needed on server {self.service.server.name} to process {self.name}")
+            f"RAM needed on server {self.server.name} to process {self.name}")
         if not cpu_needed.value.check("[cpu]"):
             raise ValueError(
                 "Variable 'cpu_needed' does not have the appropriate '[cpu]' dimensionality")
         self.cpu_needed = cpu_needed.set_label(
-            f"CPU needed on server {self.service.server.name} to process {self.name}")
+            f"CPU needed on server {self.server.name} to process {self.name}")
 
         self.description = description
         
@@ -102,7 +104,7 @@ class Job(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[ModelingObject]:
-        return [self.service] + self.networks
+        return [self.server, self.storage] + self.networks
 
     def compute_hourly_occurrences_for_usage_pattern(self, usage_pattern: Type["UsagePattern"]):
         job_occurrences = EmptyExplainableObject()

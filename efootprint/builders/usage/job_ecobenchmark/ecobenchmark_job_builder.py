@@ -3,8 +3,9 @@ from typing import List
 import pandas as pd
 
 from efootprint.abstract_modeling_classes.source_objects import SourceValue, Source
+from efootprint.core.hardware.servers.server_base_class import Server
+from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.job import Job, JobTypes
-from efootprint.core.service import Service
 from efootprint.builders.usage.job_ecobenchmark.ecobenchmark_data_analysis import ECOBENCHMARK_DATA, \
     ECOBENCHMARK_RESULTS_LINK, default_request_duration
 from efootprint.constants.units import u
@@ -15,7 +16,7 @@ ecobenchmark_source = Source(
 
 
 def ecobenchmark_job(
-        name: str, service: Service, data_upload: SourceValue, data_download: SourceValue,
+        name: str, server: Server, storage: Storage, data_upload: SourceValue, data_download: SourceValue,
         technology: str, implementation_details: str = "default", job_type=JobTypes.UNDEFINED, description: str = ""):
     filter_df = ECOBENCHMARK_DF[
         (ECOBENCHMARK_DF['service'] == technology) & (ECOBENCHMARK_DF['use_case'] == implementation_details)]
@@ -30,7 +31,7 @@ def ecobenchmark_job(
     ram_needed = SourceValue(tech_row['avg_ram_per_request_in_MB'] * u.MB, ecobenchmark_source)
 
     return Job(
-        name, service, data_upload, data_download, request_duration=default_request_duration(),
+        name, server, storage, data_upload, data_download, request_duration=default_request_duration(),
         cpu_needed=cpu_needed, ram_needed=ram_needed, job_type=job_type, description=description)
 
 

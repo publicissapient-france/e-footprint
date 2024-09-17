@@ -31,44 +31,39 @@ class TestInfraHardware(TestCase):
             power=SourceValue(2 * u.W, Sources.USER_DATA), lifespan=SourceValue(6 * u.years, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh))
 
-        self.service1 = MagicMock()
-        self.ram_needs_service1 = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.GB))
-        self.cpu_needs_service1 = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.core))
-        self.test_infra_hardware_single_service = deepcopy(self.test_infra_hardware)
-        self.service1.hour_by_hour_ram_need = self.ram_needs_service1
-        self.service1.hour_by_hour_cpu_need = self.cpu_needs_service1
-        self.test_infra_hardware_single_service.modeling_obj_containers = [self.service1]
+        self.job1 = MagicMock()
+        self.job2 = MagicMock()
+        self.job3 = MagicMock()
 
-        self.service2 = MagicMock()
-        self.service3 = MagicMock()
-        self.ram_needs_service2 = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.GB))
-        self.ram_needs_service3 = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.GB))
-        self.cpu_needs_service2 = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.core))
-        self.cpu_needs_service3 = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.core))
-        self.test_infra_hardware_multiple_services = deepcopy(self.test_infra_hardware)
-        self.service2.hour_by_hour_ram_need = self.ram_needs_service2
-        self.service3.hour_by_hour_ram_need = self.ram_needs_service3
-        self.service2.hour_by_hour_cpu_need = self.cpu_needs_service2
-        self.service3.hour_by_hour_cpu_need = self.cpu_needs_service3
-        self.test_infra_hardware_multiple_services.modeling_obj_containers = [self.service2, self.service3]
+        self.job1.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.GB))
+        self.job2.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.GB))
+        self.job3.ram_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.GB))
+        self.job1.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([0, 8], pint_unit=u.core))
+        self.job2.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([6, 14], pint_unit=u.core))
+        self.job3.cpu_needed = SourceHourlyValues(create_hourly_usage_df_from_list([8, 16], pint_unit=u.core))
 
-    def test_services(self):
-        service1 = MagicMock()
-        service2 = MagicMock()
-        with patch.object(
-                self.test_infra_hardware_multiple_services, "modeling_obj_containers", new=[service1, service2]):
-            self.assertEqual([service1, service2], self.test_infra_hardware_multiple_services.services)
+        self.test_infra_hardware_single_job = deepcopy(self.test_infra_hardware)
+        self.test_infra_hardware_single_job.modeling_obj_containers = [self.job1]
+        self.test_infra_hardware_multiple_jobs = deepcopy(self.test_infra_hardware)
+        self.test_infra_hardware_multiple_jobs.modeling_obj_containers = [self.job1, self.job2, self.job3]
+
+    def test_jobs(self):
+        job1 = MagicMock()
+        job2 = MagicMock()
+
+        with patch.object(self.test_infra_hardware, "modeling_obj_containers", new=[job1, job2]):
+            self.assertEqual([job1, job2], self.test_infra_hardware.jobs)
 
     def test_instances_fabrication_footprint(self):
-        self.test_infra_hardware_single_service.update_nb_of_instances()
-        self.test_infra_hardware_single_service.update_instances_fabrication_footprint()
-        self.assertEqual(u.kg, self.test_infra_hardware_single_service.instances_fabrication_footprint.unit)
+        self.test_infra_hardware_single_job.update_nb_of_instances()
+        self.test_infra_hardware_single_job.update_instances_fabrication_footprint()
+        self.assertEqual(u.kg, self.test_infra_hardware_single_job.instances_fabrication_footprint.unit)
         self.assertEqual([2 * 20 / (365.25 * 24), 3 * 20 / (365.25 * 24)],
-                         self.test_infra_hardware_single_service.instances_fabrication_footprint.value_as_float_list)
+                         self.test_infra_hardware_single_job.instances_fabrication_footprint.value_as_float_list)
 
     def test_energy_footprints(self):
-        self.test_infra_hardware_single_service.update_instances_energy()
-        self.test_infra_hardware_single_service.update_energy_footprint()
-        self.assertEqual(u.kg, self.test_infra_hardware_single_service.energy_footprint.unit)
+        self.test_infra_hardware_single_job.update_instances_energy()
+        self.test_infra_hardware_single_job.update_energy_footprint()
+        self.assertEqual(u.kg, self.test_infra_hardware_single_job.energy_footprint.unit)
         self.assertEqual([0.2, 0.4],
-                         self.test_infra_hardware_single_service.energy_footprint.value_as_float_list)
+                         self.test_infra_hardware_single_job.energy_footprint.value_as_float_list)

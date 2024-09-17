@@ -53,7 +53,7 @@ class Storage(InfraHardware):
 
     @property
     def jobs(self):
-        return list(set(sum([service.jobs for service in self.services], start=[])))
+        return self.modeling_obj_containers
 
     def update_storage_needed(self):
         storage_needed = EmptyExplainableObject()

@@ -16,7 +16,9 @@ def default_serverless(name="Default serverless", **kwargs):
         "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+        "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
     }
 
     output_args.update(kwargs)
@@ -34,7 +36,9 @@ def default_autoscaling(name="Default autoscaling", **kwargs):
         "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+        "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
     }
 
     output_args.update(kwargs)
@@ -52,7 +56,9 @@ def default_onpremise(name="Default on premise", **kwargs):
         "cpu_cores": SourceValue(24 * u.core, Sources.HYPOTHESIS),
         "power_usage_effectiveness": SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
         "average_carbon_intensity": SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+        "server_utilization_rate": SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+        "base_ram_consumption": SourceValue(0 * u.GB, Sources.HYPOTHESIS),
+        "base_cpu_consumption": SourceValue(0 * u.core, Sources.HYPOTHESIS)
     }
 
     output_args.update(kwargs)

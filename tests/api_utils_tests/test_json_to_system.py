@@ -17,15 +17,6 @@ class TestJsonToSystem(IntegrationTestBaseClass):
         with open(os.path.join(API_UTILS_TEST_DIR, "base_system.json"), "rb") as file:
             cls.base_system_dict = json.load(file)
 
-    def test_create_unlinked_service(self):
-        full_dict = deepcopy(self.base_system_dict)
-        with open(os.path.join(API_UTILS_TEST_DIR, "service_not_linked_to_user_journey.json"), "rb") as file:
-            full_dict["Service"].update(json.load(file))
-
-        class_obj_dict, flat_obj_dict = json_to_system(full_dict)
-
-        self.assertEqual(2, len(list(class_obj_dict["Service"].values())))
-
     def test_create_unlinked_server(self):
         full_dict = deepcopy(self.base_system_dict)
         with open(os.path.join(API_UTILS_TEST_DIR, "server_not_linked_to_user_journey.json"), "rb") as file:

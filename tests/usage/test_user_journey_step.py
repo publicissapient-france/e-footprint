@@ -10,11 +10,12 @@ from efootprint.constants.units import u
 
 class TestUserJourneyStep(TestCase):
     def setUp(self):
-        self.service = MagicMock()
-        self.service.name = "service"
 
-        self.job = Job("Job", data_download=MagicMock(), data_upload=MagicMock(),
-                       service=self.service, request_duration=MagicMock(), cpu_needed=MagicMock(),
+        self.server = MagicMock()
+        self.storage = MagicMock()
+
+        self.job = Job("Job", server=self.server, storage=self.storage, data_download=MagicMock(),
+                       data_upload=MagicMock(), request_duration=MagicMock(), cpu_needed=MagicMock(),
                        ram_needed=MagicMock())
 
         self.user_journey_step = UserJourneyStep(

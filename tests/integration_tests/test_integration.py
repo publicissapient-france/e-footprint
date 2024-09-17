@@ -9,7 +9,6 @@ from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -38,7 +37,9 @@ class IntegrationTest(IntegrationTestBaseClass):
             cpu_cores=SourceValue(24 * u.core, Sources.USER_DATA),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.USER_DATA),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.USER_DATA),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
         )
         cls.storage = Storage(
             "Default SSD storage",
@@ -53,17 +54,14 @@ class IntegrationTest(IntegrationTestBaseClass):
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(1 * u.TB)
         )
-        cls.service = Service(
-            "Youtube", cls.server, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
-        cls.streaming_job = Job("streaming", cls.service, data_upload=SourceValue(50 * u.kB),
+        cls.streaming_job = Job("streaming", server=cls.server, storage=cls.storage, data_upload=SourceValue(50 * u.kB),
                       data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
                       ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.service, data_upload=SourceValue(300 * u.MB),
+        cls.upload_job = Job("upload", server=cls.server, storage=cls.storage, data_upload=SourceValue(300 * u.MB),
                       data_download=SourceValue(0 * u.GB), request_duration=SourceValue(40 * u.s),
                       ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.upload_step = UserJourneyStep(
@@ -79,17 +77,20 @@ class IntegrationTest(IntegrationTestBaseClass):
         cls.system = System("system 1", [cls.usage_pattern])
 
         cls.initial_footprint = cls.system.total_footprint
+
         cls.initial_fab_footprints = {
             cls.storage: cls.storage.instances_fabrication_footprint,
             cls.server: cls.server.instances_fabrication_footprint,
             cls.usage_pattern: cls.usage_pattern.devices_fabrication_footprint,
         }
+
         cls.initial_energy_footprints = {
             cls.storage: cls.storage.energy_footprint,
             cls.server: cls.server.energy_footprint,
             cls.network: cls.network.energy_footprint,
             cls.usage_pattern: cls.usage_pattern.devices_energy_footprint,
         }
+
         cls.initial_system_total_fab_footprint = cls.system.total_fabrication_footprint_sum_over_period
         cls.initial_system_total_energy_footprint = cls.system.total_energy_footprint_sum_over_period
 
@@ -133,12 +134,13 @@ class IntegrationTest(IntegrationTestBaseClass):
         test_variations_on_obj_inputs(self.streaming_step)
         test_variations_on_obj_inputs(
             self.server, attrs_to_skip=["fraction_of_usage_time"],
-            special_mult={"ram": 0.01, "server_utilization_rate": 0.5})
+            special_mult={
+                "ram": 0.01, "server_utilization_rate": 0.5,
+                "base_ram_consumption": 380,
+                "base_cpu_consumption": 10
+            })
         test_variations_on_obj_inputs(
             self.storage, attrs_to_skip=["fraction_of_usage_time"])
-        test_variations_on_obj_inputs(
-            self.service,
-            special_mult={"base_ram_consumption": 380, "base_cpu_consumption": 10})
         test_variations_on_obj_inputs(self.uj)
         test_variations_on_obj_inputs(self.network)
         test_variations_on_obj_inputs(self.usage_pattern, attrs_to_skip=["hourly_user_journey_starts"])
@@ -179,20 +181,24 @@ class IntegrationTest(IntegrationTestBaseClass):
             cpu_cores=SourceValue(24 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
         )
 
-        logger.warning("Changing service server")
-        self.service.server = new_server
-        self.assertEqual(0, self.server.instances_fabrication_footprint.max().magnitude)
-        self.assertEqual(0, self.server.energy_footprint.max().magnitude)
+        logger.warning("Changing jobs server")
+        self.streaming_job.server = new_server
+        self.upload_job.server = new_server
+        self.assertEqual(0, self.server.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, self.server.energy_footprint.magnitude)
         self.footprint_has_changed([self.server])
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
-        logger.warning("Changing back to initial service server")
-        self.service.server = self.server
-        self.assertEqual(0, new_server.instances_fabrication_footprint.max().magnitude)
-        self.assertEqual(0, new_server.energy_footprint.max().magnitude)
+        logger.warning("Changing back to initial job server")
+        self.streaming_job.server = self.server
+        self.upload_job.server = self.server
+        self.assertEqual(0, new_server.instances_fabrication_footprint.magnitude)
+        self.assertEqual(0, new_server.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.server])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
@@ -210,16 +216,18 @@ class IntegrationTest(IntegrationTestBaseClass):
             data_storage_duration=SourceValue(3 * u.hours),
             base_storage_need=SourceValue(1 * u.TB)
         )
-        logger.warning("Changing service storage")
-        self.service.storage = new_storage
+        logger.warning("Changing jobs storage")
+        self.streaming_job.storage = new_storage
+        self.upload_job.storage = new_storage
 
         self.assertEqual(0, self.storage.instances_fabrication_footprint.max().magnitude)
         self.assertEqual(0, self.storage.energy_footprint.max().magnitude)
         self.footprint_has_changed([self.storage])
         self.assertTrue(self.system.total_footprint.value.equals(self.initial_footprint.value))
 
-        logger.warning("Changing back to initial service storage")
-        self.service.storage = self.storage
+        logger.warning("Changing back to initial jobs storage")
+        self.streaming_job.storage = self.storage
+        self.upload_job.storage = self.storage
         self.assertEqual(0, new_storage.instances_fabrication_footprint.magnitude)
         self.assertEqual(0, new_storage.energy_footprint.magnitude)
         self.footprint_has_not_changed([self.storage])
@@ -227,11 +235,11 @@ class IntegrationTest(IntegrationTestBaseClass):
 
     def test_update_jobs(self):
         logger.warning("Modifying streaming jobs")
-        new_job = Job("new job", self.service, data_upload=SourceValue(5 * u.kB),
+        new_job = Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.kB),
                       data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
                       ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
 
-        self.streaming_step.jobs += [new_job]
+        self.streaming_step.jobs = [new_job]
 
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
         self.footprint_has_not_changed([self.usage_pattern])
@@ -247,7 +255,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         logger.warning("Modifying uj steps")
         new_step = UserJourneyStep(
             "new_step", user_time_spent=SourceValue(2 * u.min),
-            jobs=[Job("new job", self.service, data_upload=SourceValue(5 * u.kB),
+            jobs=[Job("new job", self.server, self.storage, data_upload=SourceValue(5 * u.kB),
                       data_download=SourceValue(5 * u.GB), request_duration=SourceValue(4 * u.s),
                       ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))]
         )
@@ -307,7 +315,7 @@ class IntegrationTest(IntegrationTestBaseClass):
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
     def test_add_uj_step_without_job(self):
-        logger.warning("Add uj step without service")
+        logger.warning("Add uj step without job")
 
         step_without_job = UserJourneyStep(
             "User checks her phone", user_time_spent=SourceValue(20 * u.min), jobs=[])
@@ -343,5 +351,4 @@ class IntegrationTest(IntegrationTestBaseClass):
         print(self.upload_step)
         print(self.uj)
         print(self.network)
-        print(self.service)
         print(self.system)

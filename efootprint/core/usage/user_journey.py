@@ -1,8 +1,6 @@
 from typing import List, Type
 
-from efootprint.abstract_modeling_classes.explainable_objects import EmptyExplainableObject
 from efootprint.abstract_modeling_classes.modeling_object import ModelingObject
-from efootprint.core.service import Service
 from efootprint.core.hardware.servers.server_base_class import Server
 from efootprint.core.hardware.storage import Storage
 from efootprint.core.usage.user_journey_step import UserJourneyStep
@@ -23,7 +21,7 @@ class UserJourney(ModelingObject):
     def servers(self) -> List[Server]:
         servers = set()
         for job in self.jobs:
-            servers = servers | {job.service.server}
+            servers = servers | {job.server}
 
         return list(servers)
 
@@ -31,17 +29,9 @@ class UserJourney(ModelingObject):
     def storages(self) -> List[Storage]:
         storages = set()
         for job in self.jobs:
-            storages = storages | {job.service.storage}
+            storages = storages | {job.storage}
 
         return list(storages)
-
-    @property
-    def services(self) -> List[Service]:
-        services = set()
-        for job in self.jobs:
-            services = services | {job.service}
-
-        return list(services)
 
     @property
     def usage_patterns(self):
@@ -53,7 +43,10 @@ class UserJourney(ModelingObject):
 
     @property
     def modeling_objects_whose_attributes_depend_directly_on_me(self) -> List[Type["UsagePattern"]]:
-        return self.usage_patterns
+        if self.usage_patterns:
+            return self.usage_patterns
+        else:
+            return self.jobs
 
     @property
     def jobs(self) -> List[Job]:

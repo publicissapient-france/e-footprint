@@ -70,12 +70,8 @@ class InfraHardware(Hardware):
         pass
 
     @property
-    def services(self):
+    def jobs(self):
         return self.modeling_obj_containers
-
-    @property
-    def systems(self) -> List:
-        return list(set(sum([service.systems for service in self.services], start=[])))
 
     def update_instances_fabrication_footprint(self):
         instances_fabrication_footprint = (

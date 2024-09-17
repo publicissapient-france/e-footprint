@@ -11,7 +11,6 @@ from efootprint.core.usage.user_journey import UserJourney
 from efootprint.core.usage.user_journey_step import UserJourneyStep
 from efootprint.core.hardware.servers.autoscaling import Autoscaling
 from efootprint.core.hardware.storage import Storage
-from efootprint.core.service import Service
 from efootprint.core.usage.usage_pattern import UsagePattern
 from efootprint.core.hardware.network import Network
 from efootprint.core.system import System
@@ -36,7 +35,9 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cpu_cores=SourceValue(6 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
         )
         cls.storage = Storage(
             "Default SSD storage",
@@ -49,14 +50,8 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
             data_replication_factor=SourceValue(3 * u.dimensionless, Sources.HYPOTHESIS),
             data_storage_duration=SourceValue(4 * u.hour, Sources.HYPOTHESIS),
-            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS)
+            base_storage_need=SourceValue(100 * u.TB, Sources.HYPOTHESIS),
         )
-        cls.youtube = Service(
-            "Youtube", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
-        cls.dailymotion = Service(
-            "Dailymotion", cls.server1, cls.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
 
         cls.server2 = Autoscaling(
             "Server 2",
@@ -68,45 +63,40 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
             cpu_cores=SourceValue(6 * u.core, Sources.HYPOTHESIS),
             power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, Sources.HYPOTHESIS),
             average_carbon_intensity=SourceValue(100 * u.g / u.kWh, Sources.HYPOTHESIS),
-            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS)
+            server_utilization_rate=SourceValue(0.9 * u.dimensionless, Sources.HYPOTHESIS),
+            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
+            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS)
         )
         cls.server3 = default_autoscaling("TikTok Analytics server")
+        cls.server3.base_ram_consumption = SourceValue(300 * u.MB, Sources.HYPOTHESIS)
+        cls.server3.base_cpu_consumption = SourceValue(2 * u.core, Sources.HYPOTHESIS)
 
-        cls.tiktok = Service(
-            "TikTok service", cls.server2, cls.storage,
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
-        cls.tiktok_analytics = Service(
-            "TikTok analytics", cls.server3, cls.storage,
-            base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(2 * u.core, Sources.HYPOTHESIS))
-
-        cls.streaming_job = Job("streaming", cls.youtube, data_upload=SourceValue(50 * u.kB),
+        cls.streaming_job = Job("streaming", cls.server1, cls.storage, data_upload=SourceValue(50 * u.kB),
                                 data_download=SourceValue((2.5 / 3) * u.GB),
                                 request_duration=SourceValue(4 * u.min),
                                 ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.streaming_step = UserJourneyStep(
             "20 min streaming on Youtube", user_time_spent=SourceValue(20 * u.min), jobs=[cls.streaming_job])
 
-        cls.upload_job = Job("upload", cls.youtube, data_upload=SourceValue(300 * u.kB),
+        cls.upload_job = Job("upload", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
                              data_download=SourceValue(0 * u.GB), request_duration=SourceValue(0.4 * u.s),
                              ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.upload_step = UserJourneyStep(
             "0.4s of upload", user_time_spent=SourceValue(1 * u.s), jobs=[cls.upload_job])
 
         cls.dailymotion_job = Job(
-            "dailymotion", cls.dailymotion, data_upload=SourceValue(300 * u.kB),
+            "dailymotion", cls.server1, cls.storage, data_upload=SourceValue(300 * u.kB),
             data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
             ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.dailymotion_step = UserJourneyStep(
             "Dailymotion step", user_time_spent=SourceValue(1 * u.min), jobs=[cls.dailymotion_job])
 
         cls.tiktok_job = Job(
-            "tiktok", cls.tiktok, data_upload=SourceValue(0 * u.kB),
+            "tiktok", cls.server2, cls.storage, data_upload=SourceValue(0 * u.kB),
             data_download=SourceValue((2.5 / 3) * u.GB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.tiktok_analytics_job = Job(
-            "tiktok analytics", cls.tiktok_analytics, data_upload=SourceValue(50 * u.kB),
+            "tiktok analytics", cls.server3, cls.storage, data_upload=SourceValue(50 * u.kB),
             data_download=SourceValue(0 * u.GB), request_duration=SourceValue(4 * u.min),
             ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
         cls.tiktok_step = UserJourneyStep(
@@ -205,29 +195,25 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         self.footprint_has_not_changed([self.server3, self.server2, self.storage])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-    def test_add_new_service(self):
-        logger.warning("Adding service")
-        new_service = Service(
-            "new service", self.server1, self.storage, base_ram_consumption=SourceValue(300 * u.MB, Sources.HYPOTHESIS),
-            base_cpu_consumption=SourceValue(1 * u.core, Sources.HYPOTHESIS))
-        new_uj = UserJourneyStep(
-            "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[
-                Job(
-                    "dailymotion", new_service, data_upload=SourceValue(300 * u.kB),
+    def test_add_new_job(self):
+        logger.warning("Adding job")
+        new_job = Job(
+                    "dailymotion", self.server1, self.storage, data_upload=SourceValue(300 * u.kB),
                     data_download=SourceValue(3 * u.MB), request_duration=SourceValue(1 * u.s),
                     ram_needed=SourceValue(100 * u.MB), cpu_needed=SourceValue(1 * u.core))
-            ])
+
+        new_uj = UserJourneyStep(
+            "new uj step", user_time_spent=SourceValue(1 * u.s), jobs=[new_job])
         self.uj.uj_steps += [new_uj]
 
         self.footprint_has_changed([self.server1, self.storage])
         self.assertFalse(self.initial_footprint.value.equals(self.system.total_footprint.value))
 
-        logger.warning("Removing new service")
+        logger.warning("Removing new job")
         self.uj.uj_steps = self.uj.uj_steps[:-1]
         job = new_uj.jobs[0]
         new_uj.self_delete()
         job.self_delete()
-        new_service.self_delete()
 
         self.footprint_has_not_changed([self.server1, self.storage])
         self.assertTrue(self.initial_footprint.value.equals(self.system.total_footprint.value))
@@ -279,7 +265,7 @@ class IntegrationTestComplexSystem(IntegrationTestBaseClass):
         system.usage_patterns = current_ups
         new_up.self_delete()
 
-        self.assertEqual(self.initial_footprint, system.total_footprint)
+        self.assertTrue(self.initial_footprint.value.equals(system.total_footprint.value))
 
     def test_plot_footprints_by_category_and_object(self):
         self.system.plot_footprints_by_category_and_object()

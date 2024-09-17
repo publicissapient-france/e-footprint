@@ -13,12 +13,9 @@ class TestUserJourney(TestCase):
     def setUp(self):
         self.storage = MagicMock()
         self.server = MagicMock()
-        self.service = MagicMock()
-        self.service.server = self.server
-        self.service.storage = self.storage
 
-        self.job = Job("Job", data_download=MagicMock(), data_upload=MagicMock(),
-                       service=self.service, request_duration=MagicMock(), cpu_needed=MagicMock(),
+        self.job = Job("Job", server=self.server, storage=self.storage, data_download=MagicMock(),
+                       data_upload=MagicMock(), request_duration=MagicMock(), cpu_needed=MagicMock(),
                        ram_needed=MagicMock())
         self.step1 = UserJourneyStep(
             "test_uj_step1",
@@ -48,8 +45,8 @@ class TestUserJourney(TestCase):
     def test_storages(self):
         self.assertEqual(self.user_journey.storages, [self.storage])
 
-    def test_services(self):
-        self.assertEqual(self.user_journey.services, [self.service])
+    def test_jobs(self):
+        self.assertEqual(self.user_journey.jobs, [self.job])
 
     def test_update_duration_with_multiple_steps(self):
         self.user_journey.add_step(self.step1)

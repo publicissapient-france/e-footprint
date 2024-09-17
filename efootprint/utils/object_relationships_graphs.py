@@ -8,7 +8,6 @@ COLOR_MAP = {
     "Serverless": "red",
     "Hardware": "red",
     "Storage": "red",
-    "Service": "gold",
     "UsagePattern": "red",
     "UserJourney": "dodgerblue",
     "UserJourneyStep": "deepskyblue",
@@ -18,9 +17,7 @@ COLOR_MAP = {
 
 USAGE_PATTERN_VIEW_CLASSES_TO_IGNORE = [
     "System", "Network", "Hardware", "Country"]
-SERVICES_VIEW_CLASSES_TO_IGNORE = [
-    "System", "UsagePattern", "TimeIntervals", "Network", "Server", "Storage", "Hardware"]
-SERVICES_AND_INFRA_VIEW_CLASSES_TO_IGNORE = [
+INFRA_VIEW_CLASSES_TO_IGNORE = [
     "UsagePattern", "TimeIntervals", "Network", "Hardware", "System", "UserJourney", "UserJourneyStep"]
 
 

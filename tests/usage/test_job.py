@@ -11,11 +11,14 @@ from efootprint.constants.units import u
 
 class TestJob(TestCase):
     def setUp(self):
-        self.service = MagicMock()
-        self.service.name = "service"
+        self.server = MagicMock()
+        self.server.name = "server"
+
+        self.storage = MagicMock()
+        self.storage.name = "storage"
 
         self.job = Job(
-            "test job", service=self.service, data_download=SourceValue(200 * u.MB),
+            "test job", server=self.server, storage=self.storage, data_download=SourceValue(200 * u.MB),
             data_upload=SourceValue(100 * u.MB),
             ram_needed=SourceValue(400 * u.MB), cpu_needed=SourceValue(2 * u.core),
             request_duration=SourceValue(2 * u.min))
@@ -27,14 +30,19 @@ class TestJob(TestCase):
         with self.assertRaises(PermissionError):
             self.job.self_delete()
 
-    def test_self_delete_removes_backward_links_and_recomputes_service(self):
+    def test_self_delete_removes_backward_links_and_recomputes_server_and_storage(self):
         with patch.object(Job, "mod_obj_attributes", new_callable=PropertyMock) as mock_mod_obj_attributes, \
-                patch.object(self.service, "modeling_obj_containers", [self.job]), \
-                patch.object(self.service, "attributes_computation_chain", [self.service]):
-            mock_mod_obj_attributes.return_value = [self.service]
+                patch.object(self.server, "modeling_obj_containers", [self.job]), \
+                patch.object(self.storage, "modeling_obj_containers", [self.job]), \
+                patch.object(self.storage, "attributes_computation_chain", [self.storage]), \
+                patch.object(self.server, "attributes_computation_chain", [self.server]):
+            mock_mod_obj_attributes.return_value = [self.server, self.storage]
+
             self.job.self_delete()
-            self.assertEqual([], self.service.modeling_obj_containers)
-            self.service.compute_calculated_attributes.assert_called_once()
+            self.assertEqual([], self.server.modeling_obj_containers)
+            self.assertEqual([], self.storage.modeling_obj_containers)
+            self.server.compute_calculated_attributes.assert_called_once()
+            self.storage.compute_calculated_attributes.assert_called_once()
 
     def test_duration_in_full_hours(self):
         self.assertEqual(1 * u.dimensionless, self.job.duration_in_full_hours.value)
