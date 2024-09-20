@@ -236,11 +236,16 @@ class ExplainableHourlyQuantities(ExplainableObject):
                              f" got {type(value.dtypes.iloc[0])} dtype")
         super().__init__(value, label, left_parent, right_parent, operator, source)
 
-    def to(self, unit_to_convert_to: Unit, rounding=None):
+    def to(self, unit_to_convert_to: Unit, rounding=6):
         self.value["value"] = self.value["value"].pint.to(unit_to_convert_to)
         if rounding is not None:
-            self.value["value"] = pint_pandas.PintArray(
-                [round(elt, rounding) for elt in self.value["value"].values._data], dtype=self.unit)
+            self.round(rounding)
+
+        return self
+
+    def round(self, rounding_nb):
+        self.value["value"] = pint_pandas.PintArray(
+            np.round(self.value["value"].values._data, rounding_nb), dtype=self.unit)
 
         return self
 
