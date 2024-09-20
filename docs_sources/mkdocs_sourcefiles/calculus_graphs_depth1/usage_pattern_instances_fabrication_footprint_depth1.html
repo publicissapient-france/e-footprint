@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_ceb137 {
+             #mynetwork_6d48fb {
                  width: 760px;
                  height: 300px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_ceb137" class="card-body"></div>
+            <div id="mynetwork_6d48fb" class="card-body"></div>
         </div>
 
         
@@ -83,12 +83,12 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_ceb137');
+                  var container = document.getElementById('mynetwork_6d48fb');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total fabrication footprint", "label": "usage pattern total\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "usage pattern total fabrication footprint\n=\nDevices fabrication footprint of usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]", "x": 0.0, "y": 750}, {"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (device on which the user\njourney is made fabrication footprint over one hour)\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [0.67, 1.67, 3.0, 0.33, 1.0, 2.67, 2.0, 1.33, 0.67, 0.67],\nlast 10 vals [1.33, 2.33, 1.67, 2.33, 0.33, 1.0, 2.33, 1.33, 1.0, 0.33] * (10.17\ngram)\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],\nlast 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]", "x": 0.0, "y": 600}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "usage pattern total fabrication footprint", "label": "usage pattern total\nfabrication\nfootprint", "shape": "dot", "size": 15, "title": "usage pattern total fabrication footprint\n=\nDevices fabrication footprint of usage pattern\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],\nlast 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],\nlast 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]", "x": 0.0, "y": 750}, {"color": null, "id": "Devices fabrication footprint of usage pattern", "label": "Devices fabrication\nfootprint of usage\npattern", "shape": "dot", "size": 15, "title": "Devices fabrication footprint of usage pattern\n=\nusage pattern hourly nb of user journeys in parallel * (device on which the user\njourney is made fabrication footprint over one hour)\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:\nfirst 10 vals [2.0, 1.33, 1.0, 1.0, 0.67, 2.33, 0.33, 1.0, 2.33, 1.0],\nlast 10 vals [0.67, 2.67, 3.0, 1.33, 0.33, 2.0, 0.33, 2.33, 3.0, 1.0] * (10.17\ngram)\n=\n26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kg:\nfirst 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],\nlast 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]", "x": 0.0, "y": 600}]);
                   edges = new vis.DataSet([{"arrows": "to", "from": "Devices fabrication footprint of usage pattern", "to": "usage pattern total fabrication footprint"}]);
 
                   nodeColors = {};

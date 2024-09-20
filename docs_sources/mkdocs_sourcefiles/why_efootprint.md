@@ -25,7 +25,7 @@ Then let’s look at the four key components of digital services: **user devices
 
 Lastly, many ecodesign actions involve changing the way users interact with the service, so there needs to be a way to tell the model that users have changed the actions that they typically do. Hence, **user journeys must be part of the model inputs**.
 
-We now have a framework for thinking about the physicality of our digital service: **digital services must at least be described in terms of user journeys ([UserJourney](UserJourney.md)) with their usage information ([UsagePattern](UsagePattern.md)). Each user journey is made of steps ([UserJourneyStep](UserJourneyStep.md)) that make requests ([Job](Job.md)) through a network ([Network](Network.md)) to software ([Service](Service.md)) installed on a server ([Server](Autoscaling.md)), possibly saving data to storage ([Storage](Storage.md)).**
+We now have a framework for thinking about the physicality of our digital service: **digital services must at least be described in terms of user journeys ([UserJourney](UserJourney.md)) with their usage information ([UsagePattern](UsagePattern.md)). Each user journey is made of steps ([UserJourneyStep](UserJourneyStep.md)) that make requests ([Job](Job.md)) through a network ([Network](Network.md)), on a server ([Server](Autoscaling.md)), possibly saving data to storage ([Storage](Storage.md)).**
 
 e-footprint was born from the above analysis and the observation that no other tool had taken a modeling approach bringing together all these objects. It started as an Excel modeling and then evolved towards a Python package to allow for greater flexibility in the combination of objects.
 

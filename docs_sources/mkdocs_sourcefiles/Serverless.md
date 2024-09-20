@@ -32,13 +32,55 @@ average carbon intensity of serverless electricity in gram / kilowatt_hour.
 ### server_utilization_rate
 serverless utilization rate in dimensionless.
 
+### base_ram_consumption
+base ram consumption of serverless in megabyte.
+
+### base_cpu_consumption
+base cpu consumption of serverless in core.
+
 
 ## Backwards links
 
-- [Service](Service.md)
+- [Job](Job.md)
 
 
 ## Calculated attributes
+
+### hour_by_hour_cpu_need  
+serverless hour by hour cpu need in core.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
+    first 10 vals [0.4, 0.27, 0.2, 0.2, 0.13, 0.47, 0.07, 0.2, 0.47, 0.2],  
+    last 10 vals [0.13, 0.53, 0.6, 0.27, 0.07, 0.4, 0.07, 0.47, 0.6, 0.2]  
+  
+Depends directly on:  
+  
+- [Hourly streaming average occurrences across usage patterns](Job.md#hourly_avg_occurrences_across_usage_patterns)
+- [CPU needed on server server to process streaming](Job.md#cpu_needed)  
+
+through the following calculations:  
+
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/serverless_hour_by_hour_cpu_need_depth1.html"
+  
+You can also visit the <a href='../calculus_graphs/serverless_hour_by_hour_cpu_need.html' target='_blank'>link to serverless hour by hour cpu need’s full calculation graph</a>.
+
+### hour_by_hour_ram_need  
+serverless hour by hour ram need in gigabyte.  
+  
+Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
+    first 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],  
+    last 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]  
+  
+Depends directly on:  
+  
+- [Hourly streaming average occurrences across usage patterns](Job.md#hourly_avg_occurrences_across_usage_patterns)
+- [RAM needed on server server to process streaming](Job.md#ram_needed)  
+
+through the following calculations:  
+
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/serverless_hour_by_hour_ram_need_depth1.html"
+  
+You can also visit the <a href='../calculus_graphs/serverless_hour_by_hour_ram_need.html' target='_blank'>link to serverless hour by hour ram need’s full calculation graph</a>.
 
 ### available_ram_per_instance  
 ExplainableQuantity in gigabyte, representing the available ram per serverless instance.  
@@ -49,7 +91,7 @@ Depends directly on:
   
 - [RAM of serverless](Serverless.md#ram)
 - [serverless utilization rate](Serverless.md#server_utilization_rate)
-- [Base RAM consumption of service](Service.md#base_ram_consumption)  
+- [Base RAM consumption of serverless](Serverless.md#base_ram_consumption)  
 
 through the following calculations:  
 
@@ -66,7 +108,7 @@ Depends directly on:
   
 - [Nb cpus cores of serverless](Serverless.md#cpu_cores)
 - [serverless utilization rate](Serverless.md#server_utilization_rate)
-- [Base CPU consumption of service](Service.md#base_cpu_consumption)  
+- [Base CPU consumption of serverless](Serverless.md#base_cpu_consumption)  
 
 through the following calculations:  
 
@@ -74,52 +116,18 @@ through the following calculations:
   
 You can also visit the <a href='../calculus_graphs/serverless_available_cpu_per_instance.html' target='_blank'>link to Available CPU per serverless instance’s full calculation graph</a>.
 
-### all_services_cpu_needs  
-cpu needs of all services running on serverless in core.  
-  
-Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
-    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
-    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
-  
-Depends directly on:  
-  
-- [service hour by hour cpu need](Service.md#hour_by_hour_cpu_need)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/serverless_all_services_cpu_needs_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/serverless_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on serverless’s full calculation graph</a>.
-
-### all_services_ram_needs  
-ram needs of all services running on serverless in gigabyte.  
-  
-Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
-    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
-    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
-  
-Depends directly on:  
-  
-- [service hour by hour ram need](Service.md#hour_by_hour_ram_need)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/serverless_all_services_ram_needs_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/serverless_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on serverless’s full calculation graph</a>.
-
 ### raw_nb_of_instances  
 hourly raw number of serverless instances in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
-    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
+    first 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],  
+    last 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]  
   
 Depends directly on:  
   
-- [RAM needs of all services running on serverless](Serverless.md#all_services_ram_needs)
+- [serverless hour by hour ram need](Serverless.md#hour_by_hour_ram_need)
 - [Available RAM per serverless instance](Serverless.md#available_ram_per_instance)
-- [CPU needs of all services running on serverless](Serverless.md#all_services_cpu_needs)
+- [serverless hour by hour cpu need](Serverless.md#hour_by_hour_cpu_need)
 - [Available CPU per serverless instance](Serverless.md#available_cpu_per_instance)  
 
 through the following calculations:  
@@ -132,8 +140,8 @@ You can also visit the <a href='../calculus_graphs/serverless_raw_nb_of_instance
 hourly number of serverless instances in dimensionless.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in dimensionless:  
-    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
-    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
+    first 10 vals [0.02, 0.01, 0.01, 0.01, 0.01, 0.02, 0.0, 0.01, 0.02, 0.01],  
+    last 10 vals [0.01, 0.03, 0.03, 0.01, 0.0, 0.02, 0.0, 0.02, 0.03, 0.01]  
   
 Depends directly on:  
   
@@ -168,8 +176,8 @@ You can also visit the <a href='../calculus_graphs/serverless_instances_fabricat
 hourly energy consumed by serverless instances in kilowatt_hour.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in kWh:  
-    first 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.01, 0.0, 0.0, 0.0],  
-    last 10 vals [0.0, 0.01, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.0, 0.0]  
+    first 10 vals [0.01, 0.0, 0.0, 0.0, 0.0, 0.01, 0.0, 0.0, 0.01, 0.0],  
+    last 10 vals [0.0, 0.01, 0.01, 0.0, 0.0, 0.01, 0.0, 0.01, 0.01, 0.0]  
   
 Depends directly on:  
   

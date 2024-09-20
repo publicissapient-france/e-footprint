@@ -42,7 +42,10 @@ serverless_server = Serverless(
     cpu_cores=SourceValue(24 * u.core, source=None),
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
-    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None))
+    server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
+    base_ram_consumption = SourceValue(300 * u.MB, source=None),
+    base_cpu_consumption = SourceValue(2 * u.core, source=None)
+)
 
 on_premise_server = OnPremise(
     "on premise server",
@@ -55,7 +58,9 @@ on_premise_server = OnPremise(
     power_usage_effectiveness=SourceValue(1.2 * u.dimensionless, source=None),
     average_carbon_intensity=SourceValue(100 * u.g / u.kWh, source=None),
     server_utilization_rate=SourceValue(0.9 * u.dimensionless, source=None),
-    fixed_nb_of_instances=SourceValue(4000 * u.dimensionless, source=None)
+    fixed_nb_of_instances=SourceValue(4000 * u.dimensionless, source=None),
+    base_ram_consumption = SourceValue(300 * u.MB, source=None),
+    base_cpu_consumption = SourceValue(2 * u.core, source=None)
 )
 
 storage = Storage(

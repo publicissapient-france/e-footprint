@@ -38,13 +38,13 @@ storage initial storage need in terabyte.
 
 ## Backwards links
 
-- [Service](Service.md)
+- [Job](Job.md)
 
 
 ## Calculated attributes
 
-### all_services_storage_needs  
-storage need of storage in terabyte.  
+### storage_needed  
+hourly storage storage need in terabyte.  
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
@@ -52,14 +52,14 @@ Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in T
   
 Depends directly on:  
   
-- [Hourly service storage need](Service.md#storage_needed)
+- [Hourly streaming data upload across usage patterns](Job.md#hourly_data_upload_across_usage_patterns)
 - [Data replication factor of storage](Storage.md#data_replication_factor)  
 
 through the following calculations:  
 
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_all_services_storage_needs_depth1.html"
+--8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_storage_needed_depth1.html"
   
-You can also visit the <a href='../calculus_graphs/storage_all_services_storage_needs.html' target='_blank'>link to Storage need of storage’s full calculation graph</a>.
+You can also visit the <a href='../calculus_graphs/storage_storage_needed.html' target='_blank'>link to Hourly storage storage need’s full calculation graph</a>.
 
 ### storage_dumps  
 storage dumps for storage in terabyte.  
@@ -70,7 +70,7 @@ Example value: 8749 values from 2027-01-01 10:00:00 to 2027-12-31 22:00:00 in TB
   
 Depends directly on:  
   
-- [Storage need of storage](Storage.md#all_services_storage_needs)
+- [Hourly storage storage need](Storage.md#storage_needed)
 - [Data storage duration of storage](Storage.md#data_storage_duration)  
 
 through the following calculations:  
@@ -84,11 +84,11 @@ hourly storage delta for storage in terabyte.
   
 Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in TB:  
     first 10 vals [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],  
-    last 10 vals [-0.0, 0.0, 0.0, 0.0, -0.0, -0.0, 0.0, -0.0, -0.0, -0.0]  
+    last 10 vals [-0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]  
   
 Depends directly on:  
   
-- [Storage need of storage](Storage.md#all_services_storage_needs)
+- [Hourly storage storage need](Storage.md#storage_needed)
 - [Storage dumps for storage](Storage.md#storage_dumps)  
 
 through the following calculations:  
@@ -133,40 +133,6 @@ through the following calculations:
 --8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_nb_of_active_instances_depth1.html"
   
 You can also visit the <a href='../calculus_graphs/storage_nb_of_active_instances.html' target='_blank'>link to Hourly number of active instances for storage’s full calculation graph</a>.
-
-### all_services_cpu_needs  
-cpu needs of all services running on storage in core.  
-  
-Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in core:  
-    first 10 vals [0.13, 0.33, 0.6, 0.07, 0.2, 0.53, 0.4, 0.27, 0.13, 0.13],  
-    last 10 vals [0.27, 0.47, 0.33, 0.47, 0.07, 0.2, 0.47, 0.27, 0.2, 0.07]  
-  
-Depends directly on:  
-  
-- [service hour by hour cpu need](Service.md#hour_by_hour_cpu_need)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_all_services_cpu_needs_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/storage_all_services_cpu_needs.html' target='_blank'>link to CPU needs of all services running on storage’s full calculation graph</a>.
-
-### all_services_ram_needs  
-ram needs of all services running on storage in gigabyte.  
-  
-Example value: 26281 values from 2024-12-31 22:00:00 to 2027-12-31 22:00:00 in GB:  
-    first 10 vals [0.01, 0.02, 0.03, 0.0, 0.01, 0.03, 0.02, 0.01, 0.01, 0.01],  
-    last 10 vals [0.01, 0.02, 0.02, 0.02, 0.0, 0.01, 0.02, 0.01, 0.01, 0.0]  
-  
-Depends directly on:  
-  
-- [service hour by hour ram need](Service.md#hour_by_hour_ram_need)  
-
-through the following calculations:  
-
---8<-- "docs_sources/mkdocs_sourcefiles/calculus_graphs_depth1/storage_all_services_ram_needs_depth1.html"
-  
-You can also visit the <a href='../calculus_graphs/storage_all_services_ram_needs.html' target='_blank'>link to RAM needs of all services running on storage’s full calculation graph</a>.
 
 ### raw_nb_of_instances  
 hourly raw number of instances for storage in dimensionless.  

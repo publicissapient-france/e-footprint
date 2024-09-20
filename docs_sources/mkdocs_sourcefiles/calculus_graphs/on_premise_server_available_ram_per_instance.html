@@ -31,7 +31,7 @@
         </center>
         <style type="text/css">
 
-             #mynetwork_e3875c {
+             #mynetwork_fcd39c {
                  width: 1800px;
                  height: 900px;
                  background-color: #ffffff;
@@ -53,7 +53,7 @@
         <div class="card" style="width: 100%">
             
             
-            <div id="mynetwork_e3875c" class="card-body"></div>
+            <div id="mynetwork_fcd39c" class="card-body"></div>
         </div>
 
         
@@ -83,13 +83,13 @@
 
               // This method is responsible for drawing the graph, returns the drawn network
               function drawGraph() {
-                  var container = document.getElementById('mynetwork_e3875c');
+                  var container = document.getElementById('mynetwork_fcd39c');
 
                   
 
                   // parsing and collecting nodes and edges from the python
-                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per on premise server instance", "label": "Available RAM per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise server instance\n=\nRAM of on premise server * on premise server utilization rate - Base RAM\nconsumption of service\n=\n128 gigabyte * 0.9 dimensionless - 300 megabyte\n=\n114.9 gigabyte", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of on premise server", "label": "RAM of on premise\nserver", "shape": "dot", "size": 15, "title": "RAM of on premise server = 128 gigabyte", "x": -150.0, "y": 150}, {"color": null, "id": "on premise server utilization rate", "label": "on premise server\nutilization rate", "shape": "dot", "size": 15, "title": "on premise server utilization rate = 0.9 dimensionless", "x": 0.0, "y": 150}, {"color": null, "id": "Base RAM consumption of service", "label": "Base RAM consumption\nof service", "shape": "dot", "size": 15, "title": "Base RAM consumption of service = 300 megabyte", "x": 150.0, "y": 150}]);
-                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of on premise server", "to": "Available RAM per on premise server instance"}, {"arrows": "to", "from": "on premise server utilization rate", "to": "Available RAM per on premise server instance"}, {"arrows": "to", "from": "Base RAM consumption of service", "to": "Available RAM per on premise server instance"}]);
+                  nodes = new vis.DataSet([{"color": null, "id": "Available RAM per on premise server instance", "label": "Available RAM per on\npremise server\ninstance", "shape": "dot", "size": 15, "title": "Available RAM per on premise server instance\n=\nRAM of on premise server * on premise server utilization rate - Base RAM\nconsumption of on premise server\n=\n128 gigabyte * 0.9 dimensionless - 300 megabyte\n=\n114.9 gigabyte", "x": 0.0, "y": 300}, {"color": null, "id": "RAM of on premise server", "label": "RAM of on premise\nserver", "shape": "dot", "size": 15, "title": "RAM of on premise server = 128 gigabyte", "x": -150.0, "y": 150}, {"color": null, "id": "on premise server utilization rate", "label": "on premise server\nutilization rate", "shape": "dot", "size": 15, "title": "on premise server utilization rate = 0.9 dimensionless", "x": 0.0, "y": 150}, {"color": null, "id": "Base RAM consumption of on premise server", "label": "Base RAM consumption\nof on premise server", "shape": "dot", "size": 15, "title": "Base RAM consumption of on premise server = 300 megabyte", "x": 150.0, "y": 150}]);
+                  edges = new vis.DataSet([{"arrows": "to", "from": "RAM of on premise server", "to": "Available RAM per on premise server instance"}, {"arrows": "to", "from": "on premise server utilization rate", "to": "Available RAM per on premise server instance"}, {"arrows": "to", "from": "Base RAM consumption of on premise server", "to": "Available RAM per on premise server instance"}]);
 
                   nodeColors = {};
                   allNodes = nodes.get({ returnType: "Object" });

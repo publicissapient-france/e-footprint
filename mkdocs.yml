@@ -47,7 +47,6 @@ nav:
       - UserJourney: UserJourney.md
       - UserJourneyStep: UserJourneyStep.md
       - Job: Job.md
-  - Service: Service.md
   - System: System.md
   - Country: Country.md
 - e-footprint builders: builders.md
