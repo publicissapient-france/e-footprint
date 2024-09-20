@@ -284,7 +284,8 @@ class System(ModelingObject):
             print(f"Plotting the impact of {self.previous_change.replace('changed', 'changing')}")
             emissions_dict__old = [self.previous_total_energy_footprints, self.previous_total_fabrication_footprints]
 
-        emissions_dict__new = [self.total_energy_footprint_sum_over_period, self.total_fabrication_footprint_sum_over_period]
+        emissions_dict__new = [self.total_energy_footprint_sum_over_period,
+                               self.total_fabrication_footprint_sum_over_period]
 
         fig, ax = plt.subplots(nrows=1, ncols=1, figsize=figsize)
 

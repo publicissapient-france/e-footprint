@@ -96,9 +96,11 @@ class TestExplainableHourlyQuantities(unittest.TestCase):
 
     def test_addition_between_non_overlapping_hourly_quantities_with_same_units(self):
         hourly_usage1 = ExplainableHourlyQuantities(
-            create_hourly_usage_df_from_list([1, 2, 3], datetime.strptime("2025-01-01", "%Y-%m-%d"), pint_unit=u.W), "Usage 1")
+            create_hourly_usage_df_from_list([1, 2, 3],
+            datetime.strptime("2025-01-01", "%Y-%m-%d"), pint_unit=u.W), "Usage 1")
         hourly_usage2 = ExplainableHourlyQuantities(
-            create_hourly_usage_df_from_list([10, 20, 30], datetime.strptime("2025-01-02", "%Y-%m-%d"), pint_unit=u.W), "Usage 2")
+            create_hourly_usage_df_from_list([10, 20, 30],
+            datetime.strptime("2025-01-02", "%Y-%m-%d"), pint_unit=u.W), "Usage 2")
         sum_hourly_usage = hourly_usage1 + hourly_usage2
         self.assertEqual([1, 2, 3, 10, 20, 30], sum_hourly_usage.value_as_float_list)
         self.assertEqual(hourly_usage1.value.index.min(), sum_hourly_usage.value.index.min())

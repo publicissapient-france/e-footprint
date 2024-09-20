@@ -33,9 +33,9 @@ class JobTypes:
 
 
 class Job(ModelingObject):
-    def __init__(self, name: str, server: Server, storage: Storage, data_upload: SourceValue, data_download: SourceValue,
-                 request_duration: SourceValue, cpu_needed: SourceValue, ram_needed: SourceValue,
-                 job_type: JobTypes = JobTypes.UNDEFINED, description: str = ""):
+    def __init__(self, name: str, server: Server, storage: Storage, data_upload: SourceValue,
+                 data_download: SourceValue, request_duration: SourceValue, cpu_needed: SourceValue,
+                 ram_needed: SourceValue, job_type: JobTypes = JobTypes.UNDEFINED, description: str = ""):
         super().__init__(name)
         self.hourly_occurrences_per_usage_pattern = ExplainableObjectDict()
         self.hourly_avg_occurrences_per_usage_pattern = ExplainableObjectDict()

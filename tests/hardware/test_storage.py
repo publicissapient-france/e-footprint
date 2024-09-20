@@ -31,7 +31,8 @@ class TestStorage(TestCase):
 
     def test_update_storage_needs_single_job(self):
         job1 = MagicMock()
-        job1.hourly_data_upload_across_usage_patterns = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job1.hourly_data_upload_across_usage_patterns = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
 
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
@@ -44,8 +45,10 @@ class TestStorage(TestCase):
     def test_update_storage_needs_multiple_jobs(self):
         job1 = MagicMock()
         job2 = MagicMock()
-        job1.hourly_data_upload_across_usage_patterns = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
-        job2.hourly_data_upload_across_usage_patterns = SourceHourlyValues(create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job1.hourly_data_upload_across_usage_patterns = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
+        job2.hourly_data_upload_across_usage_patterns = SourceHourlyValues(
+            create_hourly_usage_df_from_list([1, 2, 3], pint_unit=u.TB))
 
         with patch.object(Storage, "jobs", new_callable=PropertyMock) as jobs_mock, \
                 patch.object(self.storage_base, "data_replication_factor", SourceValue(3 * u.dimensionless)):
